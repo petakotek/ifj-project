@@ -6,6 +6,7 @@
  */
  #include "lexer.h"
 #include <ctype.h>
+#include <stddef.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -61,8 +62,8 @@
  *@param int end koncici pozice
  * @return vraci char *vysledek
  */
- char *substring(int start, int end) {
-     if (start < 0 || end > lexer->length || start >= end) {
+ char *substring(size_t start, size_t end) {
+     if (end > lexer->length || start >= end) {
          return NULL;
      }
      int length = end - start;
@@ -71,7 +72,7 @@
          return NULL;
      }
      int pos = 0;
-     for (int i = start; i < end; i++) {
+     for (size_t i = start; i < end; i++) {
          vysledek[pos++] = lexer->input[i];
      }
      vysledek[pos] = '\0';
@@ -85,7 +86,7 @@
   *          vrací TOKEN_EOF; při chybě může vrátit ERROR_TOKEN
   */
  Token lexer_token_next(){
-	 Token token;
+			Token token = {0};
 	 if (lexer == NULL || lexer->pos >= lexer->length) {
 	     token.type = TOKEN_EOF;
 	     return token;
@@ -102,7 +103,7 @@
 	int radek = 0;
 	while (1) {
 		c = lexer->input[lexer->pos];
-		switch (c) {
+		switch (stav) {
 			/*
 			*Prvni stav kde jsem uprostred niceho a cekame na zacatek tokenu a nebo jsme na konci
 		 	*/
