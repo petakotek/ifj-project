@@ -7,9 +7,22 @@
 typedef enum {
     TOKEN_EOF,
     TOKEN_IDENTIFIER,
-    TOKEN_KEYWORD,
     TOKEN_NUMBER,
-
+    TOKEN_KEYWORD_IF,
+    TOKEN_KEYWORD_WHILE,
+    TOKEN_PLUS,      // +
+    TOKEN_MINUS,     // -
+    TOKEN_STAR,      // *
+    TOKEN_SLASH,     // /
+    TOKEN_ASSIGN,    // =
+    TOKEN_EQ,        // ==
+    TOKEN_LT,        // <
+    TOKEN_GT,        // >
+    TOKEN_LPAREN,    // (
+    TOKEN_RPAREN,    // )
+    TOKEN_SEMICOLON, // ;
+    TOKEN_ERROR,
+    TOKEN_KEYWORD_RETURN
 } TokenType;
 /*
 *Definuje samotny jeden token
@@ -33,3 +46,21 @@ typedef struct {
     size_t pos;
     size_t length;
 } LexerState;
+/*
+ * Funkce inicializuje lexer a alokuje paměť pro stav lexikálního analyzátoru.
+ *
+ * @param source  vstupní řetězec zpracovávaný lexerem (z main.c)
+ * @return        0 při úspěchu, -1 při chybě alokace
+ */
+int lexer_init(const char *source);
+/*
+ * Uvolní paměť spojenou s lexerem a nastaví ukazatel na NULL.
+ */
+void lexer_free(void);
+/*
+ * Hlavní funkce konečného automatu pro získání dalšího tokenu.
+ *
+ * @return  další token ze vstupu; pokud není více tokenů,
+ *          vrací TOKEN_EOF; při chybě může vrátit ERROR_TOKEN
+ */
+Token lexer_token_next();
