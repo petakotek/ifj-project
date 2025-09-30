@@ -4,6 +4,26 @@
 /*
 *Definice typu tokenu v lexeru
 */
+//Stav do kterych se muze dostat
+typedef enum{
+	START_LEX,
+	ID,
+	GLOBAL_ID,
+	NUMBER,
+	FLOAT_NUMBER,
+	HEXA_NUM,
+	FLOAT_EXP,
+	DIGIT_EXP,
+	NEG_DIGIT_EXP,
+	STRING,
+	STRING_BACK_S,
+	STRING_HEX_N,
+	BACKSLASH,
+	LINE_COMMENT,
+	BLOCK_COMMENT,
+
+}StateType ;
+//nějaky natrel co by tam mohlo byt
 typedef enum {
     TOKEN_EOF,
     TOKEN_IDENTIFIER,
