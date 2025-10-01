@@ -6,28 +6,59 @@
 */
 //Stav do kterych se muze dostat
 typedef enum{
-	START_LEX,
-	ID,
+	START_LEX, ///start
+	ID,  ///Promena
+	UNDERSCORE,
 	GLOBAL_ID,
 	NUMBER,
 	FLOAT_NUMBER,
+	ZERO,
 	HEXA_NUM,
 	FLOAT_EXP,
 	DIGIT_EXP,
 	NEG_DIGIT_EXP,
 	STRING,
-	STRING_BACK_S,
+	STRING_BLOCK,
 	STRING_HEX_N,
 	BACKSLASH,
 	LINE_COMMENT,
 	BLOCK_COMMENT,
-
+	STAR,
+	SYMBOL,
+	BLOCK_START,
+	BLOCK_END,
+	PAR_LEFT,
+	PAR_RIGHT,
+	SQUARE_LEFT,
+	PLUS,      // +
+    MINUS,     // -
+    SLASH,     // /
+    ASSIGN,    // =
+    EQ,        // ==
+    LT,        // <
+    GT,        // >
+    DOT, // .
+    LTE, // <=
+    GTE ,// >=
+    AND, // &&
+    OR, // ||
+    NOT, // !=
+    DOUBLE_DOT, // :
+    QUESTION_MARK // ?
+//dopsat vsechny operatory jako stav a jako token
 }StateType ;
 //nějaky natrel co by tam mohlo byt
 typedef enum {
     TOKEN_EOF,
     TOKEN_IDENTIFIER,
-    TOKEN_NUMBER,
+    TOKEN_GLOBAL_ID,
+    TOKEN_INTEGER,
+    TOKEN_STRING,
+    TOKEN_STRING_BLOCK,
+    TOKEN_FLOAT,
+    TOKEN_HEXA,
+    TOKEN_INTEGER_EXP,
+    TOKEN_FLOAT_EXP,
     TOKEN_KEYWORD_IF,
     TOKEN_KEYWORD_WHILE,
     TOKEN_PLUS,      // +
@@ -40,9 +71,20 @@ typedef enum {
     TOKEN_GT,        // >
     TOKEN_LPAREN,    // (
     TOKEN_RPAREN,    // )
-    TOKEN_SEMICOLON, // ;
+    TOKEN_DOT, // .
+    TOKEN_TRUE,
+    TOKEN_FALSE,
+    TOKEN_QUESTION_MARK,
+    TOKEN_LTE,
+    TOKEN_GTE,
+    TOKEN_NOT,
+    TOKEN_DOUBLE_DOT,
+    TOKEN_AND,
+    TOKEN_OR,
     TOKEN_ERROR,
-    TOKEN_KEYWORD_RETURN
+    TOKEN_NEW_LINE,
+    TOKEN_ELSE,
+    TOKEN_KEYWORD_RETURN,   //dopsat true a dalsi
 } TokenType;
 /*
 *Definuje samotny jeden token
@@ -84,3 +126,5 @@ void lexer_free(void);
  *          vrací TOKEN_EOF; při chybě může vrátit ERROR_TOKEN
  */
 Token lexer_token_next();
+
+const char *token_type_to_string(TokenType type);

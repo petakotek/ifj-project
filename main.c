@@ -17,9 +17,15 @@ int main(){
 	source[len] = '\0';
 	lexer_init(source);
 	//testovani
-	Token token = lexer_token_next();
-	printf("debug %s",token.value.string);
-	free(token.value.string);
+	Token token;
+	token = lexer_token_next();
+	while (token.type != TOKEN_EOF ) {
+		printf("%s \n",token_type_to_string(token.type));
+		if(token.value.string != NULL){
+		free(token.value.string);
+		}
+		token = lexer_token_next();
+	}
 	lexer_free();
 	free(source);
 }
