@@ -21,10 +21,13 @@ int main(){
 	token = lexer_token_next();
 	while (token.type != TOKEN_EOF ) {
 		printf("%s \n",token_type_to_string(token.type));
-		if(token.value.string != NULL){
+		if(token.type == TOKEN_STRING ||token.type == TOKEN_STRING ||token.type == TOKEN_INTEGER || token.type == TOKEN_GLOBAL_ID){
 		free(token.value.string);
 		}
 		token = lexer_token_next();
+		if(token.type == TOKEN_ERROR){
+			break;
+		}
 	}
 	lexer_free();
 	free(source);

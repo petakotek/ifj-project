@@ -23,13 +23,14 @@ typedef enum{
 	BACKSLASH,
 	LINE_COMMENT,
 	BLOCK_COMMENT,
-	STAR,
+	STAR_COMMENT,
 	SYMBOL,
 	BLOCK_START,
 	BLOCK_END,
 	PAR_LEFT,
 	PAR_RIGHT,
 	SQUARE_LEFT,
+	SQUARE_RIGHT,
 	PLUS,      // +
     MINUS,     // -
     SLASH,     // /
@@ -37,14 +38,22 @@ typedef enum{
     EQ,        // ==
     LT,        // <
     GT,        // >
+    START,	//*
     DOT, // .
     LTE, // <=
     GTE ,// >=
+    AND_HALF, //&
     AND, // &&
+    OR_HALF, // |
     OR, // ||
+    NOT_HALF, // !
     NOT, // !=
+    DOUBLE_QUO,//""
+    END_QUO,   //ukoncovaci stavy pro block string
+    END_DOUBLE_QUO,
     DOUBLE_DOT, // :
-    QUESTION_MARK // ?
+    QUESTION_MARK, // ?
+    DOUBLE_MINUS // --
 //dopsat vsechny operatory jako stav a jako token
 }StateType ;
 //nějaky natrel co by tam mohlo byt
@@ -85,6 +94,13 @@ typedef enum {
     TOKEN_NEW_LINE,
     TOKEN_ELSE,
     TOKEN_KEYWORD_RETURN,   //dopsat true a dalsi
+    TOKEN_KEYWORD_VAR,
+    TOKEN_BLOCK_STAR,
+    TOKEN_BLOCK_END,
+    TOKEN_SQUARE_LEFT,
+    TOKEN_SQUARE_RIGHT,
+    TOKEN_DOUBLE_MINUS,
+    TOKEN_KEYWORD_FOR
 } TokenType;
 /*
 *Definuje samotny jeden token

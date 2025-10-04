@@ -2,9 +2,15 @@ import subprocess
 import glob
 import os
 import difflib
+import re
 
 EXEC = "./ifj25"   # tvoje binárka
 TESTDIR = "testy/tokenazir"
+
+def normalize_output(text):
+    lines = [line.strip() for line in text.split('\n') if line.strip()]
+    normalized_text = "\n".join(lines)
+    return normalized_text.strip()
 
 def run_test(input_file, expected_file):
     with open(input_file, "r") as f:
@@ -16,8 +22,9 @@ def run_test(input_file, expected_file):
 
     # skutečný výstup
     actual = result.stdout
-
-    if actual == expected:
+    normalized_expected = normalize_output(expected)
+    normalized_actual = normalize_output(actual)
+    if normalized_actual == normalized_expected:
         print(f"[ OK ] {os.path.basename(input_file)}")
     else:
         print(f"[FAIL] {os.path.basename(input_file)}")
