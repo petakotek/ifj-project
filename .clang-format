@@ -1,3 +1,4 @@
+#pouziti clang-format -i *.c
 BasedOnStyle: Google
 IndentWidth: 4           # počet mezer pro odsazení
 TabWidth: 4              # šířka tabulátoru
