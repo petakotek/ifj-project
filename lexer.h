@@ -53,7 +53,8 @@ typedef enum{
     END_DOUBLE_QUO,
     DOUBLE_DOT, // :
     QUESTION_MARK, // ?
-    DOUBLE_MINUS // --
+    DOUBLE_MINUS, // --
+    ZNAK_HEXA  //stav kdy ve stringu dostaneme hexa cislo a tim doplnime znak
 //dopsat vsechny operatory jako stav a jako token
 }StateType ;
 //nějaky natrel co by tam mohlo byt

@@ -19,15 +19,15 @@ int main(){
 	//testovani
 	Token token;
 	token = lexer_token_next();
-	while (token.type != TOKEN_EOF ) {
-		printf("%s \n",token_type_to_string(token.type));
-		if(token.type == TOKEN_STRING ||token.type == TOKEN_STRING ||token.type == TOKEN_INTEGER || token.type == TOKEN_GLOBAL_ID){
-		free(token.value.string);
-		}
-		token = lexer_token_next();
+	while (token.type != TOKEN_EOF) {
 		if(token.type == TOKEN_ERROR){
+   			printf("%s\n", token_type_to_string(token.type));
 			break;
 		}
+		printf("%s\n", token_type_to_string(token.type));
+  		token = lexer_token_next();
+	}if (token.type == TOKEN_ERROR) {
+	    fprintf(stderr, "Lexer error on line %d.\n", token.line);
 	}
 	lexer_free();
 	free(source);
