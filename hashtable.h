@@ -32,7 +32,7 @@ typedef struct
  */
 typedef struct
 {
-    TableItemsPtr items; // Pole položek v Hashovací tabulce
+    TableItemsPtr *items; // Pole položek v Hashovací tabulce
     int tableSize; /** Aktuální velikost tabulky @param tableCapacity Kapacita tabulky nemůže být větší jak její velikost !!! */ 
     int tableCapacity; // Kapacita tabulky, která může být využita
 
