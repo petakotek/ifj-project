@@ -1,0 +1,14 @@
+#pouziti clang-format -i *.c
+BasedOnStyle: Google
+IndentWidth: 4           # počet mezer pro odsazení
+TabWidth: 4              # šířka tabulátoru
+UseTab: Never            # vždy používat mezery, ne taby
+ContinuationIndentWidth: 4  # odsazení pokračujících řádků (např. u dlouhých funkcí)
+ColumnLimit: 100         # maximální délka řádku (můžeš změnit)
+SpacesBeforeTrailingComments: 2
+AlignConsecutiveAssignments: true
+AlignConsecutiveDeclarations: true
+AllowShortIfStatementsOnASingleLine: false
+AllowShortLoopsOnASingleLine: false
+BreakBeforeBraces: Attach   # závorky na stejném řádku jako `if`, `while`, ...
+SpaceBeforeParens: ControlStatements  # mezera před závorkou jen u "if (...)"
