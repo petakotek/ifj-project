@@ -207,15 +207,16 @@ const char *token_type_to_string(TokenType type) {
  *@params c znak dodavany
  */
 void append_char(char **buf, int *delka, int *kapacita, char c) {
-    if (*delka + 1 >= *kapacita) {
+    if (*delka + 1 >= *kapacita) {  //ve chvili kdy hrozi preteceni realloc
         *kapacita *= 2;
         *buf = realloc(*buf, *kapacita);
     }
-    (*buf)[(*delka)++] = c;
+    (*buf)[(*delka)++] = c;  //zapisovani znaku do bufferu
 }
 Token lexer_token_next() {
     // inicializace bufferu na string
-    char *buf = malloc(INIT_CAPACITY);
+    char *buf = malloc(INIT_CAPACITY); /* U kazdeho returnu pred kterem se pointer na buffer nepreda MUSI BYT FREE!!!
+    									jinak memory leak typicky nasobky 32byt */
     int kapacity = INIT_CAPACITY;
     int delak = 0;
     Token token = {0};
@@ -240,6 +241,16 @@ Token lexer_token_next() {
     int hexa_count = 0;
     // buffer pro hexa cisla v stringu
     char hexa_buffer[3];
+    /*
+    * Konecny automat funguje tak ze se posovame lexer->count po vstupu ve chvili kdy v pocatecnim stavu
+    * START_LEX dedekujeme cislo nebo identifikator tak ulozime hodnotu hodnotu lexer->pos do promene zacatek
+    * ve chvili kdy v techto stavech zjistime ze dalsi charakter je jiny nez aktualni pozadovanym stavem tak
+    * udelame substring od zacatek po lexer->pos a mame token identifikatoru nebo cisla stejne tak u nekterych symbolu
+    * a u blokoveho stringu ale u normalni stringu to musime zduvodu moznosti hexa cisel ukladat do prubezneho bufferu
+    * Jednoduche symboly vracime okamzite
+    * Dulezita vec lexer->count zvetsujeme pouze pri zmene stavu s vyjimkou prazdneho znaku kde se stav nemeni ale posouvame se
+    * a v hexa cisle ve stringu kde je to naopak menime stav po ukonceni hexa cisla ale neposouvame se jinak bychom preskocili jeden znak
+    */
     while (1) {
         if (lexer->pos <
             lexer->length) {  // kontrola aby nas counter nepreskocil velikost
@@ -255,14 +266,10 @@ Token lexer_token_next() {
         }
         switch (stav) {
                 /*
-                 *Prvni stav kde jsem uprostred niceho a cekame na zacatek
-                 *tokenu a nebo jsme na konci
-                 */
-                /*
-                 * Dodelat stav symbolu ve kterem porovname symboly pridat
-                 * token
+                 *Pocatecni stav
                  */
             case START_LEX: {
+            //pocatecni vstup a jeho rozpoznani
                 if (c == '\0') {
                     token.type = TOKEN_EOF;
                     free(buf);
@@ -381,6 +388,7 @@ Token lexer_token_next() {
                 }
                 break;
             }
+            //Sekce identifikatoru
             case ID: {
                 if (isalnum(c) || c == '_') {
                     lexer->pos++;
@@ -393,6 +401,10 @@ Token lexer_token_next() {
                 }
                 break;
             }
+            /*
+            *Sekce globalnich identifikatoru
+            * Mezi stav pro _
+            */
             case UNDERSCORE: {
                 if (c == '_') {
                     stav = GLOBAL_ID;
@@ -418,6 +430,9 @@ Token lexer_token_next() {
                 }
                 break;
             }
+            /*
+            * Stav cislo ze ktereho se da dostat do float_number, Digit_exp
+            */
             case NUMBER: {
                 if (isdigit(c)) {
                     lexer->pos++;
@@ -455,6 +470,9 @@ Token lexer_token_next() {
                 }
                 break;
             }
+            /*
+            * Stav cislo ze ktereho se da dostat do float_exp
+            */
             case FLOAT_NUMBER: {
                 if (c == 'e') {
                     stav = FLOAT_EXP;
@@ -489,6 +507,10 @@ Token lexer_token_next() {
                 }
                 break;
             }
+            /*
+            * Stav pro nulo ve kterem se bud dostaneme do float_number pokud je nasledovana tecko nebo do hexa pokud nasleduje x
+            * pokud je dalsi cislo integer tak vyhodime error jelikoz vstup 0123 je neplatny
+            */
             case ZERO: {
                 if (c == 'x') {
                     stav = HEXA_NUM;
@@ -511,6 +533,9 @@ Token lexer_token_next() {
                 }
                 break;
             }
+            /*
+            * Stav pro hexa cislo pokud nedostaneme platne hexa cislo hazime error
+            */
             case HEXA_NUM: {
                 if (isxdigit(c)) {
                     lexer->pos++;
@@ -546,6 +571,9 @@ Token lexer_token_next() {
                 }
                 break;
             }
+            /*
+            * Stav digit_exp a float_exp jsou identicke pokud nedostanou platne cislo tak vraci error
+            */
             case DIGIT_EXP: {
                 if (isdigit(c)) {
                     lexer->pos++;
@@ -611,6 +639,9 @@ Token lexer_token_next() {
                 }
                 break;
             }
+            /*
+            * Zpracovani komentaru a jejich preskoceni
+            */
             case BACKSLASH: {
                 if (c == '/') {
                     stav = LINE_COMMENT;
@@ -644,8 +675,7 @@ Token lexer_token_next() {
             case STAR_COMMENT: {
                 if (c == '/') {
                     stav = START_LEX;
-                    printf("vratime se \n");
-                } else {
+                } else {   //vstup je napriklad ** coz neni konec komentare tak se vracime do blokoveho komentare
                     stav = BLOCK_COMMENT;
                 }
                 lexer->pos++;
@@ -656,9 +686,11 @@ Token lexer_token_next() {
                     stav = DOUBLE_QUO;  // druhá uvozovka
                     lexer->pos++;
                 } else if (c == '\\') {
+                //Escape znaky
                     lexer->pos++;
                     char next = lexer->input[lexer->pos];
                     if (next == 'x') {
+                    //hura hexa cislo
                         stav = ZNAK_HEXA;
                         hexa_count = 0;
                         lexer->pos++;
@@ -692,6 +724,7 @@ Token lexer_token_next() {
                     free(buf);
                     return token;
                 } else {
+                //tady je nacitani znaku do docaneho bufferu
                     append_char(&buf, &delak, &kapacity, c);
                     lexer->pos++;
                 }
@@ -699,12 +732,15 @@ Token lexer_token_next() {
             }
             case ZNAK_HEXA: {
                 if (isxdigit(c) && hexa_count < 2) {
+                //pridavame hexa cislo do hexa_buffer coz je docasny buffer pro hexa cislo
                     hexa_buffer[hexa_count++] = c;
                     lexer->pos++;
                 } else {
                     if (hexa_count == 2) {
                         hexa_buffer[2] = '\0';
+                        //prevedeni na cislo
                         int vysledek_int = (int)strtol(hexa_buffer, NULL, 16);
+                        //prevedeni na znak
                         append_char(&buf, &delak, &kapacity,(char)vysledek_int);
                         stav = STRING;
                         hexa_count = 0;
@@ -726,7 +762,7 @@ Token lexer_token_next() {
                     stav = STRING_BLOCK;
                     lexer->pos++;
                 } else {
-                    // byl to normální string
+                    // byl to normální string a tak predavame docasny buffer do return tokenu
                     append_char(&buf, &delak, &kapacity, '\0');
                     token.type = TOKEN_STRING;
                     token.line = radek;
@@ -781,6 +817,7 @@ Token lexer_token_next() {
                 }
                 break;
             }
+            //Velka sekce symbolu
             case BLOCK_START: {
                 token.type = TOKEN_BLOCK_STAR;
                 token.line = radek;
@@ -829,6 +866,7 @@ Token lexer_token_next() {
                 free(buf);
                 return token;
             }
+            //mezi krok pro mozne -- ale pokud je druhe neco jineho nez - tak vraci token
             case MINUS: {
                 if (c == '-') {
                     stav = DOUBLE_MINUS;
@@ -854,6 +892,8 @@ Token lexer_token_next() {
                 free(buf);
                 return token;
             }
+            //mezi stav pro mozne == ale vraci take samotne =
+            //to same u >= nebo u <=
             case ASSIGN: {
                 if (c == '=') {
                     stav = EQ;
@@ -914,6 +954,7 @@ Token lexer_token_next() {
                 free(buf);
                 return token;
             }
+            //tercelarni operatory
             case DOUBLE_DOT: {
                 token.type = TOKEN_DOUBLE_DOT;
                 token.line = radek;
@@ -926,7 +967,8 @@ Token lexer_token_next() {
                 free(buf);
                 return token;
             }
-
+            //pravdivostni operatory
+            //take mezi stav tady pokud nenasleduje druhe & tak se vraci error
             case AND_HALF: {
                 if (c == '&') {
                     stav = AND;
@@ -943,6 +985,7 @@ Token lexer_token_next() {
                 free(buf);
                 return token;
             }
+            //take mezi stav tady pokud nenasleduje druhe | tak se vraci error
             case OR_HALF: {
                 if (c == '|') {
                     stav = OR;
@@ -959,6 +1002,7 @@ Token lexer_token_next() {
                 free(buf);
                 return token;
             }
+            //take mezi stav tady pokud nenasleduje = tak se vraci error
             case NOT_HALF: {
                 if (c == '=') {
                     stav = NOT;
@@ -988,6 +1032,7 @@ Token lexer_token_next() {
                 return token;
         }
     }
+    //pokud dojdeme na konec bez returnu tak jsem v erroru
     token.type = TOKEN_ERROR;
     free(buf);
     return token;
