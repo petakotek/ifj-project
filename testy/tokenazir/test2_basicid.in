@@ -2,4 +2,4 @@ if
 else
 while
 for
-var "hello"
+var "String"

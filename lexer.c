@@ -5,7 +5,7 @@
  * Popis:
  */
 #include "lexer.h"
-
+#include "hashtable.h"
 #include <ctype.h>
 #include <stdbool.h>
 #include <stddef.h>
@@ -59,7 +59,7 @@ TokenType match_identifikator(const char *identifikator) {
         return TOKEN_KEYWORD_RETURN;
     }
     if (strcmp(identifikator, "else") == 0) {
-        return TOKEN_ELSE;
+        return TOKEN_KEYWORD_ELSE;
     }
     if (strcmp(identifikator, "var") == 0) {
         return TOKEN_KEYWORD_VAR;
@@ -177,7 +177,7 @@ const char *token_type_to_string(TokenType type) {
             return "ERROR";
         case TOKEN_NEW_LINE:
             return "NEW_LINE";
-        case TOKEN_ELSE:
+        case TOKEN_KEYWORD_ELSE:
             return "KEYWORD_ELSE";
         case TOKEN_KEYWORD_RETURN:
             return "KEYWORD_RETURN";
@@ -221,6 +221,7 @@ Token lexer_token_next() {
     Token token = {0};
     if (lexer == NULL || lexer->pos >= lexer->length) {
         token.type = TOKEN_EOF;
+        free(buf);
         return token;
     }
     // aktualni znak ktery cteme v automatu
@@ -245,6 +246,7 @@ Token lexer_token_next() {
             c = lexer->input[lexer->pos];
         } else {
             token.type = TOKEN_EOF;
+            free(buf);
             return token;
             break;
         }
@@ -263,6 +265,7 @@ Token lexer_token_next() {
             case START_LEX: {
                 if (c == '\0') {
                     token.type = TOKEN_EOF;
+                    free(buf);
                     return token;
                 } else if (isalpha(c)) {
                     stav = ID;
@@ -290,6 +293,7 @@ Token lexer_token_next() {
                 } else if (c == '\n') {
                     token.type = TOKEN_NEW_LINE;
                     lexer->pos++;
+                    free(buf);
                     return token;
                 } else if (c == ' ') {
                     lexer->pos++;  // preskakovani mezer
@@ -371,6 +375,7 @@ Token lexer_token_next() {
                             "nezname pismeno v lexer_token_next "
                             "%c on line : %lu",
                             c, lexer->pos);
+                    free(buf);
                     token.type = TOKEN_ERROR;
                     return token;
                 }
@@ -380,9 +385,10 @@ Token lexer_token_next() {
                 if (isalnum(c) || c == '_') {
                     lexer->pos++;
                 } else {
-                    token.value.string = substring(zacatek, lexer->pos);
-                    token.type = match_identifikator(token.value.string);
+                    token.value.identifier = substring(zacatek, lexer->pos);
+                    token.type = match_identifikator(token.value.identifier);
                     token.line = radek;
+                    free(buf);
                     return token;
                 }
                 break;
@@ -395,6 +401,7 @@ Token lexer_token_next() {
                     token.type = TOKEN_ERROR;
                     fprintf(stderr, "Chybny znak v identifikatoru na radku %i",
                             radek);
+                    free(buf);
                     return token;
                 }
                 break;
@@ -403,9 +410,10 @@ Token lexer_token_next() {
                 if (isalnum(c) || c == '_') {
                     lexer->pos++;
                 } else {
-                    token.value.string = substring(zacatek, lexer->pos);
+                    token.value.identifier = substring(zacatek, lexer->pos);
                     token.type = TOKEN_GLOBAL_ID;
                     token.line = radek;
+                    free(buf);
                     return token;
                 }
                 break;
@@ -427,10 +435,12 @@ Token lexer_token_next() {
                                 "místo čísla: %s\n",
                                 tmp);
                         token.type = TOKEN_ERROR;
+                        free(buf);
                         return token;
                     }
                     token.line = radek;
                     free(tmp);
+                    free(buf);
                     return token;
                 } else if (c == 'e') {
                     stav = DIGIT_EXP;
@@ -440,6 +450,7 @@ Token lexer_token_next() {
                     token.line = radek;
                     fprintf(stderr, "Chybny znak v čisle %i u symbolu %c",
                             radek, c);
+                    free(buf);
                     return token;
                 }
                 break;
@@ -461,16 +472,19 @@ Token lexer_token_next() {
                                 "místo čísla: %s\n",
                                 tmp);
                         token.type = TOKEN_ERROR;
+                        free(buf);
                         return token;
                     }
                     token.line = radek;
                     free(tmp);
+                    free(buf);
                     return token;
                 } else {
                     token.type = TOKEN_ERROR;
                     token.line = radek;
                     fprintf(stderr, "Chybny znak v čisle %i symbol %c", radek,
                             c);
+                    free(buf);
                     return token;
                 }
                 break;
@@ -486,11 +500,13 @@ Token lexer_token_next() {
                     token.type = TOKEN_ERROR;
                     token.line = radek;
                     fprintf(stderr, "špatny format integer \n");
+                    free(buf);
                     return token;
                 } else {
                     token.type = TOKEN_INTEGER;
                     token.value.number = 0;
                     token.line = radek;
+                    free(buf);
                     return token;
                 }
                 break;
@@ -510,11 +526,13 @@ Token lexer_token_next() {
                                 tmp);
                         token.type = TOKEN_ERROR;
                         token.line = radek;
+                        free(buf);
                         return token;
                     }
                     token.line = radek;
                     token.value.number = strtod(tmp, NULL);
                     free(tmp);
+                    free(buf);
                     return token;
                 } else {
                     token.type = TOKEN_ERROR;
@@ -523,6 +541,7 @@ Token lexer_token_next() {
                             "Chybny znak v čisle hexa num %i u "
                             "symbolu %c \n",
                             radek, c);
+                    free(buf);
                     return token;
                 }
                 break;
@@ -542,15 +561,18 @@ Token lexer_token_next() {
                                 tmp);
                         token.type = TOKEN_ERROR;
                         token.line = radek;
+                        free(buf);
                         return token;
                     }
                     token.line = radek;
                     free(tmp);
+                    free(buf);
                     return token;
                 } else {
                     token.type = TOKEN_ERROR;
                     token.line = radek;
                     fprintf(stderr, "Chybny znak v čisle digit_exp %i", radek);
+                    free(buf);
                     return token;
                 }
                 break;
@@ -570,10 +592,12 @@ Token lexer_token_next() {
                                 tmp);
                         token.type = TOKEN_ERROR;
                         token.line = radek;
+                        free(buf);
                         return token;
                     }
                     token.line = radek;
                     free(tmp);
+                    free(buf);
                     return token;
                 } else {
                     token.type = TOKEN_ERROR;
@@ -582,6 +606,7 @@ Token lexer_token_next() {
                             "Chybny znak v čisle float exp %i a "
                             "znak %c",
                             radek, c);
+                    free(buf);
                     return token;
                 }
                 break;
@@ -596,6 +621,7 @@ Token lexer_token_next() {
                 } else {
                     token.type = TOKEN_SLASH;
                     token.line = radek;
+                    free(buf);
                     return token;
                 }
                 break;
@@ -649,6 +675,7 @@ Token lexer_token_next() {
                         append_char(&buf, &delak, &kapacity, next);
                         lexer->pos++;
                     } else {
+                    free(buf);
                         fprintf(stderr,
                                 "Chyba: neznámá escape "
                                 "sekvence na řádku %i\n",
@@ -662,6 +689,7 @@ Token lexer_token_next() {
                             "řetězci na řádku %i\n",
                             radek);
                     token.type = TOKEN_ERROR;
+                    free(buf);
                     return token;
                 } else {
                     append_char(&buf, &delak, &kapacity, c);
@@ -679,7 +707,6 @@ Token lexer_token_next() {
                         int vysledek_int = (int)strtol(hexa_buffer, NULL, 16);
                         append_char(&buf, &delak, &kapacity,(char)vysledek_int);
                         stav = STRING;
-                        lexer->pos++;
                         hexa_count = 0;
                     } else {
                         fprintf(stderr,
@@ -687,6 +714,7 @@ Token lexer_token_next() {
                                 "escape sekvence na řádku %i\n",
                                 radek);
                         token.type = TOKEN_ERROR;
+                            free(buf);
                         return token;
                     }
                 }
@@ -718,6 +746,7 @@ Token lexer_token_next() {
                             "řádku %i\n",
                             radek);
                     token.type = TOKEN_ERROR;
+                    free(buf);
                     return token;
                 } else {
                     lexer->pos++;
@@ -755,41 +784,49 @@ Token lexer_token_next() {
             case BLOCK_START: {
                 token.type = TOKEN_BLOCK_STAR;
                 token.line = radek;
+                free(buf);
                 return token;
             }
             case BLOCK_END: {
                 token.type = TOKEN_BLOCK_END;
                 token.line = radek;
+                free(buf);
                 return token;
             }
             case PAR_LEFT: {
                 token.type = TOKEN_LPAREN;
                 token.line = radek;
+                free(buf);
                 return token;
             }
             case PAR_RIGHT: {
                 token.type = TOKEN_RPAREN;
                 token.line = radek;
+                free(buf);
                 return token;
             }
             case SQUARE_LEFT: {
                 token.type = TOKEN_SQUARE_LEFT;
                 token.line = radek;
+                free(buf);
                 return token;
             }
             case SQUARE_RIGHT: {
                 token.type = TOKEN_SQUARE_RIGHT;
                 token.line = radek;
+                free(buf);
                 return token;
             }
             case START: {
                 token.type = TOKEN_STAR;
                 token.line = radek;
+                free(buf);
                 return token;
             }
             case PLUS: {
                 token.type = TOKEN_PLUS;
                 token.line = radek;
+                free(buf);
                 return token;
             }
             case MINUS: {
@@ -799,6 +836,7 @@ Token lexer_token_next() {
                 } else {
                     token.type = TOKEN_MINUS;
                     token.line = radek;
+                    free(buf);
                     return token;
                 }
                 break;
@@ -807,11 +845,13 @@ Token lexer_token_next() {
             case DOUBLE_MINUS: {
                 token.type = TOKEN_DOUBLE_MINUS;
                 token.line = radek;
+                free(buf);
                 return token;
             }
             case SLASH: {
                 token.type = TOKEN_SLASH;
                 token.line = radek;
+                free(buf);
                 return token;
             }
             case ASSIGN: {
@@ -821,6 +861,7 @@ Token lexer_token_next() {
                 } else {
                     token.type = TOKEN_ASSIGN;
                     token.line = radek;
+                    free(buf);
                     return token;
                 }
                 break;
@@ -828,6 +869,7 @@ Token lexer_token_next() {
             case EQ: {
                 token.type = TOKEN_EQ;
                 token.line = radek;
+                free(buf);
                 return token;
             }
             case LT: {
@@ -837,6 +879,7 @@ Token lexer_token_next() {
                 } else {
                     token.type = TOKEN_LT;
                     token.line = radek;
+                    free(buf);
                     return token;
                 }
                 break;
@@ -844,6 +887,7 @@ Token lexer_token_next() {
             case LTE: {
                 token.type = TOKEN_LTE;
                 token.line = radek;
+                free(buf);
                 return token;
             }
             case GT: {
@@ -853,6 +897,7 @@ Token lexer_token_next() {
                 } else {
                     token.type = TOKEN_GT;
                     token.line = radek;
+                    free(buf);
                     return token;
                 }
                 break;
@@ -860,21 +905,25 @@ Token lexer_token_next() {
             case GTE: {
                 token.type = TOKEN_GTE;
                 token.line = radek;
+                free(buf);
                 return token;
             }
             case DOT: {
                 token.type = TOKEN_DOT;
                 token.line = radek;
+                free(buf);
                 return token;
             }
             case DOUBLE_DOT: {
                 token.type = TOKEN_DOUBLE_DOT;
                 token.line = radek;
+                free(buf);
                 return token;
             }
             case QUESTION_MARK: {
                 token.type = TOKEN_QUESTION_MARK;
                 token.line = radek;
+                free(buf);
                 return token;
             }
 
@@ -891,6 +940,7 @@ Token lexer_token_next() {
             case AND: {
                 token.type = TOKEN_AND;
                 token.line = radek;
+                free(buf);
                 return token;
             }
             case OR_HALF: {
@@ -906,6 +956,7 @@ Token lexer_token_next() {
             case OR: {
                 token.type = TOKEN_OR;
                 token.line = radek;
+                free(buf);
                 return token;
             }
             case NOT_HALF: {
@@ -921,6 +972,7 @@ Token lexer_token_next() {
             case NOT: {
                 token.type = TOKEN_NOT;
                 token.line = radek;
+                free(buf);
                 return token;
             }
             default:
@@ -932,9 +984,11 @@ Token lexer_token_next() {
                         "radku %i \n",
                         c, radek);
                 token.type = TOKEN_ERROR;
+                free(buf);
                 return token;
         }
     }
     token.type = TOKEN_ERROR;
+    free(buf);
     return token;
 }

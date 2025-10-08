@@ -93,7 +93,7 @@ typedef enum {
     TOKEN_OR,
     TOKEN_ERROR,
     TOKEN_NEW_LINE,
-    TOKEN_ELSE,
+    TOKEN_KEYWORD_ELSE,
     TOKEN_KEYWORD_RETURN,   //dopsat true a dalsi
     TOKEN_KEYWORD_VAR,
     TOKEN_BLOCK_STAR,
