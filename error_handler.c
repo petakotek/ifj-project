@@ -7,6 +7,8 @@
  * @author Vojtěch Voldřich (xvoldrv00)
  */
 
+ // TODO možná přejmenovat na helper_functions nebo support_functions?
+
 #include "error_handler.h"
 
 inline void printError(enum errorCodes errCode, bool exit, const char *fmt, ...) {
@@ -40,6 +42,8 @@ inline void printLog(const char *fmt, ...) {
 inline bool memoryClean() {
     // TODO jednotlivé funkce pro vyčištění struktur a podobně
     // TODO asi nastavit ať se to volá vždy při exit (atexit) nebo volat ručně i guess
+    //      https://man7.org/linux/man-pages/man3/exit.3.html
+    // TODO už můžu přidat lexer_free() a zavření souboru/free na načtený soubor
     printError(INTERNAL_ERROR, false, "Funkce memoryClean není implementovaná!\n");
     return false;
 }
