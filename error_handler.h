@@ -11,11 +11,13 @@
 
 #define ERROR_HANDLER 1
 
+// ----------------- Závislosti -----------------
 #include <stdarg.h>
 #include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
 
+// ----------------- Datové typy -----------------
 /**
  * @brief Číselník s jednotlivými návratovými kódy, jak definuje zadání
  *
@@ -51,6 +53,23 @@ enum errorCodes {
     RUNTIME_SEMANTICS_ERROR_UNCOMPATIBLE = 26,
 };
 
+// ----------------- deklarace funkcí -----------------
+/**
+ * @brief Zajišťuje volání destruktorů dynamicky alokovaných struktur
+ *
+ * @return true Vyčištění paměti proběhlo v pořádku
+ * @return false Při čištění došlo k chybě (viz standardní chybový výstup)
+ */
+bool memoryClean();
+
+/**
+ * @brief Ukončuje běh programu, zajistí vyčištění paměti a vrací zadaný chybový kód
+ *
+ * @param errCode Chybový kód
+ */
+void errorExit(enum errorCodes errCode);
+
+// ----------------- řádkové funkce -----------------
 /**
  * @brief Výpis chyb na standardní chybový výstup
  *
@@ -62,8 +81,17 @@ enum errorCodes {
  * @param fmt Text a formát pro vypsání
  * @param ... Parametry požadované formátem
  */
-inline void printError(enum errorCodes errCode, bool exit, const char *fmt, ...);
+inline void printError(enum errorCodes errCode, bool exit, const char *fmt, ...) {
+    va_list args;
+    va_start(args, fmt);
+    fprintf(stderr, "ERROR (%i) : ", errCode);
+    vfprintf(stderr, fmt, args);
+    va_end(args);
 
+    if (exit == true) {
+        errorExit(errCode);
+    }
+}
 /**
  * @brief Výpis varování na standardní chybový výstup
  *
@@ -72,8 +100,13 @@ inline void printError(enum errorCodes errCode, bool exit, const char *fmt, ...)
  * @param fmt Text a formát pro vypsání
  * @param ... Parametry požadované formátem
  */
-inline void printWarning(const char *fmt, ...);
-
+inline void printWarning(const char *fmt, ...) {
+    va_list args;
+    va_start(args, fmt);
+    fprintf(stderr, "WARNING: ");
+    vfprintf(stderr, fmt, args);
+    va_end(args);
+}
 /**
  * @brief Výpis ladících zpráv na standardní chybový výstup
  *
@@ -82,23 +115,13 @@ inline void printWarning(const char *fmt, ...);
  * @param fmt Text a formát pro vypsání
  * @param ... Parametry požadované formátem
  */
-inline void printLog(const char *fmt, ...);
-
-/**
- * @brief Zajišťuje volání destruktorů dynamicky alokovaných struktur
- *
- * @return true Vyčištění paměti proběhlo v pořádku
- * @return false Při čištění došlo k chybě (viz standardní chybový výstup)
- */
-inline bool memoryClean();
-
-/**
- * @brief Ukončuje běh programu, zajistí vyčištění paměti a vrací zadaný chybový kód
- *
- * @param errCode Chybový kód
- */
-inline void errorExit(enum errorCodes errCode);
-
+inline void printLog(const char *fmt, ...) {
+    va_list args;
+    va_start(args, fmt);
+    fprintf(stderr, "LOG: ");
+    vfprintf(stderr, fmt, args);
+    va_end(args);
+}
 #endif
 
 /*** konec error_handler.h ***/
