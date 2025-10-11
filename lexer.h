@@ -145,3 +145,4 @@ void lexer_free(void);
 Token lexer_token_next();
 
 const char *token_type_to_string(TokenType type);
+extern char *source;

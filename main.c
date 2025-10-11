@@ -12,13 +12,17 @@
 #define SYMBOL_SIZE 201
 #define LITERAL_SIZE 101
 int main(){
+	/*
+	* Nacitani v vstupu
+	* source_file je globalni promena extern je v lexer.h
+	*/
 	fseek(stdin, 0, SEEK_END);
 	size_t len =ftell(stdin);
 	fseek(stdin, 0, SEEK_SET);
-	char *source = malloc(len +1);
-	fread(source, 1, len, stdin);
-	source[len] = '\0';
-	lexer_init(source);
+	char *source_file = malloc(len +1);
+	fread(source_file, 1, len, stdin);
+	source_file[len] = '\0';
+	lexer_init(source_file);
 	//testovani
 	Token token;
 	token = lexer_token_next();
@@ -39,5 +43,5 @@ int main(){
 	    fprintf(stderr, "Lexer error on line %d.\n", token.line);
 	}
 	lexer_free();
-	free(source);
+	free(source_file);
 }

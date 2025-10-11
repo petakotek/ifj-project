@@ -1,8 +1,8 @@
 # IFJ25
 CC = gcc
-CFLAGS = -std=c11 -Wall -Wextra -O2
+CFLAGS = -std=c11 -Wall -Wextra -O2-finline-functions
 
-SRC = main.c lexer.c
+SRC = main.c lexer.c error_handler.c
 OBJ = $(SRC:.c=.o)
 EXEC = ifj25
 

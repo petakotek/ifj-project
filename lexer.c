@@ -5,13 +5,16 @@
  * Popis:
  */
 #include "lexer.h"
-#include "hashtable.h"
+
 #include <ctype.h>
 #include <stdbool.h>
 #include <stddef.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+
+#include "error_handler.h"
+#include "hashtable.h"
 /*
  * Proměna  která je potřebna byti viditelnou v celem souboru
  * Kdyz tak predelat a predavat pres argumenty
@@ -31,8 +34,8 @@ int lexer_init(const char *source) {
         return -1;
     }
     lexer->length = strlen(source);
-    lexer->input = source;
-    lexer->pos = 0;
+    lexer->input  = source;
+    lexer->pos    = 0;
     return 0;
 }
 
@@ -40,8 +43,12 @@ int lexer_init(const char *source) {
  * Uvolní paměť spojenou s lexerem a nastaví ukazatel na NULL.
  */
 void lexer_free(void) {
-    free(lexer);
+	if(lexer != NULL){
+		free(lexer);
     lexer = NULL;
+	}else {
+		printLog("lexer je null hrozba double free \n");
+	}
 }
 /*
  *	Funkce na identifikaci identifikator
@@ -85,7 +92,7 @@ char *substring(size_t start, size_t end) {
     if (end > lexer->length || start >= end) {
         return NULL;
     }
-    int length = end - start;
+    int   length   = end - start;
     char *vysledek = malloc((length + 1) * sizeof(char));
     if (vysledek == NULL) {
         return NULL;
@@ -173,8 +180,6 @@ const char *token_type_to_string(TokenType type) {
             return "AND";
         case TOKEN_OR:
             return "OR";
-        case TOKEN_ERROR:
-            return "ERROR";
         case TOKEN_NEW_LINE:
             return "NEW_LINE";
         case TOKEN_KEYWORD_ELSE:
@@ -207,23 +212,21 @@ const char *token_type_to_string(TokenType type) {
  *@params c znak dodavany
  */
 void append_char(char **buf, int *delka, int *kapacita, char c) {
-    if (*delka + 1 >= *kapacita) {  //ve chvili kdy hrozi preteceni realloc
+    if (*delka + 1 >= *kapacita) {  // ve chvili kdy hrozi preteceni realloc
         *kapacita *= 2;
         *buf = realloc(*buf, *kapacita);
     }
-    (*buf)[(*delka)++] = c;  //zapisovani znaku do bufferu
+    (*buf)[(*delka)++] = c;  // zapisovani znaku do bufferu
 }
 Token lexer_token_next() {
     // inicializace bufferu na string
-    char *buf = malloc(INIT_CAPACITY); /* U kazdeho returnu pred kterem se pointer na buffer nepreda MUSI BYT FREE!!!
-    									jinak memory leak typicky nasobky 32byt */
-    int kapacity = INIT_CAPACITY;
-    int delak = 0;
-    Token token = {0};
+    char *buf = malloc(INIT_CAPACITY); /* U kazdeho returnu pred kterem se pointer na buffer nepreda
+                                        MUSI BYT FREE!!! jinak memory leak typicky nasobky 32byt */
+    int   kapacity = INIT_CAPACITY;
+    int   delak    = 0;
+    Token token    = {0};
     if (lexer == NULL || lexer->pos >= lexer->length) {
         token.type = TOKEN_EOF;
-        free(buf);
-        return token;
     }
     // aktualni znak ktery cteme v automatu
     char c;
@@ -242,24 +245,20 @@ Token lexer_token_next() {
     // buffer pro hexa cisla v stringu
     char hexa_buffer[3];
     /*
-    * Konecny automat funguje tak ze se posovame lexer->count po vstupu ve chvili kdy v pocatecnim stavu
-    * START_LEX dedekujeme cislo nebo identifikator tak ulozime hodnotu hodnotu lexer->pos do promene zacatek
-    * ve chvili kdy v techto stavech zjistime ze dalsi charakter je jiny nez aktualni pozadovanym stavem tak
-    * udelame substring od zacatek po lexer->pos a mame token identifikatoru nebo cisla stejne tak u nekterych symbolu
-    * a u blokoveho stringu ale u normalni stringu to musime zduvodu moznosti hexa cisel ukladat do prubezneho bufferu
-    * Jednoduche symboly vracime okamzite
-    * Dulezita vec lexer->count zvetsujeme pouze pri zmene stavu s vyjimkou prazdneho znaku kde se stav nemeni ale posouvame se
-    * a v hexa cisle ve stringu kde je to naopak menime stav po ukonceni hexa cisla ale neposouvame se jinak bychom preskocili jeden znak
-    */
+     * Konecny automat funguje tak ze se posovame lexer->count po vstupu ve chvili kdy v pocatecnim
+     * stavu START_LEX dedekujeme cislo nebo identifikator tak ulozime hodnotu hodnotu lexer->pos do
+     * promene zacatek ve chvili kdy v techto stavech zjistime ze dalsi charakter je jiny nez
+     * aktualni pozadovanym stavem tak udelame substring od zacatek po lexer->pos a mame token
+     * identifikatoru nebo cisla stejne tak u nekterych symbolu a u blokoveho stringu ale u normalni
+     * stringu to musime zduvodu moznosti hexa cisel ukladat do prubezneho bufferu Jednoduche
+     * symboly vracime okamzite
+     */
     while (1) {
-        if (lexer->pos <
-            lexer->length) {  // kontrola aby nas counter nepreskocil velikost
+        if (lexer->pos < lexer->length) {  // kontrola aby nas counter nepreskocil velikost
             c = lexer->input[lexer->pos];
         } else {
             token.type = TOKEN_EOF;
-            free(buf);
-            return token;
-            break;
+            goto token_found;
         }
         if (c == '\n') {
             radek++;  // pocitani radku
@@ -269,39 +268,37 @@ Token lexer_token_next() {
                  *Pocatecni stav
                  */
             case START_LEX: {
-            //pocatecni vstup a jeho rozpoznani
+                // pocatecni vstup a jeho rozpoznani
                 if (c == '\0') {
                     token.type = TOKEN_EOF;
-                    free(buf);
-                    return token;
+                    goto token_found;
                 } else if (isalpha(c)) {
-                    stav = ID;
+                    stav    = ID;
                     zacatek = lexer->pos;
                     lexer->pos++;
                 } else if (c == '0') {
-                    stav = ZERO;
+                    stav    = ZERO;
                     zacatek = lexer->pos;
                     lexer->pos++;
                 } else if (isdigit(c)) {
-                    stav = NUMBER;
+                    stav    = NUMBER;
                     zacatek = lexer->pos;
                     lexer->pos++;
                 } else if (c == '"') {
-                    stav = STRING;
+                    stav    = STRING;
                     zacatek = lexer->pos;
                     lexer->pos++;
                 } else if (c == '/') {
                     stav = BACKSLASH;
                     lexer->pos++;
                 } else if (c == '_') {
-                    stav = UNDERSCORE;
+                    stav    = UNDERSCORE;
                     zacatek = lexer->pos;
                     lexer->pos++;
                 } else if (c == '\n') {
                     token.type = TOKEN_NEW_LINE;
                     lexer->pos++;
-                    free(buf);
-                    return token;
+                    goto token_found;
                 } else if (c == ' ') {
                     lexer->pos++;  // preskakovani mezer
                 } else if (c == '{') {
@@ -377,44 +374,42 @@ Token lexer_token_next() {
                     lexer->pos++;
                     zacatek = lexer->pos;
                 } else {
-                    // dalsi zatim tady dam error
-                    fprintf(stderr,
-                            "nezname pismeno v lexer_token_next "
-                            "%c on line : %lu",
-                            c, lexer->pos);
                     free(buf);
-                    token.type = TOKEN_ERROR;
-                    return token;
+                    printError(LEX_ERROR, true,
+                               "nezname pismeno v lexer_token_next "
+                               "%c on line : %lu",
+                               c, lexer->pos);
+                    errorExit(LEX_ERROR);
                 }
                 break;
             }
-            //Sekce identifikatoru
+            // Sekce identifikatoru
             case ID: {
                 if (isalnum(c) || c == '_') {
                     lexer->pos++;
                 } else {
                     token.value.identifier = substring(zacatek, lexer->pos);
-                    token.type = match_identifikator(token.value.identifier);
-                    token.line = radek;
-                    free(buf);
-                    return token;
+                    token.type             = match_identifikator(token.value.identifier);
+                    token.line             = radek;
+                    goto token_found;
                 }
                 break;
             }
             /*
-            *Sekce globalnich identifikatoru
-            * Mezi stav pro _
-            */
+             *Sekce globalnich identifikatoru
+             * Mezi stav pro _
+             */
             case UNDERSCORE: {
                 if (c == '_') {
                     stav = GLOBAL_ID;
                     lexer->pos++;
                 } else {
-                    token.type = TOKEN_ERROR;
-                    fprintf(stderr, "Chybny znak v identifikatoru na radku %i",
-                            radek);
                     free(buf);
-                    return token;
+                    printError(LEX_ERROR, true,
+                               "nezname pismeno v lexer_token_next"
+                               "%c on line : %lu",
+                               c, lexer->pos);
+                    errorExit(LEX_ERROR);
                 }
                 break;
             }
@@ -423,16 +418,15 @@ Token lexer_token_next() {
                     lexer->pos++;
                 } else {
                     token.value.identifier = substring(zacatek, lexer->pos);
-                    token.type = TOKEN_GLOBAL_ID;
-                    token.line = radek;
-                    free(buf);
-                    return token;
+                    token.type             = TOKEN_GLOBAL_ID;
+                    token.line             = radek;
+                    goto token_found;
                 }
                 break;
             }
             /*
-            * Stav cislo ze ktereho se da dostat do float_number, Digit_exp
-            */
+             * Stav cislo ze ktereho se da dostat do float_number, Digit_exp
+             */
             case NUMBER: {
                 if (isdigit(c)) {
                     lexer->pos++;
@@ -441,38 +435,36 @@ Token lexer_token_next() {
                     lexer->pos++;
                 } else if (c == ' ' || c == '\n') {
                     token.type = TOKEN_INTEGER;
-                    char *tmp = substring(zacatek, lexer->pos);
+                    char *tmp  = substring(zacatek, lexer->pos);
                     char *endptr;
                     token.value.number = strtod(tmp, &endptr);
                     if (endptr == tmp) {
-                        fprintf(stderr,
-                                "Chyba: neočekávaný řetězec "
-                                "místo čísla: %s\n",
-                                tmp);
-                        token.type = TOKEN_ERROR;
                         free(buf);
-                        return token;
+                        printError(LEX_ERROR, true,
+                                   "nezname pismeno v lexer_token_next"
+                                   "%c on line : %lu",
+                                   c, lexer->pos);
+                        errorExit(LEX_ERROR);
                     }
                     token.line = radek;
                     free(tmp);
-                    free(buf);
-                    return token;
+                    goto token_found;
                 } else if (c == 'e') {
                     stav = DIGIT_EXP;
                     lexer->pos++;
                 } else {
-                    token.type = TOKEN_ERROR;
-                    token.line = radek;
-                    fprintf(stderr, "Chybny znak v čisle %i u symbolu %c",
-                            radek, c);
                     free(buf);
-                    return token;
+                    printError(LEX_ERROR, true,
+                               "nezname pismeno v lexer_token_next"
+                               "%c on line : %lu",
+                               c, lexer->pos);
+                    errorExit(LEX_ERROR);
                 }
                 break;
             }
             /*
-            * Stav cislo ze ktereho se da dostat do float_exp
-            */
+             * Stav cislo ze ktereho se da dostat do float_exp
+             */
             case FLOAT_NUMBER: {
                 if (c == 'e') {
                     stav = FLOAT_EXP;
@@ -481,36 +473,35 @@ Token lexer_token_next() {
                     lexer->pos++;
                 } else if (c == ' ' || c == '\n' || c == '\0') {
                     token.type = TOKEN_FLOAT;
-                    char *tmp = substring(zacatek, lexer->pos);
+                    char *tmp  = substring(zacatek, lexer->pos);
                     char *endptr;
                     token.value.number = strtod(tmp, &endptr);
                     if (endptr == tmp) {
-                        fprintf(stderr,
-                                "Chyba: neočekávaný řetězec "
-                                "místo čísla: %s\n",
-                                tmp);
-                        token.type = TOKEN_ERROR;
                         free(buf);
-                        return token;
+                        printError(LEX_ERROR, true,
+                                   "nezname pismeno v lexer_token_next"
+                                   "%c on line : %lu",
+                                   c, lexer->pos);
+                        errorExit(LEX_ERROR);
                     }
                     token.line = radek;
                     free(tmp);
-                    free(buf);
-                    return token;
+                    goto token_found;
                 } else {
-                    token.type = TOKEN_ERROR;
-                    token.line = radek;
-                    fprintf(stderr, "Chybny znak v čisle %i symbol %c", radek,
-                            c);
                     free(buf);
-                    return token;
+                    printError(LEX_ERROR, true,
+                               "nezname pismeno v lexer_token_next"
+                               "%c on line : %lu",
+                               c, lexer->pos);
+                    errorExit(LEX_ERROR);
                 }
                 break;
             }
             /*
-            * Stav pro nulo ve kterem se bud dostaneme do float_number pokud je nasledovana tecko nebo do hexa pokud nasleduje x
-            * pokud je dalsi cislo integer tak vyhodime error jelikoz vstup 0123 je neplatny
-            */
+             * Stav pro nulo ve kterem se bud dostaneme do float_number pokud je nasledovana tecko
+             * nebo do hexa pokud nasleduje x pokud je dalsi cislo integer tak vyhodime error
+             * jelikoz vstup 0123 je neplatny
+             */
             case ZERO: {
                 if (c == 'x') {
                     stav = HEXA_NUM;
@@ -519,89 +510,82 @@ Token lexer_token_next() {
                     stav = FLOAT_NUMBER;
                     lexer->pos++;
                 } else if (isdigit(c)) {
-                    token.type = TOKEN_ERROR;
-                    token.line = radek;
-                    fprintf(stderr, "špatny format integer \n");
                     free(buf);
-                    return token;
+                    printError(LEX_ERROR, true,
+                               "neznamy charakter v lexer_token_next"
+                               "%c on line : %lu",
+                               c, lexer->pos);
+                    errorExit(LEX_ERROR);
                 } else {
-                    token.type = TOKEN_INTEGER;
+                    token.type         = TOKEN_INTEGER;
                     token.value.number = 0;
-                    token.line = radek;
-                    free(buf);
-                    return token;
+                    token.line         = radek;
                 }
                 break;
             }
             /*
-            * Stav pro hexa cislo pokud nedostaneme platne hexa cislo hazime error
-            */
+             * Stav pro hexa cislo pokud nedostaneme platne hexa cislo hazime error
+             */
             case HEXA_NUM: {
                 if (isxdigit(c)) {
                     lexer->pos++;
                 } else if (c == ' ' || c == '\n' || c == '\0') {
                     token.type = TOKEN_HEXA;
-                    char *tmp = substring(zacatek, lexer->pos);
+                    char *tmp  = substring(zacatek, lexer->pos);
                     char *endptr;
                     token.value.number = strtod(tmp, &endptr);
                     if (endptr == tmp) {
-                        fprintf(stderr,
-                                "Chyba: neočekávaný řetězec "
-                                "místo čísla: %s\n",
-                                tmp);
-                        token.type = TOKEN_ERROR;
-                        token.line = radek;
                         free(buf);
-                        return token;
+                        printError(LEX_ERROR, true,
+                                   "neznamy charakter v lexer_token_next"
+                                   "%c on line : %lu",
+                                   c, lexer->pos);
+                        errorExit(LEX_ERROR);
                     }
-                    token.line = radek;
+                    token.line         = radek;
                     token.value.number = strtod(tmp, NULL);
                     free(tmp);
-                    free(buf);
-                    return token;
+                    goto token_found;
                 } else {
-                    token.type = TOKEN_ERROR;
-                    token.line = radek;
-                    fprintf(stderr,
-                            "Chybny znak v čisle hexa num %i u "
-                            "symbolu %c \n",
-                            radek, c);
                     free(buf);
-                    return token;
+                    printError(LEX_ERROR, true,
+                               "neznamy charakter v lexer_token_next"
+                               "%c on line : %lu",
+                               c, lexer->pos);
+                    errorExit(LEX_ERROR);
                 }
                 break;
             }
             /*
-            * Stav digit_exp a float_exp jsou identicke pokud nedostanou platne cislo tak vraci error
-            */
+             * Stav digit_exp a float_exp jsou identicke pokud nedostanou platne cislo tak vraci
+             * error
+             */
             case DIGIT_EXP: {
                 if (isdigit(c)) {
                     lexer->pos++;
                 } else if (c == ' ' || c == '\n' || c == '\0') {
                     token.type = TOKEN_INTEGER_EXP;
-                    char *tmp = substring(zacatek, lexer->pos);
+                    char *tmp  = substring(zacatek, lexer->pos);
                     char *endptr;
                     token.value.number = strtod(tmp, &endptr);
                     if (endptr == tmp) {
-                        fprintf(stderr,
-                                "Chyba: neočekávaný řetězec "
-                                "místo čísla: %s\n",
-                                tmp);
-                        token.type = TOKEN_ERROR;
-                        token.line = radek;
                         free(buf);
-                        return token;
+                        printError(LEX_ERROR, true,
+                                   "neznamy charakter v lexer_token_next"
+                                   "%c on line : %lu",
+                                   c, lexer->pos);
+                        errorExit(LEX_ERROR);
                     }
                     token.line = radek;
                     free(tmp);
-                    free(buf);
-                    return token;
+                    goto token_found;
                 } else {
-                    token.type = TOKEN_ERROR;
-                    token.line = radek;
-                    fprintf(stderr, "Chybny znak v čisle digit_exp %i", radek);
                     free(buf);
-                    return token;
+                    printError(LEX_ERROR, true,
+                               "neznamy charakter v lexer_token_next"
+                               "%c on line : %lu",
+                               c, lexer->pos);
+                    errorExit(LEX_ERROR);
                 }
                 break;
             }
@@ -610,38 +594,33 @@ Token lexer_token_next() {
                     lexer->pos++;
                 } else if (c == ' ' || c == '\n' || c == '\0') {
                     token.type = TOKEN_FLOAT_EXP;
-                    char *tmp = substring(zacatek, lexer->pos);
+                    char *tmp  = substring(zacatek, lexer->pos);
                     char *endptr;
                     token.value.number = strtod(tmp, &endptr);
                     if (endptr == tmp) {
-                        fprintf(stderr,
-                                "Chyba: neočekávaný řetězec "
-                                "místo čísla: %s\n",
-                                tmp);
-                        token.type = TOKEN_ERROR;
-                        token.line = radek;
                         free(buf);
-                        return token;
+                        printError(LEX_ERROR, true,
+                                   "neznamy charakter v lexer_token_next"
+                                   "%c on line : %lu",
+                                   c, lexer->pos);
+                        errorExit(LEX_ERROR);
                     }
                     token.line = radek;
                     free(tmp);
-                    free(buf);
-                    return token;
+                    goto token_found;
                 } else {
-                    token.type = TOKEN_ERROR;
-                    token.line = radek;
-                    fprintf(stderr,
-                            "Chybny znak v čisle float exp %i a "
-                            "znak %c",
-                            radek, c);
                     free(buf);
-                    return token;
+                    printError(LEX_ERROR, true,
+                               "neznamy charakter v lexer_token_next"
+                               "%c on line : %lu",
+                               c, lexer->pos);
+                    errorExit(LEX_ERROR);
                 }
                 break;
             }
             /*
-            * Zpracovani komentaru a jejich preskoceni
-            */
+             * Zpracovani komentaru a jejich preskoceni
+             */
             case BACKSLASH: {
                 if (c == '/') {
                     stav = LINE_COMMENT;
@@ -652,8 +631,7 @@ Token lexer_token_next() {
                 } else {
                     token.type = TOKEN_SLASH;
                     token.line = radek;
-                    free(buf);
-                    return token;
+                    goto token_found;
                 }
                 break;
             }
@@ -661,6 +639,7 @@ Token lexer_token_next() {
                 if (c == '\n') {
                     stav = START_LEX;
                     lexer->pos++;
+                    goto token_found;
                 }
                 lexer->pos++;
                 break;
@@ -675,7 +654,9 @@ Token lexer_token_next() {
             case STAR_COMMENT: {
                 if (c == '/') {
                     stav = START_LEX;
-                } else {   //vstup je napriklad ** coz neni konec komentare tak se vracime do blokoveho komentare
+                    goto token_found;
+                } else {  // vstup je napriklad ** coz neni konec komentare tak se vracime do
+                          // blokoveho komentare
                     stav = BLOCK_COMMENT;
                 }
                 lexer->pos++;
@@ -686,12 +667,12 @@ Token lexer_token_next() {
                     stav = DOUBLE_QUO;  // druhá uvozovka
                     lexer->pos++;
                 } else if (c == '\\') {
-                //Escape znaky
+                    // Escape znaky
                     lexer->pos++;
                     char next = lexer->input[lexer->pos];
                     if (next == 'x') {
-                    //hura hexa cislo
-                        stav = ZNAK_HEXA;
+                        // hura hexa cislo
+                        stav       = ZNAK_HEXA;
                         hexa_count = 0;
                         lexer->pos++;
                     } else if (next == 'n') {
@@ -707,24 +688,22 @@ Token lexer_token_next() {
                         append_char(&buf, &delak, &kapacity, next);
                         lexer->pos++;
                     } else {
-                    free(buf);
-                        fprintf(stderr,
-                                "Chyba: neznámá escape "
-                                "sekvence na řádku %i\n",
-                                radek);
-                        token.type = TOKEN_ERROR;
-                        return token;
+                        free(buf);
+                        printError(LEX_ERROR, true,
+                                   "neznamy charakter v lexer_token_next"
+                                   "%c on line : %lu",
+                                   c, lexer->pos);
+                        errorExit(LEX_ERROR);
                     }
                 } else if (c == '\0' || c == '\n') {
-                    fprintf(stderr,
-                            "Chyba: neočekávaný konec řádku v "
-                            "řetězci na řádku %i\n",
-                            radek);
-                    token.type = TOKEN_ERROR;
                     free(buf);
-                    return token;
+                    printError(LEX_ERROR, true,
+                               "neznamy charakter v lexer_token_next"
+                               "%c on line : %lu",
+                               c, lexer->pos);
+                    errorExit(LEX_ERROR);
                 } else {
-                //tady je nacitani znaku do docaneho bufferu
+                    // tady je nacitani znaku do docaneho bufferu
                     append_char(&buf, &delak, &kapacity, c);
                     lexer->pos++;
                 }
@@ -732,26 +711,25 @@ Token lexer_token_next() {
             }
             case ZNAK_HEXA: {
                 if (isxdigit(c) && hexa_count < 2) {
-                //pridavame hexa cislo do hexa_buffer coz je docasny buffer pro hexa cislo
+                    // pridavame hexa cislo do hexa_buffer coz je docasny buffer pro hexa cislo
                     hexa_buffer[hexa_count++] = c;
                     lexer->pos++;
                 } else {
                     if (hexa_count == 2) {
                         hexa_buffer[2] = '\0';
-                        //prevedeni na cislo
+                        // prevedeni na cislo
                         int vysledek_int = (int)strtol(hexa_buffer, NULL, 16);
-                        //prevedeni na znak
-                        append_char(&buf, &delak, &kapacity,(char)vysledek_int);
-                        stav = STRING;
+                        // prevedeni na znak
+                        append_char(&buf, &delak, &kapacity, (char)vysledek_int);
+                        stav       = STRING;
                         hexa_count = 0;
                     } else {
-                        fprintf(stderr,
-                                "Chyba: neplatná hexadecimální "
-                                "escape sekvence na řádku %i\n",
-                                radek);
-                        token.type = TOKEN_ERROR;
-                            free(buf);
-                        return token;
+                        free(buf);
+                        printError(LEX_ERROR, true,
+                                   "neznamy charakter v lexer_token_next"
+                                   "%c on line : %lu",
+                                   c, lexer->pos);
+                        errorExit(LEX_ERROR);
                     }
                 }
                 break;
@@ -764,10 +742,10 @@ Token lexer_token_next() {
                 } else {
                     // byl to normální string a tak predavame docasny buffer do return tokenu
                     append_char(&buf, &delak, &kapacity, '\0');
-                    token.type = TOKEN_STRING;
-                    token.line = radek;
+                    token.type         = TOKEN_STRING;
+                    token.line         = radek;
                     token.value.string = buf;
-                    return token;
+                    goto token_found_string;
                 }
                 break;
             }
@@ -777,13 +755,12 @@ Token lexer_token_next() {
                     stav = END_QUO;  // první uvozovka na konci
                     lexer->pos++;
                 } else if (c == '\0') {
-                    fprintf(stderr,
-                            "Chyba: nedokončený block string na "
-                            "řádku %i\n",
-                            radek);
-                    token.type = TOKEN_ERROR;
                     free(buf);
-                    return token;
+                    printError(LEX_ERROR, true,
+                               "neznamy charakter v lexer_token_next"
+                               "%c on line : %lu",
+                               c, lexer->pos);
+                    errorExit(LEX_ERROR);
                 } else {
                     lexer->pos++;
                 }
@@ -806,10 +783,10 @@ Token lexer_token_next() {
                 if (c == '"') {
                     // třetí uvozovka → konec block stringu
                     lexer->pos++;
-                    token.type = TOKEN_STRING_BLOCK;
-                    token.line = radek;
+                    token.type         = TOKEN_STRING_BLOCK;
+                    token.line         = radek;
                     token.value.string = substring(zacatek, lexer->pos - 3);
-                    return token;
+                    goto token_found_string;
                 } else {
                     stav = STRING_BLOCK;  // nebyl to konec, zpět do
                                           // bloku
@@ -817,56 +794,48 @@ Token lexer_token_next() {
                 }
                 break;
             }
-            //Velka sekce symbolu
+            // Velka sekce symbolu
             case BLOCK_START: {
                 token.type = TOKEN_BLOCK_STAR;
                 token.line = radek;
-                free(buf);
-                return token;
+                goto token_found;
             }
             case BLOCK_END: {
                 token.type = TOKEN_BLOCK_END;
                 token.line = radek;
-                free(buf);
-                return token;
+                goto token_found;
             }
             case PAR_LEFT: {
                 token.type = TOKEN_LPAREN;
                 token.line = radek;
-                free(buf);
-                return token;
+                goto token_found;
             }
             case PAR_RIGHT: {
                 token.type = TOKEN_RPAREN;
                 token.line = radek;
-                free(buf);
-                return token;
+                goto token_found;
             }
             case SQUARE_LEFT: {
                 token.type = TOKEN_SQUARE_LEFT;
                 token.line = radek;
-                free(buf);
-                return token;
+                goto token_found;
             }
             case SQUARE_RIGHT: {
                 token.type = TOKEN_SQUARE_RIGHT;
                 token.line = radek;
-                free(buf);
-                return token;
+                goto token_found;
             }
             case START: {
                 token.type = TOKEN_STAR;
                 token.line = radek;
-                free(buf);
-                return token;
+                goto token_found;
             }
             case PLUS: {
                 token.type = TOKEN_PLUS;
                 token.line = radek;
-                free(buf);
-                return token;
+                goto token_found;
             }
-            //mezi krok pro mozne -- ale pokud je druhe neco jineho nez - tak vraci token
+            // mezi krok pro mozne -- ale pokud je druhe neco jineho nez - tak vraci token
             case MINUS: {
                 if (c == '-') {
                     stav = DOUBLE_MINUS;
@@ -874,8 +843,7 @@ Token lexer_token_next() {
                 } else {
                     token.type = TOKEN_MINUS;
                     token.line = radek;
-                    free(buf);
-                    return token;
+                    goto token_found;
                 }
                 break;
             }
@@ -883,17 +851,15 @@ Token lexer_token_next() {
             case DOUBLE_MINUS: {
                 token.type = TOKEN_DOUBLE_MINUS;
                 token.line = radek;
-                free(buf);
-                return token;
+                goto token_found;
             }
             case SLASH: {
                 token.type = TOKEN_SLASH;
                 token.line = radek;
-                free(buf);
-                return token;
+                goto token_found;
             }
-            //mezi stav pro mozne == ale vraci take samotne =
-            //to same u >= nebo u <=
+            // mezi stav pro mozne == ale vraci take samotne =
+            // to same u >= nebo u <=
             case ASSIGN: {
                 if (c == '=') {
                     stav = EQ;
@@ -901,16 +867,14 @@ Token lexer_token_next() {
                 } else {
                     token.type = TOKEN_ASSIGN;
                     token.line = radek;
-                    free(buf);
-                    return token;
+                    goto token_found;
                 }
                 break;
             }
             case EQ: {
                 token.type = TOKEN_EQ;
                 token.line = radek;
-                free(buf);
-                return token;
+                goto token_found;
             }
             case LT: {
                 if (c == '=') {
@@ -919,16 +883,14 @@ Token lexer_token_next() {
                 } else {
                     token.type = TOKEN_LT;
                     token.line = radek;
-                    free(buf);
-                    return token;
+                    goto token_found;
                 }
                 break;
             }
             case LTE: {
                 token.type = TOKEN_LTE;
                 token.line = radek;
-                free(buf);
-                return token;
+                goto token_found;
             }
             case GT: {
                 if (c == '=') {
@@ -937,103 +899,109 @@ Token lexer_token_next() {
                 } else {
                     token.type = TOKEN_GT;
                     token.line = radek;
-                    free(buf);
-                    return token;
+                    goto token_found;
                 }
                 break;
             }
             case GTE: {
                 token.type = TOKEN_GTE;
                 token.line = radek;
-                free(buf);
-                return token;
+                goto token_found;
             }
             case DOT: {
                 token.type = TOKEN_DOT;
                 token.line = radek;
-                free(buf);
-                return token;
+                goto token_found;
             }
-            //tercelarni operatory
+            // tercelarni operatory
             case DOUBLE_DOT: {
                 token.type = TOKEN_DOUBLE_DOT;
                 token.line = radek;
-                free(buf);
-                return token;
+                goto token_found;
             }
             case QUESTION_MARK: {
                 token.type = TOKEN_QUESTION_MARK;
                 token.line = radek;
-                free(buf);
-                return token;
+                goto token_found;
             }
-            //pravdivostni operatory
-            //take mezi stav tady pokud nenasleduje druhe & tak se vraci error
+            // pravdivostni operatory
+            // take mezi stav tady pokud nenasleduje druhe & tak se vraci error
             case AND_HALF: {
                 if (c == '&') {
                     stav = AND;
                     lexer->pos++;
                 } else {
-                    token.type = TOKEN_ERROR;
-                    token.line = radek;
+                    free(buf);
+                    printError(LEX_ERROR, true,
+                               "neznamy charakter v lexer_token_next"
+                               "%c on line : %lu",
+                               c, lexer->pos);
+                    errorExit(LEX_ERROR);
                 }
                 break;
             }
             case AND: {
                 token.type = TOKEN_AND;
                 token.line = radek;
-                free(buf);
-                return token;
+                goto token_found;
             }
-            //take mezi stav tady pokud nenasleduje druhe | tak se vraci error
+            // take mezi stav tady pokud nenasleduje druhe | tak se vraci error
             case OR_HALF: {
                 if (c == '|') {
                     stav = OR;
                     lexer->pos++;
                 } else {
-                    token.type = TOKEN_ERROR;
-                    token.line = radek;
+                    free(buf);
+                    printError(LEX_ERROR, true,
+                               "neznamy charakter v lexer_token_next"
+                               "%c on line : %lu",
+                               c, lexer->pos);
+                    errorExit(LEX_ERROR);
                 }
                 break;
             }
             case OR: {
                 token.type = TOKEN_OR;
                 token.line = radek;
-                free(buf);
-                return token;
+                goto token_found;
             }
-            //take mezi stav tady pokud nenasleduje = tak se vraci error
+            // take mezi stav tady pokud nenasleduje = tak se vraci error
             case NOT_HALF: {
                 if (c == '=') {
                     stav = NOT;
                     lexer->pos++;
                 } else {
-                    token.type = TOKEN_ERROR;
-                    token.line = radek;
+                    free(buf);
+                    printError(LEX_ERROR, true,
+                               "neznamy charakter v lexer_token_next"
+                               "%c on line : %lu",
+                               c, lexer->pos);
+                    errorExit(LEX_ERROR);
                 }
                 break;
             }
             case NOT: {
                 token.type = TOKEN_NOT;
                 token.line = radek;
-                free(buf);
-                return token;
+                goto token_found;
             }
             default:
-                fprintf(stderr,
-                        "chyba v konecnem automatu ve switch to "
-                        "spadlo do default \n");
-                fprintf(stderr,
-                        "chyba nastala s tim to charakterem : %c na "
-                        "radku %i \n",
-                        c, radek);
-                token.type = TOKEN_ERROR;
                 free(buf);
-                return token;
+                printError(LEX_ERROR, true,
+                           "neznamy charakter v lexer_token_next"
+                           "%c on line : %lu",
+                           c, lexer->pos);
+                errorExit(LEX_ERROR);
         }
     }
-    //pokud dojdeme na konec bez returnu tak jsem v erroru
-    token.type = TOKEN_ERROR;
     free(buf);
+    printError(LEX_ERROR, true,
+               "neznamy charakter v lexer_token_next"
+               "%c on line : %lu",
+               c, lexer->pos);
+    errorExit(LEX_ERROR);
+token_found:;
+    free(buf);
+token_found_string:;
     return token;
 }
