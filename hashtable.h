@@ -11,18 +11,19 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdbool.h>
-
+#include "lexer.h"
 /**
  * @brief Struktura položky v hashovací tabulce
  */
 typedef struct
 {
-    int key;
-    char *valueToStore;
+    char *key; // identifikator
+    Token token; // hodnota toho tokenu
     bool isEmpty; // Proměnná sloužící pro ověření, zda je položka již obsazena nějakým prvkem nebo ne
-    bool isDeleted; 
+    bool isDeleted; // 
+    // implementovat pole jako kruhove, operace % 
 
-} *TableItemsPtr;
+} TableItem;
 
 /**
  * @brief Struktura hashovaci tabulky
@@ -32,13 +33,17 @@ typedef struct
  */
 typedef struct
 {
-    TableItemsPtr *items; // Pole položek v Hashovací tabulce
+    TableItem *items; // Pole položek v Hashovací tabulce
     int tableSize; /** Aktuální velikost tabulky @param tableCapacity Kapacita tabulky nemůže být větší jak její velikost !!! */ 
     int tableCapacity; // Kapacita tabulky, která může být využita
 
 } HashTable, *HashTablePtr;
 
-void hashTableInit(int sizeOfTable);
-void hashTableDestruct(HashTable *);
+void hashTableInit(HashTable *);
+void hashTableInitItems(HashTable *);
+void hashTableInsertItem(HashTable *, const char *key, Token token);
+void hashTableDeleteItem(HashTable *, const char *key);
+void hashTableSearchItem(HashTable *, const char *key);
+int hashItem(const char *key);
 
 /* Konec hashtable.h */
