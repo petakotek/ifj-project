@@ -5,7 +5,7 @@
  * pro projekt do předmětu IFJ
  * @file hashtable.h
  * @author Petr Kotek (xkotekp00)
- * Upraveno: 04.10.2025
+ * Upraveno: 12.10.2025
  */
 
 #include <stdio.h>
@@ -40,10 +40,11 @@ typedef struct
 } HashTable, *HashTablePtr;
 
 void hashTableInit(HashTable *);
-void hashTableInitItems(HashTable *);
-void hashTableInsertItem(HashTable *, const char *key, Token token);
-void hashTableDeleteItem(HashTable *, const char *key);
-void hashTableSearchItem(HashTable *, const char *key);
+void hashTableInitItems(HashTable *); // Funkce pro základní inicializaci 
+int hashTableInsertItem(HashTable *, const char *key, Token token); // Funkce pro vložení položky do hashovací tabulky s alokací řetězce, který bude vkládán
+void hashTableDeleteItem(HashTable *, const char *key); // Funkce pro smazání položky v hashovací tabulce
+int hashTableSearchItem(HashTable *, const char *key); // Funkce pro nalezení položky v hashovací tabulce
+void hashTableDealloc(HashTable *); // funkce pro dealokaci hashovací tabulky
 int hashItem(const char *key);
 
 /* Konec hashtable.h */
