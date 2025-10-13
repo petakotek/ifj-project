@@ -1,3 +1,5 @@
+#pragma once
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -101,7 +103,7 @@ typedef enum {
     TOKEN_SQUARE_LEFT,
     TOKEN_SQUARE_RIGHT,
     TOKEN_DOUBLE_MINUS,
-    TOKEN_KEYWORD_FOR
+    TOKEN_KEYWORD_FOR,
 } TokenType;
 /*
 *Definuje samotny jeden token
