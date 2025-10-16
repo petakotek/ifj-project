@@ -3,7 +3,7 @@
  *
  * Hlavičkový soubor pro implementaci zpracování chyb a dalších pomocných funkcí
  * pro projekt do předmětu IFJ
- * @file error_handler.h
+ * @file support_functions.h
  * @author Vojtěch Voldřich (xvoldrv00)
  */
 
@@ -67,9 +67,8 @@ bool memoryClean();
  *
  * @param errCode Chybový kód
  */
-void errorExit(enum errorCodes errCode);
+void memorySafeExit(enum errorCodes errCode);
 
-// ----------------- řádkové funkce -----------------
 /**
  * @brief Výpis chyb na standardní chybový výstup
  *
@@ -81,17 +80,8 @@ void errorExit(enum errorCodes errCode);
  * @param fmt Text a formát pro vypsání
  * @param ... Parametry požadované formátem
  */
-inline void printError(enum errorCodes errCode, bool exit, const char *fmt, ...) {
-    va_list args;
-    va_start(args, fmt);
-    fprintf(stderr, "ERROR (%i) : ", errCode);
-    vfprintf(stderr, fmt, args);
-    va_end(args);
+void printError(enum errorCodes errCode, bool exit, const char *fmt, ...);
 
-    if (exit == true) {
-        errorExit(errCode);
-    }
-}
 /**
  * @brief Výpis varování na standardní chybový výstup
  *
@@ -100,13 +90,8 @@ inline void printError(enum errorCodes errCode, bool exit, const char *fmt, ...)
  * @param fmt Text a formát pro vypsání
  * @param ... Parametry požadované formátem
  */
-inline void printWarning(const char *fmt, ...) {
-    va_list args;
-    va_start(args, fmt);
-    fprintf(stderr, "WARNING: ");
-    vfprintf(stderr, fmt, args);
-    va_end(args);
-}
+void printWarning(const char *fmt, ...);
+
 /**
  * @brief Výpis ladících zpráv na standardní chybový výstup
  *
@@ -115,13 +100,8 @@ inline void printWarning(const char *fmt, ...) {
  * @param fmt Text a formát pro vypsání
  * @param ... Parametry požadované formátem
  */
-inline void printLog(const char *fmt, ...) {
-    va_list args;
-    va_start(args, fmt);
-    fprintf(stderr, "LOG: ");
-    vfprintf(stderr, fmt, args);
-    va_end(args);
-}
+void printLog(const char *fmt, ...);
+
 #endif
 
 /*** konec error_handler.h ***/
