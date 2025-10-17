@@ -1,0 +1,77 @@
+@file: LL_grammar.txt
+@author Jakub Jambrozi (xjambrj00)
+LL(1) gramatika pre jazyk IFJ25
+Štartovací symbol: Program
+
+# End / special
+TOKEN_EOF
+TOKEN_ERROR
+TOKEN_NEW_LINE
+
+# Identifiers
+TOKEN_IDENTIFIER          # e.g., local identifier
+TOKEN_GLOBAL_ID           # e.g., @global / special id (as defined by lexer)
+
+# Literals
+TOKEN_INTEGER
+TOKEN_INTEGER_EXP         # integer with exponent form, if supported
+TOKEN_FLOAT
+TOKEN_FLOAT_EXP           # float with exponent form
+TOKEN_HEXA                # hexadecimal integer
+TOKEN_STRING
+TOKEN_STRING_BLOCK        # multi-line / block string literal
+TOKEN_TRUE
+TOKEN_FALSE
+
+# Keywords
+TOKEN_KEYWORD_IF
+TOKEN_KEYWORD_ELSE
+TOKEN_KEYWORD_WHILE
+TOKEN_KEYWORD_FOR
+TOKEN_KEYWORD_RETURN
+TOKEN_KEYWORD_VAR
+
+# Operators
+TOKEN_PLUS                # +
+TOKEN_MINUS               # -
+TOKEN_DOUBLE_MINUS        # --
+TOKEN_STAR                # *
+TOKEN_SLASH               # /
+TOKEN_ASSIGN              # =
+TOKEN_EQ                  # ==
+TOKEN_LT                  # <
+TOKEN_GT                  # >
+TOKEN_LTE                 # <=
+TOKEN_GTE                 # >=
+TOKEN_NOT                 # !
+TOKEN_AND                 # &&
+TOKEN_OR                  # ||
+
+# Delimiters / punctuation
+TOKEN_LPAREN              # (
+TOKEN_RPAREN              # )
+TOKEN_SQUARE_LEFT         # [
+TOKEN_SQUARE_RIGHT        # ]
+TOKEN_DOT                 # .
+TOKEN_DOUBLE_DOT          # ..
+TOKEN_QUESTION_MARK       # ?
+TOKEN_BLOCK_START         # {
+TOKEN_BLOCK_END           # }
+
+
+Program -> Prolog Main_class
+Prolog -> TOKEN_KEYWORD_IMPORT TOKEN_STRING("ifj25") TOKEN_KEYWORD_FOR TOKEN_KEYWORD_IFJ  ##### Syntakticka chyba 2
+Main_class -> TOKEN_KEYWORD_CLASS TOKEN_IDENTIFIER(Program) Block
+
+Block -> TOKEN_BLOCK_START TOKEN_NEW_LINE Func_list TOKEN_BLOCK_END TOKEN_EOF
+
+
+Func_list -> Stmt TOKEN_NEW_LINE Func_list | eps
+
+Func_dec -> TOKEN_KEYWORD_STATIC TOKEN_IDENTIFIER TOKEN_LPAREN Param_list TOKEN_RPAREN Block
+Param_list -> TOKEN_IDENTIFIER Param_list' | eps
+Param_list' -> TOKEN_COMMA ??? TOKEN_IDENTIFIER Param_list' | eps
+
+Stmt -> ... | TOKEN_KEYWORD_RETURN Expr | ....
+
+Expr -> 
