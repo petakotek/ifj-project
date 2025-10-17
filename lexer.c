@@ -13,7 +13,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "error_handler.h"
+#include "support_functions.h"
 #include "hashtable.h"
 /*
  * Proměna  která je potřebna byti viditelnou v celem souboru
@@ -80,6 +80,33 @@ TokenType match_identifikator(const char *identifikator) {
     if (strcmp(identifikator, "for") == 0) {
         return TOKEN_KEYWORD_FOR;
     }
+    if (strcmp(identifikator, "class") == 0) {
+            return TOKEN_KEYWORD_CLASS;
+        }
+        if (strcmp(identifikator, "Ifj") == 0) {
+            return TOKEN_KEYWORD_IFJ;
+        }
+        if (strcmp(identifikator, "import") == 0) {
+            return TOKEN_KEYWORD_IMPORT;
+        }
+        if (strcmp(identifikator, "Num") == 0) {
+            return TOKEN_KEYWORD_NUM;
+        }
+        if (strcmp(identifikator, "String") == 0) {
+            return TOKEN_KEYWORD_STRING;
+        }
+        if (strcmp(identifikator, "Null") == 0) {
+            return TOKEN_KEYWORD_NULL;
+        }
+        if (strcmp(identifikator, "static") == 0) {
+            return TOKEN_KEYWORD_STATIC;
+        }
+        if (strcmp(identifikator, "is") == 0) {
+            return TOKEN_KEYWORD_IS;
+        }
+        if (strcmp(identifikator, "null") == 0) {
+            return TOKEN_KEYWORD_NULL_SMALL;
+        }
     return TOKEN_IDENTIFIER;
 }
 /*
@@ -114,96 +141,115 @@ char *substring(size_t start, size_t end) {
  * @return  další token ze vstupu; pokud není více tokenů,
  *          vrací TOKEN_EOF; při chybě může vrátit ERROR_TOKEN
  */
-const char *token_type_to_string(TokenType type) {
-    switch (type) {
-        case TOKEN_EOF:
-            return "EOF";
-        case TOKEN_IDENTIFIER:
-            return "IDENTIFIER";
-        case TOKEN_GLOBAL_ID:
-            return "GLOBAL_ID";
-        case TOKEN_INTEGER:
-            return "INTEGER";
-        case TOKEN_STRING:
-            return "STRING";
-        case TOKEN_STRING_BLOCK:
-            return "STRING_BLOCK";
-        case TOKEN_FLOAT:
-            return "FLOAT";
-        case TOKEN_HEXA:
-            return "HEXA";
-        case TOKEN_INTEGER_EXP:
-            return "INTEGER_EXP";
-        case TOKEN_FLOAT_EXP:
-            return "FLOAT_EXP";
-        case TOKEN_KEYWORD_IF:
-            return "KEYWORD_IF";
-        case TOKEN_KEYWORD_WHILE:
-            return "KEYWORD_WHILE";
-        case TOKEN_PLUS:
-            return "PLUS";
-        case TOKEN_MINUS:
-            return "MINUS";
-        case TOKEN_STAR:
-            return "STAR";
-        case TOKEN_SLASH:
-            return "SLASH";
-        case TOKEN_ASSIGN:
-            return "ASSIGN";
-        case TOKEN_EQ:
-            return "EQ";
-        case TOKEN_LT:
-            return "LT";
-        case TOKEN_GT:
-            return "GT";
-        case TOKEN_LPAREN:
-            return "LPAREN";
-        case TOKEN_RPAREN:
-            return "RPAREN";
-        case TOKEN_DOT:
-            return "DOT";
-        case TOKEN_TRUE:
-            return "TRUE";
-        case TOKEN_FALSE:
-            return "FALSE";
-        case TOKEN_QUESTION_MARK:
-            return "QUESTION_MARK";
-        case TOKEN_LTE:
-            return "LTE";
-        case TOKEN_GTE:
-            return "GTE";
-        case TOKEN_NOT:
-            return "NOT";
-        case TOKEN_DOUBLE_DOT:
-            return "DOUBLE_DOT";
-        case TOKEN_AND:
-            return "AND";
-        case TOKEN_OR:
-            return "OR";
-        case TOKEN_NEW_LINE:
-            return "NEW_LINE";
-        case TOKEN_KEYWORD_ELSE:
-            return "KEYWORD_ELSE";
-        case TOKEN_KEYWORD_RETURN:
-            return "KEYWORD_RETURN";
-        case TOKEN_KEYWORD_FOR:
-            return "KEYWORD_FOR";
-        case TOKEN_KEYWORD_VAR:
-            return "KEYWORD_VAR";
-        case TOKEN_BLOCK_STAR:
-            return "BLOCK_STAR";
-        case TOKEN_BLOCK_END:
-            return "BLOCK_END";
-        case TOKEN_SQUARE_LEFT:
-            return "SQUARE_LEFT";
-        case TOKEN_SQUARE_RIGHT:
-            return "SQUARE_RIGHT";
-        case TOKEN_DOUBLE_MINUS:
-            return "DOUBLE_MINUS";
-        default:
-            return "UNKNOWN_TOKEN";
-    }
-}
+ const char *token_type_to_string(TokenType type) {
+     switch (type) {
+         case TOKEN_EOF:
+             return "EOF";
+         case TOKEN_IDENTIFIER:
+             return "IDENTIFIER";
+         case TOKEN_GLOBAL_ID:
+             return "GLOBAL_ID";
+         case TOKEN_INTEGER:
+             return "INTEGER";
+         case TOKEN_STRING:
+             return "STRING";
+         case TOKEN_STRING_BLOCK:
+             return "STRING_BLOCK";
+         case TOKEN_FLOAT:
+             return "FLOAT";
+         case TOKEN_HEXA:
+             return "HEXA";
+         case TOKEN_INTEGER_EXP:
+             return "INTEGER_EXP";
+         case TOKEN_FLOAT_EXP:
+             return "FLOAT_EXP";
+         case TOKEN_KEYWORD_IF:
+             return "KEYWORD_IF";
+         case TOKEN_KEYWORD_WHILE:
+             return "KEYWORD_WHILE";
+
+         case TOKEN_KEYWORD_CLASS:
+             return "KEYWORD_CLASS";
+         case TOKEN_KEYWORD_IFJ:
+             return "KEYWORD_IFJ";
+         case TOKEN_KEYWORD_IMPORT:
+             return "KEYWORD_IMPORT";
+         case TOKEN_KEYWORD_NUM:
+             return "KEYWORD_NUM";
+         case TOKEN_KEYWORD_STRING:
+             return "KEYWORD_STRING";
+         case TOKEN_KEYWORD_NULL:
+             return "KEYWORD_NULL_CAPS";
+         case TOKEN_KEYWORD_STATIC:
+             return "KEYWORD_STATIC";
+         case TOKEN_KEYWORD_IS:
+             return "KEYWORD_IS";
+         case TOKEN_KEYWORD_NULL_SMALL:
+             return "KEYWORD_NULL_SMALL";
+         case TOKEN_PLUS:
+             return "PLUS";
+         case TOKEN_MINUS:
+             return "MINUS";
+         case TOKEN_STAR:
+             return "STAR";
+         case TOKEN_SLASH:
+             return "SLASH";
+         case TOKEN_ASSIGN:
+             return "ASSIGN";
+         case TOKEN_EQ:
+             return "EQ";
+         case TOKEN_LT:
+             return "LT";
+         case TOKEN_GT:
+             return "GT";
+         case TOKEN_LPAREN:
+             return "LPAREN";
+         case TOKEN_RPAREN:
+             return "RPAREN";
+         case TOKEN_DOT:
+             return "DOT";
+         case TOKEN_TRUE:
+             return "TRUE";
+         case TOKEN_FALSE:
+             return "FALSE";
+         case TOKEN_QUESTION_MARK:
+             return "QUESTION_MARK";
+         case TOKEN_LTE:
+             return "LTE";
+         case TOKEN_GTE:
+             return "GTE";
+         case TOKEN_NOT:
+             return "NOT";
+         case TOKEN_DOUBLE_DOT:
+             return "DOUBLE_DOT";
+         case TOKEN_AND:
+             return "AND";
+         case TOKEN_OR:
+             return "OR";
+         case TOKEN_NEW_LINE:
+             return "NEW_LINE";
+         case TOKEN_KEYWORD_ELSE:
+             return "KEYWORD_ELSE";
+         case TOKEN_KEYWORD_RETURN:
+             return "KEYWORD_RETURN";
+         case TOKEN_KEYWORD_FOR:
+             return "KEYWORD_FOR";
+         case TOKEN_KEYWORD_VAR:
+             return "KEYWORD_VAR";
+         case TOKEN_BLOCK_STAR:
+             return "BLOCK_STAR";
+         case TOKEN_BLOCK_END:
+             return "BLOCK_END";
+         case TOKEN_SQUARE_LEFT:
+             return "SQUARE_LEFT";
+         case TOKEN_SQUARE_RIGHT:
+             return "SQUARE_RIGHT";
+         case TOKEN_DOUBLE_MINUS:
+             return "DOUBLE_MINUS";
+         default:
+             return "UNKNOWN_TOKEN";
+     }
+ }
 /*
  *Dopomocna funkce na dodavani znaku do buffru ktery se vrati zpatky v podobe
  *stringu s tokenem
@@ -379,7 +425,7 @@ Token lexer_token_next() {
                                "nezname pismeno v lexer_token_next "
                                "%c on line : %lu",
                                c, lexer->pos);
-                    errorExit(LEX_ERROR);
+                    memorySafeExit(LEX_ERROR);
                 }
                 break;
             }
@@ -409,7 +455,7 @@ Token lexer_token_next() {
                                "nezname pismeno v lexer_token_next"
                                "%c on line : %lu",
                                c, lexer->pos);
-                    errorExit(LEX_ERROR);
+                    memorySafeExit(LEX_ERROR);
                 }
                 break;
             }
@@ -444,7 +490,7 @@ Token lexer_token_next() {
                                    "nezname pismeno v lexer_token_next"
                                    "%c on line : %lu",
                                    c, lexer->pos);
-                        errorExit(LEX_ERROR);
+                        memorySafeExit(LEX_ERROR);
                     }
                     token.line = radek;
                     free(tmp);
@@ -458,7 +504,7 @@ Token lexer_token_next() {
                                "nezname pismeno v lexer_token_next"
                                "%c on line : %lu",
                                c, lexer->pos);
-                    errorExit(LEX_ERROR);
+                    memorySafeExit(LEX_ERROR);
                 }
                 break;
             }
@@ -482,7 +528,7 @@ Token lexer_token_next() {
                                    "nezname pismeno v lexer_token_next"
                                    "%c on line : %lu",
                                    c, lexer->pos);
-                        errorExit(LEX_ERROR);
+                        memorySafeExit(LEX_ERROR);
                     }
                     token.line = radek;
                     free(tmp);
@@ -493,7 +539,7 @@ Token lexer_token_next() {
                                "nezname pismeno v lexer_token_next"
                                "%c on line : %lu",
                                c, lexer->pos);
-                    errorExit(LEX_ERROR);
+                    memorySafeExit(LEX_ERROR);
                 }
                 break;
             }
@@ -515,7 +561,7 @@ Token lexer_token_next() {
                                "neznamy charakter v lexer_token_next"
                                "%c on line : %lu",
                                c, lexer->pos);
-                    errorExit(LEX_ERROR);
+                    memorySafeExit(LEX_ERROR);
                 } else {
                     token.type         = TOKEN_INTEGER;
                     token.value.number = 0;
@@ -540,7 +586,7 @@ Token lexer_token_next() {
                                    "neznamy charakter v lexer_token_next"
                                    "%c on line : %lu",
                                    c, lexer->pos);
-                        errorExit(LEX_ERROR);
+                        memorySafeExit(LEX_ERROR);
                     }
                     token.line         = radek;
                     token.value.number = strtod(tmp, NULL);
@@ -552,7 +598,7 @@ Token lexer_token_next() {
                                "neznamy charakter v lexer_token_next"
                                "%c on line : %lu",
                                c, lexer->pos);
-                    errorExit(LEX_ERROR);
+                    memorySafeExit(LEX_ERROR);
                 }
                 break;
             }
@@ -574,7 +620,7 @@ Token lexer_token_next() {
                                    "neznamy charakter v lexer_token_next"
                                    "%c on line : %lu",
                                    c, lexer->pos);
-                        errorExit(LEX_ERROR);
+                        memorySafeExit(LEX_ERROR);
                     }
                     token.line = radek;
                     free(tmp);
@@ -585,7 +631,7 @@ Token lexer_token_next() {
                                "neznamy charakter v lexer_token_next"
                                "%c on line : %lu",
                                c, lexer->pos);
-                    errorExit(LEX_ERROR);
+                    memorySafeExit(LEX_ERROR);
                 }
                 break;
             }
@@ -603,7 +649,7 @@ Token lexer_token_next() {
                                    "neznamy charakter v lexer_token_next"
                                    "%c on line : %lu",
                                    c, lexer->pos);
-                        errorExit(LEX_ERROR);
+                        memorySafeExit(LEX_ERROR);
                     }
                     token.line = radek;
                     free(tmp);
@@ -614,7 +660,7 @@ Token lexer_token_next() {
                                "neznamy charakter v lexer_token_next"
                                "%c on line : %lu",
                                c, lexer->pos);
-                    errorExit(LEX_ERROR);
+                    memorySafeExit(LEX_ERROR);
                 }
                 break;
             }
@@ -638,8 +684,6 @@ Token lexer_token_next() {
             case LINE_COMMENT: {
                 if (c == '\n') {
                     stav = START_LEX;
-                    lexer->pos++;
-                    goto token_found;
                 }
                 lexer->pos++;
                 break;
@@ -654,7 +698,6 @@ Token lexer_token_next() {
             case STAR_COMMENT: {
                 if (c == '/') {
                     stav = START_LEX;
-                    goto token_found;
                 } else {  // vstup je napriklad ** coz neni konec komentare tak se vracime do
                           // blokoveho komentare
                     stav = BLOCK_COMMENT;
@@ -693,7 +736,7 @@ Token lexer_token_next() {
                                    "neznamy charakter v lexer_token_next"
                                    "%c on line : %lu",
                                    c, lexer->pos);
-                        errorExit(LEX_ERROR);
+                        memorySafeExit(LEX_ERROR);
                     }
                 } else if (c == '\0' || c == '\n') {
                     free(buf);
@@ -701,7 +744,7 @@ Token lexer_token_next() {
                                "neznamy charakter v lexer_token_next"
                                "%c on line : %lu",
                                c, lexer->pos);
-                    errorExit(LEX_ERROR);
+                    memorySafeExit(LEX_ERROR);
                 } else {
                     // tady je nacitani znaku do docaneho bufferu
                     append_char(&buf, &delak, &kapacity, c);
@@ -729,7 +772,7 @@ Token lexer_token_next() {
                                    "neznamy charakter v lexer_token_next"
                                    "%c on line : %lu",
                                    c, lexer->pos);
-                        errorExit(LEX_ERROR);
+                        memorySafeExit(LEX_ERROR);
                     }
                 }
                 break;
@@ -741,10 +784,10 @@ Token lexer_token_next() {
                     lexer->pos++;
                 } else {
                     // byl to normální string a tak predavame docasny buffer do return tokenu
-                    append_char(&buf, &delak, &kapacity, '\0');
                     token.type         = TOKEN_STRING;
                     token.line         = radek;
                     token.value.string = buf;
+                    printf("%s",token.value.string);
                     goto token_found_string;
                 }
                 break;
@@ -760,7 +803,7 @@ Token lexer_token_next() {
                                "neznamy charakter v lexer_token_next"
                                "%c on line : %lu",
                                c, lexer->pos);
-                    errorExit(LEX_ERROR);
+                    memorySafeExit(LEX_ERROR);
                 } else {
                     lexer->pos++;
                 }
@@ -936,7 +979,7 @@ Token lexer_token_next() {
                                "neznamy charakter v lexer_token_next"
                                "%c on line : %lu",
                                c, lexer->pos);
-                    errorExit(LEX_ERROR);
+                    memorySafeExit(LEX_ERROR);
                 }
                 break;
             }
@@ -956,7 +999,7 @@ Token lexer_token_next() {
                                "neznamy charakter v lexer_token_next"
                                "%c on line : %lu",
                                c, lexer->pos);
-                    errorExit(LEX_ERROR);
+                    memorySafeExit(LEX_ERROR);
                 }
                 break;
             }
@@ -976,7 +1019,7 @@ Token lexer_token_next() {
                                "neznamy charakter v lexer_token_next"
                                "%c on line : %lu",
                                c, lexer->pos);
-                    errorExit(LEX_ERROR);
+                    memorySafeExit(LEX_ERROR);
                 }
                 break;
             }
@@ -991,7 +1034,7 @@ Token lexer_token_next() {
                            "neznamy charakter v lexer_token_next"
                            "%c on line : %lu",
                            c, lexer->pos);
-                errorExit(LEX_ERROR);
+                memorySafeExit(LEX_ERROR);
         }
     }
     free(buf);
@@ -999,7 +1042,7 @@ Token lexer_token_next() {
                "neznamy charakter v lexer_token_next"
                "%c on line : %lu",
                c, lexer->pos);
-    errorExit(LEX_ERROR);
+    memorySafeExit(LEX_ERROR);
 token_found:;
     free(buf);
 token_found_string:;

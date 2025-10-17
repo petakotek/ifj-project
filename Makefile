@@ -2,7 +2,7 @@
 CC = gcc
 CFLAGS = -std=c11 -Wall -Wextra -O2
 
-SRC = main.c lexer.c error_handler.c
+SRC = lexer.c support_functions.c main.c
 OBJ = $(SRC:.c=.o)
 EXEC = ifj25
 
@@ -12,7 +12,7 @@ $(EXEC): $(OBJ)
 	$(CC) $(CFLAGS) -o $@ $^
 
 %.o: %.c
-	$(CC) $(CFLAGS) -c $<
+	$(CC) $(CFLAGS) -c $< -o $@
 
 clean:
 	rm -f $(OBJ) $(EXEC)
