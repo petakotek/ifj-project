@@ -61,4 +61,4 @@ void memorySafeExit(enum errorCodes errCode) {
     exit(errCode);
 }
 
-/*** konec error_handler.c ***/
+/*** konec support_functions.c ***/

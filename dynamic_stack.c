@@ -36,11 +36,12 @@ DynamicStackPtr stackConstruct(unsigned initStackSize) {
     if (newStack->array == NULL) {
         printError(INTERNAL_ERROR,
                    "Pri alokaci prostoru pro data zasobniku doslo k chybe. (Zadana velikost "
-                   "prostoru: %u * sizeof(StackElementPtr)\n",
-                   initStackSize);
+                   "prostoru: %u \n",
+                   initStackSize * sizeof(StackElementPtr));
         free(newStack);
         return NULL;
     }
+
     newStack->nextTopElement = 0;
     newStack->maxSize        = initStackSize;
     newStack->nextDownsizeAt = 0;
@@ -101,7 +102,7 @@ bool stackPop(DynamicStackPtr stack) {
     }
 
     if (stack->nextTopElement == 0) {
-        printWarning("Stack je prazdny!\n");
+        printWarning("Zasobnik je prazdny!\n");
         return false;
     }
 
@@ -133,12 +134,12 @@ bool stackResize(DynamicStackPtr stack, unsigned wantedSize) {
     }
 
     if (wantedSize < stack->maxSize && stack->nextTopElement > wantedSize) {
-        printWarning("Zmenšení zásobníku způsobilo ztrátu dat!\n");
+        printWarning("Zmenseni zasobniku zpusobilo ztratu dat!\n");
     }
 
     StackElementPtr* newStackarray = realloc(stack->array, sizeof(StackElementPtr) * wantedSize);
     if (newStackarray == NULL) {
-        printWarning("Realokace zásobníku selhala!\n");
+        printWarning("Realokace zasobniku selhala! Pozadovana velikost: %u.\n", wantedSize*sizeof(StackElementPtr));
         return false;
     }
 

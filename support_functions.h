@@ -7,9 +7,9 @@
  * @author Vojtěch Voldřich (xvoldrv00)
  */
 
-#ifndef ERROR_HANDLER
+#ifndef SUPPORT_FUNCTIONS
 
-#define ERROR_HANDLER 1
+#define SUPPORT_FUNCTIONS 1
 
 // ----------------- Závislosti -----------------
 #include <stdarg.h>
@@ -94,4 +94,4 @@ void printLog(const char *fmt, ...);
 
 #endif
 
-/*** konec error_handler.h ***/
+/*** konec support_functions.h ***/
