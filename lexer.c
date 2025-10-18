@@ -107,6 +107,12 @@ TokenType match_identifikator(const char *identifikator) {
         if (strcmp(identifikator, "null") == 0) {
             return TOKEN_KEYWORD_NULL_SMALL;
         }
+        if (strcmp(identifikator, "continue") == 0) {
+            return TOKEN_KEYWORD_CONTINUE;
+        }
+        if (strcmp(identifikator, "break") == 0) {
+            return TOKEN_KEYWORD_BREAK;
+        }
     return TOKEN_IDENTIFIER;
 }
 /*
@@ -246,6 +252,12 @@ char *substring(size_t start, size_t end) {
              return "SQUARE_RIGHT";
          case TOKEN_DOUBLE_MINUS:
              return "DOUBLE_MINUS";
+         case TOKEN_KEYWORD_CONTINUE:
+             return "CONTINUE";
+         case TOKEN_KEYWORD_BREAK:
+             return "BREAK";
+         case TOKEN_COMMA:
+             return "COMMA";
          default:
              return "UNKNOWN_TOKEN";
      }
@@ -419,9 +431,13 @@ Token lexer_token_next() {
                     stav = NOT_HALF;
                     lexer->pos++;
                     zacatek = lexer->pos;
+                }else if (c == ',') {
+                	stav = COMMA;
+                 	lexer->pos++;
+                  	zacatek = lexer->pos;
                 } else {
                     free(buf);
-                    printError(LEX_ERROR, true,
+                    printError(LEX_ERROR,
                                "nezname pismeno v lexer_token_next "
                                "%c on line : %lu",
                                c, lexer->pos);
@@ -451,7 +467,7 @@ Token lexer_token_next() {
                     lexer->pos++;
                 } else {
                     free(buf);
-                    printError(LEX_ERROR, true,
+                    printError(LEX_ERROR,
                                "nezname pismeno v lexer_token_next"
                                "%c on line : %lu",
                                c, lexer->pos);
@@ -486,7 +502,7 @@ Token lexer_token_next() {
                     token.value.number = strtod(tmp, &endptr);
                     if (endptr == tmp) {
                         free(buf);
-                        printError(LEX_ERROR, true,
+                        printError(LEX_ERROR,
                                    "nezname pismeno v lexer_token_next"
                                    "%c on line : %lu",
                                    c, lexer->pos);
@@ -500,7 +516,7 @@ Token lexer_token_next() {
                     lexer->pos++;
                 } else {
                     free(buf);
-                    printError(LEX_ERROR, true,
+                    printError(LEX_ERROR,
                                "nezname pismeno v lexer_token_next"
                                "%c on line : %lu",
                                c, lexer->pos);
@@ -524,7 +540,7 @@ Token lexer_token_next() {
                     token.value.number = strtod(tmp, &endptr);
                     if (endptr == tmp) {
                         free(buf);
-                        printError(LEX_ERROR, true,
+                        printError(LEX_ERROR,
                                    "nezname pismeno v lexer_token_next"
                                    "%c on line : %lu",
                                    c, lexer->pos);
@@ -535,7 +551,7 @@ Token lexer_token_next() {
                     goto token_found;
                 } else {
                     free(buf);
-                    printError(LEX_ERROR, true,
+                    printError(LEX_ERROR,
                                "nezname pismeno v lexer_token_next"
                                "%c on line : %lu",
                                c, lexer->pos);
@@ -557,7 +573,7 @@ Token lexer_token_next() {
                     lexer->pos++;
                 } else if (isdigit(c)) {
                     free(buf);
-                    printError(LEX_ERROR, true,
+                    printError(LEX_ERROR,
                                "neznamy charakter v lexer_token_next"
                                "%c on line : %lu",
                                c, lexer->pos);
@@ -582,7 +598,7 @@ Token lexer_token_next() {
                     token.value.number = strtod(tmp, &endptr);
                     if (endptr == tmp) {
                         free(buf);
-                        printError(LEX_ERROR, true,
+                        printError(LEX_ERROR,
                                    "neznamy charakter v lexer_token_next"
                                    "%c on line : %lu",
                                    c, lexer->pos);
@@ -594,7 +610,7 @@ Token lexer_token_next() {
                     goto token_found;
                 } else {
                     free(buf);
-                    printError(LEX_ERROR, true,
+                    printError(LEX_ERROR,
                                "neznamy charakter v lexer_token_next"
                                "%c on line : %lu",
                                c, lexer->pos);
@@ -616,7 +632,7 @@ Token lexer_token_next() {
                     token.value.number = strtod(tmp, &endptr);
                     if (endptr == tmp) {
                         free(buf);
-                        printError(LEX_ERROR, true,
+                        printError(LEX_ERROR,
                                    "neznamy charakter v lexer_token_next"
                                    "%c on line : %lu",
                                    c, lexer->pos);
@@ -627,7 +643,7 @@ Token lexer_token_next() {
                     goto token_found;
                 } else {
                     free(buf);
-                    printError(LEX_ERROR, true,
+                    printError(LEX_ERROR,
                                "neznamy charakter v lexer_token_next"
                                "%c on line : %lu",
                                c, lexer->pos);
@@ -645,7 +661,7 @@ Token lexer_token_next() {
                     token.value.number = strtod(tmp, &endptr);
                     if (endptr == tmp) {
                         free(buf);
-                        printError(LEX_ERROR, true,
+                        printError(LEX_ERROR,
                                    "neznamy charakter v lexer_token_next"
                                    "%c on line : %lu",
                                    c, lexer->pos);
@@ -656,7 +672,7 @@ Token lexer_token_next() {
                     goto token_found;
                 } else {
                     free(buf);
-                    printError(LEX_ERROR, true,
+                    printError(LEX_ERROR,
                                "neznamy charakter v lexer_token_next"
                                "%c on line : %lu",
                                c, lexer->pos);
@@ -732,7 +748,7 @@ Token lexer_token_next() {
                         lexer->pos++;
                     } else {
                         free(buf);
-                        printError(LEX_ERROR, true,
+                        printError(LEX_ERROR,
                                    "neznamy charakter v lexer_token_next"
                                    "%c on line : %lu",
                                    c, lexer->pos);
@@ -740,7 +756,7 @@ Token lexer_token_next() {
                     }
                 } else if (c == '\0' || c == '\n') {
                     free(buf);
-                    printError(LEX_ERROR, true,
+                    printError(LEX_ERROR,
                                "neznamy charakter v lexer_token_next"
                                "%c on line : %lu",
                                c, lexer->pos);
@@ -768,7 +784,7 @@ Token lexer_token_next() {
                         hexa_count = 0;
                     } else {
                         free(buf);
-                        printError(LEX_ERROR, true,
+                        printError(LEX_ERROR,
                                    "neznamy charakter v lexer_token_next"
                                    "%c on line : %lu",
                                    c, lexer->pos);
@@ -799,7 +815,7 @@ Token lexer_token_next() {
                     lexer->pos++;
                 } else if (c == '\0') {
                     free(buf);
-                    printError(LEX_ERROR, true,
+                    printError(LEX_ERROR,
                                "neznamy charakter v lexer_token_next"
                                "%c on line : %lu",
                                c, lexer->pos);
@@ -901,6 +917,11 @@ Token lexer_token_next() {
                 token.line = radek;
                 goto token_found;
             }
+            case COMMA:{
+            	token.type = TOKEN_COMMA;
+             	token.line = radek;
+              	goto token_found;
+            }
             // mezi stav pro mozne == ale vraci take samotne =
             // to same u >= nebo u <=
             case ASSIGN: {
@@ -975,7 +996,7 @@ Token lexer_token_next() {
                     lexer->pos++;
                 } else {
                     free(buf);
-                    printError(LEX_ERROR, true,
+                    printError(LEX_ERROR,
                                "neznamy charakter v lexer_token_next"
                                "%c on line : %lu",
                                c, lexer->pos);
@@ -995,7 +1016,7 @@ Token lexer_token_next() {
                     lexer->pos++;
                 } else {
                     free(buf);
-                    printError(LEX_ERROR, true,
+                    printError(LEX_ERROR,
                                "neznamy charakter v lexer_token_next"
                                "%c on line : %lu",
                                c, lexer->pos);
@@ -1015,7 +1036,7 @@ Token lexer_token_next() {
                     lexer->pos++;
                 } else {
                     free(buf);
-                    printError(LEX_ERROR, true,
+                    printError(LEX_ERROR,
                                "neznamy charakter v lexer_token_next"
                                "%c on line : %lu",
                                c, lexer->pos);
@@ -1030,7 +1051,7 @@ Token lexer_token_next() {
             }
             default:
                 free(buf);
-                printError(LEX_ERROR, true,
+                printError(LEX_ERROR,
                            "neznamy charakter v lexer_token_next"
                            "%c on line : %lu",
                            c, lexer->pos);
@@ -1038,7 +1059,7 @@ Token lexer_token_next() {
         }
     }
     free(buf);
-    printError(LEX_ERROR, true,
+    printError(LEX_ERROR,
                "neznamy charakter v lexer_token_next"
                "%c on line : %lu",
                c, lexer->pos);
