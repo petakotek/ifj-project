@@ -53,15 +53,7 @@ enum errorCodes {
     RUNTIME_SEMANTICS_ERROR_UNCOMPATIBLE = 26,
 };
 
-// ----------------- deklarace funkcí -----------------
-/**
- * @brief Zajišťuje volání destruktorů dynamicky alokovaných struktur
- *
- * @return true Vyčištění paměti proběhlo v pořádku
- * @return false Při čištění došlo k chybě (viz standardní chybový výstup)
- */
-bool memoryClean();
-
+// ----------------- deklarace veřejných funkcí -----------------
 /**
  * @brief Ukončuje běh programu, zajistí vyčištění paměti a vrací zadaný chybový kód
  *
@@ -75,12 +67,10 @@ void memorySafeExit(enum errorCodes errCode);
  * Zadání specifikuje, že veškeré výpisy chyb, varování nebo ladění máme provádět na standardní
  * chybový výstup
  * @param errCode Kód chyby
- * @param exit Určuje zda má funkce zajistit ukončení běhu programu s uvolněním paměti a vrácením
- * chybového kódu
  * @param fmt Text a formát pro vypsání
  * @param ... Parametry požadované formátem
  */
-void printError(enum errorCodes errCode, bool exit, const char *fmt, ...);
+void printError(enum errorCodes errCode, const char *fmt, ...);
 
 /**
  * @brief Výpis varování na standardní chybový výstup
