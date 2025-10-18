@@ -10,16 +10,23 @@
 #include "support_functions.h"
 #include "lexer.h"
 
-void printError(enum errorCodes errCode, bool exit, const char *fmt, ...) {
+// ----------------- deklarace pomocných funkcí -----------------
+/**
+ * @brief Zajišťuje volání destruktorů dynamicky alokovaných struktur
+ *
+ * @return true Vyčištění paměti proběhlo v pořádku
+ * @return false Při čištění došlo k chybě (viz standardní chybový výstup)
+ */
+bool memoryClean();
+
+
+// ----------------- Implementace funkcí -----------------
+void printError(enum errorCodes errCode, const char *fmt, ...) {
     va_list args;
     va_start(args, fmt);
     fprintf(stderr, "ERROR (%i) : ", errCode);
     vfprintf(stderr, fmt, args);
     va_end(args);
-
-    if (exit == true) {
-        memorySafeExit(errCode);
-    }
 }
 
 void printWarning(const char *fmt, ...) {
