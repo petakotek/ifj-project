@@ -41,10 +41,13 @@ typedef struct
 
 void hashTableInit(HashTable *);
 void hashTableInitItems(HashTable *); // Funkce pro základní inicializaci 
-int hashTableInsertItem(HashTable *, const char *key, Token token); // Funkce pro vložení položky do hashovací tabulky s alokací řetězce, který bude vkládán
-void hashTableDeleteItem(HashTable *, const char *key); // Funkce pro smazání položky v hashovací tabulce
-int hashTableSearchItem(HashTable *, const char *key); // Funkce pro nalezení položky v hashovací tabulce
+int hashTableInsertItem(HashTable *, char *key, Token token); // Funkce pro vložení položky do hashovací tabulky s alokací řetězce, který bude vkládán
+void hashTableDeleteItem(HashTable *, char *key); // Funkce pro smazání položky v hashovací tabulce
+int hashTableSearchItem(HashTable *, char *key); // Funkce pro nalezení položky v hashovací tabulce
 void hashTableDealloc(HashTable *); // funkce pro dealokaci hashovací tabulky
 int hashItem(const char *key);
+
+// TODO
+void hashTableRealloc(HashTable *); // Funkce provede reallokaci tabulky symbolu v pripade, ze doslo k naplneni kapacity
 
 /* Konec hashtable.h */
