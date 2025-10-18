@@ -7,8 +7,8 @@
  * @author Petr Kotek (xkotekp00)
  * Upraveno: 13.10.2025
  */
-#include "hashtable.h"
-#include "error_handler.h"
+#include "symtable.h"
+#include "support_functions.h"
 
 #define TABLE_CAPACITY 200 // nastavení počtu položek tabulky
 
