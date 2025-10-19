@@ -1,0 +1,57 @@
+@file: LL_grammar.txt
+@author Jakub Jambrozi (xjambrj00)
+LL(1) gramatika pre jazyk IFJ25
+Štartovací symbol: Program
+
+=== Povinný Prolog a kostra programu ===
+Program -> Prolog TOKEN_NEW_LINE Main_class
+Prolog -> TOKEN_KEYWORD_IMPORT TOKEN_STRING("ifj25") TOKEN_KEYWORD_FOR TOKEN_KEYWORD_IFJ  ##### Syntakticka chyba 2
+Main_class -> TOKEN_KEYWORD_CLASS TOKEN_IDENTIFIER(Program) TOKEN_BLOCK_START TOKEN_NEW_LINE Main_class_block TOKEN_BLOCK_END TOKEN_NEW_LINE
+Main_class_block -> Main_class_block_list Main_class_block | eps
+Main_class_block_list -> Func_dec | Getter | Setter
+
+=== Všeobecný block a jeho obsah ===
+Block -> TOKEN_BLOCK_START TOKEN_NEW_LINE smth TOKEN_BLOCK_END TOKEN_NEW_LINE | TOKEN_BLOCK_START OnelineExprOpt TOKEN_BLOCK_END TOKEN_NEW_LINE 
+smth -> smth_list TOKEN_NEW_LINE smth | eps
+smth_list -> Return | Var | Assign | If | While | For | Break | Continue
+OnelineExprOpt -> Expr | eps
+
+=== Funkcie, Getter a Setter === 
+Func_dec -> TOKEN_KEYWORD_STATIC TOKEN_IDENTIFIER TOKEN_LPAREN Param TOKEN_RPAREN Block
+Param -> TOKEN_IDENTIFIER Param_list | eps
+Param_list -> TOKEN_COMMA TOKEN_IDENTIFIER Param_list | eps 
+Getter -> TOKEN_KEYWORD_STATIC TOKEN_IDENTIFIER Block
+Setter -> TOKEN_KEYWORD_STATIC TOKEN_IDENTIFIER TOKEN_ASSIGN TOKEN_LPAREN TOKEN_IDENTIFIER TOKEN_RPAREN Block
+
+=== Deklarovanie výrazu ===
+Var -> TOKEN_KEYWORD_VAR TOKEN_IDENTIFIER Var_EXT
+Var_EXT -> TOKEN_ASSIGN Var_EXTSTAT | eps 
+Var_EXTSTAT -> Expr | TOKEN_FUNC_ID TOKEN_LPAREN Var_arg TOKEN_RPAREN | TOKEN_ID_GETTER
+Var_arg -> Expr var_arg_list | eps
+var_arg_list -> TOKEN_COMMA Expr var_arg_list | eps 
+
+=== Všeobecné priradnie ====
+Assign -> TOKEN_IDENTIFIER TOKEN_ASSIGN Expr | TOKEN_GLOBAL_ID TOKEN_ASSIGN Expr | TOKEN_SETTER_ID  TOKEN_ASSIGN Expr
+
+=== if else podmienky ===
+If -> TOKEN_KEYWORD_IF TOKEN_LPAREN Expr TOKEN_RPAREN Block Else 
+Else ->  TOKEN_KEYWORD_ELSE Block | TOKEN_KEYWORD_ELSE If | eps
+
+=== Cykly For a While === 
+While -> TOKEN_KEYWORD_WHILE TOKEN_LPAREN Expr TOKEN_RPAREN Block
+For -> TOKEN_KEYWORD_FOR TOKEN_LPAREN TOKEN_IDENTIFIER TOKEN_KEYWORD_IN Expr TOKEN_RPAREN Block
+Break -> TOKEN_KEYWORD_BREAK
+Continue -> TOKEN_KEYWORD_CONTINUE
+
+=== Return pre EXTSTAT === 
+Return -> TOKEN_KEYWORD_RETURN Return_expr
+Return_expr -> Expr | eps
+
+
+=== Výrazy ===
+//spravit aj Operators rozsirenie
+Expr ->
+
+
+
+ 

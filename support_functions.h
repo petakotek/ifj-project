@@ -91,7 +91,7 @@ void printWarning(const char *fmt, ...);
  * @param ... Parametry požadované formátem
  */
 void printLog(const char *fmt, ...);
-
+void print_and_free_tokens();
 #endif
 
 /*** konec error_handler.h ***/

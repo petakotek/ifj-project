@@ -51,7 +51,7 @@ void hashTableInitItems(HashTable *hashT)
     }
 }
 /**
- * @brief Funkce vloží prvek do pole položek hashovací tabulky a vrátí index, na kterém byla položka uložena. 
+ * @brief Funkce vloží prvek do pole položek hashovací tabulky a vrátí index, na kterém byla položka uložena.
  * V případě, že index, který vypočítala hashovací funkce je již obsazený postupuje dál polem a hledá první volný index
  * @return Funkce vraci index v poli polozek
  */
@@ -62,7 +62,7 @@ int hashTableInsertItem(HashTable *hashT, char *key, Token token)
     // na indexu položky už nějaký prvek je
     if (hashT->items[indexToStore].isEmpty == false)
     {
-        int shift = 1; // o kolik prvku oproti puvodnimu indexu je treba se posunout aby se nasel volny index 
+        int shift = 1; // o kolik prvku oproti puvodnimu indexu je treba se posunout aby se nasel volny index
 
         while (hashT->items[indexToStore + shift].isEmpty != true) // linearni hledani volneho mista
         {
@@ -80,7 +80,7 @@ int hashTableInsertItem(HashTable *hashT, char *key, Token token)
         hashT->items[indexToStore + shift].isDeleted = false;
         hashT->items[indexToStore + shift].isEmpty = false;
         hashT->items[indexToStore + shift].token = token;
-        
+
         hashT->tableSize++;
         return indexToStore + shift;
 
@@ -112,7 +112,7 @@ void hashTableDeleteItem(HashTable *hashT, char *key)
 {
     int indexToSearch = hashItem(key);
 
-    if (hashT->items[indexToSearch].key != NULL && !strcmp(key, hashT->items[indexToSearch].key)) 
+    if (hashT->items[indexToSearch].key != NULL && !strcmp(key, hashT->items[indexToSearch].key))
     {
         free(hashT->items[indexToSearch].key);
         hashT->items[indexToSearch].key = NULL;
@@ -130,7 +130,7 @@ void hashTableDeleteItem(HashTable *hashT, char *key)
             {
                 indexToSearch = 0;
                 rounded = true; // pomocná proměnná pro kontrolu, že nedochází k průchodu pole stále dokola
-                
+
             }else if (rounded && (indexToSearch + shift) == TABLE_CAPACITY)
             {
                 printError(INTERNAL_ERROR, "Prvek v tabulce nebyl nalezen");
@@ -153,7 +153,7 @@ int hashTableSearchItem(HashTable *hashT, char *key)
 {
     int indexToSearch = hashItem(key);
 
-    if (!strcmp(key, hashT->items[indexToSearch].key)) 
+    if (!strcmp(key, hashT->items[indexToSearch].key))
     {
         return indexToSearch;
 
@@ -168,7 +168,7 @@ int hashTableSearchItem(HashTable *hashT, char *key)
             {
                 rounded = true; // pomocná proměnná pro kontrolu, že nedochází k průchodu pole stále dokola
                 indexToSearch = 0;
-                
+
             }else if (rounded && (indexToSearch + shift) == TABLE_CAPACITY)
             {
                 printError(INTERNAL_ERROR, "Prvek v tabulce nebyl nalezen");
@@ -176,12 +176,12 @@ int hashTableSearchItem(HashTable *hashT, char *key)
         }
         return indexToSearch + shift;
     }
-    
+
 }
 /**
  * @brief Funkce sloužící pro uvolnění paměti tabulky symbolů
  * @param hashT Ukazatel na tabulku symbolů, která bude uvolněna
- * 
+ *
  */
 void hashTableDealloc(HashTable *hashT)
 {
@@ -204,7 +204,7 @@ void hashTableDealloc(HashTable *hashT)
     }
 }
 /**
- * @brief Hashovací funkce 
+ * @brief Hashovací funkce
  * @param key ukazatel na řetězec, který bude vkládán
  * @return Vrací index v poli struktur, který je využit při hledání, mazání, vkládání
  */
@@ -216,12 +216,12 @@ int hashItem(const char *key)
         return INTERNAL_ERROR;
     }
 
-    unsigned long hash = 5381; 
+    unsigned long hash = 5381;
     int c;
 
-    
+
     while ((c = *key++)) {
-        hash = ((hash << 5) + hash) + c; 
+        hash = ((hash << 5) + hash) + c;
     }
 
 
