@@ -5,13 +5,20 @@
  * pro projekt do předmětu IFJ
  * @file hashtable.h
  * @author Petr Kotek (xkotekp00)
- * Upraveno: 12.10.2025
+ * Upraveno: 19.10.2025
  */
 
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdbool.h>
+
+#ifndef SYMTABLE_H
+#define SYMTABLE_H
+
+#include "support_functions.h"
 #include "lexer.h"
+
+
 /**
  * @brief Struktura položky v hashovací tabulce
  */
@@ -45,9 +52,10 @@ int hashTableInsertItem(HashTable *, char *key, Token token); // Funkce pro vlo�
 void hashTableDeleteItem(HashTable *, char *key); // Funkce pro smazání položky v hashovací tabulce
 int hashTableSearchItem(HashTable *, char *key); // Funkce pro nalezení položky v hashovací tabulce
 void hashTableDealloc(HashTable *); // funkce pro dealokaci hashovací tabulky
-int hashItem(const char *key);
+int hashItem(char *key);
 
 // TODO
 void hashTableRealloc(HashTable *); // Funkce provede reallokaci tabulky symbolu v pripade, ze doslo k naplneni kapacity
 
+#endif // SYMTABLE_H
 /* Konec hashtable.h */

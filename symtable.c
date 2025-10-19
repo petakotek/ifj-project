@@ -208,7 +208,7 @@ void hashTableDealloc(HashTable *hashT)
  * @param key ukazatel na řetězec, který bude vkládán
  * @return Vrací index v poli struktur, který je využit při hledání, mazání, vkládání
  */
-int hashItem(const char *key)
+int hashItem(char *key)
 {
     if (key == NULL)
     {
