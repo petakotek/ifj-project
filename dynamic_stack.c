@@ -2,7 +2,7 @@
  * Fakulta informačních technologií VUT Brno
  *
  * Implementace zásobníku s dynamickou alokací paměti
- * @file dynamicStack.c
+ * @file dynamic_stack.c
  * @author Vojtěch Voldřich (xvoldrv00)
  */
 
@@ -67,7 +67,7 @@ bool stackPush(DynamicStackPtr stack, StackElementPtr data) {
 
     if (stack->nextTopElement >= stack->nextUpsizeAt) {
         if (stackResize(stack, stack->maxSize * 2) == false) {
-            return false;
+            // Selhání zvětšení je sice problém, ale neznemožňuje pracovat se zásobníkem
         }
     }
 
@@ -113,7 +113,7 @@ bool stackPop(DynamicStackPtr stack) {
 
     if (stack->nextTopElement < stack->nextDownsizeAt) {
         if (stackResize(stack, stack->maxSize / 2) == false) {
-            return false;
+            // Selhání realokace je sice problém ale smazání proběhlo
         }
     }
 
@@ -162,4 +162,4 @@ bool stackResize(DynamicStackPtr stack, unsigned wantedSize) {
     return true;
 }
 
-/*** konec dynamicStack.c ***/
+/*** konec dynamic_stack.c ***/

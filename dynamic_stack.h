@@ -2,7 +2,7 @@
  * Fakulta informačních technologií VUT Brno
  *
  * Hlavička zásobníku s dynamickou alokací paměti
- * @file dynamicStack.h
+ * @file dynamic_stack.h
  * @author Vojtěch Voldřich (xvoldrv00)
  */
 
@@ -115,4 +115,4 @@ void stackDestruct(DynamicStackPtr stack);
 
 #endif
 
- /*** konec dynamicStack.h ***/
+ /*** konec dynamic_stack.h ***/
