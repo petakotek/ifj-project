@@ -8,7 +8,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include "lexer.h"
-#include "hashtable.h"
+#include "symtable.h"
 #include "support_functions.h"
 #define SYMBOL_SIZE 201
 #define LITERAL_SIZE 101
