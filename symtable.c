@@ -58,7 +58,11 @@ void hashTableInitItems(HashTable *hashT)
 int hashTableInsertItem(HashTable *hashT, char *key, Token token)
 {
     int indexToStore = hashItem(key); // zahashovani retezce na index v poli polozek hashovaci tabulky
-
+    if (hashT->tableSize >= hashT->tableCapacity)
+    {
+        hashTableRealloc(hashT);
+    }
+    
     // na indexu položky už nějaký prvek je
     if (hashT->items[indexToStore].isEmpty == false)
     {
@@ -208,7 +212,7 @@ void hashTableDealloc(HashTable *hashT)
  * @param key ukazatel na řetězec, který bude vkládán
  * @return Vrací index v poli struktur, který je využit při hledání, mazání, vkládání
  */
-int hashItem(const char *key)
+int hashItem(char *key)
 {
     if (key == NULL)
     {
@@ -226,5 +230,39 @@ int hashItem(const char *key)
 
 
     return hash % TABLE_CAPACITY;
+}
+
+/**
+ * @brief Funkce pro realokaci pole položek tabulky symbolů, je volána z funkce hashTableInsertItem
+ * @param hashT je ukazatel na tabulku, která bude alokována
+ * @return nemá návratovou hodnotu
+ */
+void hashTableRealloc(HashTable *hashT)
+{
+    if (hashT == NULL || hashT->tableCapacity <= 0)
+    {
+        return;
+    }
+
+    // navýšení kapacity tabulky o 50%
+    int newCapacity = hashT->tableCapacity + (hashT->tableCapacity / 2);
+
+    // Alokace noveho pole
+    TableItem *newItems = realloc(hashT->items, sizeof(TableItem) * newCapacity);
+    if (newItems == NULL)
+    {
+        return;
+    }
+    
+    // Inicializace novych prvku
+    for (int i = hashT->tableCapacity; i < newCapacity; i++)
+    {
+        newItems[i].key = NULL;
+        newItems[i].isDeleted = false;
+        newItems[i].isEmpty = true;
+    }
+
+    hashT->items = newItems;
+    hashT->tableCapacity = newCapacity;
 }
 /* Konec hashtable.h */
