@@ -42,6 +42,7 @@ typedef enum{
     GT,        // >
     START,	//*
     DOT, // .
+    COMMA,
     LTE, // <=
     GTE ,// >=
     AND_HALF, //&
@@ -104,6 +105,18 @@ typedef enum {
     TOKEN_SQUARE_RIGHT,
     TOKEN_DOUBLE_MINUS,
     TOKEN_KEYWORD_FOR,
+    TOKEN_KEYWORD_CLASS,
+    TOKEN_KEYWORD_IFJ,
+    TOKEN_KEYWORD_IMPORT,
+    TOKEN_KEYWORD_NUM,
+    TOKEN_KEYWORD_STRING,
+    TOKEN_KEYWORD_NULL,
+    TOKEN_KEYWORD_STATIC,
+    TOKEN_KEYWORD_IS,
+    TOKEN_KEYWORD_NULL_SMALL,
+    TOKEN_KEYWORD_CONTINUE,
+	TOKEN_KEYWORD_BREAK,
+	TOKEN_COMMA
 } TokenType;
 /*
 *Definuje samotny jeden token
