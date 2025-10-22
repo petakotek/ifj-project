@@ -7,13 +7,14 @@ LL(1) gramatika pre jazyk IFJ25
 Program -> Prolog TOKEN_NEW_LINE Main_class
 Prolog -> TOKEN_KEYWORD_IMPORT TOKEN_STRING("ifj25") TOKEN_KEYWORD_FOR TOKEN_KEYWORD_IFJ  ##### Syntakticka chyba 2
 Main_class -> TOKEN_KEYWORD_CLASS TOKEN_IDENTIFIER(Program) TOKEN_BLOCK_START TOKEN_NEW_LINE Main_class_block TOKEN_BLOCK_END TOKEN_NEW_LINE
-Main_class_block -> Main_class_block_list Main_class_block | eps
-Main_class_block_list -> Func_dec | Getter | Setter
+Main_class_block -> Main_class_item Main_class_block | eps
+Main_class_item -> Func_dec | Getter | Setter
 
 === Všeobecný block a jeho obsah ===
 Block -> TOKEN_BLOCK_START TOKEN_NEW_LINE smth TOKEN_BLOCK_END TOKEN_NEW_LINE | TOKEN_BLOCK_START OnelineExprOpt TOKEN_BLOCK_END TOKEN_NEW_LINE 
-smth -> smth_list TOKEN_NEW_LINE smth | eps
-smth_list -> Return | Var | Assign | If | While | For | Break | Continue
+smth -> smth_list smth_tail
+smth_tail -> TOKEN_NEW_LINE | eps 
+smth_list -> Return | Var | Assign | If | While | For | Break | Continue | Func_call
 OnelineExprOpt -> Expr | eps
 
 === Funkcie, Getter a Setter === 
@@ -22,6 +23,7 @@ Param -> TOKEN_IDENTIFIER Param_list | eps
 Param_list -> TOKEN_COMMA TOKEN_IDENTIFIER Param_list | eps 
 Getter -> TOKEN_KEYWORD_STATIC TOKEN_IDENTIFIER Block
 Setter -> TOKEN_KEYWORD_STATIC TOKEN_IDENTIFIER TOKEN_ASSIGN TOKEN_LPAREN TOKEN_IDENTIFIER TOKEN_RPAREN Block
+Func_call -> TOKEN_IDENTIFIER TOKEN_LPAREN Var_arg TOKEN_RPAREN | KEYWORD_IFJ TOKEN_DOT TOKEN_IDENTIFIER TOKEN_LPAREN Var_arg TOKEN_RPAREN
 
 === Deklarovanie výrazu ===
 Var -> TOKEN_KEYWORD_VAR TOKEN_IDENTIFIER Var_EXT
@@ -49,8 +51,7 @@ Return_expr -> Expr | eps
 
 
 === Výrazy ===
-//spravit aj Operators rozsirenie
-Expr ->
+Expr -> /* precedenčná analýza */
 
 
 

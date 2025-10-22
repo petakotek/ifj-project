@@ -1,0 +1,8 @@
+*.c
+*.h
+dynamicStackTest
+*.o
+!stack_test.c
+!stack_test.h
+!lexer.c
+!lexer.h
