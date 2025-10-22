@@ -4,6 +4,10 @@
  * Soubor: lexer.c
  * Popis:
  */
+ /*
+ * return immie
+ *
+ */
 #include "lexer.h"
 
 #include <ctype.h>
@@ -14,7 +18,7 @@
 #include <string.h>
 
 #include "support_functions.h"
-#include "hashtable.h"
+#include "symtable.h"
 /*
  * Proměna  která je potřebna byti viditelnou v celem souboru
  * Kdyz tak predelat a predavat pres argumenty
@@ -250,8 +254,6 @@ char *substring(size_t start, size_t end) {
              return "SQUARE_LEFT";
          case TOKEN_SQUARE_RIGHT:
              return "SQUARE_RIGHT";
-         case TOKEN_DOUBLE_MINUS:
-             return "DOUBLE_MINUS";
          case TOKEN_KEYWORD_CONTINUE:
              return "CONTINUE";
          case TOKEN_KEYWORD_BREAK:
@@ -312,14 +314,235 @@ Token lexer_token_next() {
      * symboly vracime okamzite
      */
     while (1) {
-        if (lexer->pos < lexer->length) {  // kontrola aby nas counter nepreskocil velikost
-            c = lexer->input[lexer->pos];
-        } else {
-            token.type = TOKEN_EOF;
-            goto token_found;
+
+    if (lexer->pos >= lexer->length) {  // kontrola aby nas counter nepreskocil velikost
+    /*
+     * Pro situace ze jsme v urcitem stavu a hitnem EOF tak abychom i ten posledni token nejak vyhodnotili
+    */
+        switch (stav) {
+            case START_LEX:
+                token.type = TOKEN_EOF;
+                goto token_found;
+
+            case ID:
+                token.value.identifier = substring(zacatek, lexer->pos);
+                token.type             = match_identifikator(token.value.identifier);
+                token.line             = radek;
+                goto token_found;
+
+            case GLOBAL_ID:
+                token.value.identifier = substring(zacatek, lexer->pos);
+                token.type             = TOKEN_GLOBAL_ID;
+                token.line             = radek;
+                goto token_found;
+
+            case NUMBER:
+                token.value.identifier = substring(zacatek, lexer->pos);
+                token.type             = TOKEN_INTEGER;
+                token.line             = radek;
+                goto token_found;
+
+            case HEXA_NUM:
+                token.value.identifier = substring(zacatek, lexer->pos);
+                token.type             = TOKEN_HEXA;
+                token.line             = radek;
+                goto token_found;
+
+            case FLOAT_NUMBER:
+                token.value.identifier = substring(zacatek, lexer->pos);
+                token.type             = TOKEN_FLOAT;
+                token.line             = radek;
+                goto token_found;
+
+            case DIGIT_EXP:
+                token.value.identifier = substring(zacatek, lexer->pos);
+                token.type             = TOKEN_INTEGER_EXP;
+                token.line             = radek;
+                goto token_found;
+
+            case FLOAT_EXP:
+                token.value.identifier = substring(zacatek, lexer->pos);
+                token.type             = TOKEN_FLOAT_EXP;
+                token.line             = radek;
+                goto token_found;
+
+            case STRING:
+                free(buf);
+                printError(LEX_ERROR,
+                           "Nedokonceny string"
+                           "%c on line : %lu",
+                           c, lexer->pos);
+                memorySafeExit(LEX_ERROR);
+                break;
+
+            case STRING_BLOCK:
+                free(buf);
+                printError(LEX_ERROR,
+                           "Nedokonceny string_block"
+                           "%c on line : %lu",
+                           c, lexer->pos);
+                memorySafeExit(LEX_ERROR);
+                break;
+
+            case ZNAK_HEXA:
+                free(buf);
+                printError(LEX_ERROR,
+                           "Nedokonceny string"
+                           "%c on line : %lu",
+                           c, lexer->pos);
+                memorySafeExit(LEX_ERROR);
+                break;
+
+            case DOUBLE_QUO:
+                    token.type         = TOKEN_STRING;
+                    token.line         = radek;
+                    token.value.string = substring(zacatek, lexer->pos);
+                    goto token_found_string;
+
+                case END_QUO:
+                    free(buf);
+                    printError(LEX_ERROR, "Nedokonceny block string %c on line : %lu", c, lexer->pos);
+                    memorySafeExit(LEX_ERROR);
+                    break;
+
+                case END_DOUBLE_QUO:
+                    token.type         = TOKEN_STRING_BLOCK;
+                    token.line         = radek;
+                    token.value.string = substring(zacatek, lexer->pos);
+                    goto token_found_string;
+            // Jednoznakové operátory a symboly
+            case PLUS:
+                token.type = TOKEN_PLUS;
+                goto token_found;
+
+            case MINUS:
+                token.type = TOKEN_MINUS;
+                goto token_found;
+
+            case SLASH:
+                token.type = TOKEN_SLASH;
+                goto token_found;
+
+            case ASSIGN:
+                token.type = TOKEN_ASSIGN;
+                goto token_found;
+
+            case EQ:
+                token.type = TOKEN_EQ;
+                goto token_found;
+
+            case LT:
+                token.type = TOKEN_LT;
+                goto token_found;
+
+            case GT:
+                token.type = TOKEN_GT;
+                goto token_found;
+
+            case LTE:
+                token.type = TOKEN_LTE;
+                goto token_found;
+
+            case GTE:
+                token.type = TOKEN_GTE;
+                goto token_found;
+
+            case START:
+                token.type = TOKEN_STAR;
+                goto token_found;
+
+            case DOT:
+                token.type = TOKEN_DOT;
+                goto token_found;
+
+            case COMMA:
+                token.type = TOKEN_COMMA;
+                goto token_found;
+
+
+            case DOUBLE_DOT:
+                token.type = TOKEN_DOUBLE_DOT;
+                goto token_found;
+
+            case QUESTION_MARK:
+                token.type = TOKEN_QUESTION_MARK;
+                goto token_found;
+
+
+            // Závorky
+            case BLOCK_START:
+                token.type = TOKEN_BLOCK_STAR;
+                goto token_found;
+
+            case BLOCK_END:
+                token.type = TOKEN_BLOCK_END;
+                goto token_found;
+
+            case PAR_LEFT:
+                token.type = TOKEN_LPAREN;
+                goto token_found;
+
+            case PAR_RIGHT:
+                token.type = TOKEN_RPAREN;
+                goto token_found;
+
+            case SQUARE_LEFT:
+                token.type = TOKEN_SQUARE_LEFT;
+                goto token_found;
+
+            case SQUARE_RIGHT:
+                token.type = TOKEN_SQUARE_RIGHT;
+                goto token_found;
+
+            // Logické operátory
+            case AND_HALF:
+                free(buf);
+                printError(LEX_ERROR,
+                           "neznamy charakter"
+                           "%c on line : %lu",
+                           c, lexer->pos);
+                memorySafeExit(LEX_ERROR);
+                break;
+
+            case AND:
+                token.type = TOKEN_AND;
+                goto token_found;
+
+            case OR_HALF:
+                free(buf);
+                printError(LEX_ERROR,
+                           "neznamy charakter"
+                           "%c on line : %lu",
+                           c, lexer->pos);
+                memorySafeExit(LEX_ERROR);
+                break;
+
+            case OR:
+                token.type = TOKEN_OR;
+                goto token_found;
+
+            case NOT_HALF:
+                free(buf);
+                printError(LEX_ERROR,
+                           "neznamy charakter"
+                           "%c on line : %lu",
+                           c, lexer->pos);
+                memorySafeExit(LEX_ERROR);
+                break;
+
+            case NOT:
+                token.type = TOKEN_NOT;
+                goto token_found;
+
+            default:
+                token.type = TOKEN_EOF;
+                goto token_found;
         }
+    }
+
+        c = lexer->input[lexer->pos];
         if (c == '\n') {
-            radek++;  // pocitani radku
+            radek++;
         }
         switch (stav) {
                 /*
@@ -362,39 +585,30 @@ Token lexer_token_next() {
                 } else if (c == '{') {
                     stav = BLOCK_START;
                     lexer->pos++;
-                    zacatek = lexer->pos;
                 } else if (c == '}') {
                     stav = BLOCK_END;
                     lexer->pos++;
-                    zacatek = lexer->pos;
                 } else if (c == '(') {
                     stav = PAR_LEFT;
                     lexer->pos++;
-                    zacatek = lexer->pos;
                 } else if (c == ')') {
                     stav = PAR_RIGHT;
                     lexer->pos++;
-                    zacatek = lexer->pos;
                 } else if (c == '[') {
                     stav = SQUARE_LEFT;
                     lexer->pos++;
-                    zacatek = lexer->pos;
                 } else if (c == ']') {
                     stav = SQUARE_RIGHT;
                     lexer->pos++;
-                    zacatek = lexer->pos;
                 } else if (c == '+') {
                     stav = PLUS;
                     lexer->pos++;
-                    zacatek = lexer->pos;
                 } else if (c == '-') {
                     stav = MINUS;
                     lexer->pos++;
-                    zacatek = lexer->pos;
                 } else if (c == '*') {
                     stav = START;
                     lexer->pos++;
-                    zacatek = lexer->pos;
                 } else if (c == '=') {
                     stav = ASSIGN;
                     lexer->pos++;
@@ -410,15 +624,12 @@ Token lexer_token_next() {
                 } else if (c == '.') {
                     stav = DOT;
                     lexer->pos++;
-                    zacatek = lexer->pos;
                 } else if (c == ':') {
                     stav = DOUBLE_DOT;
                     lexer->pos++;
-                    zacatek = lexer->pos;
                 } else if (c == '?') {
                     stav = QUESTION_MARK;
                     lexer->pos++;
-                    zacatek = lexer->pos;
                 } else if (c == '&') {
                     stav = AND_HALF;
                     lexer->pos++;
@@ -495,21 +706,10 @@ Token lexer_token_next() {
                 } else if (c == '.') {
                     stav = FLOAT_NUMBER;
                     lexer->pos++;
-                } else if (c == ' ' || c == '\n') {
+                } else if (c == ' ' || c == '\n' || c == EOF) {
                     token.type = TOKEN_INTEGER;
-                    char *tmp  = substring(zacatek, lexer->pos);
-                    char *endptr;
-                    token.value.number = strtod(tmp, &endptr);
-                    if (endptr == tmp) {
-                        free(buf);
-                        printError(LEX_ERROR,
-                                   "nezname pismeno v lexer_token_next"
-                                   "%c on line : %lu",
-                                   c, lexer->pos);
-                        memorySafeExit(LEX_ERROR);
-                    }
+                    token.value.identifier = substring(zacatek, lexer->pos);
                     token.line = radek;
-                    free(tmp);
                     goto token_found;
                 } else if (c == 'e') {
                     stav = DIGIT_EXP;
@@ -535,19 +735,8 @@ Token lexer_token_next() {
                     lexer->pos++;
                 } else if (c == ' ' || c == '\n' || c == '\0') {
                     token.type = TOKEN_FLOAT;
-                    char *tmp  = substring(zacatek, lexer->pos);
-                    char *endptr;
-                    token.value.number = strtod(tmp, &endptr);
-                    if (endptr == tmp) {
-                        free(buf);
-                        printError(LEX_ERROR,
-                                   "nezname pismeno v lexer_token_next"
-                                   "%c on line : %lu",
-                                   c, lexer->pos);
-                        memorySafeExit(LEX_ERROR);
-                    }
+                    token.value.identifier = substring(zacatek, lexer->pos);
                     token.line = radek;
-                    free(tmp);
                     goto token_found;
                 } else {
                     free(buf);
@@ -580,7 +769,7 @@ Token lexer_token_next() {
                     memorySafeExit(LEX_ERROR);
                 } else {
                     token.type         = TOKEN_INTEGER;
-                    token.value.number = 0;
+                    token.value.identifier = "0";
                     token.line         = radek;
                 }
                 break;
@@ -593,20 +782,8 @@ Token lexer_token_next() {
                     lexer->pos++;
                 } else if (c == ' ' || c == '\n' || c == '\0') {
                     token.type = TOKEN_HEXA;
-                    char *tmp  = substring(zacatek, lexer->pos);
-                    char *endptr;
-                    token.value.number = strtod(tmp, &endptr);
-                    if (endptr == tmp) {
-                        free(buf);
-                        printError(LEX_ERROR,
-                                   "neznamy charakter v lexer_token_next"
-                                   "%c on line : %lu",
-                                   c, lexer->pos);
-                        memorySafeExit(LEX_ERROR);
-                    }
-                    token.line         = radek;
-                    token.value.number = strtod(tmp, NULL);
-                    free(tmp);
+                    token.value.identifier = substring(zacatek, lexer->pos);
+                    token.line = radek;
                     goto token_found;
                 } else {
                     free(buf);
@@ -627,19 +804,8 @@ Token lexer_token_next() {
                     lexer->pos++;
                 } else if (c == ' ' || c == '\n' || c == '\0') {
                     token.type = TOKEN_INTEGER_EXP;
-                    char *tmp  = substring(zacatek, lexer->pos);
-                    char *endptr;
-                    token.value.number = strtod(tmp, &endptr);
-                    if (endptr == tmp) {
-                        free(buf);
-                        printError(LEX_ERROR,
-                                   "neznamy charakter v lexer_token_next"
-                                   "%c on line : %lu",
-                                   c, lexer->pos);
-                        memorySafeExit(LEX_ERROR);
-                    }
+                    token.value.identifier = substring(zacatek, lexer->pos);
                     token.line = radek;
-                    free(tmp);
                     goto token_found;
                 } else {
                     free(buf);
@@ -656,19 +822,8 @@ Token lexer_token_next() {
                     lexer->pos++;
                 } else if (c == ' ' || c == '\n' || c == '\0') {
                     token.type = TOKEN_FLOAT_EXP;
-                    char *tmp  = substring(zacatek, lexer->pos);
-                    char *endptr;
-                    token.value.number = strtod(tmp, &endptr);
-                    if (endptr == tmp) {
-                        free(buf);
-                        printError(LEX_ERROR,
-                                   "neznamy charakter v lexer_token_next"
-                                   "%c on line : %lu",
-                                   c, lexer->pos);
-                        memorySafeExit(LEX_ERROR);
-                    }
+                    token.value.identifier = substring(zacatek, lexer->pos);
                     token.line = radek;
-                    free(tmp);
                     goto token_found;
                 } else {
                     free(buf);
@@ -896,21 +1051,10 @@ Token lexer_token_next() {
             }
             // mezi krok pro mozne -- ale pokud je druhe neco jineho nez - tak vraci token
             case MINUS: {
-                if (c == '-') {
-                    stav = DOUBLE_MINUS;
-                    lexer->pos++;
-                } else {
                     token.type = TOKEN_MINUS;
                     token.line = radek;
                     goto token_found;
-                }
                 break;
-            }
-
-            case DOUBLE_MINUS: {
-                token.type = TOKEN_DOUBLE_MINUS;
-                token.line = radek;
-                goto token_found;
             }
             case SLASH: {
                 token.type = TOKEN_SLASH;

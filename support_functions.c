@@ -78,7 +78,7 @@ void print_and_free_tokens() {
         } else if (token.type == TOKEN_INTEGER || token.type == TOKEN_HEXA ||
                    token.type == TOKEN_FLOAT || token.type == TOKEN_FLOAT_EXP ||
                    token.type == TOKEN_INTEGER_EXP) {
-            printf(" -> value: %lf\n", token.value.number);
+            printf(" -> value: \"%s\"\n", token.value.string);
         } else if (token.type == TOKEN_IDENTIFIER || token.type == TOKEN_GLOBAL_ID) {
             printf(" -> id: \"%s\"\n", token.value.identifier);
             free(token.value.identifier);
