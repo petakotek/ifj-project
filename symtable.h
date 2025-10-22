@@ -53,8 +53,6 @@ void hashTableDeleteItem(HashTable *, char *key); // Funkce pro smazání polož
 int hashTableSearchItem(HashTable *, char *key); // Funkce pro nalezení položky v hashovací tabulce
 void hashTableDealloc(HashTable *); // funkce pro dealokaci hashovací tabulky
 int hashItem(char *key);
-
-// TODO
 void hashTableRealloc(HashTable *); // Funkce provede reallokaci tabulky symbolu v pripade, ze doslo k naplneni kapacity
 
 #endif // SYMTABLE_H
