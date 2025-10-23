@@ -74,6 +74,7 @@ void parser()
         Stack_top = stackRead(Stack);
         if(Stack_top.is_terminal)
         {
+            printf("%d\n",token.type);
             printf("%d\n",Stack_top.symbol);
             if (Stack_top.symbol == token.type)
             {
@@ -235,7 +236,7 @@ void Prolog_func(DynamicStackPtr Stack, Token token)
     stackPush(Stack,make_term(TOKEN_KEYWORD_IFJ));
     stackPush(Stack,make_term(TOKEN_KEYWORD_FOR));
     Token ifj25;
-    ifj25.type = TOKEN_IDENTIFIER;
+    ifj25.type = TOKEN_STRING;
     ifj25.value.string = "ifj25";
     stackPush(Stack,make_term_value(ifj25));
     stackPush(Stack,make_term(TOKEN_KEYWORD_IMPORT));
