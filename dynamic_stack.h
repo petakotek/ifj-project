@@ -12,7 +12,7 @@
 #include <stdbool.h>
 #include <stddef.h>
 #include "support_functions.h"
-#include "parser.h"
+#include "symbol.h"
 
 /**
  * @brief Základní velikost zásobníku (možné použít při volání stackConstruct)

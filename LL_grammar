@@ -4,7 +4,7 @@ LL(1) gramatika pre jazyk IFJ25
 Štartovací symbol: Program
 
 === Povinný Prolog a kostra programu ===
-Program -> Prolog TOKEN_NEW_LINE Main_class
+Program -> Prolog TOKEN_NEW_LINE Main_class TOKEN_EOF
 Prolog -> TOKEN_KEYWORD_IMPORT TOKEN_STRING("ifj25") TOKEN_KEYWORD_FOR TOKEN_KEYWORD_IFJ  ##### Syntakticka chyba 2
 Main_class -> TOKEN_KEYWORD_CLASS TOKEN_IDENTIFIER(Program) TOKEN_BLOCK_START TOKEN_NEW_LINE Main_class_block TOKEN_BLOCK_END TOKEN_NEW_LINE
 Main_class_block -> Main_class_item Main_class_block | eps

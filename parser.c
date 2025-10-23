@@ -7,13 +7,38 @@
 * @author Jakub Jambrozi (xjambrj00)
 * upravované: 22.10.2025
 */
-#include "dynamic_stack.h"
+#include "parser.h"
 
 Symbol make_term(TokenType T)
 {
     Symbol x; 
     x.is_terminal = true;
     x.symbol = T;
+    x.value_needed = false;
+    return x;
+}
+
+Symbol make_term_value(Token T)
+{
+    Symbol x; 
+    x.is_terminal = true;
+    x.symbol = T.type;
+    switch (T.type) 
+    {
+        case TOKEN_INTEGER:     
+            x.value.identifier = T.value.identifier; 
+            break;
+        case TOKEN_FLOAT:   
+            x.value.number = T.value.number; 
+            break;
+        case TOKEN_STRING:
+            x.value.string = T.value.string; // predpoklad: vlastník je lexer; ak treba, použi strdup()
+            break;
+        default:
+            // ak typ nemá „hodnotu“, tak has_value nemá význam
+            x.value_needed = false;
+            break;
+    }
     return x;
 }
 
@@ -49,23 +74,47 @@ void parser()
         Stack_top = stackRead(Stack);
         if(Stack_top.is_terminal)
         {
+            printf("%d\n",Stack_top.symbol);
             if (Stack_top.symbol == token.type)
             {
+                bool ok = true;
+                if (Stack_top.value_needed)
+                    {
+                        switch (token.type) 
+                        {
+                        case TOKEN_STRING:
+                            ok = (token.value.string && Stack_top.value.string && strcmp(Stack_top.value.string, token.value.string) == 0);
+                            break;
+                        case TOKEN_INTEGER:
+                            ok = (Stack_top.value.identifier == token.value.identifier);
+                            break;
+                        case TOKEN_FLOAT:
+                            ok = (Stack_top.value.number == token.value.number);
+                            break;
+                        default:
+                            // pre typy bez hodnoty porovnávať netreba
+                            ok = true;
+                        }
+                    }
+
+                if (!ok) {
+                    printError(SYNTAX_ERROR, "Nesúlad hodnoty terminálu");
+                    memorySafeExit(SYNTAX_ERROR);
+                }
+                printf("ok\n");
                 stackPop(Stack);
                 token = lexer_token_next();
             }
 
             else
             {
-                printError(INTERNAL_ERROR,"Nesprávne poradie tokenov\n");
+                printError(SYNTAX_ERROR,"Nesprávne poradie tokenov\n");
                 memorySafeExit(SYNTAX_ERROR);
             }
         }
 
         else
         {
-            //TENTO BREAK SLUZI IBA AKO BREAK PRED NEIMPLEMENTOVANYMI FUNKCIAMI
-            break;
             switch (Stack_top.symbol)
             {
                 case N_Program:
@@ -173,8 +222,25 @@ void push_check(bool boolean)
     }
 }
 
-void Program_func(DynamicStackPtr Stack, Token token)        { NOT_IMPL("Program_func"); }
-void Prolog_func(DynamicStackPtr Stack, Token token)         { NOT_IMPL("Prolog_func"); }
+void Program_func(DynamicStackPtr Stack, Token token)        
+{ 
+    stackPop(Stack);
+    stackPush(Stack,make_nonterm(N_MainClass));
+    stackPush(Stack,make_term(TOKEN_NEW_LINE));
+    stackPush(Stack,make_nonterm(N_Prolog));
+}
+void Prolog_func(DynamicStackPtr Stack, Token token)
+{ 
+    stackPop(Stack);
+    stackPush(Stack,make_term(TOKEN_KEYWORD_IFJ));
+    stackPush(Stack,make_term(TOKEN_KEYWORD_FOR));
+    Token ifj25;
+    ifj25.type = TOKEN_IDENTIFIER;
+    ifj25.value.string = "ifj25";
+    stackPush(Stack,make_term_value(ifj25));
+    stackPush(Stack,make_term(TOKEN_KEYWORD_IMPORT));
+
+}
 void MainClass_func(DynamicStackPtr Stack, Token token)      { NOT_IMPL("MainClass_func"); }
 void MainClassBlock_func(DynamicStackPtr Stack, Token token) { NOT_IMPL("MainClassBlock_func"); }
 void MainClassItem_func(DynamicStackPtr Stack, Token token)  { NOT_IMPL("MainClassItem_func"); }

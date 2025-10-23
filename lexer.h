@@ -118,6 +118,14 @@ typedef enum {
 	TOKEN_KEYWORD_BREAK,
 	TOKEN_COMMA
 } TokenType;
+
+typedef union {
+    int    *identifier;
+    double number;
+    char  *string;
+    // ... ostatné varianty
+} TokenValue;
+
 /*
 *Definuje samotny jeden token
 *obecne prametry tokenu: Line(pro error zpravy) .. vice mene nenapadlo
@@ -125,11 +133,7 @@ typedef enum {
 */
 typedef struct {
     TokenType type;
-    union {
-           char *identifier;
-           double number;
-           char *string;
-       } value;
+    TokenValue value;
     int line;
 } Token;
 /*

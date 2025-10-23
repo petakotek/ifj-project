@@ -1,15 +1,23 @@
 /** 
 * Fakulta informačných technologií VUT Brno
 *
-* Hlavičkový súbor pre imple#mentáciu lexikálnej analýzy
+* Hlavičkový súbor pre implementáciu lexikálnej analýzy
 * pre projekt do predmetu IFJ
 * @file  parser.h
 * @author Jakub Jambrozi (xjambrj00)
 * upravované: 22.10.2025
 */
 
+#ifndef PARSER_H
+#define PARSER_H
+
 #include <stdio.h>
 #include <stdbool.h>
+#include "lexer.h"
+#include "support_functions.h"
+#include "dynamic_stack.h"
+#include "symbol.h"
+
 #define NOT_IMPL(name) \
     do { fprintf(stderr, "[parser] %s not implemented\n", name); } while (0)
 
@@ -49,14 +57,6 @@ typedef enum
     N_Expr
 } Nonterm;
 
-/**
- * @brief Štruktúra terminalov/neterminálov vkladaná na zásobník
- */
-typedef struct Symbol
-{
-    bool is_terminal; 
-    int symbol; 
-} Symbol;
 
 
 /**
@@ -70,6 +70,8 @@ Symbol make_term(TokenType T);
  * @param T Neterminal z enum Nonterm 
  */
 Symbol make_nonterm(Nonterm N);
+
+Symbol make_term_value(Token T);
 
 void Program_func(DynamicStackPtr Stack, Token token);
 void Prolog_func(DynamicStackPtr Stack, Token token);
@@ -101,3 +103,4 @@ void Return_func(DynamicStackPtr Stack, Token token);
 void ReturnExpr_func(DynamicStackPtr Stack, Token token);
 void Expr_func(DynamicStackPtr Stack, Token token);
 
+#endif // PARSER_H
