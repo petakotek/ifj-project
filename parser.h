@@ -1,4 +1,4 @@
-/** 
+/**
 * Fakulta informačných technologií VUT Brno
 *
 * Hlavičkový súbor pre implementáciu lexikálnej analýzy
@@ -24,35 +24,35 @@
 /**
  * @brief Definicia neterminálov
  */
-typedef enum 
+typedef enum
 {
     N_Program,
-    N_Prolog, 
-    N_MainClass, 
+    N_Prolog,
+    N_MainClass,
     N_MainClassBlock,
     N_MainClassItem,
-    N_Block, 
-    N_Smth, 
-    N_SmthTail, 
+    N_Block,
+    N_Smth,
+    N_SmthTail,
     N_SmthList,
-    N_FuncDec, 
-    N_Param, 
+    N_FuncDec,
+    N_Param,
     N_ParamList,
-    N_Getter, 
+    N_Getter,
     N_Setter,
-    N_Var, 
-    N_Var_EXT, 
-    N_Var_EXTSTAT, 
-    N_VarArg, 
+    N_Var,
+    N_Var_EXT,
+    N_Var_EXTSTAT,
+    N_VarArg,
     N_VarArgList,
-    N_Assign, 
-    N_If, 
-    N_Else, 
-    N_While, 
-    N_For, 
-    N_Break, 
+    N_Assign,
+    N_If,
+    N_Else,
+    N_While,
+    N_For,
+    N_Break,
     N_Continue,
-    N_Return, 
+    N_Return,
     N_ReturnExpr,
     N_Expr
 } Nonterm;
@@ -67,12 +67,12 @@ Symbol make_term(TokenType T);
 
 /**
  * @brief pomocná funkcia na vytvorenie struktury neterminalu
- * @param T Neterminal z enum Nonterm 
+ * @param T Neterminal z enum Nonterm
  */
 Symbol make_nonterm(Nonterm N);
 
 Symbol make_term_value(Token T);
-
+void parser();
 void Program_func(DynamicStackPtr Stack, Token token);
 void Prolog_func(DynamicStackPtr Stack, Token token);
 void MainClass_func(DynamicStackPtr Stack, Token token);

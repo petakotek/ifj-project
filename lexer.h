@@ -120,7 +120,8 @@ typedef enum {
 } TokenType;
 
 typedef union {
-    int    *identifier;
+    char *identifier;
+
     double number;
     char  *string;
     // ... ostatné varianty
