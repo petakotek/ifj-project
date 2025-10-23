@@ -1,0 +1,103 @@
+/** 
+* Fakulta informačných technologií VUT Brno
+*
+* Hlavičkový súbor pre imple#mentáciu lexikálnej analýzy
+* pre projekt do predmetu IFJ
+* @file  parser.h
+* @author Jakub Jambrozi (xjambrj00)
+* upravované: 22.10.2025
+*/
+
+#include <stdio.h>
+#include <stdbool.h>
+#define NOT_IMPL(name) \
+    do { fprintf(stderr, "[parser] %s not implemented\n", name); } while (0)
+
+/**
+ * @brief Definicia neterminálov
+ */
+typedef enum 
+{
+    N_Program,
+    N_Prolog, 
+    N_MainClass, 
+    N_MainClassBlock,
+    N_MainClassItem,
+    N_Block, 
+    N_Smth, 
+    N_SmthTail, 
+    N_SmthList,
+    N_FuncDec, 
+    N_Param, 
+    N_ParamList,
+    N_Getter, 
+    N_Setter,
+    N_Var, 
+    N_Var_EXT, 
+    N_Var_EXTSTAT, 
+    N_VarArg, 
+    N_VarArgList,
+    N_Assign, 
+    N_If, 
+    N_Else, 
+    N_While, 
+    N_For, 
+    N_Break, 
+    N_Continue,
+    N_Return, 
+    N_ReturnExpr,
+    N_Expr
+} Nonterm;
+
+/**
+ * @brief Štruktúra terminalov/neterminálov vkladaná na zásobník
+ */
+typedef struct Symbol
+{
+    bool is_terminal; 
+    int symbol; 
+} Symbol;
+
+
+/**
+ * @brief pomocná funkcia na vytvorenie struktury terminalu
+ * @param T Terminal z enum Term
+ */
+Symbol make_term(TokenType T);
+
+/**
+ * @brief pomocná funkcia na vytvorenie struktury neterminalu
+ * @param T Neterminal z enum Nonterm 
+ */
+Symbol make_nonterm(Nonterm N);
+
+void Program_func(Token token);
+void Prolog_func(Token token);
+void MainClass_func(Token token);
+void MainClassBlock_func(Token token);
+void MainClassItem_func(Token token);
+void Block_func(Token token);
+void Smth_func(Token token);
+void SmthTail_func(Token token);
+void SmthList_func(Token token);
+void FuncDec_func(Token token);
+void Param_func(Token token);
+void ParamList_func(Token token);
+void Getter_func(Token token);
+void Setter_func(Token token);
+void Var_func(Token token);
+void Var_EXT_func(Token token);
+void Var_EXTSTAT_func(Token token);
+void VarArg_func(Token token);
+void VarArgList_func(Token token);
+void Assign_func(Token token);
+void If_func(Token token);
+void Else_func(Token token);
+void While_func(Token token);
+void For_func(Token token);
+void Break_func(Token token);
+void Continue_func(Token token);
+void Return_func(Token token);
+void ReturnExpr_func(Token token);
+void Expr_func(Token token);
+

@@ -1,0 +1,207 @@
+/** 
+* Fakulta informačných technologií VUT Brno
+*
+* Súbor pre implementáciu lexikálnej analýzy
+* pre projekt do predmetu IFJ
+* @file  parser.c
+* @author Jakub Jambrozi (xjambrj00)
+* upravované: 22.10.2025
+*/
+#include "dynamic_stack.h"
+
+Symbol make_term(TokenType T)
+{
+    Symbol x; 
+    x.is_terminal = true;
+    x.symbol = T;
+    return x;
+}
+
+Symbol make_nonterm(Nonterm N)
+{
+    Symbol x; 
+    x.is_terminal = false;
+    x.symbol = N;
+    return x;
+}
+
+void push_check(bool boolean);
+
+void parser()
+{
+    DynamicStackPtr Stack = stackConstruct(DEFAULT_INIT_SIZE);
+    if (Stack == NULL) 
+    {
+        printError(INTERNAL_ERROR,"Chyba alokácie");
+        memorySafeExit(INTERNAL_ERROR);
+    }
+
+    bool push;
+    push = stackPush(Stack,make_term(TOKEN_EOF));
+    push_check(push);
+    push = stackPush(Stack,make_nonterm(N_Program));
+    push_check(push);
+    Token token = lexer_token_next();
+    Symbol Stack_top;
+
+    while (!stackIsEmpty(Stack))
+    {
+        Stack_top = stackRead(Stack);
+        if(Stack_top.is_terminal)
+        {
+            if (Stack_top.symbol == token.type)
+            {
+                stackPop(Stack);
+                printf("%s", token_type_to_string(token.type));
+                printf(" -> value: \"%s\"\n", token.value.string);
+                token = lexer_token_next();
+            }
+
+            else
+            {
+                printError(INTERNAL_ERROR,"Nesprávne poradie tokenov\n");
+                memorySafeExit(SYNTAX_ERROR);
+            }
+        }
+
+        else
+        {
+            //TENTO BREAK SLUZI IBA AKO BREAK PRED NEIMPLEMENTOVANYMI FUNKCIAMI
+            break;
+            switch(Stack_top.symbol)
+            {
+                case N_Program:
+                    Program_func(token);
+                    break;
+                case N_Prolog:
+                    Prolog_func(token);
+                    break;
+                case N_MainClass:
+                    MainClass_func(token);
+                    break;
+                case N_MainClassBlock:
+                    MainClassBlock_func(token);
+                    break;
+                case N_MainClassItem:
+                    MainClassItem_func(token);
+                    break;
+                case N_Block:
+                    Block_func(token);
+                    break;
+                case N_Smth:
+                    Smth_func(token);
+                    break;
+                case N_SmthTail:
+                    SmthTail_func(token);
+                    break;
+                case N_SmthList:
+                    SmthList_func(token);
+                    break;
+                case N_FuncDec:
+                    FuncDec_func(token);
+                    break;
+                case N_Param:
+                    Param_func(token);
+                    break;
+                case N_ParamList:
+                    ParamList_func(token);
+                    break;
+                case N_Getter:
+                    Getter_func(token);
+                    break;
+                case N_Setter:
+                    Setter_func(token);
+                    break;
+                case N_Var:
+                    Var_func(token);
+                    break;
+                case N_Var_EXT:
+                    Var_EXT_func(token);
+                    break;
+                case N_Var_EXTSTAT:
+                    Var_EXTSTAT_func(token);
+                    break;
+                case N_VarArg:
+                    VarArg_func(token);
+                    break;
+                case N_VarArgList:
+                    VarArgList_func(token);
+                    break;
+                case N_Assign:
+                    Assign_func(token);
+                    break;
+                case N_If:
+                    If_func(token);
+                    break;
+                case N_Else:
+                    Else_func(token);
+                    break;
+                case N_While:
+                    While_func(token);
+                    break;
+                case N_For:
+                    For_func(token);
+                    break;
+                case N_Break:
+                    Break_func(token);
+                    break;
+                case N_Continue:
+                    Continue_func(token);
+                    break;
+                case N_Return:
+                    Return_func(token);
+                    break;
+                case N_ReturnExpr:
+                    ReturnExpr_func(token);
+                    break;
+                case N_Expr:
+                    Expr_func(token);
+                    break;
+                default:
+                    printError(INTERNAL_ERROR,"Nespravny Neterminal");
+                    memorySafeExit(INTERNAL_ERROR);
+                    break;
+            }
+        }
+    }
+}
+
+void push_check(bool boolean)
+{
+    if(!boolean)
+    {
+        printError(INTERNAL_ERROR,"Chyba pushovania na Stack");
+        memorySafeExit(INTERNAL_ERROR);
+    }
+}
+
+void Program_func(Token token)        { NOT_IMPL("Program_func"); }
+void Prolog_func(Token token)         { NOT_IMPL("Prolog_func"); }
+void MainClass_func(Token token)      { NOT_IMPL("MainClass_func"); }
+void MainClassBlock_func(Token token) { NOT_IMPL("MainClassBlock_func"); }
+void MainClassItem_func(Token token)  { NOT_IMPL("MainClassItem_func"); }
+void Block_func(Token token)          { NOT_IMPL("Block_func"); }
+void Smth_func(Token token)           { NOT_IMPL("Smth_func"); }
+void SmthTail_func(Token token)       { NOT_IMPL("SmthTail_func"); }
+void SmthList_func(Token token)       { NOT_IMPL("SmthList_func"); }
+void FuncDec_func(Token token)        { NOT_IMPL("FuncDec_func"); }
+void Param_func(Token token)          { NOT_IMPL("Param_func"); }
+void ParamList_func(Token token)      { NOT_IMPL("ParamList_func"); }
+void Getter_func(Token token)         { NOT_IMPL("Getter_func"); }
+void Setter_func(Token token)         { NOT_IMPL("Setter_func"); }
+void Var_func(Token token)            { NOT_IMPL("Var_func"); }
+void Var_EXT_func(Token token)        { NOT_IMPL("Var_EXT_func"); }
+void Var_EXTSTAT_func(Token token)    { NOT_IMPL("Var_EXTSTAT_func"); }
+void VarArg_func(Token token)         { NOT_IMPL("VarArg_func"); }
+void VarArgList_func(Token token)     { NOT_IMPL("VarArgList_func"); }
+void Assign_func(Token token)         { NOT_IMPL("Assign_func"); }
+void If_func(Token token)             { NOT_IMPL("If_func"); }
+void Else_func(Token token)           { NOT_IMPL("Else_func"); }
+void While_func(Token token)          { NOT_IMPL("While_func"); }
+void For_func(Token token)            { NOT_IMPL("For_func"); }
+void Break_func(Token token)          { NOT_IMPL("Break_func"); }
+void Continue_func(Token token)       { NOT_IMPL("Continue_func"); }
+void Return_func(Token token)         { NOT_IMPL("Return_func"); }
+void ReturnExpr_func(Token token)     { NOT_IMPL("ReturnExpr_func"); }
+void Expr_func(Token token)           { NOT_IMPL("Expr_func"); }
+
