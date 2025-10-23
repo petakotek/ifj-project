@@ -120,6 +120,15 @@ bool stackPop(DynamicStackPtr stack) {
     return true;
 }
 
+bool stackIsEmpty(DynamicStackPtr stack) {
+    if(stack == NULL) {
+        printError(INTERNAL_ERROR, "(stackIsEmpty) Nebyl predan zasobnik!\n");
+        return false;
+    }
+
+    return stack->nextTopElement == 0;
+}
+
 void stackDestruct(DynamicStackPtr stack) {
     if (stack != NULL) {
         free(stack->array);

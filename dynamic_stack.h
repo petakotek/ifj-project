@@ -22,7 +22,7 @@
  * @brief Datový typ pro jednotlivé položky zásobníku
  * 
  */
-typedef char* StackElementPtr;
+typedef char* StackElementPtr; // TODO asi potřeba udělat jinak, záleží na použití
 
 /**
  * @brief Zásobník s automatickým zvětšením/zmenšením
@@ -106,12 +106,20 @@ StackElementPtr stackRead(DynamicStackPtr stack);
 bool stackPop(DynamicStackPtr stack);
 
 /**
+ * @brief Určuje zda je zásobník prázdný
+ * 
+ * @param stack Ukazatel na zásobník
+ * @return true Je prázdný
+ * @return false Není prázdný, nebo nedostal zásobník
+ */
+bool stackIsEmpty(DynamicStackPtr stack);
+
+/**
  * @brief Zajišťuje dealokaci dat i metadat zásobníku
  * 
  * @param stack Ukazatel na zásobník
  */
 void stackDestruct(DynamicStackPtr stack);
-
 
 #endif
 
