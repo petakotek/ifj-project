@@ -32,12 +32,12 @@ DynamicStackPtr stackConstruct(unsigned initStackSize) {
         return NULL;
     }
 
-    newStack->array = malloc(sizeof(StackElementPtr) * initStackSize);
+    newStack->array = malloc(sizeof(Symbol) * initStackSize);
     if (newStack->array == NULL) {
         printError(INTERNAL_ERROR,
                    "Pri alokaci prostoru pro data zasobniku doslo k chybe. (Zadana velikost "
                    "prostoru: %u \n",
-                   initStackSize * sizeof(StackElementPtr));
+                   initStackSize * sizeof(Symbol));
         free(newStack);
         return NULL;
     }
@@ -48,18 +48,14 @@ DynamicStackPtr stackConstruct(unsigned initStackSize) {
     newStack->nextUpsizeAt   = newStack->maxSize / 2;
     newStack->resized        = false;
 
-    newStack->array[0] = NULL;
+    
 
     return newStack;
 }
 
-bool stackPush(DynamicStackPtr stack, StackElementPtr data) {
+bool stackPush(DynamicStackPtr stack, Symbol data) {
     if (stack == NULL) {
         printError(INTERNAL_ERROR, "(stackPush) Nebyl predan zasobnik!\n");
-        return false;
-    }
-    if (data == NULL) {
-        printError(INTERNAL_ERROR, "(stackPush) Nebyl predan prvek!\n");
         return false;
     }
 
@@ -78,19 +74,10 @@ bool stackPush(DynamicStackPtr stack, StackElementPtr data) {
 
     stack->array[stack->nextTopElement] = data;
     stack->nextTopElement++;
-    stack->array[stack->nextTopElement] = NULL;
     return true;
 }
 
-StackElementPtr stackRead(DynamicStackPtr stack) {
-    if (stack == NULL) {
-        printError(INTERNAL_ERROR, "(stackRead) Nebyl predan zasobnik!\n");
-        return NULL;
-    }
-    if (stack->nextTopElement == 0) {
-        printWarning("Cteni z prazdneho zasobniku!\n");
-        return NULL;
-    }
+Symbol stackRead(DynamicStackPtr stack) {
 
     return stack->array[stack->nextTopElement - 1];
 }
@@ -109,7 +96,7 @@ bool stackPop(DynamicStackPtr stack) {
     stack->resized = false;
 
     stack->nextTopElement--;
-    stack->array[stack->nextTopElement] = NULL;
+    
 
     if (stack->nextTopElement < stack->nextDownsizeAt) {
         if (stackResize(stack, stack->maxSize / 2) == false) {
@@ -146,9 +133,9 @@ bool stackResize(DynamicStackPtr stack, unsigned wantedSize) {
         printWarning("Zmenseni zasobniku zpusobilo ztratu dat!\n");
     }
 
-    StackElementPtr* newStackarray = realloc(stack->array, sizeof(StackElementPtr) * wantedSize);
+    Symbol* newStackarray = realloc(stack->array, sizeof(Symbol) * wantedSize);
     if (newStackarray == NULL) {
-        printWarning("Realokace zasobniku selhala! Pozadovana velikost: %u.\n", wantedSize*sizeof(StackElementPtr));
+        printWarning("Realokace zasobniku selhala! Pozadovana velikost: %u.\n", wantedSize*sizeof(Symbol));
         return false;
     }
 

@@ -18,7 +18,6 @@
 #include <string.h>
 
 #include "support_functions.h"
-#include "symtable.h"
 /*
  * Proměna  která je potřebna byti viditelnou v celem souboru
  * Kdyz tak predelat a predavat pres argumenty

@@ -9,8 +9,10 @@
 #ifndef DYNAMIC_STACK
 #define DYNAMIC_STACK 1
 
+#include <stdbool.h>
 #include <stddef.h>
 #include "support_functions.h"
+#include "parser.h"
 
 /**
  * @brief Základní velikost zásobníku (možné použít při volání stackConstruct)
@@ -23,6 +25,7 @@
  * 
  */
 typedef char* StackElementPtr; // TODO asi potřeba udělat jinak, záleží na použití
+//OD KUBA VSADE KDE BOL StackElementPtr JE SYMBOL NIC INE SOM NEMENIL
 
 /**
  * @brief Zásobník s automatickým zvětšením/zmenšením
@@ -33,7 +36,7 @@ typedef struct{
      * @brief Uložení dat
      * 
      */
-    StackElementPtr* array;
+    Symbol* array;
     /**
      * @brief Nejnižší prázdné pole zásobníku (hned nad vrcholem zásobníku)
      * 
@@ -86,7 +89,7 @@ DynamicStackPtr stackConstruct(unsigned initStackSize);
  * @return true Operace proběhla v pořádku
  * @return false Došlo k chybě
  */
-bool stackPush(DynamicStackPtr stack,StackElementPtr data);
+bool stackPush(DynamicStackPtr stack,Symbol data);
 
 /**
  * @brief Vrátí data z vrcholu zásobníku (nemaže zásobník)
@@ -94,7 +97,7 @@ bool stackPush(DynamicStackPtr stack,StackElementPtr data);
  * @param stack Ukazatel na zásobník
  * @return StackElementPtr Data z vrcholu
  */
-StackElementPtr stackRead(DynamicStackPtr stack);
+Symbol stackRead(DynamicStackPtr stack);
 
 /**
  * @brief Odstraní vrchní prvek zásobníku, zajistí případné zmenšení zásobníku

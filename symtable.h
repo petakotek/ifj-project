@@ -16,7 +16,6 @@
 #define SYMTABLE_H
 
 #include "support_functions.h"
-#include "lexer.h"
 
 
 /**

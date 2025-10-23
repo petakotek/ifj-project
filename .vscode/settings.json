@@ -1,5 +1,11 @@
 {
     "cSpell.words": [
         "hashtable"
-    ]
+    ],
+    "files.associations": {
+        "support_functions.h": "c",
+        "parser.h": "c",
+        "stdio.h": "c",
+        "dynamic_stack.h": "c"
+    }
 }

@@ -33,8 +33,8 @@ Var_arg -> Expr var_arg_list | eps
 var_arg_list -> TOKEN_COMMA Expr var_arg_list | eps 
 
 === Všeobecné priradnie ====
-Assign -> TOKEN_IDENTIFIER TOKEN_ASSIGN Expr | TOKEN_GLOBAL_ID TOKEN_ASSIGN Expr | TOKEN_SETTER_ID  TOKEN_ASSIGN Expr
-
+Assign -> TOKEN_IDENTIFIER TOKEN_ASSIGN Expr | TOKEN_GLOBAL_ID TOKEN_ASSIGN Expr | TOKEN_SETTER_ID  TOKEN_ASSIGN Expr | Func_call TOKEN_ASSIGN TOKEN_LPAREN 
+ 
 === if else podmienky ===
 If -> TOKEN_KEYWORD_IF TOKEN_LPAREN Expr TOKEN_RPAREN Block Else 
 Else ->  TOKEN_KEYWORD_ELSE Block | TOKEN_KEYWORD_ELSE If | eps

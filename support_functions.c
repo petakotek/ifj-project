@@ -8,7 +8,6 @@
  */
 
 #include "support_functions.h"
-#include "lexer.h"
 
 // ----------------- deklarace pomocných funkcí -----------------
 /**
