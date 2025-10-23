@@ -1,3 +1,10 @@
+
+/*
+ *
+ * Autoři: xpasekj00
+ * Soubor: lexer.h
+ * Popis:
+ */
 #pragma once
 
 #include <stdio.h>

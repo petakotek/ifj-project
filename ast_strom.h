@@ -92,14 +92,6 @@ typedef struct AstNode {
         struct {
             struct AstNode* return_expr;
         } Return;
-
-        struct {
-            struct AstNode* return_expr;
-        } Break;
-
-        struct {
-            struct AstNode* return_expr;
-        } COntinue;
         struct {
             char* func_name;
             struct AstNode** arguments;

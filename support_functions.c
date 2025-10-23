@@ -98,7 +98,7 @@ void print_and_free_tokens() {
     }
 
     if (token.type == TOKEN_ERROR) {
-        fprintf(stderr, "Lexer error on line %d.\n", token.line);
+     	fprintf(stderr, "Lexer error on line %d.\n", token.line);
     } else {
         printf("%s\n", token_type_to_string(token.type));
     }
