@@ -15,6 +15,12 @@
 #include <stdbool.h>
 #include "lexer.h"   // musí obsahovať: TokenType, TokenValue (union), Token
 
+typedef enum {
+    NK_Program, NK_Prolog,
+    NK_String, NK_Int, NK_Float,
+    // ... ďalšie (NK_MainClass, NK_Block, NK_Expr, ...)
+} NodeKind;
+
 /**
  * @brief Štruktúra terminalov/neterminálov vkladaná na zásobník
  */
@@ -24,6 +30,11 @@ typedef struct Symbol
     int symbol; 
     TokenValue value;
     bool value_needed;
+    bool is_reduce;
+    size_t reduce_arity;     // koľko detí zozbierať
+    NodeKind reduce_kind; 
 } Symbol;
+
+
 
 #endif // SYMBOL_H

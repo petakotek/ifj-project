@@ -50,12 +50,22 @@ Symbol make_nonterm(Nonterm N)
     return x;
 }
 
+
+Symbol make_reduce(NodeKind kind, size_t arity)
+{
+    Symbol x = {0};
+    x.is_reduce = true;
+    x.reduce_kind = kind;
+    x.reduce_arity = arity;
+    return x;
+}
 void push_check(bool boolean);
 
 void parser()
-{
+{   
+    DynamicStackPtr AstStack = stackConstruct(DEFAULT_INIT_SIZE);
     DynamicStackPtr Stack = stackConstruct(DEFAULT_INIT_SIZE);
-    if (Stack == NULL) 
+    if (Stack == NULL | AstStack == NULL) 
     {
         printError(INTERNAL_ERROR,"Chyba alokácie");
         memorySafeExit(INTERNAL_ERROR);
@@ -74,6 +84,28 @@ void parser()
         Stack_top = stackRead(Stack);
         if(Stack_top.is_terminal)
         {
+
+            if (Stack_top.is_reduce) 
+            {
+                stackPop(Stack);
+                size_t n = Stack_top.reduce_arity;
+
+                ASTNode **kids = n ? malloc(n * sizeof(ASTNode*)) : NULL;
+                if (n && !kids) { printError(INTERNAL_ERROR, "AST alloc"); memorySafeExit(INTERNAL_ERROR); }
+
+                // na vrchu sú pravé deti; preto vkladáme odzadu
+                for (size_t i = 0; i < n; ++i) {
+                    ASTNode *kid = (ASTNode*)stackRead(AstStack);
+                    stackPop(AstStack);
+                    kids[n - 1 - i] = kid;
+                }
+
+                ASTNode *parent = ast_new(Stack_top.reduce_kind, n, kids);
+                free(kids);
+                stackPush(AstStack, parent);
+                continue;
+            }
+
             printf("%d\n",token.type);
             printf("%d\n",Stack_top.symbol);
             if (Stack_top.symbol == token.type)
@@ -97,6 +129,20 @@ void parser()
                     }
                 }
 
+                switch (token.type) {
+                    case TOKEN_STRING:
+                        stackPush(AstStack, new_leaf(NK_String, token));
+                        break;
+                    case TOKEN_INTEGER:
+                        stackPush(AstStack, new_leaf(NK_Int, token));
+                        break;
+                    case TOKEN_FLOAT:
+                        stackPush(AstStack, new_leaf(NK_Float, token));
+                        break;
+                    default:
+                        // kľúčové slová, NEW_LINE, interpunkcia: zvyčajne do AST nejdú => nič nepushuj
+                        break;
+                }
                 if (!ok) {
                     printError(SYNTAX_ERROR, "Nesúlad hodnoty terminálu");
                     memorySafeExit(SYNTAX_ERROR);
@@ -239,6 +285,8 @@ void Program_func(DynamicStackPtr Stack, Token token)
 
 void Prolog_func(DynamicStackPtr Stack, Token token)
 { 
+    push_check(stackPush(Stack, make_reduce(NK_Prolog, 1)));
+    
     stackPop(Stack);
     stackPush(Stack,make_term(TOKEN_KEYWORD_IFJ));
     stackPush(Stack,make_term(TOKEN_KEYWORD_FOR));

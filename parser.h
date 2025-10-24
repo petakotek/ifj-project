@@ -63,6 +63,17 @@ typedef enum
     N_Expr
 } Nonterm;
 
+
+
+
+
+typedef struct ASTNode {
+} ASTNode;
+
+ASTNode new_leaf(NodeKind k, Token t);
+ASTNode ast_new(NodeKind k, size_t nkids, ASTNode **kids);
+
+
 /**
  * @brief pomocná funkcia na vytvorenie struktury terminalu
  * @param T Terminal z enum Term
@@ -74,6 +85,8 @@ Symbol make_term(TokenType T);
  * @param N Neterminal z enum Nonterm 
  */
 Symbol make_nonterm(Nonterm N);
+
+Symbol make_reduce(NodeKind kind, size_t arity);
 
 Symbol make_term_value(Token T);
 void parser();
