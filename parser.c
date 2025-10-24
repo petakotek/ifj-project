@@ -23,6 +23,7 @@ Symbol make_term_value(Token T)
     Symbol x; 
     x.is_terminal = true;
     x.symbol = T.type;
+    x.value_needed = true;
     switch (T.type) 
     {
         case TOKEN_INTEGER:     
@@ -32,10 +33,9 @@ Symbol make_term_value(Token T)
             x.value.number = T.value.number; 
             break;
         case TOKEN_STRING:
-            x.value.string = T.value.string; // predpoklad: vlastník je lexer; ak treba, použi strdup()
+            x.value.string = T.value.string;
             break;
         default:
-            // ak typ nemá „hodnotu“, tak has_value nemá význam
             x.value_needed = false;
             break;
     }
@@ -80,9 +80,9 @@ void parser()
             {
                 bool ok = true;
                 if (Stack_top.value_needed)
+                {
+                    switch (token.type) 
                     {
-                        switch (token.type) 
-                        {
                         case TOKEN_STRING:
                             ok = (token.value.string && Stack_top.value.string && strcmp(Stack_top.value.string, token.value.string) == 0);
                             break;
@@ -93,10 +93,9 @@ void parser()
                             ok = (Stack_top.value.number == token.value.number);
                             break;
                         default:
-                            // pre typy bez hodnoty porovnávať netreba
                             ok = true;
-                        }
                     }
+                }
 
                 if (!ok) {
                     printError(SYNTAX_ERROR, "Nesúlad hodnoty terminálu");
@@ -106,14 +105,12 @@ void parser()
                 stackPop(Stack);
                 token = lexer_token_next();
             }
-
             else
             {
                 printError(SYNTAX_ERROR,"Nesprávne poradie tokenov\n");
                 memorySafeExit(SYNTAX_ERROR);
             }
         }
-
         else
         {
             switch (Stack_top.symbol)
@@ -124,41 +121,47 @@ void parser()
                 case N_Prolog:
                     Prolog_func(Stack, token);
                     break;
-                case N_MainClass:
-                    MainClass_func(Stack, token);
+                case N_Main_class:
+                    Main_class_func(Stack, token);
                     break;
-                case N_MainClassBlock:
-                    MainClassBlock_func(Stack, token);
+                case N_Main_class_block:
+                    Main_class_block_func(Stack, token);
                     break;
-                case N_MainClassItem:
-                    MainClassItem_func(Stack, token);
+                case N_Main_class_item:
+                    Main_class_item_func(Stack, token);
                     break;
                 case N_Block:
                     Block_func(Stack, token);
                     break;
-                case N_Smth:
-                    Smth_func(Stack, token);
+                case N_Block_content:
+                    Block_content_func(Stack, token);
                     break;
-                case N_SmthTail:
-                    SmthTail_func(Stack, token);
+                case N_smth:
+                    smth_func(Stack, token);
                     break;
-                case N_SmthList:
-                    SmthList_func(Stack, token);
+                case N_smth_tail:
+                    smth_tail_func(Stack, token);
                     break;
-                case N_FuncDec:
-                    FuncDec_func(Stack, token);
+                case N_smth_list:
+                    smth_list_func(Stack, token);
+                    break;
+                case N_Oneline_expr_opt:
+                    Oneline_expr_opt_func(Stack, token);
+                    break;
+                case N_Func_dec:
+                    Func_dec_func(Stack, token);
+                    break;
+                case N_Func_dec_tail:
+                    Func_dec_tail_func(Stack, token);
                     break;
                 case N_Param:
                     Param_func(Stack, token);
                     break;
-                case N_ParamList:
-                    ParamList_func(Stack, token);
+                case N_Param_list:
+                    Param_list_func(Stack, token);
                     break;
-                case N_Getter:
-                    Getter_func(Stack, token);
-                    break;
-                case N_Setter:
-                    Setter_func(Stack, token);
+                case N_Func_call:
+                    Func_call_func(Stack, token);
                     break;
                 case N_Var:
                     Var_func(Stack, token);
@@ -166,17 +169,20 @@ void parser()
                 case N_Var_EXT:
                     Var_EXT_func(Stack, token);
                     break;
-                case N_Var_EXTSTAT:
-                    Var_EXTSTAT_func(Stack, token);
+                case N_Var_arg:
+                    Var_arg_func(Stack, token);
                     break;
-                case N_VarArg:
-                    VarArg_func(Stack, token);
+                case N_Var_arg_list:
+                    var_arg_list_func(Stack, token);
                     break;
-                case N_VarArgList:
-                    VarArgList_func(Stack, token);
+                case N_Call_assign:
+                    Call_assign_func(Stack, token);
                     break;
-                case N_Assign:
-                    Assign_func(Stack, token);
+                case N_Call_assign_list:
+                    Call_assign_list_func(Stack, token);
+                    break;
+                case N_Global_assign:
+                    Global_assign_func(Stack, token);
                     break;
                 case N_If:
                     If_func(Stack, token);
@@ -199,8 +205,8 @@ void parser()
                 case N_Return:
                     Return_func(Stack, token);
                     break;
-                case N_ReturnExpr:
-                    ReturnExpr_func(Stack, token);
+                case N_Return_expr:
+                    Return_expr_func(Stack, token);
                     break;
                 case N_Expr:
                     Expr_func(Stack, token);
@@ -226,10 +232,11 @@ void push_check(bool boolean)
 void Program_func(DynamicStackPtr Stack, Token token)        
 { 
     stackPop(Stack);
-    stackPush(Stack,make_nonterm(N_MainClass));
+    stackPush(Stack,make_nonterm(N_Main_class));
     stackPush(Stack,make_term(TOKEN_NEW_LINE));
     stackPush(Stack,make_nonterm(N_Prolog));
 }
+
 void Prolog_func(DynamicStackPtr Stack, Token token)
 { 
     stackPop(Stack);
@@ -240,33 +247,42 @@ void Prolog_func(DynamicStackPtr Stack, Token token)
     ifj25.value.string = "ifj25";
     stackPush(Stack,make_term_value(ifj25));
     stackPush(Stack,make_term(TOKEN_KEYWORD_IMPORT));
-
 }
-void MainClass_func(DynamicStackPtr Stack, Token token)      { NOT_IMPL("MainClass_func"); }
-void MainClassBlock_func(DynamicStackPtr Stack, Token token) { NOT_IMPL("MainClassBlock_func"); }
-void MainClassItem_func(DynamicStackPtr Stack, Token token)  { NOT_IMPL("MainClassItem_func"); }
-void Block_func(DynamicStackPtr Stack, Token token)          { NOT_IMPL("Block_func"); }
-void Smth_func(DynamicStackPtr Stack, Token token)           { NOT_IMPL("Smth_func"); }
-void SmthTail_func(DynamicStackPtr Stack, Token token)       { NOT_IMPL("SmthTail_func"); }
-void SmthList_func(DynamicStackPtr Stack, Token token)       { NOT_IMPL("SmthList_func"); }
-void FuncDec_func(DynamicStackPtr Stack, Token token)        { NOT_IMPL("FuncDec_func"); }
-void Param_func(DynamicStackPtr Stack, Token token)          { NOT_IMPL("Param_func"); }
-void ParamList_func(DynamicStackPtr Stack, Token token)      { NOT_IMPL("ParamList_func"); }
-void Getter_func(DynamicStackPtr Stack, Token token)         { NOT_IMPL("Getter_func"); }
-void Setter_func(DynamicStackPtr Stack, Token token)         { NOT_IMPL("Setter_func"); }
-void Var_func(DynamicStackPtr Stack, Token token)            { NOT_IMPL("Var_func"); }
-void Var_EXT_func(DynamicStackPtr Stack, Token token)        { NOT_IMPL("Var_EXT_func"); }
-void Var_EXTSTAT_func(DynamicStackPtr Stack, Token token)    { NOT_IMPL("Var_EXTSTAT_func"); }
-void VarArg_func(DynamicStackPtr Stack, Token token)         { NOT_IMPL("VarArg_func"); }
-void VarArgList_func(DynamicStackPtr Stack, Token token)     { NOT_IMPL("VarArgList_func"); }
-void Assign_func(DynamicStackPtr Stack, Token token)         { NOT_IMPL("Assign_func"); }
-void If_func(DynamicStackPtr Stack, Token token)             { NOT_IMPL("If_func"); }
-void Else_func(DynamicStackPtr Stack, Token token)           { NOT_IMPL("Else_func"); }
-void While_func(DynamicStackPtr Stack, Token token)          { NOT_IMPL("While_func"); }
-void For_func(DynamicStackPtr Stack, Token token)            { NOT_IMPL("For_func"); }
-void Break_func(DynamicStackPtr Stack, Token token)          { NOT_IMPL("Break_func"); }
-void Continue_func(DynamicStackPtr Stack, Token token)       { NOT_IMPL("Continue_func"); }
-void Return_func(DynamicStackPtr Stack, Token token)         { NOT_IMPL("Return_func"); }
-void ReturnExpr_func(DynamicStackPtr Stack, Token token)     { NOT_IMPL("ReturnExpr_func"); }
-void Expr_func(DynamicStackPtr Stack, Token token)           { NOT_IMPL("Expr_func"); }
 
+/* --- prediktívne funkcie podľa novej LL gramatiky (len premenované prototypy) --- */
+void Main_class_func(DynamicStackPtr Stack, Token token)          { NOT_IMPL("Main_class_func"); }
+void Main_class_block_func(DynamicStackPtr Stack, Token token)    { NOT_IMPL("Main_class_block_func"); }
+void Main_class_item_func(DynamicStackPtr Stack, Token token)     { NOT_IMPL("Main_class_item_func"); }
+
+void Block_func(DynamicStackPtr Stack, Token token)               { NOT_IMPL("Block_func"); }
+void Block_content_func(DynamicStackPtr Stack, Token token)       { NOT_IMPL("Block_content_func"); }
+void smth_func(DynamicStackPtr Stack, Token token)                { NOT_IMPL("smth_func"); }
+void smth_tail_func(DynamicStackPtr Stack, Token token)           { NOT_IMPL("smth_tail_func"); }
+void smth_list_func(DynamicStackPtr Stack, Token token)           { NOT_IMPL("smth_list_func"); }
+void Oneline_expr_opt_func(DynamicStackPtr Stack, Token token)    { NOT_IMPL("Oneline_expr_opt_func"); }
+
+void Func_dec_func(DynamicStackPtr Stack, Token token)            { NOT_IMPL("Func_dec_func"); }
+void Func_dec_tail_func(DynamicStackPtr Stack, Token token)       { NOT_IMPL("Func_dec_tail_func"); }
+void Param_func(DynamicStackPtr Stack, Token token)               { NOT_IMPL("Param_func"); }
+void Param_list_func(DynamicStackPtr Stack, Token token)          { NOT_IMPL("Param_list_func"); }
+void Func_call_func(DynamicStackPtr Stack, Token token)           { NOT_IMPL("Func_call_func"); }
+
+void Var_func(DynamicStackPtr Stack, Token token)                 { NOT_IMPL("Var_func"); }
+void Var_EXT_func(DynamicStackPtr Stack, Token token)             { NOT_IMPL("Var_EXT_func"); }
+void Var_arg_func(DynamicStackPtr Stack, Token token)             { NOT_IMPL("Var_arg_func"); }
+void var_arg_list_func(DynamicStackPtr Stack, Token token)        { NOT_IMPL("var_arg_list_func"); }
+
+void Call_assign_func(DynamicStackPtr Stack, Token token)         { NOT_IMPL("Call_assign_func"); }
+void Call_assign_list_func(DynamicStackPtr Stack, Token token)    { NOT_IMPL("Call_assign_list_func"); }
+void Global_assign_func(DynamicStackPtr Stack, Token token)       { NOT_IMPL("Global_assign_func"); }
+
+void If_func(DynamicStackPtr Stack, Token token)                  { NOT_IMPL("If_func"); }
+void Else_func(DynamicStackPtr Stack, Token token)                { NOT_IMPL("Else_func"); }
+void While_func(DynamicStackPtr Stack, Token token)               { NOT_IMPL("While_func"); }
+void For_func(DynamicStackPtr Stack, Token token)                 { NOT_IMPL("For_func"); }
+void Break_func(DynamicStackPtr Stack, Token token)               { NOT_IMPL("Break_func"); }
+void Continue_func(DynamicStackPtr Stack, Token token)            { NOT_IMPL("Continue_func"); }
+
+void Return_func(DynamicStackPtr Stack, Token token)              { NOT_IMPL("Return_func"); }
+void Return_expr_func(DynamicStackPtr Stack, Token token)         { NOT_IMPL("Return_expr_func"); }
+void Expr_func(DynamicStackPtr Stack, Token token)                { NOT_IMPL("Expr_func"); }
