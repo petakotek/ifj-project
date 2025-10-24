@@ -1,4 +1,4 @@
-/** 
+/**
 * Fakulta informačných technologií VUT Brno
 *
 * Hlavičkový súbor pre implementáciu lexikálnej analýzy
@@ -26,7 +26,7 @@
 /**
  * @brief Definicia neterminálov
  */
-typedef enum 
+typedef enum
 {
     N_Program,
     N_Prolog, 
@@ -76,8 +76,7 @@ Symbol make_term(TokenType T);
 Symbol make_nonterm(Nonterm N);
 
 Symbol make_term_value(Token T);
-
-/* Neterminálové prediktívne funkcie podľa aktuálnej LL gramatiky */
+void parser();
 void Program_func(DynamicStackPtr Stack, Token token);
 void Prolog_func(DynamicStackPtr Stack, Token token);
 void MainClass_func(DynamicStackPtr Stack, Token token);
