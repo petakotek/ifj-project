@@ -8,7 +8,6 @@
 * upravované: 22.10.2025
 */
 #include "parser.h"
-#include "ast_strom.h"
 
 Symbol make_term(TokenType T)
 {
@@ -60,13 +59,32 @@ Symbol make_reduce(AstNodeType kind, size_t arity)
     x.reduce_arity = arity;
     return x;
 }
+
+Symbol make_astnode(struct AstNode *n) {
+    Symbol x = {0};
+    x.is_astnode = true;
+    x.ast_ptr = n;
+    return x;
+}
+
+void aststack_push(DynamicStackPtr S, struct AstNode *n) 
+{
+    push_check(stackPush(S, make_astnode(n)));
+}
+
+struct AstNode* aststack_read(DynamicStackPtr S) 
+{
+    Symbol top = stackRead(S);
+    return top.ast_ptr;
+}
+
 void push_check(bool boolean);
 
-void parser()
+AstNode *parser()
 {
     DynamicStackPtr AstStack = stackConstruct(DEFAULT_INIT_SIZE);
     DynamicStackPtr Stack = stackConstruct(DEFAULT_INIT_SIZE);
-    if (Stack == NULL | AstStack == NULL)
+    if (Stack == NULL || AstStack == NULL)
     {
         printError(INTERNAL_ERROR,"Chyba alokácie");
         memorySafeExit(INTERNAL_ERROR);
@@ -83,29 +101,44 @@ void parser()
     while (!stackIsEmpty(Stack))
     {
         Stack_top = stackRead(Stack);
+        if (Stack_top.is_reduce)
+        {
+            stackPop(Stack);
+            size_t n = Stack_top.reduce_arity;
+
+            AstNode **kids = NULL;
+
+            if (n > 0) 
+            {
+                kids = malloc(sizeof(AstNode*) * n);
+                if (kids == NULL) {
+                    printError(INTERNAL_ERROR, "Chyba alokácie pamäte pre deti AST uzla");
+                    memorySafeExit(INTERNAL_ERROR);
+                }
+            }
+
+            if (n && !kids) 
+            { 
+                printError(INTERNAL_ERROR, "AST alloc"); 
+                memorySafeExit(INTERNAL_ERROR); 
+            }
+
+            // na vrchu sú pravé deti; preto vkladáme odzadu
+            for (size_t i = 0; i < n; ++i) 
+            {
+                AstNode *kid = aststack_read(AstStack);
+                stackPop(AstStack);
+                kids[n - 1 - i] = kid;
+            }
+
+            AstNode *parent = ast_new(Stack_top.reduce_kind, n, kids);
+            free(kids);
+            aststack_push(AstStack,parent);
+            continue;
+        }
+
         if(Stack_top.is_terminal)
         {
-
-            if (Stack_top.is_reduce)
-            {
-                stackPop(Stack);
-                size_t n = Stack_top.reduce_arity;
-
-                AstNode **kids = n ? malloc(n * sizeof(AstNode*)) : NULL;
-                if (n && !kids) { printError(INTERNAL_ERROR, "AST alloc"); memorySafeExit(INTERNAL_ERROR); }
-
-                // na vrchu sú pravé deti; preto vkladáme odzadu
-                for (size_t i = 0; i < n; ++i) {
-                    AstNode *kid = (AstNode*)stackRead(AstStack);
-                    stackPop(AstStack);
-                    kids[n - 1 - i] = kid;
-                }
-
-                AstNode *parent = ast_new(Stack_top.reduce_kind, n, kids);
-                free(kids);
-                stackPush(AstStack, parent);
-                continue;
-            }
 
             printf("%d\n",token.type);
             printf("%d\n",Stack_top.symbol);
@@ -130,20 +163,6 @@ void parser()
                     }
                 }
 
-                switch (token.type) {
-                    case TOKEN_STRING:
-                        stackPush(AstStack, new_leaf(NK_String, token));
-                        break;
-                    case TOKEN_INTEGER:
-                        stackPush(AstStack, new_leaf(NK_Int, token));
-                        break;
-                    case TOKEN_FLOAT:
-                        stackPush(AstStack, new_leaf(NK_Float, token));
-                        break;
-                    default:
-                        // kľúčové slová, NEW_LINE, interpunkcia: zvyčajne do AST nejdú => nič nepushuj
-                        break;
-                }
                 if (!ok) {
                     printError(SYNTAX_ERROR, "Nesúlad hodnoty terminálu");
                     memorySafeExit(SYNTAX_ERROR);
@@ -264,7 +283,12 @@ void parser()
                     break;
             }
         }
+
     }
+
+    AstNode *ast_root = aststack_read(AstStack);
+    return ast_root;
+
 }
 
 void push_check(bool boolean)
@@ -279,6 +303,7 @@ void push_check(bool boolean)
 void Program_func(DynamicStackPtr Stack, Token token)
 {
     stackPop(Stack);
+    push_check(stackPush(Stack, make_reduce(AST_PROGRAM, 2)));
     stackPush(Stack,make_nonterm(N_Main_class));
     stackPush(Stack,make_term(TOKEN_NEW_LINE));
     stackPush(Stack,make_nonterm(N_Prolog));
@@ -286,9 +311,9 @@ void Program_func(DynamicStackPtr Stack, Token token)
 
 void Prolog_func(DynamicStackPtr Stack, Token token)
 {
-    push_check(stackPush(Stack, make_reduce(NK_Prolog, 1)));
-
+    
     stackPop(Stack);
+    push_check(stackPush(Stack, make_reduce(AST_PROLOG,0)));
     stackPush(Stack,make_term(TOKEN_KEYWORD_IFJ));
     stackPush(Stack,make_term(TOKEN_KEYWORD_FOR));
     Token ifj25;
