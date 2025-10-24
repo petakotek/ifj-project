@@ -18,7 +18,7 @@ AstNode *ast_new(AstNodeType kind, size_t n, AstNode **kids) {
         new_node->data.Program.prolog = kids[0]; // Prolog
         new_node->data.Program.main_class = kids[2]; // MainClass
         // Uvolnění syntaktického uzlu:
-        ast_free_single(kids[1]); // kids[1] je uzel pro TOKEN_NEW_LINE
+        //ast_free_single(kids[1]); // kids[1] je uzel pro TOKEN_NEW_LINE
     }
     // ... další specifické uzly (NK_If, NK_Func_dec, atd.) ...
 
