@@ -24,8 +24,7 @@
  * @brief Datový typ pro jednotlivé položky zásobníku
  * 
  */
-typedef char* StackElementPtr; // TODO asi potřeba udělat jinak, záleží na použití
-//OD KUBA VSADE KDE BOL StackElementPtr JE SYMBOL NIC INE SOM NEMENIL
+typedef Symbol StackElementPtr;
 
 /**
  * @brief Zásobník s automatickým zvětšením/zmenšením
@@ -36,7 +35,7 @@ typedef struct{
      * @brief Uložení dat
      * 
      */
-    Symbol* array;
+    StackElementPtr* array;
     /**
      * @brief Nejnižší prázdné pole zásobníku (hned nad vrcholem zásobníku)
      * 
@@ -89,7 +88,7 @@ DynamicStackPtr stackConstruct(unsigned initStackSize);
  * @return true Operace proběhla v pořádku
  * @return false Došlo k chybě
  */
-bool stackPush(DynamicStackPtr stack,Symbol data);
+bool stackPush(DynamicStackPtr stack,StackElementPtr data);
 
 /**
  * @brief Vrátí data z vrcholu zásobníku (nemaže zásobník)
@@ -97,7 +96,7 @@ bool stackPush(DynamicStackPtr stack,Symbol data);
  * @param stack Ukazatel na zásobník
  * @return StackElementPtr Data z vrcholu
  */
-Symbol stackRead(DynamicStackPtr stack);
+StackElementPtr stackRead(DynamicStackPtr stack);
 
 /**
  * @brief Odstraní vrchní prvek zásobníku, zajistí případné zmenšení zásobníku

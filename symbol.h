@@ -31,6 +31,8 @@ typedef struct Symbol
     bool is_reduce;
     size_t reduce_arity;     // koľko detí zozbierať
     AstNodeType reduce_kind;
+    struct AstNode *ast_ptr;
+    bool is_astnode; 
 } Symbol;
 
 

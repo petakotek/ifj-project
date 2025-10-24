@@ -85,7 +85,11 @@ Symbol make_nonterm(Nonterm N);
 Symbol make_reduce(AstNodeType kind, size_t arity);
 
 Symbol make_term_value(Token T);
-void parser();
+
+void aststack_push(DynamicStackPtr S, struct AstNode *n);
+struct AstNode* aststack_read(DynamicStackPtr S);
+AstNode *parser();
+
 void Program_func(DynamicStackPtr Stack, Token token);
 void Prolog_func(DynamicStackPtr Stack, Token token);
 void MainClass_func(DynamicStackPtr Stack, Token token);

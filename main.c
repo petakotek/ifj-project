@@ -23,7 +23,8 @@ int main(){
 	source_file[len] = '\0';
 	lexer_init(source_file);
 	print_and_free_tokens();
-	parser();
+	AstNode *AST;
+	AST = parser();
 	lexer_free();
 	free(source_file);
 }

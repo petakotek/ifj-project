@@ -53,7 +53,7 @@ DynamicStackPtr stackConstruct(unsigned initStackSize) {
     return newStack;
 }
 
-bool stackPush(DynamicStackPtr stack, Symbol data) {
+bool stackPush(DynamicStackPtr stack, StackElementPtr data) {
     if (stack == NULL) {
         printError(INTERNAL_ERROR, "(stackPush) Nebyl predan zasobnik!\n");
         return false;
@@ -77,7 +77,7 @@ bool stackPush(DynamicStackPtr stack, Symbol data) {
     return true;
 }
 
-Symbol stackRead(DynamicStackPtr stack) {
+StackElementPtr stackRead(DynamicStackPtr stack) {
 
     return stack->array[stack->nextTopElement - 1];
 }
@@ -133,7 +133,7 @@ bool stackResize(DynamicStackPtr stack, unsigned wantedSize) {
         printWarning("Zmenseni zasobniku zpusobilo ztratu dat!\n");
     }
 
-    Symbol* newStackarray = realloc(stack->array, sizeof(Symbol) * wantedSize);
+    StackElementPtr* newStackarray = realloc(stack->array, sizeof(Symbol) * wantedSize);
     if (newStackarray == NULL) {
         printWarning("Realokace zasobniku selhala! Pozadovana velikost: %u.\n", wantedSize*sizeof(Symbol));
         return false;
