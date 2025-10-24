@@ -1,3 +1,5 @@
+#pragma once
+#include "lexer.h"
 /*
  *
  * Autoři: xpasekj00
@@ -110,3 +112,7 @@ typedef struct AstNode {
     }data;
 
 } AstNode;
+
+
+AstNode new_leaf(AstNodeType k, Token t);
+AstNode *ast_new(AstNodeType k, size_t nkids, AstNode **kids);

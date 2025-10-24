@@ -19,6 +19,7 @@
 #include "support_functions.h"
 #include "dynamic_stack.h"
 #include "symbol.h"
+#include "ast_strom.h"
 
 #define NOT_IMPL(name) \
     do { fprintf(stderr, "[parser] %s not implemented\n", name); } while (0)
@@ -29,35 +30,35 @@
 typedef enum
 {
     N_Program,
-    N_Prolog, 
-    N_Main_class, 
+    N_Prolog,
+    N_Main_class,
     N_Main_class_block,
     N_Main_class_item,
-    N_Block, 
+    N_Block,
     N_Block_content,
-    N_smth, 
-    N_smth_tail, 
+    N_smth,
+    N_smth_tail,
     N_smth_list,
     N_Oneline_expr_opt,
-    N_Func_dec, 
+    N_Func_dec,
     N_Func_dec_tail,
-    N_Param, 
+    N_Param,
     N_Param_list,
     N_Func_call,
-    N_Var, 
-    N_Var_EXT, 
-    N_Var_arg, 
+    N_Var,
+    N_Var_EXT,
+    N_Var_arg,
     N_Var_arg_list,
-    N_Call_assign, 
+    N_Call_assign,
     N_Call_assign_list,
     N_Global_assign,
-    N_If, 
-    N_Else, 
-    N_While, 
-    N_For, 
-    N_Break, 
+    N_If,
+    N_Else,
+    N_While,
+    N_For,
+    N_Break,
     N_Continue,
-    N_Return, 
+    N_Return,
     N_Return_expr,
 
     N_Expr
@@ -67,11 +68,6 @@ typedef enum
 
 
 
-typedef struct ASTNode {
-} ASTNode;
-
-ASTNode new_leaf(NodeKind k, Token t);
-ASTNode ast_new(NodeKind k, size_t nkids, ASTNode **kids);
 
 
 /**
@@ -82,11 +78,11 @@ Symbol make_term(TokenType T);
 
 /**
  * @brief pomocná funkcia na vytvorenie struktury neterminalu
- * @param N Neterminal z enum Nonterm 
+ * @param N Neterminal z enum Nonterm
  */
 Symbol make_nonterm(Nonterm N);
 
-Symbol make_reduce(NodeKind kind, size_t arity);
+Symbol make_reduce(AstNodeType kind, size_t arity);
 
 Symbol make_term_value(Token T);
 void parser();

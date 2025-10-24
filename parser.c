@@ -1,4 +1,4 @@
-/** 
+/**
 * Fakulta informačných technologií VUT Brno
 *
 * Súbor pre implementáciu lexikálnej analýzy
@@ -8,10 +8,11 @@
 * upravované: 22.10.2025
 */
 #include "parser.h"
+#include "ast_strom.h"
 
 Symbol make_term(TokenType T)
 {
-    Symbol x; 
+    Symbol x;
     x.is_terminal = true;
     x.symbol = T;
     x.value_needed = false;
@@ -20,17 +21,17 @@ Symbol make_term(TokenType T)
 
 Symbol make_term_value(Token T)
 {
-    Symbol x; 
+    Symbol x;
     x.is_terminal = true;
     x.symbol = T.type;
     x.value_needed = true;
-    switch (T.type) 
+    switch (T.type)
     {
-        case TOKEN_INTEGER:     
-            x.value.identifier = T.value.identifier; 
+        case TOKEN_INTEGER:
+            x.value.identifier = T.value.identifier;
             break;
-        case TOKEN_FLOAT:   
-            x.value.number = T.value.number; 
+        case TOKEN_FLOAT:
+            x.value.number = T.value.number;
             break;
         case TOKEN_STRING:
             x.value.string = T.value.string;
@@ -44,14 +45,14 @@ Symbol make_term_value(Token T)
 
 Symbol make_nonterm(Nonterm N)
 {
-    Symbol x; 
+    Symbol x;
     x.is_terminal = false;
     x.symbol = N;
     return x;
 }
 
 
-Symbol make_reduce(NodeKind kind, size_t arity)
+Symbol make_reduce(AstNodeType kind, size_t arity)
 {
     Symbol x = {0};
     x.is_reduce = true;
@@ -62,10 +63,10 @@ Symbol make_reduce(NodeKind kind, size_t arity)
 void push_check(bool boolean);
 
 void parser()
-{   
+{
     DynamicStackPtr AstStack = stackConstruct(DEFAULT_INIT_SIZE);
     DynamicStackPtr Stack = stackConstruct(DEFAULT_INIT_SIZE);
-    if (Stack == NULL | AstStack == NULL) 
+    if (Stack == NULL | AstStack == NULL)
     {
         printError(INTERNAL_ERROR,"Chyba alokácie");
         memorySafeExit(INTERNAL_ERROR);
@@ -85,22 +86,22 @@ void parser()
         if(Stack_top.is_terminal)
         {
 
-            if (Stack_top.is_reduce) 
+            if (Stack_top.is_reduce)
             {
                 stackPop(Stack);
                 size_t n = Stack_top.reduce_arity;
 
-                ASTNode **kids = n ? malloc(n * sizeof(ASTNode*)) : NULL;
+                AstNode **kids = n ? malloc(n * sizeof(AstNode*)) : NULL;
                 if (n && !kids) { printError(INTERNAL_ERROR, "AST alloc"); memorySafeExit(INTERNAL_ERROR); }
 
                 // na vrchu sú pravé deti; preto vkladáme odzadu
                 for (size_t i = 0; i < n; ++i) {
-                    ASTNode *kid = (ASTNode*)stackRead(AstStack);
+                    AstNode *kid = (AstNode*)stackRead(AstStack);
                     stackPop(AstStack);
                     kids[n - 1 - i] = kid;
                 }
 
-                ASTNode *parent = ast_new(Stack_top.reduce_kind, n, kids);
+                AstNode *parent = ast_new(Stack_top.reduce_kind, n, kids);
                 free(kids);
                 stackPush(AstStack, parent);
                 continue;
@@ -113,7 +114,7 @@ void parser()
                 bool ok = true;
                 if (Stack_top.value_needed)
                 {
-                    switch (token.type) 
+                    switch (token.type)
                     {
                         case TOKEN_STRING:
                             ok = (token.value.string && Stack_top.value.string && strcmp(Stack_top.value.string, token.value.string) == 0);
@@ -275,8 +276,8 @@ void push_check(bool boolean)
     }
 }
 
-void Program_func(DynamicStackPtr Stack, Token token)        
-{ 
+void Program_func(DynamicStackPtr Stack, Token token)
+{
     stackPop(Stack);
     stackPush(Stack,make_nonterm(N_Main_class));
     stackPush(Stack,make_term(TOKEN_NEW_LINE));
@@ -284,9 +285,9 @@ void Program_func(DynamicStackPtr Stack, Token token)
 }
 
 void Prolog_func(DynamicStackPtr Stack, Token token)
-{ 
+{
     push_check(stackPush(Stack, make_reduce(NK_Prolog, 1)));
-    
+
     stackPop(Stack);
     stackPush(Stack,make_term(TOKEN_KEYWORD_IFJ));
     stackPush(Stack,make_term(TOKEN_KEYWORD_FOR));
