@@ -1,0 +1,39 @@
+takhle mi to dava smysl : Jistě. Zde je stručné shrnutí postupu pro implementaci **Abstraktního Syntaktického Stromu (AST)** pomocí druhého zásobníku do vašeho existujícího **top-down parseru řízeného zásobníkem**:
+
+## 1. Příprava datových struktur :tools:
+
+1.  **Definujte strukturu `ASTNode`**: Vytvořte strukturu, která reprezentuje uzel v AST (typ uzlu, hodnota/data, pole potomků).
+2.  **Rozšiřte `Nonterm`**: Do výčtu neterminálů (nebo do samostatného výčtu symbolů) přidejte **speciální značku redukce** (např. `N_END_PROGRAM_REDUCE`) pro každé gramatické pravidlo, ze kterého chcete vytvořit AST uzel.
+
+***
+
+## 2. Úprava Hlaviček a Inicializace :gear:
+
+1.  **Upravte hlavičky funkcí**: Všechny funkce pro zpracování neterminálů (např. `Program_func`, `Prolog_func` atd.) musí přijímat třetí argument: `DynamicStackPtr ASTStack`.
+2.  **Inicializace v `parser()`**: V hlavní funkci `parser()` **inicializujte druhý zásobník** (`ASTStack`) pro ukládání ukazatelů na hotové uzly AST.
+
+***
+
+## 3. Modifikace logiky parseru 
+
+### A. Tvorba Listů (Terminály)
+
+1.  **V bloku `if (Stack_top.is_terminal)`**: Jakmile je terminál úspěšně **shodován** (`match`) s tokenem (`Stack_top.symbol == token.type`), vytvořte **listový uzel AST** (`ASTNode`) obsahující hodnotu tokenu.
+2.  **Uložte na `ASTStack`**: Vytvořený listový uzel vložte na `ASTStack`.
+
+### B. Expanze a Redukční Značka (Neterminály)
+
+1.  **V bloku `else` (pro neterminály)**: V každé funkci neterminálu (např. `Program_func`):
+    * **Odeberte** původní neterminál ($A$).
+    * **Vložte značku redukce**: Vložte speciální značku (`N_END_PROGRAM_REDUCE`) na symbolový zásobník. Toto je váš signál, že pravidlo pro $A$ je dokončeno.
+    * **Vložte symboly pravé strany**: Vložte symboly pravé strany pravidla ($X_n, \dots, X_1$) nad značku redukce (v opačném pořadí).
+
+### C. Redukce (Tvorba interních uzlů)
+
+1.  **Nová obslužná funkce**: Vytvořte novou funkci (např. `EndProgramReduce_func`) pro každou značku redukce.
+2.  **Volání redukce**: Tuto novou funkci přidejte do `switch` bloku v `parser()` pod příslušným markerem.
+3.  **Logika redukce**: Uvnitř této funkce:
+    * **Popněte značku**: Odeberte značku ze symbolového zásobníku.
+    * **Popněte potomky**: **Vysuňte** potřebný počet hotových AST uzlů (dětí) z `ASTStacku` (v opačném pořadí).
+    * **Vytvořte rodiče**: Vytvořte nový AST uzel pro neterminál $A$ a připojte k němu vysunuté děti.
+    * **Uložte výsledek**: Vložte nový rodičovský uzel zpět na `ASTStack`.
