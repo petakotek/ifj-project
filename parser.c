@@ -132,13 +132,13 @@ void parser()
 
                 switch (token.type) {
                     case TOKEN_STRING:
-                        stackPush(AstStack, new_leaf(NK_String, token));
+                        stackPush(AstStack, new_leaf(AST_STRING_LIT, token));
                         break;
                     case TOKEN_INTEGER:
-                        stackPush(AstStack, new_leaf(NK_Int, token));
+                        stackPush(AstStack, new_leaf(AST_INT_LIT, token));
                         break;
                     case TOKEN_FLOAT:
-                        stackPush(AstStack, new_leaf(NK_Float, token));
+                        stackPush(AstStack, new_leaf(AST_FLOAT_LIT, token));
                         break;
                     default:
                         // kľúčové slová, NEW_LINE, interpunkcia: zvyčajne do AST nejdú => nič nepushuj
