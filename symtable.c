@@ -1,6 +1,6 @@
 /**
  * Fakulta informačních technologií VUT Brno
- * 
+ *
  * Hlavičkový soubor pro implementaci hashovací tabulky s implicitním zřetězením
  * pro projekt do předmětu IFJ
  * @file hashtable.c

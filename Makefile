@@ -2,7 +2,7 @@
 CC = gcc
 CFLAGS = -std=c11 -Wall -Wextra -O2
 
-SRC = lexer.c support_functions.c main.c
+SRC = lexer.c support_functions.c main.c symtable.c
 OBJ = $(SRC:.c=.o)
 EXEC = ifj25
 
