@@ -87,7 +87,7 @@ void parser()
                             ok = (token.value.string && Stack_top.value.string && strcmp(Stack_top.value.string, token.value.string) == 0);
                             break;
                         case TOKEN_INTEGER:
-                            ok = (Stack_top.value.identifier == token.value.identifier);
+                            ok = (Stack_top.value.number == token.value.number);
                             break;
                         case TOKEN_FLOAT:
                             ok = (Stack_top.value.number == token.value.number);
