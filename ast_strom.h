@@ -25,6 +25,9 @@ typedef enum {
     AST_RETURN,
     AST_FUNC_CALL,
     AST_PARAM,
+    AST_BREAK,
+    AST_CONTINUE,
+    AST_GLOBAL_ASSIGN
 } AstNodeType;
 
 typedef struct AstNode {

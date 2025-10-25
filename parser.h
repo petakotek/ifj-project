@@ -60,7 +60,8 @@ typedef enum
     N_Return,
     N_Return_expr,
     N_Else_body,
-    N_Expr
+    N_Expr,
+    N_New_line_check
 } Nonterm;
 
 
