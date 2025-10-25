@@ -132,7 +132,6 @@ typedef union {
 
     double number;
     char  *string;
-    // ... ostatné varianty
 } TokenValue;
 
 /*
