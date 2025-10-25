@@ -9,83 +9,6 @@
 */
 #include "parser.h"
 
-Symbol make_term(TokenType T)
-{
-    Symbol x = {0};
-    x.is_terminal = true;
-    x.symbol = T;
-    x.value_needed = false;
-    return x;
-}
-
-Symbol make_term_value(Token T)
-{
-    Symbol x = {0};
-    x.is_terminal = true;
-    x.symbol = T.type;
-    x.value_needed = true;
-    x.is_reduce = false;
-    switch (T.type)
-    {
-        case TOKEN_INTEGER:
-            x.value.number = T.value.number;
-            break;
-        case TOKEN_FLOAT:
-            x.value.number = T.value.number;
-            break;
-        case TOKEN_STRING:
-            x.value.string = T.value.string;
-            break;
-        case TOKEN_IDENTIFIER:
-            x.value.identifier = T.value.identifier;
-            break;
-        default:
-            x.value_needed = false;
-            break;
-    }
-    return x;
-}
-
-Symbol make_nonterm(Nonterm N)
-{
-    Symbol x = {0};
-    x.is_terminal = false;
-    x.is_reduce = false;
-    x.symbol = N;
-    return x;
-}
-
-
-Symbol make_reduce(AstNodeType kind, size_t arity)
-{
-    Symbol x = {0};
-    x.is_terminal = false;
-    x.is_reduce = true;
-    x.reduce_kind = kind;
-    x.reduce_arity = arity;
-    return x;
-}
-
-Symbol make_astnode(struct AstNode *n) {
-    Symbol x = {0};
-    x.is_astnode = true;
-    x.ast_ptr = n;
-    return x;
-}
-
-void aststack_push(DynamicStackPtr S, struct AstNode *n) 
-{
-    push_check(stackPush(S, make_astnode(n)));
-}
-
-struct AstNode* aststack_read(DynamicStackPtr S) 
-{
-    Symbol top = stackRead(S);
-    return top.ast_ptr;
-}
-
-void push_check(bool boolean);
-
 AstNode *parser()
 {
     DynamicStackPtr AstStack = stackConstruct(DEFAULT_INIT_SIZE);
@@ -112,7 +35,7 @@ AstNode *parser()
     while (!stackIsEmpty(Stack))
     {
         Stack_top = stackRead(Stack);
-        printf("%d\n",Stack_top.is_reduce);
+        //printf("%d\n",Stack_top.is_reduce);
         if (Stack_top.is_reduce)
         {
             size_t n = Stack_top.reduce_arity;
@@ -161,21 +84,26 @@ AstNode *parser()
             if (Stack_top.symbol == token.type)
             {
                 bool ok = true;
+                bool concrete_value = false;
                 if (Stack_top.value_needed)
                 {
                     switch (token.type)
                     {
                         case TOKEN_STRING:
                             ok = (token.value.string && Stack_top.value.string && strcmp(Stack_top.value.string, token.value.string) == 0);
+                            concrete_value = true;
                             break;
                         case TOKEN_INTEGER:
                             ok = (Stack_top.value.number == token.value.number);
+                            concrete_value = true;
                             break;
                         case TOKEN_FLOAT:
                             ok = (Stack_top.value.number == token.value.number);
+                            concrete_value = true;
                             break;
                         case TOKEN_IDENTIFIER:
                             ok = (token.value.identifier && Stack_top.value.identifier && strcmp(Stack_top.value.identifier, token.value.identifier) == 0);
+                            concrete_value = true;
                             break;
                         default:
                             ok = true;
@@ -186,6 +114,44 @@ AstNode *parser()
                     printError(SYNTAX_ERROR, "Nesúlad hodnoty terminálu\n");
                     memorySafeExit(SYNTAX_ERROR);
                 }
+                
+                if (concrete_value)
+                {
+                    Stack_top.capture_value = true;
+                }
+                
+                if (Stack_top.capture_value)
+                {
+                    AstNode *leaf = NULL;
+                    switch (token.type) 
+                    {
+                        case TOKEN_IDENTIFIER:
+                            leaf = ast_new(AST_ID,0,NULL);
+                            leaf->data.ID.value = token.value.identifier
+                            break;
+                        case TOKEN_GLOBAL_ID:
+                            leaf = ast_new_global(token.value.identifier);
+                            break;
+                        case TOKEN_INTEGER:
+                            leaf = ast_new_int(token.value.number);
+                            break;
+                        case TOKEN_FLOAT:
+                            leaf = ast_new_float(token.value.number);
+                            break;
+                        case TOKEN_STRING:
+                            leaf = ast_new_string(token.value.string);
+                            break;
+                        default:
+                            break;
+                    }
+                    if (leaf) 
+                    {
+                        aststack_push(gAstStack, leaf);
+                    }
+                }
+
+                
+
                 printf("ok\n");
                 stackPop(Stack);
                 token = lexer_token_next();
@@ -314,9 +280,12 @@ AstNode *parser()
         printError(SYNTAX_ERROR, "AST je prázdny\n");
         memorySafeExit(SYNTAX_ERROR);
     }
-
     
+
     AstNode *ast_root = aststack_read(AstStack);
+    stackDestruct(Stack);
+    stackDestruct(AstStack);
+
     return ast_root;
 
 }
@@ -354,7 +323,6 @@ void Prolog_func(DynamicStackPtr Stack, Token token)
     push_check(stackPush(Stack,make_term(TOKEN_KEYWORD_IMPORT)));
 }
 
-/* --- prediktívne funkcie podľa novej LL gramatiky (len premenované prototypy) --- */
 void Main_class_func(DynamicStackPtr Stack, Token token)          
 {   
     stackPop(Stack);
@@ -371,7 +339,6 @@ void Main_class_func(DynamicStackPtr Stack, Token token)
     push_check(stackPush(Stack,make_term_value(Program_class)));
     push_check(stackPush(Stack,make_term(TOKEN_KEYWORD_CLASS)));
 }
-
 
 void Main_class_block_func(DynamicStackPtr Stack, Token token)     
 {
@@ -649,7 +616,6 @@ void Func_call_func(DynamicStackPtr Stack, Token token)
     memorySafeExit(SYNTAX_ERROR);
 }
 
-
 void Var_func(DynamicStackPtr Stack, Token token)
 { 
     stackPop(Stack);
@@ -720,8 +686,6 @@ void var_arg_list_func(DynamicStackPtr Stack, Token token)
     }
 }
 
-/* === Call_assign / Call_assign_list / Global_assign ===================== */
-
 void Call_assign_func(DynamicStackPtr Stack, Token token)
 {
     // Call_assign -> IDENT Call_assign_list
@@ -762,7 +726,6 @@ void Global_assign_func(DynamicStackPtr Stack, Token token)
     push_check(stackPush(Stack, make_term(TOKEN_ASSIGN)));
     push_check(stackPush(Stack, make_term(TOKEN_GLOBAL_ID)));
 }
-
 
 void If_func(DynamicStackPtr Stack, Token token)
 {
@@ -808,7 +771,6 @@ void ElseBody_func(DynamicStackPtr Stack, Token token)
         memorySafeExit(SYNTAX_ERROR);
     }
 }
-/* === While / For ======================================================== */
 
 void While_func(DynamicStackPtr Stack, Token token)
 {
@@ -838,8 +800,6 @@ void For_func(DynamicStackPtr Stack, Token token)
     push_check(stackPush(Stack, make_term(TOKEN_KEYWORD_FOR)));
 }
 
-/* === Break / Continue =================================================== */
-
 void Break_func(DynamicStackPtr Stack, Token token)
 {
     stackPop(Stack);
@@ -855,7 +815,6 @@ void Continue_func(DynamicStackPtr Stack, Token token)
     push_check(stackPush(Stack, make_reduce(AST_STATEMENT, 0)));
     push_check(stackPush(Stack, make_term(TOKEN_KEYWORD_CONTINUE)));
 }
-
 
 void Return_func(DynamicStackPtr Stack, Token token)
 {
@@ -942,4 +901,91 @@ void  New_line_func(DynamicStackPtr Stack, Token token)
         printError(SYNTAX_ERROR, "za koncom bloku class program chybny token\n");
         memorySafeExit(SYNTAX_ERROR);
     }
+}
+
+Symbol make_reduce(AstNodeType kind, size_t arity)
+{
+    Symbol x = {0};
+    x.is_terminal = false;
+    x.is_reduce = true;
+    x.reduce_kind = kind;
+    x.reduce_arity = arity;
+    return x;
+}
+
+Symbol make_nonterm(Nonterm N)
+{
+    Symbol x = {0};
+    x.is_terminal = false;
+    x.is_reduce = false;
+    x.symbol = N;
+    return x;
+}
+
+Symbol make_term_value(Token token)
+{
+    Symbol x = {0};
+    x.is_terminal = true;
+    x.symbol = token.type;
+    x.value_needed = true;
+    x.is_reduce = false;
+    switch (token.type)
+    {
+        case TOKEN_INTEGER:
+            x.value.number = token.value.number;
+            break;
+        case TOKEN_FLOAT:
+            x.value.number = token.value.number;
+            break;
+        case TOKEN_STRING:
+            x.value.string = token.value.string;
+            break;
+        case TOKEN_IDENTIFIER:
+            x.value.identifier = token.value.identifier;
+            break;
+        default:
+            x.value_needed = false;
+            break;
+    }
+    return x;
+}
+
+Symbol make_term(TokenType T)
+{
+    Symbol x = {0};
+    x.is_terminal = true;
+    x.symbol = T;
+    x.value_needed = false;
+    x.capture_value = false;
+    return x;
+}
+
+
+Symbol make_astnode(struct AstNode *n) {
+    Symbol x = {0};
+    x.is_astnode = true;
+    x.ast_ptr = n;
+    return x;
+}
+
+void aststack_push(DynamicStackPtr S, struct AstNode *n) 
+{
+    push_check(stackPush(S, make_astnode(n)));
+}
+
+struct AstNode* aststack_read(DynamicStackPtr S) 
+{
+    Symbol top = stackRead(S);
+    return top.ast_ptr;
+}
+
+Symbol make_term_with_value(Token token)
+{
+    Symbol x = {0};
+    x.is_terminal = true;
+    x.symbol = token.type;
+    x.value_needed = false;
+    x.capture_value = true;
+    return x;
+
 }
