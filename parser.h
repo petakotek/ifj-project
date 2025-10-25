@@ -33,9 +33,8 @@ typedef enum
     N_Prolog,
     N_Main_class,
     N_Main_class_block,
-    N_Main_class_item,
-    N_Block,
     N_Block_content,
+    N_Block,
     N_smth,
     N_smth_tail,
     N_smth_list,
@@ -60,7 +59,7 @@ typedef enum
     N_Continue,
     N_Return,
     N_Return_expr,
-
+    N_Else_body,
     N_Expr
 } Nonterm;
 
@@ -94,7 +93,6 @@ void Program_func(DynamicStackPtr Stack, Token token);
 void Prolog_func(DynamicStackPtr Stack, Token token);
 void MainClass_func(DynamicStackPtr Stack, Token token);
 void MainClassBlock_func(DynamicStackPtr Stack, Token token);
-void MainClassItem_func(DynamicStackPtr Stack, Token token);
 
 void Block_func(DynamicStackPtr Stack, Token token);
 void BlockContent_func(DynamicStackPtr Stack, Token token);
@@ -127,6 +125,7 @@ void Continue_func(DynamicStackPtr Stack, Token token);
 
 void Return_func(DynamicStackPtr Stack, Token token);
 void ReturnExpr_func(DynamicStackPtr Stack, Token token);
-void Expr_func(DynamicStackPtr Stack, Token token);
+void Expr_func(DynamicStackPtr Stack, Token token,Token *gLookahead, DynamicStackPtr gAstStack);
+void ElseBody_func(DynamicStackPtr Stack, Token token);
 
 #endif // PARSER_H

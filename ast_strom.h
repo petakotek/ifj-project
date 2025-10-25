@@ -128,3 +128,5 @@
  void ast_free_single(AstNode *kids);
 AstNode *new_leaf(AstNodeType k, Token t);
 AstNode *ast_new(AstNodeType k, size_t nkids, AstNode **kids);
+AstNode* precedence_parse_expr(Token *lookahead);
+

@@ -25,6 +25,7 @@ AstNode *ast_new(AstNodeType kind, size_t n, AstNode **kids) {
      * Program -> Prolog TOKEN_NEW_LINE Main_class TOKEN_EOF
      */
     if (kind == AST_PROGRAM) {
+<<<<<<< HEAD
         new_node->data.Program.prolog = kids[0];
         new_node->data.Program.main_class = kids[2];
         ast_free_single(kids[1]); // TOKEN_NEW_LINE
@@ -494,6 +495,13 @@ AstNode *new_leaf(AstNodeType k, Token t) {
 
     } else if (k == AST_STRING_LIT) {
         new_node->value.identifier_name = strdup(t.value.identifier);
+=======
+        // Pevná struktura (Program -> Prolog NEW_LINE MainClass)
+        new_node->data.Program.prolog = kids[0]; // Prolog
+        new_node->data.Program.main_class = kids[2]; // MainClass
+        // Uvolnění syntaktického uzlu:
+        //ast_free_single(kids[1]); // kids[1] je uzel pro TOKEN_NEW_LINE
+>>>>>>> 4c58935a739992fe60f5aeb18a24ef10c2f6b8e4
     }
 
     return new_node;
