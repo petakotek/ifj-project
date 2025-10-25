@@ -38,7 +38,34 @@ AstNode *ast_new(AstNodeType kind, size_t n, AstNode **kids) {
         ast_free_single(kids[0]); // STATIC
         ast_free_single(kids[1]); // IDENTIFIER
     }
-
+    /*
+     * === Tělo hlavní třídy ===
+     * Main_class_block -> Func_dec Main_class_block | ε
+     */
+    if (kind == AST_MAIN_CLASS_BLOCK) {
+        if (n == 2) {
+            // rekurzivní spojení: přidáváme funkci do seznamu
+            new_node->children_count = kids[1]->children_count + 1;
+            new_node->children = malloc(sizeof(AstNode *) * new_node->children_count);
+            if (!new_node->children) {
+                printError(INTERNAL_ERROR, "AST_MAIN_CLASS_BLOCK: malloc selhal");
+                memorySafeExit(INTERNAL_ERROR);
+            }
+    
+            memcpy(new_node->children, kids[1]->children, sizeof(AstNode *) * kids[1]->children_count);
+            new_node->children[new_node->children_count - 1] = kids[0]; // přidáme novou funkci
+    
+            free(kids[1]->children);
+            ast_free_single(kids[1]);
+        } else if (n == 0) {
+            // ε — prázdný blok
+            new_node->children = NULL;
+            new_node->children_count = 0;
+        } else {
+            printError(SYNTAX_ERROR, "AST_MAIN_CLASS_BLOCK: neplatný počet dětí");
+            memorySafeExit(SYNTAX_ERROR);
+        }
+    }
     /*
      * === if else podminky ===
      * If -> TOKEN_KEYWORD_IF TOKEN_LPAREN Expr TOKEN_RPAREN Block Else
@@ -255,7 +282,30 @@ AstNode *ast_new(AstNodeType kind, size_t n, AstNode **kids) {
         memorySafeExit(SEMANTICS_ERROR_UNEXPECTED);
         }
     }
-
+    /*
+     * === Statement ===
+     * Statement -> Expr | Assign | Return | If | While | For | ε
+     *
+     * Obaluje jeden příkaz nebo výraz (pokud existuje).
+     * Pokud je n == 0 → jde o prázdný příkaz (ε).
+     */
+    if (kind == AST_STATEMENT) {
+        if (n == 1) {
+            new_node->children_count = 1;
+            new_node->children = malloc(sizeof(AstNode *));
+            if (new_node->children == NULL) {
+                printError(INTERNAL_ERROR, "AST_STATEMENT: malloc selhal");
+                memorySafeExit(INTERNAL_ERROR);
+            }
+            new_node->children[0] = kids[0];
+        } else if (n == 0) {
+            new_node->children = NULL;
+            new_node->children_count = 0;
+        } else {
+            printError(SYNTAX_ERROR, "AST_STATEMENT: neočekávaný počet dětí");
+            memorySafeExit(SYNTAX_ERROR);
+        }
+    }
     /*
      * === Literál: Integer ===
      * Int_lit -> TOKEN_INT

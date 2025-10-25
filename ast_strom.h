@@ -39,7 +39,9 @@
      AST_STATEMENT_LIST,
      AST_STRING_LIT,
      AST_INT_LIT,
-     AST_FLOAT_LIT
+     AST_FLOAT_LIT,
+     AST_STATEMENT,
+     AST_MAIN_CLASS_BLOCK
  } AstNodeType;
 
  typedef struct AstNode {

@@ -8,6 +8,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include "parser.h"
+#include "ast_strom.h"
 #define SYMBOL_SIZE 201
 #define LITERAL_SIZE 101
 int main(){

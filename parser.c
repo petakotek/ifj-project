@@ -110,17 +110,17 @@ AstNode *parser()
                     }
                 }
 
-                
+
                 if (!ok) {
                     printError(SYNTAX_ERROR, "Nesúlad hodnoty terminálu\n");
                     memorySafeExit(SYNTAX_ERROR);
                 }
-                
+
                 if (concrete_value)
                 {
                     Stack_top.capture_value = true;
                 }
-                
+
                 if (Stack_top.capture_value)
                 {
                     switch (token.type) {
@@ -128,10 +128,10 @@ AstNode *parser()
                         aststack_push(AstStack, new_leaf(AST_STRING_LIT, token));
                         break;
                     case TOKEN_INTEGER:
-                        aststackPush(AstStack, new_leaf(AST_INT_LIT, token));
+                        aststack_push(AstStack, new_leaf(AST_INT_LIT, token));
                         break;
                     case TOKEN_FLOAT:
-                        aststackPush(AstStack, new_leaf(AST_FLOAT_LIT, token));
+                        aststack_push(AstStack, new_leaf(AST_FLOAT_LIT, token));
                         break;
                     default:
                         // kľúčové slová, NEW_LINE, interpunkcia: zvyčajne do AST nejdú => nič nepushuj
@@ -139,7 +139,7 @@ AstNode *parser()
                     }
                 }
 
-                
+
 
                 printf("ok\n");
                 stackPop(Stack);
@@ -269,7 +269,7 @@ AstNode *parser()
         printError(SYNTAX_ERROR, "AST je prázdny\n");
         memorySafeExit(SYNTAX_ERROR);
     }
-    
+
 
     AstNode *ast_root = aststack_read(AstStack);
     stackDestruct(Stack);
@@ -312,8 +312,8 @@ void Prolog_func(DynamicStackPtr Stack, Token token)
     push_check(stackPush(Stack,make_term(TOKEN_KEYWORD_IMPORT)));
 }
 
-void Main_class_func(DynamicStackPtr Stack, Token token)          
-{   
+void Main_class_func(DynamicStackPtr Stack, Token token)
+{
     stackPop(Stack);
     push_check(stackPush(Stack, make_reduce(AST_MAIN_CLASS, 1)));
     push_check(stackPush(Stack,make_nonterm(N_New_line_check)));
@@ -329,7 +329,7 @@ void Main_class_func(DynamicStackPtr Stack, Token token)
     push_check(stackPush(Stack,make_term(TOKEN_KEYWORD_CLASS)));
 }
 
-void Main_class_block_func(DynamicStackPtr Stack, Token token)     
+void Main_class_block_func(DynamicStackPtr Stack, Token token)
 {
     //popneme  neterminál
     stackPop(Stack);
@@ -957,12 +957,12 @@ Symbol make_astnode(struct AstNode *n) {
     return x;
 }
 
-void aststack_push(DynamicStackPtr S, struct AstNode *n) 
+void aststack_push(DynamicStackPtr S, struct AstNode *n)
 {
     push_check(stackPush(S, make_astnode(n)));
 }
 
-struct AstNode* aststack_read(DynamicStackPtr S) 
+struct AstNode* aststack_read(DynamicStackPtr S)
 {
     Symbol top = stackRead(S);
     return top.ast_ptr;
