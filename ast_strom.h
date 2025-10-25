@@ -1,5 +1,12 @@
+/*
+ *
+ * Autoři: xpasekj00
+ * Soubor: ast_strom.h
+ * Popis: hlavickovy soubor pro ast strom, obsahuje strukturu node pro strom
+ */
 #pragma once
 #include "lexer.h"
+#include <stdbool.h>
 /*
  *
  * Autoři: xpasekj00
@@ -50,43 +57,74 @@
 
      // Union pro pevně strukturované uzly
      union {
-         struct {
-             struct AstNode *prolog;
-             struct AstNode *main_class;
-         } Program;
+	     struct {
+	           struct AstNode *prolog;
+	           struct AstNode *main_class;
+	       } Program;
 
-         struct {
-             struct AstNode *params; // Bude to AST_PARAM_LIST
-             struct AstNode *block;
-         } Func_dec;
+	       struct {
+	           char *import_string; // "ifj25"
+	       } Prolog;
 
-         // NK_IF a NK_WHILE využívají standardizované pojmenování:
-         struct {
-             struct AstNode *condition;
-             struct AstNode *if_block;
-             struct AstNode *else_block; // NULL, pokud chybí
-         } If;
+	       struct {
+	           char *class_name;
+	           struct AstNode *body; // AST_STATEMENT_LIST
+	       } Main_class;
 
-         struct {
-             struct AstNode *condition;
-             struct AstNode *block;
-         } While;
+	       struct {
+	           struct AstNode *params; // AST_PARAM_LIST
+	           struct AstNode *block;
+	       } Func_dec;
 
-         struct {
-             char *iterator_name;
-             struct AstNode *container_expr;
-             struct AstNode *block;
-         } For;
+	       struct {
+	           struct AstNode *block;
+	       } Getter;
 
-         struct {
-             struct AstNode *target_var; // Cíl přiřazení (proměnná, volání funkce, atd.)
-             struct AstNode *expr;       // Pravá strana
-         } Assign;
+	       struct {
+	           char *param_name;
+	           struct AstNode *block;
+	       } Setter;
 
+	       struct {
+	           struct AstNode *condition;
+	           struct AstNode *if_block;
+	           struct AstNode *else_block;
+	       } If;
+
+	       struct {
+	           struct AstNode *condition;
+	           struct AstNode *block;
+	       } While;
+
+	       struct {
+	           char *iterator_name;
+	           struct AstNode *container_expr;
+	           struct AstNode *block;
+	       } For;
+
+	       struct {
+	           struct AstNode *target_var;
+	           struct AstNode *expr;
+	           bool is_global; // přidané
+	       } Assign;
+
+	       struct {
+	           struct AstNode *return_expr; // NULL pokud eps
+	       } Return;
+
+	       struct {
+	           char *identifier_name;
+	           struct AstNode *var_ext; // přiřazení nebo NULL
+	       } Var;
+
+	       struct {
+	           char *function_name;
+	           struct AstNode *arguments; // AST_PARAM_LIST nebo AST_STATEMENT_LIST
+	       } Func_call;
      } data;
 
  } AstNode;
 
  void ast_free_single(AstNode *kids);
-AstNode new_leaf(AstNodeType k, Token t);
+AstNode *new_leaf(AstNodeType k, Token t);
 AstNode *ast_new(AstNodeType k, size_t nkids, AstNode **kids);
