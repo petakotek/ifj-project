@@ -134,3 +134,4 @@ AstNode *ast_new(AstNodeType k, size_t nkids, AstNode **kids);
 AstNode* precedence_parse_expr(Token *lookahead);
 void ast_traverse(AstNode *node, int depth);
 void ast_free_whole(AstNode *node);
+char *ast_node_type_to_string(AstNodeType type);
