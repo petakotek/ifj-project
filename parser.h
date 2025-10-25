@@ -61,7 +61,8 @@ typedef enum
     N_Return_expr,
     N_Else_body,
     N_Expr,
-    N_New_line_check
+    N_New_line_check,
+    N_Opt_newlines
 } Nonterm;
 
 
@@ -82,9 +83,9 @@ Symbol make_term(TokenType T);
 /**
  * @brief pomocná funkcia pre vytvorenie struktúry termu
  * pri ktorom potrebujeme uchovať value
- * @param token token ktorého hodnotu chceme uchovať
+ * @param type typu tokenu z ktorého hodnotu chceme uchovať
  */
-Symbol make_term_with_value(Token token);
+Symbol make_term_with_value(TokenType type);
 
 /**
  * @brief pomocná funkcia na vytvorenie struktury neterminalu
