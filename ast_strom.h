@@ -33,10 +33,10 @@
      AST_BREAK,
      AST_CONTINUE,
      AST_FUNC_CALL,
-     AST_PARAM,      // Reprezentuje jeden parametr
-     AST_PARAM_LIST, // Reprezentuje seznam parametrů (doplněno)
-     AST_EXPR,       // Uzel pro výsledky precedenční analýzy (binární, unární, literál)
-     AST_STATEMENT_LIST, // Pro Main_class_block a Block (doplněno)
+     AST_PARAM,
+     AST_PARAM_LIST,
+     AST_EXPR,
+     AST_STATEMENT_LIST,
      AST_STRING_LIT,
      AST_INT_LIT,
      AST_FLOAT_LIT

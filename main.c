@@ -22,7 +22,7 @@ int main(){
 	fread(source_file, 1, len, stdin);
 	source_file[len] = '\0';
 	lexer_init(source_file);
-	print_and_free_tokens();
+	//print_and_free_tokens();
 	AstNode *AST;
 	AST = parser();
 	lexer_free();
