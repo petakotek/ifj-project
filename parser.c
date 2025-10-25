@@ -9,86 +9,6 @@
 */
 #include "parser.h"
 
-<<<<<<< HEAD
-=======
-Symbol make_term(TokenType T)
-{
-    Symbol x = {0};
-    x.is_terminal = true;
-    x.symbol = T;
-    x.value_needed = false;
-    return x;
-}
-
-Symbol make_term_value(Token T)
-{
-    Symbol x = {0};
-    x.is_terminal = true;
-    x.symbol = T.type;
-    x.value_needed = true;
-    x.is_reduce = false;
-    switch (T.type)
-    {
-        case TOKEN_INTEGER:
-            x.value.number = T.value.number;
-            break;
-        case TOKEN_FLOAT:
-            x.value.number = T.value.number;
-            break;
-        case TOKEN_STRING:
-            x.value.string = T.value.string;
-            break;
-        case TOKEN_IDENTIFIER:
-            x.value.identifier = T.value.identifier;
-            break;
-        default:
-            x.value_needed = false;
-            break;
-    }
-    return x;
-}
-
-Symbol make_nonterm(Nonterm N)
-{
-    Symbol x = {0};
-    x.is_terminal = false;
-    x.is_reduce = false;
-    x.symbol = N;
-    return x;
-}
-
-
-Symbol make_reduce(AstNodeType kind, size_t arity)
-{
-    Symbol x = {0};
-    x.is_terminal = false;
-    x.is_reduce = true;
-    x.reduce_kind = kind;
-    x.reduce_arity = arity;
-    return x;
-}
-
-Symbol make_astnode(struct AstNode *n) {
-    Symbol x = {0};
-    x.is_astnode = true;
-    x.ast_ptr = n;
-    return x;
-}
-
-void aststack_push(DynamicStackPtr S, struct AstNode *n)
-{
-    push_check(stackPush(S, make_astnode(n)));
-}
-
-struct AstNode* aststack_read(DynamicStackPtr S)
-{
-    Symbol top = stackRead(S);
-    return top.ast_ptr;
-}
-
-void push_check(bool boolean);
-
->>>>>>> 68bcb181bf8d6ea319e113efd9aa04becebdcf88
 AstNode *parser()
 {
     DynamicStackPtr AstStack = stackConstruct(DEFAULT_INIT_SIZE);
@@ -190,20 +110,7 @@ AstNode *parser()
                     }
                 }
 
-                switch (token.type) {
-                    case TOKEN_STRING:
-                        stackPush(AstStack, new_leaf(AST_STRING_LIT, token));
-                        break;
-                    case TOKEN_INTEGER:
-                        stackPush(AstStack, new_leaf(AST_INT_LIT, token));
-                        break;
-                    case TOKEN_FLOAT:
-                        stackPush(AstStack, new_leaf(AST_FLOAT_LIT, token));
-                        break;
-                    default:
-                        // kľúčové slová, NEW_LINE, interpunkcia: zvyčajne do AST nejdú => nič nepushuj
-                        break;
-                }
+                
                 if (!ok) {
                     printError(SYNTAX_ERROR, "Nesúlad hodnoty terminálu\n");
                     memorySafeExit(SYNTAX_ERROR);
@@ -216,31 +123,19 @@ AstNode *parser()
                 
                 if (Stack_top.capture_value)
                 {
-                    AstNode *leaf = NULL;
-                    switch (token.type) 
-                    {
-                        case TOKEN_IDENTIFIER:
-                            leaf = ast_new(AST_ID,0,NULL);
-                            leaf->data.ID.value = token.value.identifier
-                            break;
-                        case TOKEN_GLOBAL_ID:
-                            leaf = ast_new_global(token.value.identifier);
-                            break;
-                        case TOKEN_INTEGER:
-                            leaf = ast_new_int(token.value.number);
-                            break;
-                        case TOKEN_FLOAT:
-                            leaf = ast_new_float(token.value.number);
-                            break;
-                        case TOKEN_STRING:
-                            leaf = ast_new_string(token.value.string);
-                            break;
-                        default:
-                            break;
-                    }
-                    if (leaf) 
-                    {
-                        aststack_push(gAstStack, leaf);
+                    switch (token.type) {
+                    case TOKEN_STRING:
+                        aststack_push(AstStack, new_leaf(AST_STRING_LIT, token));
+                        break;
+                    case TOKEN_INTEGER:
+                        aststackPush(AstStack, new_leaf(AST_INT_LIT, token));
+                        break;
+                    case TOKEN_FLOAT:
+                        aststackPush(AstStack, new_leaf(AST_FLOAT_LIT, token));
+                        break;
+                    default:
+                        // kľúčové slová, NEW_LINE, interpunkcia: zvyčajne do AST nejdú => nič nepushuj
+                        break;
                     }
                 }
 
@@ -374,11 +269,7 @@ AstNode *parser()
         printError(SYNTAX_ERROR, "AST je prázdny\n");
         memorySafeExit(SYNTAX_ERROR);
     }
-<<<<<<< HEAD
     
-=======
-
->>>>>>> 68bcb181bf8d6ea319e113efd9aa04becebdcf88
 
     AstNode *ast_root = aststack_read(AstStack);
     stackDestruct(Stack);
@@ -421,15 +312,8 @@ void Prolog_func(DynamicStackPtr Stack, Token token)
     push_check(stackPush(Stack,make_term(TOKEN_KEYWORD_IMPORT)));
 }
 
-<<<<<<< HEAD
 void Main_class_func(DynamicStackPtr Stack, Token token)          
 {   
-=======
-/* --- prediktívne funkcie podľa novej LL gramatiky (len premenované prototypy) --- */
-
-void Main_class_func(DynamicStackPtr Stack, Token token)
-{
->>>>>>> 68bcb181bf8d6ea319e113efd9aa04becebdcf88
     stackPop(Stack);
     push_check(stackPush(Stack, make_reduce(AST_MAIN_CLASS, 1)));
     push_check(stackPush(Stack,make_nonterm(N_New_line_check)));
@@ -445,12 +329,7 @@ void Main_class_func(DynamicStackPtr Stack, Token token)
     push_check(stackPush(Stack,make_term(TOKEN_KEYWORD_CLASS)));
 }
 
-<<<<<<< HEAD
 void Main_class_block_func(DynamicStackPtr Stack, Token token)     
-=======
-
-void Main_class_block_func(DynamicStackPtr Stack, Token token)
->>>>>>> 68bcb181bf8d6ea319e113efd9aa04becebdcf88
 {
     //popneme  neterminál
     stackPop(Stack);
@@ -1012,7 +891,6 @@ void  New_line_func(DynamicStackPtr Stack, Token token)
         memorySafeExit(SYNTAX_ERROR);
     }
 }
-<<<<<<< HEAD
 
 Symbol make_reduce(AstNodeType kind, size_t arity)
 {
@@ -1100,5 +978,3 @@ Symbol make_term_with_value(Token token)
     return x;
 
 }
-=======
->>>>>>> 68bcb181bf8d6ea319e113efd9aa04becebdcf88
