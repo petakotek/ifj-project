@@ -4,11 +4,7 @@
  * Soubor: ast_strom.c
  * Popis: zajistuje ulozeni vysledku z parseru do stromu
  */
-#include "ast_strom.h"
-#include <stdlib.h>
-#include "lexer.h"
-#include "parser.h"
-#include "support_functions.h"
+ #include "ast_strom.h"
 AstNode *ast_new(AstNodeType kind, size_t n, AstNode **kids) {
     AstNode *new_node = malloc(sizeof(AstNode));
     if (!new_node) {
@@ -25,7 +21,6 @@ AstNode *ast_new(AstNodeType kind, size_t n, AstNode **kids) {
      * Program -> Prolog TOKEN_NEW_LINE Main_class TOKEN_EOF
      */
     if (kind == AST_PROGRAM) {
-<<<<<<< HEAD
         new_node->data.Program.prolog = kids[0];
         new_node->data.Program.main_class = kids[2];
         ast_free_single(kids[1]); // TOKEN_NEW_LINE
@@ -42,25 +37,6 @@ AstNode *ast_new(AstNodeType kind, size_t n, AstNode **kids) {
         new_node->data.Func_dec.block = kids[3]; // AST_BLOCK
         ast_free_single(kids[0]); // STATIC
         ast_free_single(kids[1]); // IDENTIFIER
-    }
-
-    /*
-     * === Funkce, Getter a Setter ===
-     * Getter -> TOKEN_KEYWORD_STATIC TOKEN_IDENTIFIER TOKEN_ASSIGN TOKEN_LPAREN TOKEN_RPAREN Block
-     */
-    if (kind == AST_GETTER) {
-        new_node->data.Getter.block = kids[2];
-        new_node->value.identifier_name = strdup(kids[1]->value.identifier_name);
-    }
-
-    /*
-     * === Funkcie, Getter a Setter ===
-     * Setter -> TOKEN_KEYWORD_STATIC TOKEN_IDENTIFIER TOKEN_ASSIGN TOKEN_LPAREN TOKEN_IDENTIFIER TOKEN_RPAREN Block
-     */
-    if (kind == AST_SETTER) {
-        new_node->data.Setter.param_name = strdup(kids[3]->value.identifier_name);
-        new_node->data.Setter.block = kids[4];
-        new_node->value.identifier_name = strdup(kids[1]->value.identifier_name);
     }
 
     /*
@@ -135,16 +111,6 @@ AstNode *ast_new(AstNodeType kind, size_t n, AstNode **kids) {
         new_node->data.Assign.target_var = kids[0];
         new_node->data.Assign.expr = kids[2];
         ast_free_single(kids[1]); // TOKEN_ASSIGN
-    }
-
-    /*
-     * === Všeobecný block a jeho obsah ===
-     * Statement_list, Param_list, Main_class -> seznam uzlů (rekurzivní struktura)
-     */
-    if (kind == AST_STATEMENT_LIST || kind == AST_PARAM_LIST || kind == AST_MAIN_CLASS) {
-        new_node->children = kids;
-        new_node->children_count = n;
-        return new_node;
     }
 
     /*
@@ -246,7 +212,6 @@ AstNode *ast_new(AstNodeType kind, size_t n, AstNode **kids) {
          if (n == 3) {
              new_node->children_count = kids[0]->children_count + 1;
              new_node->children = malloc(sizeof(AstNode *) * new_node->children_count);
-             //zkopírujeme ukazatele na staré děti
              memcpy(new_node->children, kids[0]->children, sizeof(AstNode *) * kids[0]->children_count);
 
              new_node->children[new_node->children_count - 1] = kids[2];
@@ -270,7 +235,8 @@ AstNode *ast_new(AstNodeType kind, size_t n, AstNode **kids) {
     /*
      * === Seznam příkazů ===
      * Statement_list -> Statement_list Statement | Statement
-
+     *prvne potkame a n = 1 ulozime do kids[0]
+     *druhe potkame a , b tim padem n = 3 zkopirujeme a a vytvorime a b
      */
     if (kind == AST_STATEMENT_LIST) {
         if(n == 2){
@@ -319,7 +285,7 @@ AstNode *ast_new(AstNodeType kind, size_t n, AstNode **kids) {
     return new_node;
     }
     void ast_traverse(AstNode *node, int depth) {
-        if (node != NULL) return;
+        if (node == NULL) return;
 
         // Odsazení podle úrovně
         for (int i = 0; i < depth; i++) printf("  ");
@@ -335,9 +301,10 @@ AstNode *ast_new(AstNodeType kind, size_t n, AstNode **kids) {
                 break;
 
             case AST_FUNC_DEC:
-                if (node->value.identifier_name)
+                if (node->value.identifier_name){
                     for (int i = 0; i < depth + 1; i++) printf("  ");
                     printf("Function: %s\n", node->value.identifier_name);
+                }
                 ast_traverse(node->data.Func_dec.params, depth + 1);
                 ast_traverse(node->data.Func_dec.block, depth + 1);
                 break;
@@ -429,8 +396,9 @@ AstNode *ast_new(AstNodeType kind, size_t n, AstNode **kids) {
             case AST_FUNC_DEC:
                 ast_free_whole(node->data.Func_dec.params);
                 ast_free_whole(node->data.Func_dec.block);
-                if (node->value.identifier_name)
+                if (node->value.identifier_name){
                     free(node->value.identifier_name);
+                }
                 break;
 
             case AST_IF:
@@ -447,22 +415,29 @@ AstNode *ast_new(AstNodeType kind, size_t n, AstNode **kids) {
             case AST_FOR:
                 ast_free_whole(node->data.For.container_expr);
                 ast_free_whole(node->data.For.block);
-                if (node->data.For.iterator_name)
-                    free(node->data.For.iterator_name);
+                if (node->value.identifier_name){
+                    free(node->value.identifier_name);
+                }
                 break;
 
             case AST_VAR:
             case AST_ASSIGN:
             case AST_RETURN:
-                if (node->value.identifier_name)
+                if (node->value.identifier_name){
                     free(node->value.identifier_name);
+                }
                 break;
 
             case AST_STRING_LIT:
-                if (node->value.string_value)
+                if (node->value.string_value){
                     free(node->value.string_value);
+                }
                 break;
-
+            case AST_PARAM:
+            	if (node->value.string_value){
+                	free(node->value.identifier_name);
+             	}
+            break;
             default:
                 break;
         }
@@ -473,12 +448,28 @@ void ast_free_single(AstNode *kid) {
     if (!kid) {
         return;
     }
-    if (kid->value.identifier_name != NULL) {
-        free(kid->value.identifier_name);
-    }
-    if(kid->value.string_value != NULL){
-    	free(kid->value.identifier_name);
-    }
+    switch(kid->type) {
+           case AST_STRING_LIT:
+               if (kid->value.string_value != NULL) {
+                   free(kid->value.string_value);
+               }
+               break;
+
+           case AST_PARAM:
+           case AST_VAR:
+           case AST_FUNC_CALL:
+           case AST_GETTER:
+           case AST_SETTER:
+           case AST_FOR:
+           case AST_PROLOG:
+               if (kid->value.identifier_name != NULL) {
+                   free(kid->value.identifier_name);
+               }
+               break;
+
+           default:
+               break;
+       }
     free(kid);
 }
 AstNode *new_leaf(AstNodeType k, Token t) {
@@ -486,22 +477,17 @@ AstNode *new_leaf(AstNodeType k, Token t) {
     if (!new_node) {
     printError(INTERNAL_ERROR, "chyba v alokaci AST_node \n");
     }
-
+    new_node->type = k;
+    new_node->children = NULL;
+    new_node->children_count = 0;
     if (k == AST_INT_LIT) {
         new_node->value.int_value = strtoll(t.value.identifier, NULL, 10);
-
+        free(t.value.identifier);
     } else if (k == AST_FLOAT_LIT) {
         new_node->value.float_value = strtod(t.value.identifier, NULL);
-
+        free(t.value.identifier);
     } else if (k == AST_STRING_LIT) {
         new_node->value.identifier_name = strdup(t.value.identifier);
-=======
-        // Pevná struktura (Program -> Prolog NEW_LINE MainClass)
-        new_node->data.Program.prolog = kids[0]; // Prolog
-        new_node->data.Program.main_class = kids[2]; // MainClass
-        // Uvolnění syntaktického uzlu:
-        //ast_free_single(kids[1]); // kids[1] je uzel pro TOKEN_NEW_LINE
->>>>>>> 4c58935a739992fe60f5aeb18a24ef10c2f6b8e4
     }
 
     return new_node;

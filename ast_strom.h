@@ -5,8 +5,11 @@
  * Popis: hlavickovy soubor pro ast strom, obsahuje strukturu node pro strom
  */
 #pragma once
-#include "lexer.h"
 #include <stdbool.h>
+#include "ast_strom.h"
+#include <stdlib.h>
+#include "lexer.h"
+#include "support_functions.h"
 /*
  *
  * Autoři: xpasekj00
@@ -129,4 +132,5 @@
 AstNode *new_leaf(AstNodeType k, Token t);
 AstNode *ast_new(AstNodeType k, size_t nkids, AstNode **kids);
 AstNode* precedence_parse_expr(Token *lookahead);
-
+void ast_traverse(AstNode *node, int depth);
+void ast_free_whole(AstNode *node);
