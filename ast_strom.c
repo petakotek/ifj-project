@@ -291,7 +291,7 @@ AstNode *ast_new(AstNodeType kind, size_t n, AstNode **kids) {
         for (int i = 0; i < depth; i++) printf("  ");
 
         // Výpis typu uzlu
-        printf("Node type: %d\n", node->type);
+        printf("Node type: %s\n",ast_node_type_to_string(node->type));
 
         // Rekurze podle typu uzlu
         switch (node->type) {
@@ -380,10 +380,10 @@ AstNode *ast_new(AstNodeType kind, size_t n, AstNode **kids) {
         if (node == NULL)
             return;
 
-        for (int i = 0; i < node->children_count; i++) {
-            ast_free_whole(node->children[i]);
-        }
-        if (node->children_count > 0 && node->children != NULL) {
+        if (node->children != NULL) {
+            for (int i = 0; i < node->children_count; i++) {
+                ast_free_whole(node->children[i]);
+            }
             free(node->children);
         }
 
@@ -396,9 +396,8 @@ AstNode *ast_new(AstNodeType kind, size_t n, AstNode **kids) {
             case AST_FUNC_DEC:
                 ast_free_whole(node->data.Func_dec.params);
                 ast_free_whole(node->data.Func_dec.block);
-                if (node->value.identifier_name){
+                if (node->value.identifier_name)
                     free(node->value.identifier_name);
-                }
                 break;
 
             case AST_IF:
@@ -415,29 +414,42 @@ AstNode *ast_new(AstNodeType kind, size_t n, AstNode **kids) {
             case AST_FOR:
                 ast_free_whole(node->data.For.container_expr);
                 ast_free_whole(node->data.For.block);
-                if (node->value.identifier_name){
+                if (node->value.identifier_name)
                     free(node->value.identifier_name);
-                }
                 break;
 
             case AST_VAR:
-            case AST_ASSIGN:
-            case AST_RETURN:
-                if (node->value.identifier_name){
+                ast_free_whole(node->data.Var.var_ext);
+                if (node->value.identifier_name)
                     free(node->value.identifier_name);
-                }
+                break;
+
+            case AST_ASSIGN:
+                ast_free_whole(node->data.Assign.target_var);
+                ast_free_whole(node->data.Assign.expr);
+                break;
+
+            case AST_RETURN:
+                ast_free_whole(node->data.Return.return_expr);
                 break;
 
             case AST_STRING_LIT:
-                if (node->value.string_value){
+                if (node->value.string_value)
                     free(node->value.string_value);
-                }
                 break;
+
             case AST_PARAM:
-            	if (node->value.string_value){
-                	free(node->value.identifier_name);
-             	}
-            break;
+                if (node->value.identifier_name)
+                    free(node->value.identifier_name);
+                break;
+
+            case AST_INT_LIT:
+            case AST_FLOAT_LIT:
+            case AST_BREAK:
+            case AST_CONTINUE:
+                // žádná dynamická paměť
+                break;
+
             default:
                 break;
         }
@@ -491,4 +503,32 @@ AstNode *new_leaf(AstNodeType k, Token t) {
     }
 
     return new_node;
+}
+char *ast_node_type_to_string(AstNodeType type) {
+    switch (type) {
+        case AST_PROGRAM:         return "AST_PROGRAM";
+        case AST_PROLOG:          return "AST_PROLOG";
+        case AST_MAIN_CLASS:      return "AST_MAIN_CLASS";
+        case AST_FUNC_DEC:        return "AST_FUNC_DEC";
+        case AST_GETTER:          return "AST_GETTER";
+        case AST_SETTER:          return "AST_SETTER";
+        case AST_BLOCK:           return "AST_BLOCK";
+        case AST_VAR:             return "AST_VAR";
+        case AST_ASSIGN:          return "AST_ASSIGN";
+        case AST_IF:              return "AST_IF";
+        case AST_WHILE:           return "AST_WHILE";
+        case AST_FOR:             return "AST_FOR";
+        case AST_RETURN:          return "AST_RETURN";
+        case AST_BREAK:           return "AST_BREAK";
+        case AST_CONTINUE:        return "AST_CONTINUE";
+        case AST_FUNC_CALL:       return "AST_FUNC_CALL";
+        case AST_PARAM:           return "AST_PARAM";
+        case AST_PARAM_LIST:      return "AST_PARAM_LIST";
+        case AST_EXPR:            return "AST_EXPR";
+        case AST_STATEMENT_LIST:  return "AST_STATEMENT_LIST";
+        case AST_STRING_LIT:      return "AST_STRING_LIT";
+        case AST_INT_LIT:         return "AST_INT_LIT";
+        case AST_FLOAT_LIT:       return "AST_FLOAT_LIT";
+        default:                  return "UNKNOWN_AST_NODE";
+    }
 }
