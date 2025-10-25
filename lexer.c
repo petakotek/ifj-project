@@ -2,11 +2,7 @@
  *
  * Autoři: xpasekj00
  * Soubor: lexer.c
- * Popis:
- */
-/*
- * return immie
- *
+ * Popis: Lexer zajistuje pridel tokenu pro parser pres konecny automat
  */
 #include "lexer.h"
 
@@ -116,6 +112,9 @@ TokenType match_identifikator(const char *identifikator) {
     if (strcmp(identifikator, "break") == 0) {
         return TOKEN_KEYWORD_BREAK;
     }
+    if (strcmp(identifikator, "in") == 0){
+    	return TOKEN_KEYWORD_IN;
+    }
     return TOKEN_IDENTIFIER;
 }
 /*
@@ -195,6 +194,8 @@ const char *token_type_to_string(TokenType type) {
             return "KEYWORD_IS";
         case TOKEN_KEYWORD_NULL_SMALL:
             return "KEYWORD_NULL_SMALL";
+        case TOKEN_KEYWORD_IN:
+        	return "KEYWORD_IN";
         case TOKEN_PLUS:
             return "PLUS";
         case TOKEN_MINUS:

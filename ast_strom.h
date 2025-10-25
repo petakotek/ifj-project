@@ -1,123 +1,136 @@
+/*
+ *
+ * Autoři: xpasekj00
+ * Soubor: ast_strom.h
+ * Popis: hlavickovy soubor pro ast strom, obsahuje strukturu node pro strom
+ */
 #pragma once
+#include <stdbool.h>
+#include "ast_strom.h"
+#include <stdlib.h>
 #include "lexer.h"
+#include "support_functions.h"
 /*
  *
  * Autoři: xpasekj00
  * Soubor: ast_strom.h
  * Popis:
  */
-typedef enum {
-    AST_PROGRAM,
-    AST_PROLOG,
-    AST_MAIN_CLASS,
-    AST_MAIN_CLASS_BLOCK,
-    AST_FUNC_DEC,
-    AST_GETTER,
-    AST_SETTER,
-    AST_BLOCK,
-    AST_STATEMENT,
-    AST_EXPR,
-    AST_VAR,
-    AST_ASSIGN,
-    AST_IF,
-    AST_WHILE,
-    AST_FOR,
-    AST_RETURN,
-    AST_FUNC_CALL,
-    AST_PARAM,
-    AST_BREAK,
-    AST_CONTINUE,
-    AST_GLOBAL_ASSIGN
-} AstNodeType;
+ typedef enum {
+     AST_PROGRAM,
+     AST_PROLOG,
+     AST_MAIN_CLASS,
+     AST_FUNC_DEC,
+     AST_GETTER,
+     AST_SETTER,
+     AST_BLOCK,
+     AST_VAR,
+     AST_ASSIGN,
+     AST_IF,
+     AST_WHILE,
+     AST_FOR,
+     AST_RETURN,
+     AST_BREAK,
+     AST_CONTINUE,
+     AST_FUNC_CALL,
+     AST_PARAM,
+     AST_PARAM_LIST,
+     AST_EXPR,
+     AST_STATEMENT_LIST,
+     AST_STRING_LIT,
+     AST_INT_LIT,
+     AST_FLOAT_LIT
+ } AstNodeType;
 
-typedef struct AstNode {
-    AstNodeType type;
-    char* name;
+ typedef struct AstNode {
+     AstNodeType type;
 
-    struct AstNode** children;
-    int children_count;
+     // Obecné datové pole pro jména, identifikátory a literály.
+     union {
+         char *identifier_name;
+         long long int_value;
+         double float_value;
+         char *string_value;
+     } value;
 
-    union {
-    	struct {
-        	struct AstNode* prolog;
-            struct AstNode* main_class;
-           } Program;
-     	struct {
-      		char* import_string;
-      	}Prolog;
+     // Standardizované pole pro DĚTI (uzly se seznamy)
+     // Používá se pro AST_BLOCK, AST_STATEMENT_LIST, AST_FUNC_CALL (argumenty)
+     struct AstNode **children;
+     int children_count;
 
-       	struct {
-        	struct AstNode* main_class_block;
-        } Main_class;
-        struct {
-            struct AstNode** items;
-        } Main_class_block;
-        struct {
-            char* func_name;
-            struct AstNode* params;
-            struct AstNode* block;
-        } Func_dec;
-        struct {
-            char* getter_name;
-            struct AstNode* block;
-        } Getter;
-        struct {
-            char* setter_name;
-            char* param_name;
-            struct AstNode* block;
-        } Setter;
-        struct {
-            struct AstNode** statements;
-            int statements_count;
-        } Block;
-        struct {
-            char* var_name;
-            struct AstNode* var_ext;
-        } Var;
-        struct {
-            char* assign_target;
-            struct AstNode* expr;
-        } Assign;
-        struct {
-                struct AstNode* condition;
-                struct AstNode* if_block;
-                struct AstNode* else_block;
-        } If;
-        struct {
-                struct AstNode* condition;
-                struct AstNode* block;
-            } While;
+     // Union pro pevně strukturované uzly
+     union {
+	     struct {
+	           struct AstNode *prolog;
+	           struct AstNode *main_class;
+	       } Program;
 
-        struct {
-            char* iterator;
-            struct AstNode* container_expr;
-            struct AstNode* block;
-        } For;
+	       struct {
+	           char *import_string; // "ifj25"
+	       } Prolog;
 
-        struct {
-            struct AstNode* return_expr;
-        } Return;
-        struct {
-            struct AstNode* return_expr;
-        } Break;
+	       struct {
+	           char *class_name;
+	           struct AstNode *body; // AST_STATEMENT_LIST
+	       } Main_class;
 
-        struct {
-            struct AstNode* return_expr;
-        } Continue;
-        struct {
-            char* func_name;
-            struct AstNode** arguments;
-            int arguments_count;
-        } Func_call;
-//precedenční analýzy dodelat
-        struct {
-        } Expr;
-    }data;
+	       struct {
+	           struct AstNode *params; // AST_PARAM_LIST
+	           struct AstNode *block;
+	       } Func_dec;
 
-} AstNode;
+	       struct {
+	           struct AstNode *block;
+	       } Getter;
 
+	       struct {
+	           char *param_name;
+	           struct AstNode *block;
+	       } Setter;
 
-AstNode new_leaf(AstNodeType k, Token t);
+	       struct {
+	           struct AstNode *condition;
+	           struct AstNode *if_block;
+	           struct AstNode *else_block;
+	       } If;
+
+	       struct {
+	           struct AstNode *condition;
+	           struct AstNode *block;
+	       } While;
+
+	       struct {
+	           char *iterator_name;
+	           struct AstNode *container_expr;
+	           struct AstNode *block;
+	       } For;
+
+	       struct {
+	           struct AstNode *target_var;
+	           struct AstNode *expr;
+	           bool is_global; // přidané
+	       } Assign;
+
+	       struct {
+	           struct AstNode *return_expr; // NULL pokud eps
+	       } Return;
+
+	       struct {
+	           char *identifier_name;
+	           struct AstNode *var_ext; // přiřazení nebo NULL
+	       } Var;
+
+	       struct {
+	           char *function_name;
+	           struct AstNode *arguments; // AST_PARAM_LIST nebo AST_STATEMENT_LIST
+	       } Func_call;
+     } data;
+
+ } AstNode;
+
+ void ast_free_single(AstNode *kids);
+AstNode *new_leaf(AstNodeType k, Token t);
 AstNode *ast_new(AstNodeType k, size_t nkids, AstNode **kids);
 AstNode* precedence_parse_expr(Token *lookahead);
-
+void ast_traverse(AstNode *node, int depth);
+void ast_free_whole(AstNode *node);

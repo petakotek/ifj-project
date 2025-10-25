@@ -9,6 +9,86 @@
 */
 #include "parser.h"
 
+<<<<<<< HEAD
+=======
+Symbol make_term(TokenType T)
+{
+    Symbol x = {0};
+    x.is_terminal = true;
+    x.symbol = T;
+    x.value_needed = false;
+    return x;
+}
+
+Symbol make_term_value(Token T)
+{
+    Symbol x = {0};
+    x.is_terminal = true;
+    x.symbol = T.type;
+    x.value_needed = true;
+    x.is_reduce = false;
+    switch (T.type)
+    {
+        case TOKEN_INTEGER:
+            x.value.number = T.value.number;
+            break;
+        case TOKEN_FLOAT:
+            x.value.number = T.value.number;
+            break;
+        case TOKEN_STRING:
+            x.value.string = T.value.string;
+            break;
+        case TOKEN_IDENTIFIER:
+            x.value.identifier = T.value.identifier;
+            break;
+        default:
+            x.value_needed = false;
+            break;
+    }
+    return x;
+}
+
+Symbol make_nonterm(Nonterm N)
+{
+    Symbol x = {0};
+    x.is_terminal = false;
+    x.is_reduce = false;
+    x.symbol = N;
+    return x;
+}
+
+
+Symbol make_reduce(AstNodeType kind, size_t arity)
+{
+    Symbol x = {0};
+    x.is_terminal = false;
+    x.is_reduce = true;
+    x.reduce_kind = kind;
+    x.reduce_arity = arity;
+    return x;
+}
+
+Symbol make_astnode(struct AstNode *n) {
+    Symbol x = {0};
+    x.is_astnode = true;
+    x.ast_ptr = n;
+    return x;
+}
+
+void aststack_push(DynamicStackPtr S, struct AstNode *n)
+{
+    push_check(stackPush(S, make_astnode(n)));
+}
+
+struct AstNode* aststack_read(DynamicStackPtr S)
+{
+    Symbol top = stackRead(S);
+    return top.ast_ptr;
+}
+
+void push_check(bool boolean);
+
+>>>>>>> 68bcb181bf8d6ea319e113efd9aa04becebdcf88
 AstNode *parser()
 {
     DynamicStackPtr AstStack = stackConstruct(DEFAULT_INIT_SIZE);
@@ -43,7 +123,7 @@ AstNode *parser()
 
             AstNode **kids = NULL;
 
-            if (n > 0) 
+            if (n > 0)
             {
                 kids = malloc(sizeof(AstNode*) * n);
                 if (kids == NULL) {
@@ -52,16 +132,16 @@ AstNode *parser()
                 }
             }
 
-            if (n && !kids) 
-            { 
-                printError(INTERNAL_ERROR, "AST alloc\n"); 
-                memorySafeExit(INTERNAL_ERROR); 
+            if (n && !kids)
+            {
+                printError(INTERNAL_ERROR, "AST alloc");
+                memorySafeExit(INTERNAL_ERROR);
             }
 
-            // na vrchu sú pravé deti; preto vkladáme odzadu 
-            for (size_t i = 0; i < n; ++i) 
+            // na vrchu sú pravé deti; preto vkladáme odzadu
+            for (size_t i = 0; i < n; ++i)
             {
-                if (stackIsEmpty(AstStack)) 
+                if (stackIsEmpty(AstStack))
                 {
                     printError(SYNTAX_ERROR, "Vnútorná chyba: málo detí na AST zásobníku pri redukcii\n");
                     memorySafeExit(SYNTAX_ERROR);
@@ -110,6 +190,20 @@ AstNode *parser()
                     }
                 }
 
+                switch (token.type) {
+                    case TOKEN_STRING:
+                        stackPush(AstStack, new_leaf(AST_STRING_LIT, token));
+                        break;
+                    case TOKEN_INTEGER:
+                        stackPush(AstStack, new_leaf(AST_INT_LIT, token));
+                        break;
+                    case TOKEN_FLOAT:
+                        stackPush(AstStack, new_leaf(AST_FLOAT_LIT, token));
+                        break;
+                    default:
+                        // kľúčové slová, NEW_LINE, interpunkcia: zvyčajne do AST nejdú => nič nepushuj
+                        break;
+                }
                 if (!ok) {
                     printError(SYNTAX_ERROR, "Nesúlad hodnoty terminálu\n");
                     memorySafeExit(SYNTAX_ERROR);
@@ -275,12 +369,16 @@ AstNode *parser()
 
     }
 
-    if (stackIsEmpty(AstStack)) 
+    if (stackIsEmpty(AstStack))
     {
         printError(SYNTAX_ERROR, "AST je prázdny\n");
         memorySafeExit(SYNTAX_ERROR);
     }
+<<<<<<< HEAD
     
+=======
+
+>>>>>>> 68bcb181bf8d6ea319e113efd9aa04becebdcf88
 
     AstNode *ast_root = aststack_read(AstStack);
     stackDestruct(Stack);
@@ -310,7 +408,7 @@ void Program_func(DynamicStackPtr Stack, Token token)
 
 void Prolog_func(DynamicStackPtr Stack, Token token)
 {
-    
+
     stackPop(Stack);
     push_check(stackPush(Stack, make_reduce(AST_PROLOG, 0)));
 
@@ -323,8 +421,15 @@ void Prolog_func(DynamicStackPtr Stack, Token token)
     push_check(stackPush(Stack,make_term(TOKEN_KEYWORD_IMPORT)));
 }
 
+<<<<<<< HEAD
 void Main_class_func(DynamicStackPtr Stack, Token token)          
 {   
+=======
+/* --- prediktívne funkcie podľa novej LL gramatiky (len premenované prototypy) --- */
+
+void Main_class_func(DynamicStackPtr Stack, Token token)
+{
+>>>>>>> 68bcb181bf8d6ea319e113efd9aa04becebdcf88
     stackPop(Stack);
     push_check(stackPush(Stack, make_reduce(AST_MAIN_CLASS, 1)));
     push_check(stackPush(Stack,make_nonterm(N_New_line_check)));
@@ -340,7 +445,12 @@ void Main_class_func(DynamicStackPtr Stack, Token token)
     push_check(stackPush(Stack,make_term(TOKEN_KEYWORD_CLASS)));
 }
 
+<<<<<<< HEAD
 void Main_class_block_func(DynamicStackPtr Stack, Token token)     
+=======
+
+void Main_class_block_func(DynamicStackPtr Stack, Token token)
+>>>>>>> 68bcb181bf8d6ea319e113efd9aa04becebdcf88
 {
     //popneme  neterminál
     stackPop(Stack);
@@ -367,7 +477,7 @@ void Main_class_block_func(DynamicStackPtr Stack, Token token)
         return;
     }
 
-    else 
+    else
     {// Nič z FIRST ani FOLLOW: syntaktická chyba
         printError(SYNTAX_ERROR, "Očakávaný 'static' alebo '}' v Main_class_block");
         memorySafeExit(SYNTAX_ERROR);
@@ -474,12 +584,12 @@ void smth_list_func(DynamicStackPtr Stack, Token token) {
     }
 }
 
-void Oneline_expr_opt_func(DynamicStackPtr Stack, Token token)    
-{ 
+void Oneline_expr_opt_func(DynamicStackPtr Stack, Token token)
+{
     stackPop(Stack);
     switch (token.type)
     {
-        // FIRST(Expr): všetky tokeny, ktorými môže začínať výraz 
+        // FIRST(Expr): všetky tokeny, ktorými môže začínať výraz
         case TOKEN_IDENTIFIER:
         case TOKEN_GLOBAL_ID:
         case TOKEN_INTEGER:
@@ -503,11 +613,11 @@ void Oneline_expr_opt_func(DynamicStackPtr Stack, Token token)
 }
 
 void Func_dec_func(DynamicStackPtr Stack, Token token)
-{ 
+{
     stackPop(Stack);
     push_check(stackPush(Stack, make_nonterm(N_Func_dec_tail)));
     push_check(stackPush(Stack, make_term(TOKEN_IDENTIFIER)));
-    push_check(stackPush(Stack, make_term(TOKEN_KEYWORD_STATIC))); 
+    push_check(stackPush(Stack, make_term(TOKEN_KEYWORD_STATIC)));
 }
 
 void Func_dec_tail_func(DynamicStackPtr Stack, Token token)
@@ -546,7 +656,7 @@ void Func_dec_tail_func(DynamicStackPtr Stack, Token token)
     }
 }
 void Param_func(DynamicStackPtr Stack, Token token)
-{ 
+{
     stackPop(Stack);
 
     if (token.type == TOKEN_IDENTIFIER)
@@ -563,7 +673,7 @@ void Param_func(DynamicStackPtr Stack, Token token)
     {
         printError(SYNTAX_ERROR, "Očakávaný identifikátor alebo ')' v Param\n");
         memorySafeExit(SYNTAX_ERROR);
-    }   
+    }
 }
 
 void Param_list_func(DynamicStackPtr Stack, Token token)
@@ -587,7 +697,7 @@ void Param_list_func(DynamicStackPtr Stack, Token token)
     }
 }
 void Func_call_func(DynamicStackPtr Stack, Token token)
-{ 
+{
     stackPop(Stack);
 
     if (token.type == TOKEN_IDENTIFIER) {
@@ -617,7 +727,7 @@ void Func_call_func(DynamicStackPtr Stack, Token token)
 }
 
 void Var_func(DynamicStackPtr Stack, Token token)
-{ 
+{
     stackPop(Stack);
     push_check(stackPush(Stack, make_reduce(AST_VAR, 1)));
     push_check(stackPush(Stack, make_nonterm(N_Var_EXT)));
@@ -626,7 +736,7 @@ void Var_func(DynamicStackPtr Stack, Token token)
 }
 
 void Var_EXT_func(DynamicStackPtr Stack, Token token)
-{ 
+{
     stackPop(Stack);
     if (token.type == TOKEN_ASSIGN)
     {
@@ -849,17 +959,17 @@ void Return_expr_func(DynamicStackPtr Stack, Token token)
         case TOKEN_LPAREN:
             push_check(stackPush(Stack, make_nonterm(N_Expr)));
             return;
- 
+
         case TOKEN_NEW_LINE:
         case TOKEN_BLOCK_END:
         case TOKEN_RPAREN:
             return; // ε – žiadny uzol, aritu už rozhodol Return_func
- 
+
          default:
             printError(SYNTAX_ERROR, "Neočakávaný token v Return_expr\n");
             memorySafeExit(SYNTAX_ERROR);
     }
-}  
+}
 
 void Expr_func(DynamicStackPtr Stack, Token token, Token *gLookahead, DynamicStackPtr gAstStack)
 {
@@ -872,7 +982,7 @@ void Expr_func(DynamicStackPtr Stack, Token token, Token *gLookahead, DynamicSta
     }
 
     AstNode *expr = precedence_parse_expr(gLookahead);
-    if (!expr) 
+    if (!expr)
     {
         printError(SYNTAX_ERROR, "Chybný výraz\n");
         memorySafeExit(SYNTAX_ERROR);
@@ -902,6 +1012,7 @@ void  New_line_func(DynamicStackPtr Stack, Token token)
         memorySafeExit(SYNTAX_ERROR);
     }
 }
+<<<<<<< HEAD
 
 Symbol make_reduce(AstNodeType kind, size_t arity)
 {
@@ -989,3 +1100,5 @@ Symbol make_term_with_value(Token token)
     return x;
 
 }
+=======
+>>>>>>> 68bcb181bf8d6ea319e113efd9aa04becebdcf88
