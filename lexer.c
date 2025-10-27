@@ -130,7 +130,8 @@ char *substring(size_t start, size_t end) {
     int   length   = end - start;
     char *vysledek = malloc((length + 1) * sizeof(char));
     if (vysledek == NULL) {
-        return NULL;
+        printError(INTERNAL_ERROR, "nepovedeny malloc v substringu v lexeru radek 133 \n");
+        memorySafeExit(INTERNAL_ERROR);
     }
     int pos = 0;
     for (size_t i = start; i < end; i++) {
@@ -149,7 +150,7 @@ char *substring(size_t start, size_t end) {
  * @return  další token ze vstupu; pokud není více tokenů,
  *          vrací TOKEN_EOF; při chybě může vrátit ERROR_TOKEN
  */
-const char *token_type_to_string(TokenType type) {
+ char *token_type_to_string(TokenType type) {
     switch (type) {
         case TOKEN_EOF:
             return "EOF";

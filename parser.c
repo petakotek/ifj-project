@@ -8,6 +8,8 @@
 * upravované: 22.10.2025
 */
 #include "parser.h"
+#include "lexer.h"
+#include "support_functions.h"
 
 AstNode *parser()
 {
@@ -39,7 +41,6 @@ AstNode *parser()
         if (Stack_top.is_reduce)
         {
             size_t n = Stack_top.reduce_arity;
-            stackPop(Stack);
 
             AstNode **kids = NULL;
 
@@ -70,7 +71,8 @@ AstNode *parser()
                 stackPop(AstStack);
                 kids[n - 1 - i] = kid;
             }
-            AstNode *parent = ast_new(Stack_top.reduce_kind, n, kids);
+            AstNode *parent = ast_new(Stack_top.reduce_kind,kids);
+            stackPop(Stack);
             free(kids);
             aststack_push(AstStack,parent);
             continue;
@@ -134,10 +136,10 @@ AstNode *parser()
                         aststack_push(AstStack, new_leaf(AST_FLOAT_LIT, token));
                         break;
                     case TOKEN_IDENTIFIER:
-                        //aststack_push(AstStack,new_leaf(AST_IDENTIFIER,token));
+                        aststack_push(AstStack,new_leaf(AST_IDENTIFIER,token));
                         break;
                     case TOKEN_GLOBAL_ID:
-                        //aststack_push(AstStack,new_leaf(AST_GLOBAL_ID,token));
+                        aststack_push(AstStack,new_leaf(AST_GLOBAL_ID,token));
                         break;
                     default:
                         // kľúčové slová, NEW_LINE, interpunkcia: zvyčajne do AST nejdú => nič nepushuj
@@ -633,9 +635,13 @@ void Var_EXT_func(DynamicStackPtr Stack, Token token)
         push_check(stackPush(Stack, make_nonterm(N_Expr)));
         push_check(stackPush(Stack, make_term(TOKEN_ASSIGN)));
     }
+    else if (token.type == TOKEN_NEW_LINE)
+    {
+
+    }
     else
     {
-        push_check(stackPush(Stack, make_reduce(AST_VAR, 0))); // eps
+   		printError(SYNTAX_ERROR, "ERROR SYNTAX");
     }
 }
 
