@@ -1,17 +1,5 @@
 # Generování kódu
 
-## Struktura souboru
-- **sablony.c**
-  Obsahuje jednotlivé šablony pro emisi kódu – specializované funkce na konkrétní jazykové konstrukce jako funkce, if, while, přiřazení, výrazy apod.
-
-- **codegen.c**
-  Implementuje hlavní workflow generování kódu – volání jednotlivých šablon a orchestraci průchodu AST.
-
-- **codegen.h**
-  Hlavicový soubor s prototypy funkcí, datovými strukturami a základními definicemi. Nepředpokládá tvorbu nových struktur.
-
-***
-
 ## Workflow codegenu
 
 Máme funkci:
@@ -24,19 +12,12 @@ void codegen_generate(ASTNode *root, SymbolTable *symtab);
 - Nejprve zavolá:
 
 ```c
-emit_prolog();
 emit_globals(symtab);
+emit_seznam(ASTNode *root, SymbolTable *symtab);
 ```
 
-Tyto základní funkce vygenerují prolog kódu a definují globální proměnné.
 
-- Dále zavolá:
-
-```c
-emit_class_program(root, symtab);
-```
-
-Kde pro každé dítě (příkaz/funkce) zleva v AST postupně voláme funkci:
+ve funkci emit_seznam pro každé dítě  zleva v AST postupně voláme funkci tahle funkce bude volana v kazde funkci jelikoz jedeme post:
 
 ```c
 void emit_command(ASTNode *cmd, SymbolTable *symtab);
@@ -75,7 +56,7 @@ void emit_command(ASTNode *cmd, SymbolTable *symtab) {
 ## Dynamická kontrola typu
 
 Nemame implicitni konverze zakazany
-chyby ktere muzou nastat: 
+chyby ktere muzou nastat:
 
     Čtení nebo zápis do neexistující proměnné vede k chybě č. 54.
 
@@ -118,8 +99,7 @@ void emit_arithmetic(ASTNode *expr, SymbolTable *symtab) {
 
 ## Globální proměnné
 
-Důležité je, aby globální proměnné byly inicializovány na `nil` pomocí funkce `emit_globals(symtab);` a kde se take vytvori globalni ramec(GF), abychom předešli běhovým chybám.
-JsouGF ktere je vytvoren  ktere je urcen
+Důležité je, aby globální proměnné byly inicializovány na `nil` pomocí funkce `emit_globals(symtab);` abychom předešli běhovým chybám.
 
 ***
 
@@ -160,6 +140,10 @@ RETURN               # návrat volajícímu
 ## Labely
 
 Je dobré, aby každý LABEL měl jedinečný název. Často se to řeší přidáváním čítače na konec názvu.
+to zajisuje funkce
+```
+char *generatorLable(char * prefix);
+```
 
 **Příklad if/else:**
 

@@ -144,7 +144,6 @@ char* read_all_stdin(void) {
 
     // Null-terminate řetězec
     buffer[total_size] = '\0';
-    //abychom meli i delku souboru
     return buffer;
 }
 /*** konec error_handler.c ***/
