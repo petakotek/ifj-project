@@ -10,9 +10,6 @@
 
 
 #include "parser.h"
-#include "lexer.h"
-#include "support_functions.h"
-#include "dynamic_stack.h"
 
 AstNode *parser()
 {
