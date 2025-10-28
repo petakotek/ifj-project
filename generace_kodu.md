@@ -74,6 +74,15 @@ void emit_command(ASTNode *cmd, SymbolTable *symtab) {
 
 ## Dynamická kontrola typu
 
+Nemame implicitni konverze zakazany
+chyby ktere muzou nastat: 
+
+    Čtení nebo zápis do neexistující proměnné vede k chybě č. 54.
+
+    Čtení neinicializované proměnné vede k chybě č. 56.
+
+    Použití operace nad nevhodnými typy operandů vede k chybě č. 53.
+
 Pro každou operaci, která vyžaduje specifický typ, vložíme instrukce pro běhové kontroly.
 Ve chvíli, kdy potkáme něco jako `x = a + b`, vkládáme typovou kontrolu, kterou interpret provede za běhu.
 Je to podobné jako v assembleru, využívají se skoky:
@@ -109,13 +118,15 @@ void emit_arithmetic(ASTNode *expr, SymbolTable *symtab) {
 
 ## Globální proměnné
 
-Důležité je, aby globální proměnné byly inicializovány na `nil` pomocí funkce `emit_globals(symtab);`, abychom předešli běhovým chybám.
+Důležité je, aby globální proměnné byly inicializovány na `nil` pomocí funkce `emit_globals(symtab);` a kde se take vytvori globalni ramec(GF), abychom předešli běhovým chybám.
+JsouGF ktere je vytvoren  ktere je urcen
 
 ***
 
 ## Konvence volání funkcí
 
-Funkování konvence volání používané u while, if, for, funkcí atd.
+Funkování konvence volání.
+Pouze ve volani funkci vytvarim novy ramec lokalni ramec LF
 
 **Volající (caller):**
 
