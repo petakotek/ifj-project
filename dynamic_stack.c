@@ -172,6 +172,6 @@
 // DEFINE_STACK(char*, String) // Slouží pro testování
 
 DEFINE_STACK(Symbol, Symbol)
-DEFINE_STACK(AstNode, AstNode)
+DEFINE_STACK(AstNode*, AstNode)
 
 /*** konec dynamic_stack.c ***/
