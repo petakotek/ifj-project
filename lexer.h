@@ -124,7 +124,8 @@ typedef enum {
     TOKEN_KEYWORD_NULL_SMALL,
     TOKEN_KEYWORD_CONTINUE,
 	TOKEN_KEYWORD_BREAK,
-	TOKEN_COMMA
+	TOKEN_COMMA,
+	TOKEN_NEGACE,
 } TokenType;
 
 typedef union {
@@ -170,6 +171,5 @@ void lexer_free(void);
  *          vrací TOKEN_EOF; při chybě může vrátit ERROR_TOKEN
  */
 Token lexer_token_next();
-
-const char *token_type_to_string(TokenType type);
+char *token_type_to_string(TokenType type);
 extern char *source;

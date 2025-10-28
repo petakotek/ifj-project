@@ -12,8 +12,8 @@
 #include <stdio.h>
 #include <string.h>
 
-DynamicStackPtr testInit(unsigned size, char* testName);
-void testDestruct(DynamicStackPtr stack);
-void printStack(DynamicStackPtr stack);
+DynamicStringStackPtr testInit(unsigned size, char* testName);
+void testDestruct(DynamicStringStackPtr stack);
+void printStack(DynamicStringStackPtr stack);
 
  /*** konec stackTest.c ***/

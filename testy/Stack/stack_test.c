@@ -9,7 +9,7 @@
 #include "stack_test.h"
 
 void test1() {
-    DynamicStackPtr a = testInit(1, "Test1 size to small");
+    DynamicStringStackPtr a = testInit(1, "Test1 size to small");
 
     if (a == NULL) {
         printf("Ok\n\n");
@@ -19,68 +19,68 @@ void test1() {
 }
 
 void test2() {
-    DynamicStackPtr a = testInit(2, "Test2 push, read, pop");
+    DynamicStringStackPtr a = testInit(2, "Test2 push, read, pop");
 
     printStack(a);
     char data[] = "a";
-    stackPush(a, data);
+    stackStringPush(a, data);
     printStack(a);
-    stackPop(a);
+    stackStringPop(a);
     printStack(a);
 
     testDestruct(a);
 }
 
 void test3() {
-    DynamicStackPtr a =
+    DynamicStringStackPtr a =
         testInit(2, "Test3 multiple pushes causing resize, multiple pops causing downsize");
 
     printStack(a);
 
-    stackPush(a, "a");
+    stackStringPush(a, "a");
     printStack(a);
 
-    stackPush(a, "b");
+    stackStringPush(a, "b");
     printStack(a);
 
-    stackPush(a, "c");
+    stackStringPush(a, "c");
     printStack(a);
 
-    stackPush(a, "d");
+    stackStringPush(a, "d");
     printStack(a);
 
-    stackPush(a, "e");
+    stackStringPush(a, "e");
     printStack(a);
 
-    stackPop(a);
+    stackStringPop(a);
     printStack(a);
 
-    stackPop(a);
+    stackStringPop(a);
     printStack(a);
 
-    stackPop(a);
+    stackStringPop(a);
     printStack(a);
 
-    stackPop(a);
+    stackStringPop(a);
     printStack(a);
 
-    stackPop(a);
+    stackStringPop(a);
     printStack(a);
 
     testDestruct(a);
 }
 
 void test4() {
-    DynamicStackPtr a = testInit(2, "Test4 multiple upsize and order check");
+    DynamicStringStackPtr a = testInit(2, "Test4 multiple upsize and order check");
 
     char* values[] = {"A", "B", "C", "D", "E", "F"};
     for (int i = 0; i < 6; i++) {
-        stackPush(a, values[i]);
+        stackStringPush(a, values[i]);
         printStack(a);
     }
 
     for (int i = 0; i < 6; i++) {
-        stackPop(a);
+        stackStringPop(a);
         printStack(a);
     }
 
@@ -88,85 +88,85 @@ void test4() {
 }
 
 void test5() {
-    DynamicStackPtr a = testInit(2, "Test5 pop from empty stack");
+    DynamicStringStackPtr a = testInit(2, "Test5 pop from empty stack");
 
-    stackPop(a);
+    stackStringPop(a);
     printStack(a);
 
-    stackPush(a, "X");
-    stackPop(a);
+    stackStringPush(a, "X");
+    stackStringPop(a);
     printStack(a);
 
-    stackPop(a);
+    stackStringPop(a);
     printStack(a);
 
     testDestruct(a);
 }
 
 void test6() {
-    DynamicStackPtr a = testInit(2, "Test6 upsize and downsize sequence");
+    DynamicStringStackPtr a = testInit(2, "Test6 upsize and downsize sequence");
 
-    stackPush(a, "1");
-    stackPush(a, "2");
-    stackPush(a, "3");
-    stackPush(a, "4");
-    stackPush(a, "5");
+    stackStringPush(a, "1");
+    stackStringPush(a, "2");
+    stackStringPush(a, "3");
+    stackStringPush(a, "4");
+    stackStringPush(a, "5");
     printStack(a);
 
-    stackPop(a);
-    stackPop(a);
-    stackPop(a);
+    stackStringPop(a);
+    stackStringPop(a);
+    stackStringPop(a);
     printStack(a);
 
-    stackPush(a, "6");
-    stackPush(a, "7");
+    stackStringPush(a, "6");
+    stackStringPush(a, "7");
     printStack(a);
 
     testDestruct(a);
 }
 
 void test7() {
-    DynamicStackPtr a = testInit(2, "Test7 multiple read consistency");
+    DynamicStringStackPtr a = testInit(2, "Test7 multiple read consistency");
 
-    stackPush(a, "aaa");
-    stackPush(a, "bbb");
-    stackPush(a, "ccc");
+    stackStringPush(a, "aaa");
+    stackStringPush(a, "bbb");
+    stackStringPush(a, "ccc");
 
     printStack(a);
-    printf("Read top: %s\n", stackRead(a));
-    printf("Read again: %s\n", stackRead(a));
+    printf("Read top: %s\n", stackStringRead(a));
+    printf("Read again: %s\n", stackStringRead(a));
 
-    stackPop(a);
+    stackStringPop(a);
     printStack(a);
 
     testDestruct(a);
 }
 
 void test8() {
-    DynamicStackPtr a = testInit(2, "Test8 random push/pop sequence");
+    DynamicStringStackPtr a = testInit(2, "Test8 random push/pop sequence");
 
-    stackPush(a, "A");
-    stackPush(a, "B");
-    stackPop(a);
-    stackPush(a, "C");
-    stackPush(a, "D");
-    stackPop(a);
-    stackPush(a, "E");
-    stackPush(a, "F");
-    stackPop(a);
+    stackStringPush(a, "A");
+    stackStringPush(a, "B");
+    stackStringPop(a);
+    stackStringPush(a, "C");
+    stackStringPush(a, "D");
+    stackStringPop(a);
+    stackStringPush(a, "E");
+    stackStringPush(a, "F");
+    stackStringPop(a);
     printStack(a);
 
     testDestruct(a);
 }
 
 void test9() {
-    DynamicStackPtr a = testInit(2, "Test9 many resizes in both ways");
+    DynamicStringStackPtr a = testInit(2, "Test9 many resizes in both ways");
 
     char* letters[] = {"a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m",
                        "n", "o", "p", "x", "r", "x", "t", "u", "v", "w", "x", "y", "z"};
 
     for (unsigned i = 0; i < 26; i++) {
-        stackPush(a, letters[i]);
+        stackStringPush(a, letters[i]);
         if (a->resized == true) {
             printStack(a);
         }
@@ -174,7 +174,7 @@ void test9() {
     printStack(a);
 
     for (unsigned i = 0; i < 26; i++) {
-        stackPop(a);
+        stackStringPop(a);
         if (a->resized == true) {
             printStack(a);
         }
@@ -184,15 +184,15 @@ void test9() {
 }
 
 void test10() {
-    DynamicStackPtr a =
-        testInit(50, "Destruct on a non emtpy stack should not cause memory errors");
+    DynamicStringStackPtr a =
+        testInit(50, "Destruct on a non empty stack should not cause memory errors");
 
-    stackPush(a, "A");
-    stackPush(a, "B");
-    stackPush(a, "C");
-    stackPush(a, "D");
-    stackPush(a, "E");
-    stackPush(a, "F");
+    stackStringPush(a, "A");
+    stackStringPush(a, "B");
+    stackStringPush(a, "C");
+    stackStringPush(a, "D");
+    stackStringPush(a, "E");
+    stackStringPush(a, "F");
     printStack(a);
 
     testDestruct(a);
@@ -210,15 +210,15 @@ int main() {
     test9();
     test10();
 }
-DynamicStackPtr testInit(unsigned size, char* testName) {
+DynamicStringStackPtr testInit(unsigned size, char* testName) {
     printf("\n\n-----------------------------------------------------------\n");
     printf("[%s]\n", testName);
-    return stackConstruct(size);
+    return stackStringConstruct(size);
 }
 
-void testDestruct(DynamicStackPtr stack) { stackDestruct(stack); }
+void testDestruct(DynamicStringStackPtr stack) { stackStringDestruct(stack); }
 
-void printStack(DynamicStackPtr stack) {
+void printStack(DynamicStringStackPtr stack) {
     printf("Stack nextTopElement: %u\n", stack->nextTopElement);
     printf("Stack nextDownsizeAt: %u\n", stack->nextDownsizeAt);
     printf("Stack nextUpsizeAt: %u\n", stack->nextUpsizeAt);
@@ -233,8 +233,8 @@ void printStack(DynamicStackPtr stack) {
     }
     printf("---\n");
 
-    if (stackRead(stack) != NULL) {
-        printf("Stack top element: %s\n", stackRead(stack));
+    if (stackStringRead(stack) != NULL) {
+        printf("Stack top element: %s\n", stackStringRead(stack));
     } else {
         printf("Stack top element: NULL\n");
     }

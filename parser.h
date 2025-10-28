@@ -65,7 +65,7 @@ typedef enum
     N_Opt_newlines
 } Nonterm;
 
-
+AstNode* parser();
 
 /**
  * @brief pomocná funkcia na vytvorenie struktúry Symbol ktorá bude obsahovat ukazatel na uzol stromu
@@ -184,7 +184,7 @@ void smth_func(DynamicStackPtr Stack, Token token);
  * @brief Funkcia na zaobchádzanie s netermínalom smth_tail
  * @param Stack Inicializovaný Stack na ktorom sú strukturý Symbol neterminálov a terminálov
  * @param token Aktuálne použivaný token z lexer.c
- */ 
+ */
 void smth_tail_func(DynamicStackPtr Stack, Token token);
 
 /**
@@ -343,7 +343,7 @@ void Return_func(DynamicStackPtr Stack, Token token);
 void Return_expr_func(DynamicStackPtr Stack, Token token);
 
 /**
- * @brief Funkcia na zaobchádzanie s netermínalom Expr 
+ * @brief Funkcia na zaobchádzanie s netermínalom Expr
  * @param Stack Inicializovaný Stack na ktorom sú strukturý Symbol neterminálov a terminálov
  * @param token Aktuálne použivaný token z lexer.c
  */
@@ -364,4 +364,7 @@ void ElseBody_func(DynamicStackPtr Stack, Token token);
  */
 void  New_line_func(DynamicStackPtr Stack, Token token);
 
+void Opt_newlines_func(DynamicStackPtr Stack, Token token);
+Symbol make_term_value_and_capture_identifier(const char *exact);
+void printSymbol(const Symbol *s);
 #endif // PARSER_H

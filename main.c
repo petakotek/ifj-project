@@ -26,6 +26,9 @@ int main(){
 	//print_and_free_tokens();
 	AstNode *AST;
 	AST = parser();
+	fprintf(stderr, "\n===== AST STROM =====\n");
+	ast_dump(AST);
 	lexer_free();
+	ast_free_whole(AST);
 	free(source_file);
 }
