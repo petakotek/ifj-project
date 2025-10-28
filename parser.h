@@ -365,5 +365,6 @@ void ElseBody_func(DynamicStackPtr Stack, Token token);
 void  New_line_func(DynamicStackPtr Stack, Token token);
 
 void Opt_newlines_func(DynamicStackPtr Stack, Token token);
+Symbol make_term_value_and_capture_identifier(const char *exact);
 void printSymbol(const Symbol *s);
 #endif // PARSER_H

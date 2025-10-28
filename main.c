@@ -33,7 +33,9 @@ int main(){
 	// tvorba stromu pres parser
 	AstNode *AST;
 	AST = parser();
-	ast_traverse(AST,10);
+	fprintf(stderr, "\n===== AST STROM =====\n");
+	ast_dump(AST);
 	lexer_free();
+	ast_free_whole(AST);
 	free(source_file);
 }

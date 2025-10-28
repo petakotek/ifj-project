@@ -1,10 +1,12 @@
 /*
  *
- * Autoři: xpasekj00
+ * Autoři: xpasekj00, xjambrj00
  * Soubor: ast_strom.h
  * Popis: hlavickovy soubor pro ast strom, obsahuje strukturu node pro strom
  */
-#pragma once
+
+#ifndef AST_STROM_H
+#define AST_STROM_H
 #include <string.h>
 #include <stdbool.h>
 #include <stdlib.h>
@@ -12,125 +14,80 @@
 #include "support_functions.h"
 #include <stdio.h>
 #include <assert.h>
-/*
- *
- * Autoři: xpasekj00
- * Soubor: ast_strom.h
- * Popis:
- */
- typedef enum {
-     AST_PROGRAM,
-     AST_PROLOG,
-     AST_MAIN_CLASS,
-     AST_FUNC_DEC,
-     AST_GETTER,
-     AST_SETTER,
-     AST_BLOCK,
-     AST_VAR,
-     AST_ASSIGN,
-     AST_IF,
-     AST_WHILE,
-     AST_FOR,
-     AST_RETURN,
-     AST_BREAK,
-     AST_CONTINUE,
-     AST_FUNC_CALL,
-     AST_PARAM,
-     AST_PARAM_LIST,
-     AST_EXPR,
-     AST_STATEMENT_LIST,
-     AST_STRING_LIT,
-     AST_INT_LIT,
-     AST_FLOAT_LIT,
-     AST_STATEMENT,
-     AST_MAIN_CLASS_BLOCK,
-     AST_IDENTIFIER,
-     AST_GLOBAL_ID,
-      AST_TYPE_COUNT
- } AstNodeType;
 
- typedef struct AstNode {
-     AstNodeType type;
 
-     // Obecné datové pole pro jména, identifikátory a literály.
-     union {
-         char *identifier_name;
-         long long int_value;
-         double float_value;
-         char *string_value;
-     } value;
+typedef enum AstNodeType {
+    // high-level
+    AST_PROGRAM,
+    AST_PROLOG,
+    AST_MAIN_CLASS,
+    AST_MAIN_CLASS_BLOCK,
 
-     // Standardizované pole pro DĚTI (uzly se seznamy)
-     // Používá se pro AST_BLOCK, AST_STATEMENT_LIST, AST_FUNC_CALL (argumenty)
-     struct AstNode **children;
-     int children_count;
+    // bloky a zoznamy
+    AST_BLOCK,
+    AST_STATEMENT,
+    AST_STATEMENT_LIST,
 
-     // Union pro pevně strukturované uzly
-     union {
-	     struct {
-	           struct AstNode *prolog;
-	           struct AstNode *main_class;
-	       } Program;
+    // deklarácie a volania
+    AST_FUNC_DEC,
+    AST_PARAM,
+    AST_FUNC_CALL,
 
-	       struct {
-	           char *import_string; // "ifj25"
-	       } Prolog;
+    // premenné / priradenie
+    AST_VAR,
+    AST_ASSIGN,
 
-	       struct {
-	           char *class_name;
-	           struct AstNode *body; // AST_STATEMENT_LIST
-	       } Main_class;
+    // riadiace štruktúry
+    AST_IF,
+    AST_WHILE,
+    AST_FOR,
+    AST_BREAK,
+    AST_CONTINUE,
+    AST_RETURN,
 
-	       struct {
-	           struct AstNode *params; // AST_PARAM_LIST
-	           struct AstNode *block;
-			   struct AstNode *identifikator;
-	       } Func_dec;
+    // listy
+    AST_IDENTIFIER,
+    AST_GLOBAL_ID,
+    AST_INT_LIT,
+    AST_FLOAT_LIT,
+    AST_STRING_LIT,
 
-	       struct {
-	           struct AstNode *condition;
-	           struct AstNode *if_block;
-	           struct AstNode *else_block;
-	       } If;
+	AST_EMPTY,
+} AstNodeType;
 
-	       struct {
-	           struct AstNode *condition;
-	           struct AstNode *block;
-	       } While;
 
-	       struct {
-	           char *iterator_name;
-	           struct AstNode *container_expr;
-	           struct AstNode *block;
-	       } For;
+// Hodnota listu (len pre listové uzly)
+typedef struct AstValue {
+    long long int_val;
+    double      float_val;
+    char       *str;       // pre IDENTIFIER / GLOBAL_ID / STRING_LIT
+    bool        has_str;
+    bool        is_int;
+    bool        is_float;
+} AstValue;
 
-	       struct {
-	           struct AstNode *target_var;
-	           struct AstNode *expr;
-	           bool is_global; // přidané
-	       } Assign;
+typedef struct AstNode {
+    AstNodeType kind;
+    size_t      arity;
+    struct AstNode **child;
 
-	       struct {
-	           struct AstNode *return_expr; // NULL pokud eps
-	       } Return;
+    bool is_leaf;
+    AstValue value;          // platný len ak is_leaf == true
+} AstNode;
 
-	       struct {
-	           char *identifier_name;
-	           struct AstNode *var_ext; // přiřazení nebo NULL
-	       } Var;
 
-	       struct {
-	           char *function_name;
-	           struct AstNode *arguments; // AST_PARAM_LIST nebo AST_STATEMENT_LIST
-	       } Func_call;
-     } data;
-
- } AstNode;
-
- void ast_free_single(AstNode *kids);
-AstNode *new_leaf(AstNodeType k, Token t);
-AstNode *ast_new(AstNodeType kind, AstNode **kids);
-AstNode* precedence_parse_expr(Token *lookahead);
-void ast_traverse(AstNode *node, int depth);
+AstNode *new_leaf(AstNodeType kind, Token token);
+AstNode *ast_new(AstNodeType kind, size_t arity, AstNode **kids);
 void ast_free_whole(AstNode *node);
-char *ast_node_type_to_string(AstNodeType type);
+
+void ast_traverse(AstNode *node, int depth);
+void ast_value_from_token(AstValue *out, AstNodeType kind, Token *token);
+char *dup_cstr(const char *string);
+const char *ast_node_type_to_string(AstNodeType kind);
+void ast_dump(const AstNode *root);
+AstNode *build_param_flat(size_t n, AstNode **kids);
+AstNode *build_stmtlist_flat(size_t n, AstNode **kids);
+AstNode *build_classblock_flat(size_t n, AstNode **kids);
+
+
+#endif // AST_STROM_H
