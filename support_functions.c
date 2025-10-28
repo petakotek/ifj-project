@@ -46,8 +46,6 @@ void printLog(const char *fmt, ...) {
 
 bool memoryClean() {
     // TODO jednotlivé funkce pro vyčištění struktur a podobně
-    // TODO asi nastavit ať se to volá vždy při exit (atexit) nebo volat ručně i guess
-    //      https://man7.org/linux/man-pages/man3/exit.3.html
     // TODO už můžu přidat lexer_free() a zavření souboru/free na načtený soubor
     lexer_free();
     printError(INTERNAL_ERROR, false, "Funkce memoryClean není implementovaná!\n");
