@@ -58,10 +58,6 @@
             printError(INTERNAL_ERROR, "(%s) Nebyl predan zasobnik!\n", __func__);                \
             return false;                                                                         \
         }                                                                                         \
-        if (data == NULL) {                                                                       \
-            printError(INTERNAL_ERROR, "(%s) Nebyl predan prvek!\n", __func__);                   \
-            return false;                                                                         \
-        }                                                                                         \
                                                                                                   \
         stack->resized = false;                                                                   \
                                                                                                   \
@@ -108,7 +104,6 @@
         stack->resized = false;                                                                   \
                                                                                                   \
         stack->nextTopElement--;                                                                  \
-        stack->array[stack->nextTopElement] = NULL;                                               \
                                                                                                   \
         if (stack->nextTopElement < stack->nextDownsizeAt) {                                      \
             if (stack##NAME##Resize(stack, stack->maxSize / 2) == false) {                        \
