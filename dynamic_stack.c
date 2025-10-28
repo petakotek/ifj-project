@@ -9,6 +9,14 @@
 
 #include "dynamic_stack.h"
 
+/**
+ * @brief Makro pro definici zásobníkových funkcí pro určitý datový typ
+ *
+ * Definuje funkcí pro práci se zásobníkem s formátem stackNAMEOperace
+ * (stackIntPush)
+ * @param TYPE Datový typ data v poli zásobníku
+ * @param NAME Řetězec pro odlišení funkcí prodaný typ zásobníku
+ */
 #define DEFINE_STACK(TYPE, NAME)                                                                  \
     /**                                                                                           \
      * @brief Obstarává změnu velikosti zásobníku a změnu nextDownsizeAt a nextUpsizeAt     \
