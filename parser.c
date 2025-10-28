@@ -44,7 +44,7 @@ AstNode *parser()
         if (Stack_top.is_reduce)
         {
             size_t n = Stack_top.reduce_arity;
-            
+
 
             AstNode **kids = NULL;
 
@@ -86,19 +86,19 @@ AstNode *parser()
                 kids[n - 1 - i] = kid;
             }
             AstNode *parent = NULL;
-            if (Stack_top.reduce_kind == AST_PARAM) 
+            if (Stack_top.reduce_kind == AST_PARAM)
             {
                 parent = build_param_flat(n, kids);      // <<— PLOCHÝ ZOZNAM
-            } 
-            else if (Stack_top.reduce_kind == AST_STATEMENT_LIST) 
+            }
+            else if (Stack_top.reduce_kind == AST_STATEMENT_LIST)
             {
                 parent = build_stmtlist_flat(n, kids);
             }
-            else if (Stack_top.reduce_kind == AST_MAIN_CLASS_BLOCK) 
+            else if (Stack_top.reduce_kind == AST_MAIN_CLASS_BLOCK)
             {
                 parent = build_classblock_flat(n, kids);
             }
-            else 
+            else
             {
                 parent = ast_new(Stack_top.reduce_kind, n, kids);
             }
@@ -132,7 +132,7 @@ AstNode *parser()
                         case TOKEN_IDENTIFIER:
                             ok = (token.value.identifier && Stack_top.value.identifier && strcmp(Stack_top.value.identifier, token.value.identifier) == 0);
                             break;
-                        
+
                         default:
                             ok = true;
                     }
@@ -335,7 +335,7 @@ void Prolog_func(DynamicStackPtr Stack, Token token)
 
     stackPop(Stack);
     push_check(stackPush(Stack, make_reduce(AST_PROLOG,0)));
-    
+
     push_check(stackPush(Stack,make_term(TOKEN_KEYWORD_IFJ)));
     push_check(stackPush(Stack,make_term(TOKEN_KEYWORD_FOR)));
     Token ifj25;
@@ -579,7 +579,7 @@ void Param_list_func(DynamicStackPtr Stack, Token token)
     stackPop(Stack);
     if (token.type == TOKEN_COMMA)
     {
-        push_check(stackPush(Stack, make_reduce(AST_PARAM, 2))); 
+        push_check(stackPush(Stack, make_reduce(AST_PARAM, 2)));
         push_check(stackPush(Stack, make_nonterm(N_Param_list)));
         push_check(stackPush(Stack, make_term_with_value(TOKEN_IDENTIFIER)));
         push_check(stackPush(Stack, make_term(TOKEN_COMMA)));
@@ -642,7 +642,7 @@ void Var_EXT_func(DynamicStackPtr Stack, Token token)
         push_check(stackPush(Stack, make_nonterm(N_Expr)));
         push_check(stackPush(Stack, make_term(TOKEN_ASSIGN)));
     }
-    
+
     // epsilon vetva (koniec deklarácie bez priradenia)
     else if (token.type == TOKEN_NEW_LINE || token.type == TOKEN_BLOCK_END || token.type == TOKEN_RPAREN)
     {

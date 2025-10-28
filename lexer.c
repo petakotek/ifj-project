@@ -261,6 +261,8 @@ char *substring(size_t start, size_t end) {
             return "BREAK";
         case TOKEN_COMMA:
             return "COMMA";
+        case TOKEN_NEGACE:
+        	return "NEGACE";
         default:
             return "UNKNOWN_TOKEN";
     }
@@ -521,14 +523,9 @@ Token lexer_token_next() {
                     token.type = TOKEN_OR;
                     goto token_found;
 
-                case NOT_HALF:
-                    free(buf);
-                    printError(LEX_ERROR,
-                               "neznamy charakter"
-                               "%c on line : %lu",
-                               c, lexer->pos);
-                    memorySafeExit(LEX_ERROR);
-                    break;
+                case NEGACE:
+	                token.type = TOKEN_NEGACE;
+	                goto token_found;
 
                 case NOT:
                     token.type = TOKEN_NOT;
@@ -641,7 +638,7 @@ Token lexer_token_next() {
                     lexer->pos++;
                     zacatek = lexer->pos;
                 } else if (c == '!') {
-                    stav = NOT_HALF;
+                    stav = NEGACE;
                     lexer->pos++;
                     zacatek = lexer->pos;
                 } else if (c == ',') {
@@ -708,7 +705,7 @@ Token lexer_token_next() {
                 } else if (c == '.') {
                     stav = FLOAT_NUMBER;
                     lexer->pos++;
-                } else if (c == ' ' || c == '\n' || c == EOF) {
+                } else if (c == ' ' || c == '\n' || c == EOF || c == ')') {
                     token.type             = TOKEN_INTEGER;
                     token.value.identifier = substring(zacatek, lexer->pos);
                     token.line             = radek;
@@ -735,7 +732,7 @@ Token lexer_token_next() {
                     lexer->pos++;
                 } else if (isdigit(c)) {
                     lexer->pos++;
-                } else if (c == ' ' || c == '\n' || c == '\0') {
+                } else if (c == ' ' || c == '\n' || c == '\0' || c == ')') {
                     token.type             = TOKEN_FLOAT;
                     token.value.identifier = substring(zacatek, lexer->pos);
                     token.line             = radek;
@@ -1175,18 +1172,15 @@ Token lexer_token_next() {
                 token.line = radek;
                 goto token_found;
             }
-            // take mezi stav tady pokud nenasleduje = tak se vraci error
-            case NOT_HALF: {
+
+            case NEGACE: {
                 if (c == '=') {
                     stav = NOT;
                     lexer->pos++;
                 } else {
-                    free(buf);
-                    printError(LEX_ERROR,
-                               "neznamy charakter v lexer_token_next"
-                               "%c on line : %lu",
-                               c, lexer->pos);
-                    memorySafeExit(LEX_ERROR);
+	                token.type = TOKEN_NEGACE;
+	                token.line = radek;
+	                goto token_found;
                 }
                 break;
             }
