@@ -32,10 +32,12 @@ int main(){
 	//print_and_free_tokens();
 	// tvorba stromu pres parser
 	AstNode *AST;
+
 	AST = parser();
-	fprintf(stderr, "\n===== AST STROM =====\n");
+	//funkcia ast_dump -> funkcia na kontrolny vypis ast stromu
 	ast_dump(AST);
 	lexer_free();
+	//free ast stromu
 	ast_free_whole(AST);
 	free(source_file);
 }

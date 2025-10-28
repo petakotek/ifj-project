@@ -957,7 +957,7 @@ Token lexer_token_next() {
                     token.type         = TOKEN_STRING;
                     token.line         = radek;
                     token.value.string = buf;
-                    printf("%s", token.value.string);
+                    //printf("%s", token.value.string);
                     goto token_found_string;
                 }
                 break;
