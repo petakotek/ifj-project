@@ -32,6 +32,9 @@ AstNode *parser()
     gLookahead = &token;
     gAstStack  = AstStack;
 
+
+
+
     while (!stackIsEmpty(Stack))
     {
         Stack_top = stackRead(Stack);
@@ -39,7 +42,7 @@ AstNode *parser()
         if (Stack_top.is_reduce)
         {
             size_t n = Stack_top.reduce_arity;
-            stackPop(Stack);
+            
 
             AstNode **kids = NULL;
 
@@ -71,6 +74,7 @@ AstNode *parser()
                 kids[n - 1 - i] = kid;
             }
             AstNode *parent = ast_new(Stack_top.reduce_kind, n, kids);
+            stackPop(Stack);
             free(kids);
             aststack_push(AstStack,parent);
             continue;
@@ -105,6 +109,7 @@ AstNode *parser()
                             ok = (token.value.identifier && Stack_top.value.identifier && strcmp(Stack_top.value.identifier, token.value.identifier) == 0);
                             concrete_value = true;
                             break;
+                        
                         default:
                             ok = true;
                     }
@@ -633,9 +638,15 @@ void Var_EXT_func(DynamicStackPtr Stack, Token token)
         push_check(stackPush(Stack, make_nonterm(N_Expr)));
         push_check(stackPush(Stack, make_term(TOKEN_ASSIGN)));
     }
+    
+    if (token.type == TOKEN_NEW_LINE)
+    {
+        
+    }
     else
     {
-        push_check(stackPush(Stack, make_reduce(AST_VAR, 0))); // eps
+        printError(SYNTAX_ERROR,"chyba za var");
+        memorySafeExit(SYNTAX_ERROR);
     }
 }
 
