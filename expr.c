@@ -5,9 +5,7 @@
 #ifndef EXPR_C
 #define EXPR_C
 
-#include "ast_strom.h"
-#include "parser.h"
-#include "dynamic_stack.h"
+#include "expr.h"
 
 /**
  * TODO: vyřešit ukončování výrazu? Například počítáním závorek? Popřípadě pokud závorka
@@ -154,8 +152,6 @@ AstNode* parseExpression(Token *token)
     // je potřeba ukládat na zásobník symboly
     Token actualToken = *token;
     push_check(stackPrecedencePush(stack, make_term(P_DOLLAR))); // vložení $ na zasobnik
-    
-    Token nextToken = lexer_token_next();
 
     while (!stackPrecedenceIsEmpty(stack))
     {
@@ -163,7 +159,8 @@ AstNode* parseExpression(Token *token)
         switch (PSA_TABLE[stackPrecedenceRead(stack).symbol][operatorToPush(actualToken)])
         {
         case R: // >
-            stackPrecedencePush(stack, make_term(R));
+            bool pravda = stackPrecedencePush(stack, make_term(R));
+            
             findPrecedenceRule(stack);
             
         case L: // <
@@ -171,7 +168,7 @@ AstNode* parseExpression(Token *token)
             
         case E: // =
             stackPrecedencePush(stack, make_term(actualToken.type));
-            
+            actualToken = lexer_token_next();
         default:
             printError(INTERNAL_ERROR, "(PSA) Zadany vyraz neni syntakticky spravny");
             return NULL;

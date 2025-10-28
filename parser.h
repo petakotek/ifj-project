@@ -20,7 +20,7 @@
 #include "dynamic_stack.h"
 #include "symbol.h"
 #include "ast_strom.h"
-#include "expr.c"
+#include "expr.h"
 
 /**
  * @brief Definicia neterminálov
