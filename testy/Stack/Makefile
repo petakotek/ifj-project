@@ -7,27 +7,30 @@ OBJ = $(SRC:.c=.o)
 EXEC = dynamicStackTest
 
 all: dataGet
-	make $(EXEC)
+	@make $(EXEC)
 
 run:  all
-	./dynamicStackTest
+	@./dynamicStackTest
 
 dataGet:
-	cp ../../dynamic_stack.c ./
-	cp ../../dynamic_stack.h ./
-	cp ../../support_functions.c ./
-	cp ../../support_functions.h ./
+	@cp ../../dynamic_stack.c ./
+	@cp ../../dynamic_stack.h ./
+	@cp ../../support_functions.c ./
+	@cp ../../support_functions.h ./
 
 $(EXEC): $(OBJ)
-	cp ../../dynamic_stack.c ./
-	cp ../../dynamic_stack.h ./
-	$(CC) $(CFLAGS) -o $@ $^
+	@cp ../../dynamic_stack.c ./
+	@cp ../../dynamic_stack.h ./
+	@$(CC) $(CFLAGS) -o $@ $^
 
 
 %.o: %.c
-	$(CC) $(CFLAGS) -c $<
+	@$(CC) $(CFLAGS) -c $<
 
 clean:
-	rm -f $(OBJ) $(EXEC)
+	@rm -f $(OBJ) $(EXEC)
+
+clean_all: clean
+	@rm -f dynamic_stack.* support_functions.*
 
 .PHONY: all clean dataGet
