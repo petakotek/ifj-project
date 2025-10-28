@@ -10,9 +10,7 @@
 
 
 #include "parser.h"
-#include "lexer.h"
-#include "support_functions.h"
-#include "dynamic_stack.h"
+
 
 AstNode *parser()
 {
@@ -879,7 +877,7 @@ void Expr_func(DynamicSymbolStackPtr Stack, Token token, Token *gLookahead, Dyna
         memorySafeExit(INTERNAL_ERROR);
     }
 
-    AstNode *expr = precedence_parse_expr(gLookahead);
+    AstNode *expr = parseExpression(gLookahead);
     if (!expr)
     {
         printError(SYNTAX_ERROR, "Chybný výraz\n");

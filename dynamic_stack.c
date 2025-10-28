@@ -173,5 +173,5 @@
 
 DEFINE_STACK(Symbol, Symbol)
 DEFINE_STACK(AstNode*, AstNode)
-
+DEFINE_STACK(Symbol, Precedence)
 /*** konec dynamic_stack.c ***/
