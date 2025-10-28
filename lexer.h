@@ -1,3 +1,10 @@
+
+/*
+ *
+ * Autoři: xpasekj00
+ * Soubor: lexer.h
+ * Popis:
+ */
 #pragma once
 
 #include <stdio.h>
@@ -107,6 +114,7 @@ typedef enum {
     TOKEN_KEYWORD_FOR,
     TOKEN_KEYWORD_CLASS,
     TOKEN_KEYWORD_IFJ,
+    TOKEN_KEYWORD_IN,
     TOKEN_KEYWORD_IMPORT,
     TOKEN_KEYWORD_NUM,
     TOKEN_KEYWORD_STRING,
@@ -116,8 +124,17 @@ typedef enum {
     TOKEN_KEYWORD_NULL_SMALL,
     TOKEN_KEYWORD_CONTINUE,
 	TOKEN_KEYWORD_BREAK,
-	TOKEN_COMMA
+	TOKEN_COMMA,
+	TOKEN_NEGACE,
 } TokenType;
+
+typedef union {
+    char *identifier;
+
+    double number;
+    char  *string;
+} TokenValue;
+
 /*
 *Definuje samotny jeden token
 *obecne prametry tokenu: Line(pro error zpravy) .. vice mene nenapadlo
@@ -125,11 +142,7 @@ typedef enum {
 */
 typedef struct {
     TokenType type;
-    union {
-           char *identifier;
-           double number;
-           char *string;
-       } value;
+    TokenValue value;
     int line;
 } Token;
 /*
@@ -158,6 +171,5 @@ void lexer_free(void);
  *          vrací TOKEN_EOF; při chybě může vrátit ERROR_TOKEN
  */
 Token lexer_token_next();
-
-const char *token_type_to_string(TokenType type);
+char *token_type_to_string(TokenType type);
 extern char *source;

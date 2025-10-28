@@ -7,9 +7,8 @@
 #include <stddef.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include "lexer.h"
-#include "hashtable.h"
-#include "support_functions.h"
+#include "parser.h"
+#include "ast_strom.h"
 #define SYMBOL_SIZE 201
 #define LITERAL_SIZE 101
 int main(){
@@ -24,8 +23,10 @@ int main(){
 	fread(source_file, 1, len, stdin);
 	source_file[len] = '\0';
 	lexer_init(source_file);
-	//testovani
-	print_and_free_tokens();
+	//print_and_free_tokens();
+	AstNode *AST;
+	AST = parser();
+	ast_traverse(AST,10);
 	lexer_free();
 	free(source_file);
 }
