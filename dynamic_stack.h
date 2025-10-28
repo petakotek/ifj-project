@@ -98,6 +98,7 @@
     /**                                                                                                   \
      * @brief Vrátí data z vrcholu zásobníku (nemaže zásobník)                                     \
      *                                                                                                    \
+     * @warning Očekává, že zásobník existuje a není prázdný. Jinak nedefinované chování!     \
      * @param stack Ukazatel na zásobník                                                                \
      * @return Data z vrcholu                                                                             \
      */                                                                                                   \

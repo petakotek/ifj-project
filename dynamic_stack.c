@@ -78,15 +78,6 @@
     }                                                                                             \
                                                                                                   \
     TYPE stack##NAME##Read(Dynamic##NAME##StackPtr stack) {                                       \
-        if (stack == NULL) {                                                                      \
-            printError(INTERNAL_ERROR, "(%s) Nebyl predan zasobnik!\n", __func__);                \
-            return NULL;                                                                          \
-        }                                                                                         \
-        if (stack->nextTopElement == 0) {                                                         \
-            printWarning("(%s) Cteni z prazdneho zasobniku!\n", __func__);                        \
-            return NULL;                                                                          \
-        }                                                                                         \
-                                                                                                  \
         return stack->array[stack->nextTopElement - 1];                                           \
     }                                                                                             \
                                                                                                   \
