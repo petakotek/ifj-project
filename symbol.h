@@ -18,7 +18,6 @@
 
 
 
-
 /**
  * @brief Štruktúra terminalov/neterminálov vkladaná na zásobník
  */

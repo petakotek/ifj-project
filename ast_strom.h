@@ -5,11 +5,13 @@
  * Popis: hlavickovy soubor pro ast strom, obsahuje strukturu node pro strom
  */
 #pragma once
+#include <string.h>
 #include <stdbool.h>
-#include "ast_strom.h"
 #include <stdlib.h>
 #include "lexer.h"
 #include "support_functions.h"
+#include <stdio.h>
+#include <assert.h>
 /*
  *
  * Autoři: xpasekj00
@@ -41,7 +43,10 @@
      AST_INT_LIT,
      AST_FLOAT_LIT,
      AST_STATEMENT,
-     AST_MAIN_CLASS_BLOCK
+     AST_MAIN_CLASS_BLOCK,
+     AST_IDENTIFIER,
+     AST_GLOBAL_ID,
+      AST_TYPE_COUNT
  } AstNodeType;
 
  typedef struct AstNode {
@@ -79,16 +84,8 @@
 	       struct {
 	           struct AstNode *params; // AST_PARAM_LIST
 	           struct AstNode *block;
+			   struct AstNode *identifikator;
 	       } Func_dec;
-
-	       struct {
-	           struct AstNode *block;
-	       } Getter;
-
-	       struct {
-	           char *param_name;
-	           struct AstNode *block;
-	       } Setter;
 
 	       struct {
 	           struct AstNode *condition;
@@ -132,7 +129,7 @@
 
  void ast_free_single(AstNode *kids);
 AstNode *new_leaf(AstNodeType k, Token t);
-AstNode *ast_new(AstNodeType k, size_t nkids, AstNode **kids);
+AstNode *ast_new(AstNodeType kind, AstNode **kids);
 AstNode* precedence_parse_expr(Token *lookahead);
 void ast_traverse(AstNode *node, int depth);
 void ast_free_whole(AstNode *node);

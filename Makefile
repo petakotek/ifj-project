@@ -1,6 +1,6 @@
 # IFJ25
 CC = gcc
-CFLAGS = -std=c11 -Wall -Wextra -O2
+CFLAGS = -std=c11 -Wall -Wextra -O2 -pedantic
 
 SRC = main.c lexer.c  parser.c support_functions.c symtable.c dynamic_stack.c ast_strom.c expr.c
 OBJ = $(SRC:.c=.o)

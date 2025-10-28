@@ -26,6 +26,7 @@ int main(){
 	//print_and_free_tokens();
 	AstNode *AST;
 	AST = parser();
+	ast_traverse(AST,10);
 	lexer_free();
 	free(source_file);
 }

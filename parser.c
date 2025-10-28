@@ -8,6 +8,8 @@
 * upravované: 22.10.2025
 */
 #include "parser.h"
+#include "lexer.h"
+#include "support_functions.h"
 
 AstNode *parser()
 {
@@ -139,10 +141,10 @@ AstNode *parser()
                         aststack_push(AstStack, new_leaf(AST_FLOAT_LIT, token));
                         break;
                     case TOKEN_IDENTIFIER:
-                        //aststack_push(AstStack,new_leaf(AST_IDENTIFIER,token));
+                        aststack_push(AstStack,new_leaf(AST_IDENTIFIER,token));
                         break;
                     case TOKEN_GLOBAL_ID:
-                        //aststack_push(AstStack,new_leaf(AST_GLOBAL_ID,token));
+                        aststack_push(AstStack,new_leaf(AST_GLOBAL_ID,token));
                         break;
                     default:
                         // kľúčové slová, NEW_LINE, interpunkcia: zvyčajne do AST nejdú => nič nepushuj
