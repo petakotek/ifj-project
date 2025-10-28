@@ -134,7 +134,7 @@
 
 //  DECLARE_STACK(char*, String) // Slouží pro testování
 DECLARE_STACK(Symbol, Symbol)
-DECLARE_STACK(AstNode, AstNode)
+DECLARE_STACK(AstNode*, AstNode)
 
 #endif
 /*** konec dynamic_stack.h ***/

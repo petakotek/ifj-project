@@ -56,7 +56,7 @@ typedef enum{
     AND, // &&
     OR_HALF, // |
     OR, // ||
-    NOT_HALF, // !
+    NEGACE, // !
     NOT, // !=
     DOUBLE_QUO,//""
     END_QUO,   //ukoncovaci stavy pro block string
