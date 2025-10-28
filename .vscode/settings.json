@@ -9,6 +9,12 @@
         "dynamic_stack.h": "c",
         "typeinfo": "c",
         "ast_strom.h": "c",
-        "stdlib.h": "c"
+        "stdlib.h": "c",
+        "system_error": "c",
+        "array": "c",
+        "functional": "c",
+        "tuple": "c",
+        "type_traits": "c",
+        "utility": "c"
     }
 }
