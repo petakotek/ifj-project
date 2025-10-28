@@ -9,6 +9,7 @@
 #include <stdlib.h>
 #include "parser.h"
 #include "ast_strom.h"
+#include "support_functions.h"
 #define SYMBOL_SIZE 201
 #define LITERAL_SIZE 101
 int main(){
@@ -16,14 +17,20 @@ int main(){
 	* Nacitani v vstupu
 	* source_file je globalni promena extern je v lexer.h
 	*/
-	fseek(stdin, 0, SEEK_END);
-	size_t len =ftell(stdin);
-	fseek(stdin, 0, SEEK_SET);
-	char *source_file = malloc(len +1);
-	fread(source_file, 1, len, stdin);
-	source_file[len] = '\0';
+	if(stdin == NULL){
+		return 0;
+	}
+	char *source_file = NULL;
+	//volani funcke na nacteni souboru
+	source_file = read_all_stdin();
+	if (source_file == NULL) {
+        fprintf(stderr, "Chyba: selhalo načítání vstupů\n");
+        return 1;
+    }
+	// inicializovani struktury staraji se o cteni ze souboru
 	lexer_init(source_file);
-	//print_and_free_tokens();
+	print_and_free_tokens();
+	// tvorba stromu pres parser
 	AstNode *AST;
 	AST = parser();
 	fprintf(stderr, "\n===== AST STROM =====\n");

@@ -93,6 +93,12 @@ void printWarning(const char *fmt, ...);
  */
 void printLog(const char *fmt, ...);
 void print_and_free_tokens();
+/**
+* @brief Funkce na nacteni vstupu do retezce tak a abychom se vyhli fseek
+* @param void
+* @return pointer na na allockovane pole se vstupem
+*/
+char* read_all_stdin(void);
 #endif
 
 /*** konec support_functions.h ***/
