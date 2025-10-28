@@ -8,7 +8,10 @@
  */
 
 #include "support_functions.h"
-
+/*
+* Definujeme zakladni kapacitu cteni souboru
+*/
+#define INITIAL_CAPACITY 1024
 // ----------------- deklarace pomocných funkcí -----------------
 /**
  * @brief Zajišťuje volání destruktorů dynamicky alokovaných struktur
@@ -102,5 +105,48 @@ void print_and_free_tokens() {
     } else {
         printf("%s\n", token_type_to_string(token.type));
     }
+}
+/*
+* Funkce na cteni pro nacteni ze vstupu jelikoz muj fseek byl nebezpecny
+*/
+char* read_all_stdin(void) {
+    char *buffer = malloc(INITIAL_CAPACITY);
+    if (buffer == NULL) {
+        return NULL;
+    }
+
+    size_t total_size = 0;
+    size_t capacity = INITIAL_CAPACITY;
+
+    while (1) {
+        size_t bytes_read = fread(
+            buffer + total_size,
+            1,
+            capacity - total_size - 1,
+            stdin
+        );
+        //dostali jsem se na konec
+        if (bytes_read == 0) {
+            break;
+        }
+
+        total_size += bytes_read;
+
+        // zvětšovani bufferu aby nedoslo k preteceni
+        if (total_size >= capacity - 1) {
+            capacity *= 2;
+            char *new_buffer = realloc(buffer, capacity);
+            if (new_buffer == NULL) {
+                free(buffer);
+                return NULL;
+            }
+            buffer = new_buffer;
+        }
+    }
+
+    // Null-terminate řetězec
+    buffer[total_size] = '\0';
+    //abychom meli i delku souboru
+    return buffer;
 }
 /*** konec error_handler.c ***/
