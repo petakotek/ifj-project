@@ -57,6 +57,21 @@ typedef enum AstNodeType {
     AST_STRING_LIT,
 
 	AST_EMPTY,
+
+    // expression
+    AST_PLUS,       // +
+    AST_MINUS,      // -
+    AST_MUL,        // *
+    AST_DIV,        // /
+    AST_EQ,         // ==
+    AST_LT,         // <
+    AST_GT,         // >
+    AST_NOT,        // !
+    AST_AND,        // &&
+    AST_OR,         // ||
+    AST_IS,         // is
+    AST_GTE,        // >=
+    AST_LTE,        // <=
 } AstNodeType;
 
 

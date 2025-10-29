@@ -1,4 +1,7 @@
 import "ifj25" for Ifj
 class Program {
-    static main(x) { x }
+static main() {
+    var x = 5 + 5
+    return
+}
 }

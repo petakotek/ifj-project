@@ -126,6 +126,9 @@ typedef enum {
 	TOKEN_KEYWORD_BREAK,
 	TOKEN_COMMA,
 	TOKEN_NEGACE,
+    TOKEN_DOLLAR,
+    TOKEN_STOP,
+    TOKEN_EXPRESSION,
 } TokenType;
 
 typedef union {
