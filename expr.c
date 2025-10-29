@@ -99,6 +99,7 @@ int operatorToPush(Token token)
         // )
         case TOKEN_RPAREN:  return INDEX_RP;
 
+        case TOKEN_EXPRESSION: return INDEX_ID;
         // jinak je to $
         default:
             return INDEX_DOLLAR;
@@ -177,14 +178,19 @@ void findPrecedenceRule(DynamicPrecedenceStackPtr stack, DynamicAstNodeStackPtr 
     Token p3; // parametr 3
 
     int count = 0;
-
+    if (stack == NULL)
+    {
+        printError(SYNTAX_ERROR, "(PSA) stack je ve findPrecedenceRule NULL\n");
+        memorySafeExit(SYNTAX_ERROR);
+    }
+    
     DynamicPrecedenceStack tmp = *stack; // zkopiruji si stack a spocitam si pocet prvku, ktere na zasobniku jsou
     while (stackPrecedenceRead(&tmp).type != TOKEN_STOP)
     {
         stackPrecedencePop(&tmp);
         count++;
     }
-
+    printf("count %d\n", count);
     switch (count)
     {
 
@@ -250,9 +256,9 @@ void findPrecedenceRule(DynamicPrecedenceStackPtr stack, DynamicAstNodeStackPtr 
                 kids[1] = secondChild;
                 AstNode *newRoot = ast_new(getAstNodeTypeFromTokenType(p2.type), 2, kids);
                 stackAstNodePush(stackA, newRoot);
-
-                    p2.type = TOKEN_EXPRESSION; // vratim na klasicky zasobnik jenom expression
-                    stackPrecedencePush(stack, p2);
+                
+                p2.type = TOKEN_EXPRESSION; // vratim na klasicky zasobnik jenom expression
+                stackPrecedencePush(stack, p2);
             }
         break;
             // TODO E -> (E)
@@ -366,7 +372,6 @@ AstNode* parseExpression(Token *token)
 
         case R: // >
             printf(" > (%d, %d) \n", operatorToPush(StackTop), operatorToPush(actualToken));
-            
             findPrecedenceRule(stackP, stackA); // najde pravidlo z gramatiky a na precedence zasobnik vrati E
             printf("actualToken %d stack po > :", actualToken.type);
             printStack(stackP);
