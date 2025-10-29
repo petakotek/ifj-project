@@ -34,15 +34,4 @@ typedef struct Symbol
     bool is_astnode;
     bool capture_value;
 } Symbol;
-
-
-
-typedef struct
-{
-    Token token; // originalni token
-    bool isTerm;
-    int value;
-}precedentSymbol;
-
-
 #endif // SYMBOL_H
