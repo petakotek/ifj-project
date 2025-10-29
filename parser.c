@@ -112,12 +112,6 @@ AstNode *parser()
                         case TOKEN_STRING:
                             ok = (token.value.string && Stack_top.value.string && strcmp(Stack_top.value.string, token.value.string) == 0);
                             break;
-                        case TOKEN_INTEGER:
-                            ok = (Stack_top.value.number == token.value.number);
-                            break;
-                        case TOKEN_FLOAT:
-                            ok = (Stack_top.value.number == token.value.number);
-                            break;
                         case TOKEN_IDENTIFIER:
                             ok = (token.value.identifier && Stack_top.value.identifier && strcmp(Stack_top.value.identifier, token.value.identifier) == 0);
                             break;
@@ -161,7 +155,7 @@ AstNode *parser()
 
                 //printf("ok\n");
                 stackSymbolPop(Stack);
-                token = lexer_token_next();
+                token = lexer_token_next(); 
             }
             else
             {
@@ -946,12 +940,6 @@ Symbol makeTermValue(Token token)
     x.capture_value = false;
     switch (token.type)
     {
-        case TOKEN_INTEGER:
-            x.value.number = token.value.number;
-            break;
-        case TOKEN_FLOAT:
-            x.value.number = token.value.number;
-            break;
         case TOKEN_STRING:
             x.value.string = token.value.string;
             break;

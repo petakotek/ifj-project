@@ -86,8 +86,8 @@ typedef enum AstNodeType {
  *  
  */
 typedef struct AstValue {
-    int         int_val;
-    float       float_val;
+    long long   int_val;
+    double       float_val;
     char       *str;       // pre IDENTIFIER / GLOBAL_ID / STRING_LIT
     bool        has_str;
     bool        is_int;

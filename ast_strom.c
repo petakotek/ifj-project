@@ -194,11 +194,11 @@ void ast_value_from_token(AstValue *out, AstNodeType kind, Token *token) {
     {
         case AST_INT_LIT:
             out->is_int = true;
-            out->int_val = token->value.number;   // prispôsob ak máš odlišné polia
+            out->int_val = strtoll(token->value.string,NULL,0);   // prispôsob ak máš odlišné polia
             break;
         case AST_FLOAT_LIT:
             out->is_float = true;
-            out->float_val = token->value.number;
+            out->float_val = strtod(token->value.string,NULL);
             break;
         case AST_STRING_LIT:
             out->has_str = true;
@@ -286,7 +286,7 @@ static void ast_dump_rec(const AstNode *n, int depth, const AstNode *parent) {
         if (n->value.has_str && n->value.str)
             fprintf(stderr, " (str=\"%s\")", n->value.str);
         else if (n->value.is_int)
-            fprintf(stderr, " (int=%lld)", (long long)n->value.int_val);
+            fprintf(stderr, " (int=%lld)", n->value.int_val);
         else if (n->value.is_float)
             fprintf(stderr, " (float=%g)", n->value.float_val);
     }
