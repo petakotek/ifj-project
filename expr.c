@@ -320,7 +320,7 @@ void printStack(DynamicPrecedenceStackPtr stack)
  * co mam teda vracet? Vracim ukazatel na koren stromu, ktery vytvorim z vyrazu
    tvořím si podstromečky
  */
-AstNode* parseExpression(Token *token)
+AstNode* parseExpression(Token *token,int flag)
 {
     DynamicPrecedenceStackPtr stackP = stackPrecedenceConstruct(DEFAULT_INIT_ELEMENT_COUNT); // zásobník pro precedeční analýzu
     DynamicAstNodeStackPtr stackA = stackAstNodeConstruct(DEFAULT_INIT_ELEMENT_COUNT); // Zásobník uzlů, na které budou odkládány zpracované výrazy
