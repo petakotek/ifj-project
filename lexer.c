@@ -16,7 +16,6 @@
 #include "support_functions.h"
 /*
  * Proměna  která je potřebna byti viditelnou v celem souboru
- * Kdyz tak predelat a predavat pres argumenty
  */
 static LexerState *lexer = NULL;
 // pocatecni kapacita buffer ktere je pouzivat pro pridavani znaku do stringu
@@ -130,7 +129,7 @@ char *substring(size_t start, size_t end) {
     int   length   = end - start;
     char *vysledek = malloc((length + 1) * sizeof(char));
     if (vysledek == NULL) {
-        printError(INTERNAL_ERROR, "nepovedeny malloc v substringu v lexeru radek 133 \n");
+        printError(INTERNAL_ERROR, "nepovedeny malloc v substringu v lexeru\n");
         memorySafeExit(INTERNAL_ERROR);
     }
     int pos = 0;
@@ -141,15 +140,8 @@ char *substring(size_t start, size_t end) {
     return vysledek;
 }
 /*
- * Funkce na proces zpracovani cisel
- */
-
-/*
- * Hlavní funkce konečného automatu pro získání dalšího tokenu.
- *
- * @return  další token ze vstupu; pokud není více tokenů,
- *          vrací TOKEN_EOF; při chybě může vrátit ERROR_TOKEN
- */
+*Funkce ktera prevadi typ tokenu na char * pro print
+*/
  char *token_type_to_string(TokenType type) {
     switch (type) {
         case TOKEN_EOF:
@@ -283,8 +275,7 @@ void append_char(char **buf, int *delka, int *kapacita, char c) {
 }
 Token lexer_token_next() {
     // inicializace bufferu na string
-    char *buf = malloc(INIT_CAPACITY); /* U kazdeho returnu pred kterem se pointer na buffer nepreda
-                                        MUSI BYT FREE!!! jinak memory leak typicky nasobky 32byt */
+    char *buf = malloc(INIT_CAPACITY); /* Musi se dojit na konec pomoci goto jinak MUSI BYT FREE!!! jinak memory leak typicky nasobky 32byt */
     int   kapacity = INIT_CAPACITY;
     int   delak    = 0;
     Token token    = {0};
@@ -308,20 +299,20 @@ Token lexer_token_next() {
     // buffer pro hexa cisla v stringu
     char hexa_buffer[3];
     /*
-     * Konecny automat funguje tak ze se posovame lexer->count po vstupu ve chvili kdy v pocatecnim
+     * Konecny automat funguje tak ze se posovame lexer->pos po vstupu ve chvili kdy v pocatecnim
      * stavu START_LEX dedekujeme cislo nebo identifikator tak ulozime hodnotu hodnotu lexer->pos do
      * promene zacatek ve chvili kdy v techto stavech zjistime ze dalsi charakter je jiny nez
      * aktualni pozadovanym stavem tak udelame substring od zacatek po lexer->pos a mame token
      * identifikatoru nebo cisla stejne tak u nekterych symbolu a u blokoveho stringu ale u normalni
-     * stringu to musime zduvodu moznosti hexa cisel ukladat do prubezneho bufferu Jednoduche
+     * stringu to musime zduvodu moznosti hexa cisel ukladat do prubezneho bufferu jednoduche
      * symboly vracime okamzite
      */
     while (1) {
         if (lexer->pos >= lexer->length) {  // kontrola aby nas counter nepreskocil velikost
-                                            /*
-                                             * Pro situace ze jsme v urcitem stavu a hitnem EOF bez toho aby tam byl \n tak abychom
-                                             * i ten posledni token vyhodnotili spravnym vystupem
-                                             */
+            /*
+                * Switch pro situace ze jsme v urcitem stavu a hitnem EOF bez toho aby tam byl \n tak abychom
+                * i ten posledni token vyhodnotili spravnym vystupem
+            */
             switch (stav) {
                 case START_LEX:
                     token.type = TOKEN_EOF;

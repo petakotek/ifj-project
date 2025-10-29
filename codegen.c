@@ -55,10 +55,10 @@ void emit_deti(AstNode *root){
 }
 
 void emit_float(AstNode *node){
-	printf("float@%a \n",node->value.float_val);
+	printf("float@%f \n",node->value.float_val);
 }
 void emit_int(AstNode *node){
-	printf("int@%dll \n",node->value.is_int);
+	printf("int@%lld \n",node->value.int_val);
 }
 void emit_string(AstNode *node){
 	printf("string@%s \n",node->value.str);
@@ -66,14 +66,40 @@ void emit_string(AstNode *node){
 void emit_bool(AstNode *node){
 	printf("bool@%s \n",ast_node_type_to_string(node->kind));
 }
+void emit_push_value(AstNode *node){
+	if(node->kind == AST_INT_LIT){
+		printf("PUSHS LF@%lld",node->value.int_val);
+	}else if(node->kind == AST_STRING_LIT){
+		printf("PUSHS LF@%s",node->value.str);
+	}else if(node->kind == AST_FLOAT_LIT){
+		printf("PUSHS LF@%f",node->value.float_val);
+	}
+}
+/*
+* funkce na checkovani typu
+*/
+void check_type(AstNode *node1,AstNode *node2,AstNode *nodeOperator){
+	switch(nodeOperator->kind){
+		case AST_PLUS:{
+
+		}
+		break;
+
+	}
+}
 void emit_assigne(AstNode *node){
-	char * prava_strana = node->value.str;
+	char * pravaStrana = node->value.str;
 	for(int i = 0;i < node->arity;i++){
-		AstNode *leva_strana = node->child[i];
-		if(leva_strana->kind == AST_PLUS){
-			if(leva_strana->kind == AST_INT_LIT){
-			printf("PUSHS LF@%s",leva_strana->child[0]->value.is_int);
-			}
+		AstNode *levaStrana = node->child[i];
+		if(levaStrana->kind == AST_PLUS){
+			emit_push_value(node->child[0]);
+			emit_push_value(node->child[1]);
+			printf("ADDS");
+		}
+		if(levaStrana->kind == AST_MINUS){
+			emit_push_value(node->child[0]);
+			emit_push_value(node->child[1]);
+			printf("MINUS");
 		}
 	}
 }

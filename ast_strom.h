@@ -77,17 +77,17 @@ typedef enum AstNodeType {
 
 /**
  * @brief struktura na uchovavanie hodnoty tokenu pre abstraktny syntakticky strom
- * @param int_value typ int -> uchovanie hodnoty tokenu pre cele cislo 
+ * @param int_value typ int -> uchovanie hodnoty tokenu pre cele cislo
  * @param float_val typ float -> uchovanie hodnoty tokenu pre desatine cislo
  * @param str typ *char -> uchovanie hodnoty tokenu pre premennu, globalnu premennu a pre retazec
  * @param has_str typ bool -> nastavime true ak zapisujeme do str
  * @param is_int typ bool -> nastavime true ak zapisujeme do int_val
  * @param is_float typ bool -> nastavime true ak zapisujeme do float_val
- *  
+ *
  */
 typedef struct AstValue {
-    int         int_val;
-    float       float_val;
+    long long int         int_val;
+    double       float_val;
     char       *str;       // pre IDENTIFIER / GLOBAL_ID / STRING_LIT
     bool        has_str;
     bool        is_int;
