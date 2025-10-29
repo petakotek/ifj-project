@@ -163,7 +163,7 @@ AstNode* parseExpression(Token *token)
             
             findPrecedenceRule(stack);
             
-        case L: // <
+        case L:
             
             
         case E: // =
