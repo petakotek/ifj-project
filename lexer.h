@@ -134,7 +134,6 @@ typedef enum {
 
 typedef union {
     char *identifier;
-    char  *string;
 } TokenValue;
 
 /*
