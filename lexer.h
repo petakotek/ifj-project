@@ -129,6 +129,7 @@ typedef enum {
     TOKEN_DOLLAR,
     TOKEN_STOP,
     TOKEN_EXPRESSION,
+    TOKEN_PSA_END,
 } TokenType;
 
 typedef union {

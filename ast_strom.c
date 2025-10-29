@@ -257,6 +257,10 @@ const char *ast_node_type_to_string(AstNodeType kind) {
         case AST_INT_LIT:          return "INT_LIT";
         case AST_FLOAT_LIT:        return "FLOAT_LIT";
         case AST_STRING_LIT:       return "STRING_LIT";
+    case AST_PLUS:                  return "STRING_PLUS";
+    case AST_MINUS:                  return "STRING_MINUS";
+    case AST_MUL:                  return "STRING_MUL";
+    case AST_DIV:                  return "STRING_DIV";
         case AST_EMPTY: return "EMPTY";
         default:                   return "UNKNOWN_AST_NODE";
     }
