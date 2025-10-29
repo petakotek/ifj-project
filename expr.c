@@ -371,15 +371,47 @@ AstNode* parseExpression(Token *token)
         {
 
         case R: // >
-            bool pravda = stackPrecedencePush(stack, make_term(R));
-            
-            findPrecedenceRule(stack);
-            
+            printf(" > (%d, %d) \n", operatorToPush(StackTop), operatorToPush(actualToken));
+            findPrecedenceRule(stackP, stackA); // najde pravidlo z gramatiky a na precedence zasobnik vrati E
+            printf("actualToken %d stack po > :", actualToken.type);
+            printStack(stackP);
+            if (actualToken.type == TOKEN_NEW_LINE)
+            {
+                findPrecedenceRule(stackP, stackA);
+                printStack(stackP);
+                AstNode* root = stackAstNodeRead(stackA);
+                stackAstNodeDestruct(stackA);
+                stackPrecedenceDestruct(stackP);
+                printf("asdf %s\n", ast_node_type_to_string(root->kind));
+                return root;
+            }
+        break;
+
         case L: // <
-            stackPrecedencePush(stack, make_term(L));
+            printf(" < (%d, %d) \n", operatorToPush(StackTop), operatorToPush(actualToken));
             
+            if (stackPrecedenceRead(stackP).type == TOKEN_DOLLAR || (operatorToPush(StackTop) != INDEX_ID && operatorToPush(StackTop) != INDEX_DOLLAR)) // pokud je na za zasobniku pouze dollar, tak tam vlozim  < i
+            // struktura bude tedy  $ < i
+            { 
+                stackPrecedencePush(stackP, stop); // <
+                stackPrecedencePush(stackP, actualToken);
+                
+            }
+            else{ // vlozim na zasobnik pred prvni terminal stop znak, abych vedel, kde potom koncit
+                Token topTmp = stackPrecedenceRead(stackP);
+                stackPrecedencePop(stackP);
+                stackPrecedencePush(stackP, stop); // <
+                stackPrecedencePush(stackP, topTmp); // to co tam bylo
+                stackPrecedencePush(stackP, actualToken); // aktualni token
+                
+            }
+
+            printf("actualToken %d stack po < :", actualToken.type);
+            printStack(stackP);
+            actualToken = lexer_token_next();
+            break;
         case E: // =
-            stackPrecedencePush(stack, make_term(actualToken.type));
+            stackPrecedencePush(stackP, actualToken);
             actualToken = lexer_token_next();
             break;
 
