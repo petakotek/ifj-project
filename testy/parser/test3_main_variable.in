@@ -1,7 +1,7 @@
 import "ifj25" for Ifj
 class Program {
 static main() {
-    var x = 5 + 5
+    var x = y + 5 * 2
     return
 }
 }
