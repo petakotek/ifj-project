@@ -400,6 +400,7 @@ AstNode* parseExpression(Token *token)
                     stackAstNodeDestruct(stackA);
                     stackPrecedenceDestruct(stackP);
                     // printf("asdf %s\n", ast_node_type_to_string(root->kind));
+                    *token = actualToken;
                     return root;
                 }
                 // printf("actualToken %d\n", actualToken.type);

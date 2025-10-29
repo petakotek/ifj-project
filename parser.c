@@ -414,7 +414,6 @@ void Block_content_func(DynamicSymbolStackPtr Stack, Token token)
         pushCheck(stackSymbolPush(Stack, makeReduce(AST_STATEMENT_LIST, 0)));
         return;
     }
-
     // Inak: 1 položka + chvost → pravorekurzívny plochý zoznam
     pushCheck(stackSymbolPush(Stack, makeReduce(AST_STATEMENT_LIST, 2)));
     pushCheck(stackSymbolPush(Stack, makeNonterm(N_smth_tail)));
