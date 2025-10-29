@@ -23,7 +23,7 @@ typedef enum {
 } precedentRules;
 
 int PSA_TABLE[12][12] = {
-//  +- */ >< >= <=
+//   0  1  2  3  4  5  6  7  8  9  10 11
     {R, L, R, R, R, L, R, R, L, R, L, R}, // + -
     {R, R, R, R, R, L, R, R, L, R, L, R}, // * /
     {L, L, R, R, R, L, R, R, L, R, L, R}, // < > >= <=
@@ -40,18 +40,18 @@ int PSA_TABLE[12][12] = {
 
  // vsechny operatory, ktere se mohou vyskytnout ve vyrazu
 typedef enum{
-    P_PLUS_MINUS, // + -
-    P_MUL_DIV, // + /
-    P_COMPARE, // > < >= <=
-    P_IS, // is
-    P_EQ, // == !=
-    P_NEG, // !
-    P_AND, // &&
-    P_OR, // ||
-    P_ID, // identifikator
-    P_DOLLAR, // dollar
-    P_LP, // (
-    P_RP, // )
+    INDEX_PLUS_MINUS,   // 0    + -
+    INDEX_MUL_DIV,      // 1    * /
+    INDEX_COMPARE,      // 2    > < >= <=
+    INDEX_IS,           // 3    is
+    INDEX_EQ,           // 4    == !=
+    INDEX_NEG,          // 5    !
+    INDEX_AND,          // 6    &&
+    INDEX_OR,           // 7    ||
+    INDEX_ID,           // 8    identifikator
+    INDEX_DOLLAR,       // 9    dollar
+    INDEX_LP,           // 10   (
+    INDEX_RP,           // 11   )
 } operators_t;
 
 
@@ -61,47 +61,47 @@ int operatorToPush(Token token)
     switch (token.type)
         {
         // + -
-        case TOKEN_PLUS:    return P_PLUS_MINUS;
-        case TOKEN_MINUS:   return P_PLUS_MINUS;
+        case TOKEN_PLUS:    return INDEX_PLUS_MINUS;
+        case TOKEN_MINUS:   return INDEX_PLUS_MINUS;
         // * /
-        case TOKEN_STAR:    return P_MUL_DIV;
-        case TOKEN_SLASH:   return P_MUL_DIV;
+        case TOKEN_STAR:    return INDEX_MUL_DIV;
+        case TOKEN_SLASH:   return INDEX_MUL_DIV;
         // > < >= <=
-        case TOKEN_LT:      return P_COMPARE;
-        case TOKEN_GT:      return P_COMPARE;
-        case TOKEN_GTE:     return P_COMPARE;
-        case TOKEN_LTE:     return P_COMPARE;
+        case TOKEN_LT:      return INDEX_COMPARE;
+        case TOKEN_GT:      return INDEX_COMPARE;
+        case TOKEN_GTE:     return INDEX_COMPARE;
+        case TOKEN_LTE:     return INDEX_COMPARE;
         // is
         case TOKEN_KEYWORD_IS:
-                            return P_IS;
+                            return INDEX_IS;
         // == !=
-        case TOKEN_EQ:      return P_EQ;
-        case TOKEN_NOT:     return P_EQ;
+        case TOKEN_EQ:      return INDEX_EQ;
+        case TOKEN_NOT:     return INDEX_EQ;
 
         // !
         // case TOKEN_NEG:     return P_NEG; // Pepa prida token negaci
         // &&
-        case TOKEN_AND:     return P_AND;
+        case TOKEN_AND:     return INDEX_AND;
         // ||
-        case TOKEN_OR:      return P_OR;
+        case TOKEN_OR:      return INDEX_OR;
 
         // id
         case TOKEN_IDENTIFIER:
-                            return P_ID;
+                            return INDEX_ID;
         case TOKEN_INTEGER:
-                            return P_ID;
+                            return INDEX_ID;
         case TOKEN_GLOBAL_ID:
-                            return P_ID;
+                            return INDEX_ID;
         case TOKEN_FLOAT:
-                            return P_ID;
+                            return INDEX_ID;
         // (
-        case TOKEN_LPAREN:  return P_LP;
+        case TOKEN_LPAREN:  return INDEX_LP;
         // )
-        case TOKEN_RPAREN:  return P_RP;
+        case TOKEN_RPAREN:  return INDEX_RP;
 
         // jinak je to $
         default:
-            return P_DOLLAR;
+            return INDEX_DOLLAR;
         }
 }
 
@@ -129,48 +129,233 @@ int operatorToPush(Token token)
  */
 
 /**
+ * @brief Funkce převede TokenType na AstNodeType
+ * 
+ * @param type Typ tokenu
+ * @return AstNodeType Převedený typ uzlu AST
+ */
+AstNodeType getAstNodeTypeFromTokenType(TokenType type)
+{
+    switch (type)
+    {
+    case TOKEN_PLUS:        return AST_PLUS;    // +
+    case TOKEN_MINUS:       return AST_MINUS;   // -
+    case TOKEN_STAR:        return AST_MUL;     // *
+    case TOKEN_SLASH:       return AST_DIV;     // /
+    case TOKEN_IDENTIFIER:  return AST_IDENTIFIER; // identifikator
+    case TOKEN_INTEGER:     return AST_INT_LIT;   // integer literal
+    case TOKEN_FLOAT:       return AST_FLOAT_LIT; // float literal
+    case TOKEN_GLOBAL_ID:   return AST_GLOBAL_ID; // global identifier
+    case TOKEN_EQ:          return AST_EQ;      // ==
+    case TOKEN_LT:          return AST_LT;      // <
+    case TOKEN_GT:          return AST_GT;      // >
+    case TOKEN_NOT:         return AST_NOT;     // !
+    case TOKEN_AND:         return AST_AND;     // &&
+    case TOKEN_OR:          return AST_OR;      // ||
+    case TOKEN_KEYWORD_IS:  return AST_IS;      // is
+    case TOKEN_GTE:         return AST_GTE;     // >=
+    case TOKEN_LTE:         return AST_LTE;     // <=
+
+
+    default:
+        printError(SYNTAX_ERROR, "(PSA) Nelze prevést TokenType na AstNodeType, neznámý token\n");
+        memorySafeExit(SYNTAX_ERROR);
+        break;
+    }
+}
+
+
+/**
  * @brief Funkce nalezne pravidlo z gramatiky precedenční analýzy a sestaví mini podstrom,
  * ke kterému ukazatel na minikořen hodí na stack
  * @param stack Zásobník, který se bude vyprazdňovat po symbol <
  */
-void findPrecedenceRule(DynamicPrecedenceStackPtr stack)
+void findPrecedenceRule(DynamicPrecedenceStackPtr stack, DynamicAstNodeStackPtr stackA)
 {
-    while (stackPrecedenceRead(stack).symbol != L)
+    Token p1; // parametr 1
+    Token p2; // parametr 2
+    Token p3; // parametr 3
+
+    int count = 0;
+
+    DynamicPrecedenceStack tmp = *stack; // zkopiruji si stack a spocitam si pocet prvku, ktere na zasobniku jsou
+    while (stackPrecedenceRead(&tmp).type != TOKEN_STOP)
     {
-        
+        stackPrecedencePop(&tmp);
+        count++;
     }
-    stackPrecedencePop(stack); // vyhození konečného symbolu <
+
+    switch (count)
+    {
+
+        case 1: // E -> i
+            p1 = stackPrecedenceRead(stack);
+            stackPrecedencePop(stack); // vyhodim vyraz
+            stackPrecedencePop(stack); // vyhodim <
+            AstNode* newNode = NULL;
+            newNode = new_leaf(getAstNodeTypeFromTokenType(p1.type), p1);
+            stackAstNodePush(stackA, newNode); // hodim na zasobnik uzel
+        break;
+
+        case 2: // E -> !E
+            p1 = stackPrecedenceRead(stack);
+            stackPrecedencePop(stack); // vyhodim vyraz
+            p2 = stackPrecedenceRead(stack);
+            stackPrecedencePop(stack); // vyhodim vyraz
+            switch (p2.type)
+            {
+            case TOKEN_NOT:
+                {
+                    AstNode **kids = NULL;
+                    // vyberu si ze zasobniku 1 identifikator
+                    AstNode *child = stackAstNodeRead(stackA);
+                    stackAstNodePop(stackA);
+                    kids[0] = child;
+                    AstNode *newRoot = ast_new(AST_NOT, 1, kids);
+                    stackAstNodePush(stackA, newRoot);
+                }
+                break;
+            default:
+                printError(SYNTAX_ERROR, "(PSA) Nenalezene pravidlo pro precedencni analyzu\n");
+                memorySafeExit(SYNTAX_ERROR);
+                break;
+            }
+        break;
+
+        case 3: // E -> E op E
+            p1 = stackPrecedenceRead(stack);
+            stackPrecedencePop(stack); // levy vyraz
+            p2 = stackPrecedenceRead(stack);
+            stackPrecedencePop(stack); // nejaky operator
+            p3 = stackPrecedenceRead(stack);
+            stackPrecedencePop(stack); // pravy vyraz
+            
+
+            // kontrola, ze p1 a p3 jsou nejake identifikatory (cislo, promenna, globalni promenna, ...)
+            // a ze p2 je nejaky operator (+, -, *, /, atd.)
+            if (operatorToPush(p1) == INDEX_ID && operatorToPush(p3) == INDEX_ID &&
+                operatorToPush(p2) != INDEX_ID && operatorToPush(p2) != INDEX_DOLLAR)
+            {
+                AstNode **kids = NULL;
+                // vyberu si ze zasobniku 2 identifikatory
+                AstNode *firstChild = stackAstNodeRead(stackA);
+                stackAstNodePop(stackA);
+                AstNode *secondChild = stackAstNodeRead(stackA);
+                stackAstNodePop(stackA);
+                kids[-1] = firstChild;
+                kids[0] = secondChild;
+                AstNode *newRoot = ast_new(getAstNodeTypeFromTokenType(p2.type), 2, kids);
+                stackAstNodePush(stackA, newRoot);
+            }
+
+
+        default:
+            break;
+
+    }
 }
 
-/**
- * co mam teda vracet? Vracim ukazatel na koren stromu, ktery vytvorim z vyrazu
-``tvořím si podstromečky
- */
-AstNode* parseExpression(Token *token)
+void printStack(DynamicPrecedenceStackPtr stack)
 {
-    DynamicPrecedenceStackPtr stack = stackPrecedenceConstruct(DEFAULT_INIT_ELEMENT_COUNT);
-    // je potřeba ukládat na zásobník symboly
-    Token actualToken = *token;
-    push_check(stackPrecedencePush(stack, make_term(P_DOLLAR))); // vložení $ na zasobnik
 
     while (!stackPrecedenceIsEmpty(stack))
     {
+        Token tokenRead = stackPrecedenceRead(stack);
+        stackPrecedencePop(stack);
+        printf("%d ", tokenRead.type);
+    }
 
-        switch (PSA_TABLE[stackPrecedenceRead(stack).symbol][operatorToPush(actualToken)])
+    printf("\n");
+}
+/**
+ * co mam teda vracet? Vracim ukazatel na koren stromu, ktery vytvorim z vyrazu
+   tvořím si podstromečky
+ */
+AstNode* parseExpression(Token *token)
+{
+    DynamicPrecedenceStackPtr stackP = stackPrecedenceConstruct(DEFAULT_INIT_ELEMENT_COUNT); // zásobník pro precedeční analýzu
+    DynamicAstNodeStackPtr stackA = stackAstNodeConstruct(DEFAULT_INIT_ELEMENT_COUNT); // Zásobník uzlů, na které budou odkládány zpracované výrazy
+
+    Token actualToken = *token; // aktuální token na vstupu, se kterým pracuji
+
+    Token dollar; // $
+    dollar.type = TOKEN_DOLLAR;
+    Token stop; // >
+    stop.type = TOKEN_STOP;
+
+    push_check(stackPrecedencePush(stackP, dollar)); // vložení $ na zasobnik
+    
+    Token StackTop;
+
+    bool firstOK = false; // kontrola, ze prvni token, ktery prijimam je nejaky identifikator
+
+    int krokCount = 1; // debug 
+
+    while (!stackPrecedenceIsEmpty(stackP))
+    {
+        StackTop = stackPrecedenceRead(stackP);
+        int topOp = operatorToPush(StackTop);
+        int inputOp = operatorToPush(actualToken);
+        // ošetření toho, že první token musí být nějaký identifikátor, nelze začít operátorem
+        if (!firstOK)
         {
+            switch (actualToken.type)
+            {
+            case TOKEN_IDENTIFIER:
+            case TOKEN_GLOBAL_ID:
+            case TOKEN_INTEGER:
+            case TOKEN_STRING:
+            case TOKEN_FLOAT:
+                firstOK = true;
+                break;
+
+            default:
+                printError(SYNTAX_ERROR, "(PSA) prvni odeslany token neni identifikator\n");
+                memorySafeExit(SYNTAX_ERROR);
+                break;
+            }
+        }
+        
+        // ošetřit konec výrazu, pokud dostanu NL
+        // if (((operatorToPush(StackTop) != P_ID) && (operatorToPush(StackTop) != P_DOLLAR)) && actualToken.type == TOKEN_NEW_LINE)
+        // {
+        //     Token tmp = lexer_token_next();
+        //     if (tmp.type == TOKEN_NEW_LINE)
+        //     {
+        //         break;
+        //     }   
+        // }
+        printf(" (%d, %d) \n", operatorToPush(StackTop), operatorToPush(actualToken));
+
+        switch (PSA_TABLE[topOp][inputOp])
+        {
+
         case R: // >
-            bool pravda = stackPrecedencePush(stack, make_term(R));
-            
-            findPrecedenceRule(stack);
-            
+            findPrecedenceRule(stackP, stackA); // najde pravidlo z gramatiky a na precedence zasobnik vrati E
+            break;
+
         case L: // <
-            stackPrecedencePush(stack, make_term(L));
-            
-        case E: // =
-            stackPrecedencePush(stack, make_term(actualToken.type));
+            if (stackPrecedenceRead(stackP).type == TOKEN_DOLLAR)
+            { // stack push kdyz tam je jenom dollar
+                printf("tady jsem\n");
+                stackPrecedencePush(stackP, stop); // <
+                stackPrecedencePush(stackP, actualToken);
+            }else{ // stack push after top terminal
+                Token topTmp = stackPrecedenceRead(stackP);
+                stackPrecedencePop(stackP);
+                stackPrecedencePush(stackP, stop); // <
+                stackPrecedencePush(stackP, topTmp); // to co tam bylo
+                stackPrecedencePush(stackP, actualToken); // aktualni token
+            }
             actualToken = lexer_token_next();
-        default:
-            printError(INTERNAL_ERROR, "(PSA) Zadany vyraz neni syntakticky spravny");
+
+        case E: // =
+            stackPrecedencePush(stackP, actualToken);
+            actualToken = lexer_token_next();
+            break;
+
+        default: // stav ktery nesmi nastat
+            printError(SYNTAX_ERROR, "(PSA) Zadany vyraz neni syntakticky spravny\n");
             return NULL;
         }
     }
@@ -183,7 +368,7 @@ AstNode* parseExpression(Token *token)
     Potom  co bude výraz zpraovanej tak zavolám funkci: 
     */
     
-    return stackPrecedenceRead(stack).ast_ptr;
+    return NULL;
 }
 // ast_new // vytvoří nový uzel a vytvoří pouze název a propojí mi ho zpětně
 // ast_new(stack, kids)ů // 

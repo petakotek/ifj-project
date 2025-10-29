@@ -37,4 +37,12 @@ typedef struct Symbol
 
 
 
+typedef struct
+{
+    Token token; // originalni token
+    bool isTerm;
+    int value;
+}precedentSymbol;
+
+
 #endif // SYMBOL_H

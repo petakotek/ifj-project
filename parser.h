@@ -60,7 +60,8 @@ typedef enum
     N_Else_body,
     N_Expr,
     N_New_line_check,
-    N_Opt_newlines
+    N_Opt_newlines,
+    N_Start,
 } Nonterm;
 
 AstNode* parser();
