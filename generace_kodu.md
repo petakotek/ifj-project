@@ -12,7 +12,6 @@ void codegen_generate(ASTNode *root, SymbolTable *symtab);
 - Nejprve zavolá:
 
 ```c
-emit_globals(symtab);
 emit_seznam(ASTNode *root, SymbolTable *symtab);
 ```
 
@@ -79,7 +78,7 @@ void emit_arithmetic(ASTNode *expr, SymbolTable *symtab) {
     printf("JUMPIFEQ $check_right_type GF@type_left string@int\n");
     printf("JUMPIFEQ $check_right_type GF@type_left string@float\n");
     printf("EXIT int@25\n");  // Chyba: levý operand není číslo
-
+    macro_jumpifeq()
     printf("LABEL $check_right_type\n");
 
     // Běhová kontrola typu pravého operandu

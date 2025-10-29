@@ -2,6 +2,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include "ast_strom.h"
+#include "parser.h"
 #include "support_functions.h"
 #define MAX_LABELS 1000
 /**
@@ -42,29 +43,52 @@ void free_labels() {
 *@brief zajisti aby globalni promene byly inicializovany hned na zacatku
 *@param ukazatel na hash_table
 */
-void emit_globals(HashTable *hash_table){
-	/*
-	* Nejakym zpusobem se dostane na globalni promene
-	*/
-}
 /*
 *@brief zajisti rozbaleni uzlu
 *@params ukazatel na uzel
 *@params ukazatel na hash_table
 */
-void emit_deti(AstNode *root,HashTable *hash_table){
+void emit_deti(AstNode *root){
 	for(int i = 0;i < root->arity;i++){
-		emit_command(root->child[i],hash_table);
+		emit_command(root->child[i]);
 	}
 }
 
-void emit_while(AstNode *node, HashTable *hash_table){
-	emit_deti(node, hash_table);
+void emit_float(AstNode *node){
+	printf("float@%a \n",node->value.float_val);
+}
+void emit_int(AstNode *node){
+	printf("int@%dll \n",node->value.is_int);
+}
+void emit_string(AstNode *node){
+	printf("string@%s \n",node->value.str);
+}
+void emit_bool(AstNode *node){
+	printf("bool@%s \n",ast_node_type_to_string(node->kind));
+}
+void emit_assigne(AstNode *node){
+	char * prava_strana = node->value.str;
+	for(int i = 0;i < node->arity;i++){
+		AstNode *leva_strana = node->child[i];
+		if(leva_strana->kind == AST_PLUS){
+			if(leva_strana->kind == AST_INT_LIT){
+			printf("PUSHS LF@%s",leva_strana->child[0]->value.is_int);
+			}
+		}
+	}
+}
+void emit_while(AstNode *node){
+	emit_command(node->child[0]);
+	char * label = generatorLable("while");
+	emit_deti(node);
 	/*
 	* nejak se dostat k podmince ve strome
 	*/
-	printf("JUMPIFEQ ");
-	printf("LABEL %s",generatorLable("while"));
+	char *label_end = generatorLable("while_end");
+	printf("LABEL %s",label);
+	printf("JUMPIFEQ  %s GF@cond bool@false",label_end);
+
+
 }
 
 /*
@@ -72,29 +96,40 @@ void emit_while(AstNode *node, HashTable *hash_table){
 *@params ukazatel na uzel
 *@params ukazatel na hash_table
 */
-void emit_command(AstNode *node, HashTable *hash_table) {
+void emit_command(AstNode *node) {
     switch (node->kind) {
         case AST_PROLOG:
         	emit_prolog();
         break;
         case AST_PROGRAM:
-            emit_deti(node, hash_table);
-            break;
-        case AST_WHILE:
-            emit_while(node, hash_table);
-            break;
-        case AST_FUNC_CALL:
-            emit_funcall(node, hash_table);
+            emit_deti(node);
             break;
         case AST_BLOCK:
-        	emit_deti(node,hash_table);
+        	emit_deti(node);
          	break;
+        case AST_FLOAT_LIT:
+        	emit_float(node);
+         	break;
+        case AST_INT_LIT:
+       		emit_int(node);
+        	break;
+        case AST_STRING_LIT:
+        	emit_string(node);
+         	break;
+        case AST_WHILE:
+              emit_while(node);
+              break;
+        case AST_FUNC_CALL:
+            emit_funcall(node);
+            break;
+        case AST_FOR:
+       		emit_for();
+        	break;
         default:
         	printError(INTERNAL_ERROR, "Chyba v generatoru neznamy uzel");
          	memorySafeExit(INTERNAL_ERROR);
     }
 }
-void codegen_generate(AstNode *root, HashTable *hash_table){
-	emit_globals(hash_table);
-	emit_deti(root, hash_table);
+void codegen_generate(AstNode *root){
+	emit_deti(root);
 }

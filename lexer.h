@@ -130,7 +130,6 @@ typedef enum {
 
 typedef union {
     char *identifier;
-
     double number;
     char  *string;
 } TokenValue;
