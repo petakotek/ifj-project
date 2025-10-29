@@ -32,7 +32,7 @@ int PSA_TABLE[12][12] = {
     {R, R, R, R, R, R, R, R, L, R, L, R}, // negace !
     {L, L, L, L, L, L, R, R, L, R, L, R}, // &&
     {L, L, L, L, L, L, L, R, L, R, L, R}, // ||
-    {R, R, R, R, R, N, R, R, N, R, N, L}, // id
+    {R, R, R, R, R, N, R, R, N, R, N, R}, // id
     {L, L, L, L, L, L, L, L, L, N, L, N}, // dollar
     {L, L, L, L, L, L, L, L, L, N, L, E}, // (
     {R, R, R, R, R, N, R, R, N, R, N, R}, // )
@@ -164,7 +164,8 @@ AstNodeType getAstNodeTypeFromTokenType(TokenType type)
     case TOKEN_KEYWORD_IS:  return AST_IS;      // is
     case TOKEN_GTE:         return AST_GTE;     // >=
     case TOKEN_LTE:         return AST_LTE;     // <=
-
+    case TOKEN_LPAREN:      return AST_LPAREN;     // (
+    case TOKEN_RPAREN:      return AST_RPAREN;     // )
 
     default:
         printError(SYNTAX_ERROR, "(PSA) Nelze prevést TokenType na AstNodeType, neznámý token\n");
@@ -199,6 +200,7 @@ void findPrecedenceRule(DynamicPrecedenceStackPtr stack, DynamicAstNodeStackPtr 
         stackPrecedencePop(&tmp);
         count++;
     }
+    printf("\t\t\tparam count %d\n", count);
     switch (count)
     {
 
@@ -268,9 +270,14 @@ void findPrecedenceRule(DynamicPrecedenceStackPtr stack, DynamicAstNodeStackPtr 
                 
                 p2.type = TOKEN_EXPRESSION; // vratim na klasicky zasobnik jenom expression
                 stackPrecedencePush(stack, p2);
+
+            }else if (p1.type == TOKEN_RPAREN && p3.type == TOKEN_LPAREN &&         //  E -> (E)
+                p2.type == TOKEN_EXPRESSION)
+            {
+                stackPrecedencePush(stack, p2);
             }
         break;
-            // TODO E -> (E)
+            
             
 
 
@@ -360,25 +367,25 @@ AstNode* parseExpression(Token *token)
 
         
         // ošetření toho, že první token musí být nějaký identifikátor, nelze začít operátorem
-        if (!firstOK)
-        {
-            switch (actualToken.type)
-            {
-            case TOKEN_IDENTIFIER:
-            case TOKEN_GLOBAL_ID:
-            case TOKEN_INTEGER:
-            case TOKEN_STRING:
-            case TOKEN_FLOAT:
-            case TOKEN_NEGACE:
-                firstOK = true;
-                break;
+        // if (!firstOK)
+        // {
+        //     switch (actualToken.type)
+        //     {
+        //     case TOKEN_IDENTIFIER:
+        //     case TOKEN_GLOBAL_ID:
+        //     case TOKEN_INTEGER:
+        //     case TOKEN_STRING:
+        //     case TOKEN_FLOAT:
+        //     case TOKEN_NEGACE:
+        //         firstOK = true;
+        //         break;
             
-            default:
-                printError(SYNTAX_ERROR, "(PSA) prvni odeslany token neni identifikator\n");
-                memorySafeExit(SYNTAX_ERROR);
-                break;
-            }
-        }
+        //     default:
+        //         printError(SYNTAX_ERROR, "(PSA) prvni odeslany token neni identifikator\n");
+        //         memorySafeExit(SYNTAX_ERROR);
+        //         break;
+        //     }
+        // }
         
         // radky a sloupce
         switch (PSA_TABLE[operatorToPush(StackTop)][operatorToPush(actualToken)])
@@ -404,7 +411,7 @@ AstNode* parseExpression(Token *token)
                     printf("string %s\n", ast_node_type_to_string(root->kind));
                     stackAstNodeDestruct(stackA);
                     stackPrecedenceDestruct(stackP);
-                    token = &actualToken;
+                    *token = actualToken;
                     return root; // koren, ktery vracim Kubovi na cely vyraz
                 }
 
@@ -439,6 +446,8 @@ AstNode* parseExpression(Token *token)
 
             case E: // =
                 stackPrecedencePush(stackP, actualToken);
+                printf("\t\t\t%d = (%d, %d) ",poradiCount++, operatorToPush(StackTop), operatorToPush(actualToken));
+                printStack(stackP);
                 actualToken = lexer_token_next();
             break;
 

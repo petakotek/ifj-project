@@ -261,6 +261,13 @@ const char *ast_node_type_to_string(AstNodeType kind) {
     case AST_MINUS:                  return "STRING_MINUS";
     case AST_MUL:                  return "STRING_MUL";
     case AST_DIV:                  return "STRING_DIV";
+    case AST_GT:                  return "STRING_GT";
+    case AST_LT:                  return "STRING_LT";
+    case AST_GTE:                  return "STRING_GTE";
+    case AST_LTE:                  return "STRING_LTE";
+    case AST_EQ:                  return "STRING_EQ";
+    case AST_LPAREN:                  return "STRING_LPAREN";
+    case AST_RPAREN:                  return "STRING_RPAREN";
         case AST_EMPTY: return "EMPTY";
         default:                   return "UNKNOWN_AST_NODE";
     }
