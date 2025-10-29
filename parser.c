@@ -265,6 +265,8 @@ AstNode *parser()
                     break;
                 case N_Expr:
                     Expr_func(Stack, gLookahead, gAstStack);
+                    token = *gLookahead;
+                    printf("precedencna odovzdala token jeho type je = %d\n",token.type);
                     break;
                 case N_Else_body:
                     ElseBody_func(Stack, token);
@@ -295,7 +297,7 @@ AstNode *parser()
     AstNode *ast_root = stackAstNodeRead(AstStack);
     stackSymbolDestruct(Stack);
     stackAstNodeDestruct(AstStack);
-    fprintf(stderr,"PARSER IS DONE");
+    fprintf(stderr,"PARSER IS DONE\n");
     return ast_root;
 
 }
@@ -874,9 +876,12 @@ void Expr_func(DynamicSymbolStackPtr Stack, Token *gLookahead, DynamicAstNodeSta
         printError(SYNTAX_ERROR, "Chybný výraz\n");
         memorySafeExit(SYNTAX_ERROR);
     }
+    fprintf(stderr,"expr strom po skoncení funcke parseExpression\n");
+    ast_dump(expr);
 
     // výsledný uzol výrazu dáme na AST zásobník
     pushCheck(stackAstNodePush(gAstStack, expr));
+    
 }
 
 void  New_line_func(DynamicSymbolStackPtr Stack, Token token)
