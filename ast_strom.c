@@ -118,7 +118,7 @@ AstNode *ast_new(AstNodeType kind, size_t arity, AstNode **kids) {
     if (arity > 0) 
     {
         
-        fprintf(stderr, "  -> Alokujem pole detí pre %zu uzlov\n", arity);
+        //fprintf(stderr, "  -> Alokujem pole detí pre %zu uzlov\n", arity);
         
         new_node->child = (AstNode**)malloc(sizeof(AstNode*) * arity);
         if (!new_node->child) {
@@ -128,13 +128,13 @@ AstNode *ast_new(AstNodeType kind, size_t arity, AstNode **kids) {
         for (size_t i = 0; i < arity; ++i)
         {
             
-            fprintf(stderr, "    -> Priraďujem dieťa[%zu] = %d\n", i, kids[i]->value);
+            //fprintf(stderr, "    -> Priraďujem dieťa[%zu] = %d\n", i, kids[i]->value);
             
             new_node->child[i] = kids[i];
         }
 
     }
-    fprintf(stderr, "[AST-NEW] Uzol %s (%p) úspešne vytvorený\n", ast_node_type_to_string(new_node->kind),  (void*)new_node);
+    //fprintf(stderr, "[AST-NEW] Uzol %s (%p) úspešne vytvorený\n", ast_node_type_to_string(new_node->kind),  (void*)new_node);
     
 
     return new_node;
@@ -152,12 +152,12 @@ AstNode *new_leaf(AstNodeType kind, Token token) {
 
     ast_value_from_token(&newLeaf->value, kind, &token);
     
-    if (newLeaf->value.has_str)
-        fprintf(stderr, "  -> String hodnota: '%s'\n", newLeaf->value.str);
-    else if (newLeaf->value.is_int)
-        fprintf(stderr, "  -> Int hodnota: %d\n", newLeaf->value.int_val);
-    else if (newLeaf->value.is_float)
-        fprintf(stderr, "  -> Float hodnota: %f\n", newLeaf->value.float_val);
+    //if (newLeaf->value.has_str)
+    //    fprintf(stderr, "  -> String hodnota: '%s'\n", newLeaf->value.str);
+    //else if (newLeaf->value.is_int)
+    //    fprintf(stderr, "  -> Int hodnota: %d\n", newLeaf->value.int_val);
+    //else if (newLeaf->value.is_float)
+    //   fprintf(stderr, "  -> Float hodnota: %f\n", newLeaf->value.float_val);
     
     return newLeaf;
 }
@@ -257,6 +257,10 @@ const char *ast_node_type_to_string(AstNodeType kind) {
         case AST_INT_LIT:          return "INT_LIT";
         case AST_FLOAT_LIT:        return "FLOAT_LIT";
         case AST_STRING_LIT:       return "STRING_LIT";
+    case AST_PLUS:                  return "STRING_PLUS";
+    case AST_MINUS:                  return "STRING_MINUS";
+    case AST_MUL:                  return "STRING_MUL";
+    case AST_DIV:                  return "STRING_DIV";
         case AST_EMPTY: return "EMPTY";
         default:                   return "UNKNOWN_AST_NODE";
     }

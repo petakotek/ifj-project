@@ -51,7 +51,7 @@ bool memoryClean() {
     // TODO jednotlivé funkce pro vyčištění struktur a podobně
     // TODO už můžu přidat lexer_free() a zavření souboru/free na načtený soubor
     lexer_free();
-    printError(INTERNAL_ERROR, false, "Funkce memoryClean není implementovaná!\n");
+    printWarning("Funkce memoryClean není implementovaná!\n");
     return false;
 }
 
@@ -73,12 +73,12 @@ void print_and_free_tokens() {
         }
         printf("%s", token_type_to_string(token.type));
         if (token.type == TOKEN_STRING || token.type == TOKEN_STRING_BLOCK) {
-            printf(" -> value: \"%s\"\n", token.value.string);
-            free(token.value.string);
+            printf(" -> value: \"%s\"\n", token.value.identifier);
+            free(token.value.identifier);
         } else if (token.type == TOKEN_INTEGER || token.type == TOKEN_HEXA ||
                    token.type == TOKEN_FLOAT || token.type == TOKEN_FLOAT_EXP ||
                    token.type == TOKEN_INTEGER_EXP) {
-            printf(" -> value: \"%s\"\n", token.value.string);
+            printf(" -> value: \"%s\"\n", token.value.identifier);
         } else if (token.type == TOKEN_IDENTIFIER || token.type == TOKEN_GLOBAL_ID) {
             printf(" -> id: \"%s\"\n", token.value.identifier);
             free(token.value.identifier);

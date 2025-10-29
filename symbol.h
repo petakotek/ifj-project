@@ -34,7 +34,4 @@ typedef struct Symbol
     bool is_astnode;
     bool capture_value;
 } Symbol;
-
-
-
 #endif // SYMBOL_H

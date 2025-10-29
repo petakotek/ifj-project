@@ -126,12 +126,14 @@ typedef enum {
 	TOKEN_KEYWORD_BREAK,
 	TOKEN_COMMA,
 	TOKEN_NEGACE,
+    TOKEN_DOLLAR,
+    TOKEN_STOP,
+    TOKEN_EXPRESSION,
+    TOKEN_PSA_END,
 } TokenType;
 
 typedef union {
     char *identifier;
-    double number;
-    char  *string;
 } TokenValue;
 
 /*
