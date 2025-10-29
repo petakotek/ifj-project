@@ -173,5 +173,6 @@
 
 DEFINE_STACK(Symbol, Symbol)
 DEFINE_STACK(AstNode*, AstNode)
-DEFINE_STACK(Symbol, Precedence)
+DEFINE_STACK(HashTable*, HashTablePtr)
+
 /*** konec dynamic_stack.c ***/

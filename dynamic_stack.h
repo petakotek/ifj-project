@@ -15,6 +15,7 @@
 
 #include "support_functions.h"
 #include "symbol.h"
+#include "symtable.h"
 
 /**
  * @brief Základní velikost zásobníku (možné použít při inicializaci)
@@ -135,6 +136,7 @@
 //  DECLARE_STACK(char*, String) // Slouží pro testování
 DECLARE_STACK(Symbol, Symbol)
 DECLARE_STACK(AstNode*, AstNode)
-DECLARE_STACK(Symbol, Precedence)
+DECLARE_STACK(HashTable*, HashTablePtr)
+
 #endif
 /*** konec dynamic_stack.h ***/
