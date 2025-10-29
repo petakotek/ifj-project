@@ -136,5 +136,6 @@
 DECLARE_STACK(Symbol, Symbol)
 DECLARE_STACK(AstNode*, AstNode)
 DECLARE_STACK(Token, Precedence)
+DECLARE_STACK(char *, labelStack)
 #endif
 /*** konec dynamic_stack.h ***/

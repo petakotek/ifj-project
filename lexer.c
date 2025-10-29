@@ -270,6 +270,10 @@ void append_char(char **buf, int *delka, int *kapacita, char c) {
     if (*delka + 1 >= *kapacita) {  // ve chvili kdy hrozi preteceni realloc
         *kapacita *= 2;
         *buf = realloc(*buf, *kapacita);
+        if(buf == NULL){
+       	printError(INTERNAL_ERROR, "error in append_char reallock \n");
+        memorySafeExit(INTERNAL_ERROR);
+        }
     }
     (*buf)[(*delka)++] = c;  // zapisovani znaku do bufferu
 }
