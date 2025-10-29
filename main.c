@@ -39,6 +39,6 @@ int main(){
 	lexer_free();
 	//free ast stromu
 	ast_free_whole(AST);
-	fprintf(stderr,"%s", ast_node_type_to_string(AST->child[0]));
+	fprintf(stderr,"%s", ast_node_type_to_string(AST->child[0]->kind));
 	free(source_file);
 }
