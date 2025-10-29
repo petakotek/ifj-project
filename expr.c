@@ -151,7 +151,7 @@ AstNode* parseExpression(Token *token)
     DynamicPrecedenceStackPtr stack = stackPrecedenceConstruct(DEFAULT_INIT_ELEMENT_COUNT);
     // je potřeba ukládat na zásobník symboly
     Token actualToken = *token;
-    push_check(stackPrecedencePush(stack, make_term(P_DOLLAR))); // vložení $ na zasobnik
+    pushCheck(stackPrecedencePush(stack, makeTerm(P_DOLLAR))); // vložení $ na zasobnik
 
     while (!stackPrecedenceIsEmpty(stack))
     {
@@ -159,15 +159,15 @@ AstNode* parseExpression(Token *token)
         switch (PSA_TABLE[stackPrecedenceRead(stack).symbol][operatorToPush(actualToken)])
         {
         case R: // >
-            bool pravda = stackPrecedencePush(stack, make_term(R));
+            
             
             findPrecedenceRule(stack);
             
         case L: // <
-            stackPrecedencePush(stack, make_term(L));
+            
             
         case E: // =
-            stackPrecedencePush(stack, make_term(actualToken.type));
+            
             actualToken = lexer_token_next();
         default:
             printError(INTERNAL_ERROR, "(PSA) Zadany vyraz neni syntakticky spravny");
