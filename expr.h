@@ -8,6 +8,6 @@
 
 
 
-AstNode* parseExpression(Token *token);
+AstNode* parseExpression(Token *token,int flag);
 
 #endif

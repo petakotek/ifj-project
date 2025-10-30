@@ -399,7 +399,7 @@ Token lexer_token_next() {
                 case DOUBLE_QUO:
                     token.type         = TOKEN_STRING;
                     token.line         = radek;
-                    token.value.string = substring(zacatek, lexer->pos);
+                    token.value.identifier = substring(zacatek, lexer->pos);
                     goto token_found_string;
 
                 case END_QUO:
@@ -412,7 +412,7 @@ Token lexer_token_next() {
                 case END_DOUBLE_QUO:
                     token.type         = TOKEN_STRING_BLOCK;
                     token.line         = radek;
-                    token.value.string = substring(zacatek, lexer->pos);
+                    token.value.identifier = substring(zacatek, lexer->pos);
                     goto token_found_string;
                 // Jednoznakové operátory a symboly
                 case PLUS:
@@ -956,8 +956,7 @@ Token lexer_token_next() {
                     // byl to normální string a tak predavame docasny buffer do return tokenu
                     token.type         = TOKEN_STRING;
                     token.line         = radek;
-                    token.value.string = buf;
-                    //printf("%s", token.value.string);
+                    token.value.identifier = buf;
                     goto token_found_string;
                 }
                 break;
@@ -998,7 +997,7 @@ Token lexer_token_next() {
                     lexer->pos++;
                     token.type         = TOKEN_STRING_BLOCK;
                     token.line         = radek;
-                    token.value.string = substring(zacatek, lexer->pos - 3);
+                    token.value.identifier = substring(zacatek, lexer->pos - 3);
                     goto token_found_string;
                 } else {
                     stav = STRING_BLOCK;  // nebyl to konec, zpět do

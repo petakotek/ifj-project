@@ -194,15 +194,15 @@ void ast_value_from_token(AstValue *out, AstNodeType kind, Token *token) {
     {
         case AST_INT_LIT:
             out->is_int = true;
-            out->int_val = token->value.number;   // prispôsob ak máš odlišné polia
+            out->int_val = strtoll(token->value.identifier,NULL,0);   // prispôsob ak máš odlišné polia
             break;
         case AST_FLOAT_LIT:
             out->is_float = true;
-            out->float_val = token->value.number;
+            out->float_val = strtod(token->value.identifier,NULL);
             break;
         case AST_STRING_LIT:
             out->has_str = true;
-            out->str = dup_cstr(token->value.string);
+            out->str = dup_cstr(token->value.identifier);
             break;
         case AST_IDENTIFIER:
         case AST_GLOBAL_ID: 
@@ -257,7 +257,12 @@ const char *ast_node_type_to_string(AstNodeType kind) {
         case AST_INT_LIT:          return "INT_LIT";
         case AST_FLOAT_LIT:        return "FLOAT_LIT";
         case AST_STRING_LIT:       return "STRING_LIT";
+    case AST_PLUS:                  return "STRING_PLUS";
+    case AST_MINUS:                  return "STRING_MINUS";
+    case AST_MUL:                  return "STRING_MUL";
+    case AST_DIV:                  return "STRING_DIV";
         case AST_EMPTY: return "EMPTY";
+        case AST_NULL: return "NULL";
         default:                   return "UNKNOWN_AST_NODE";
     }
 }
@@ -282,7 +287,7 @@ static void ast_dump_rec(const AstNode *n, int depth, const AstNode *parent) {
         if (n->value.has_str && n->value.str)
             fprintf(stderr, " (str=\"%s\")", n->value.str);
         else if (n->value.is_int)
-            fprintf(stderr, " (int=%lld)", (long long)n->value.int_val);
+            fprintf(stderr, " (int=%lld)", n->value.int_val);
         else if (n->value.is_float)
             fprintf(stderr, " (float=%g)", n->value.float_val);
     }
