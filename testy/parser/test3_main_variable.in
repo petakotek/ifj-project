@@ -1,6 +1,8 @@
 import "ifj25" for Ifj
 class Program {
 static main() {
-    var x = 45 + 5
+    if (5 == 47) {
+        var x = (78 * (x * (45 + 5)) / 4)
+    }
 }
 }
