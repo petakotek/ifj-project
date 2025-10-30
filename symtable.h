@@ -8,23 +8,27 @@
  * Upraveno: 19.10.2025
  */
 
+#ifndef SYMTABLE_H
+#define SYMTABLE_H
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdbool.h>
 
-#ifndef SYMTABLE_H
-#define SYMTABLE_H
-
+#include "semantic_types.h"
 #include "support_functions.h"
 
 
 /**
  * @brief Struktura položky v hashovací tabulce
  */
+/* typedef SemanticSymbol TableItem;
+ */
+
 typedef struct
 {
     char *key; // identifikator
-    Token token; // hodnota toho tokenu
+    SemanticSymbol symbol; // hodnota toho tokenu
     bool isEmpty; // Proměnná sloužící pro ověření, zda je položka již obsazena nějakým prvkem nebo ne
     bool isDeleted; // 
     // implementovat pole jako kruhove, operace % 
@@ -47,7 +51,7 @@ typedef struct
 
 HashTable *hashTableInit();
 void hashTableInitItems(HashTable *); // Funkce pro základní inicializaci 
-int hashTableInsertItem(HashTable *, char *key, Token token); // Funkce pro vložení položky do hashovací tabulky s alokací řetězce, který bude vkládán
+int hashTableInsertItem(HashTable *, char *key, SemanticSymbol token); // Funkce pro vložení položky do hashovací tabulky s alokací řetězce, který bude vkládán
 void hashTableDeleteItem(HashTable *, char *key); // Funkce pro smazání položky v hashovací tabulce
 int hashTableSearchItem(HashTable *, char *key); // Funkce pro nalezení položky v hashovací tabulce
 void hashTableDealloc(HashTable *); // funkce pro dealokaci hashovací tabulky

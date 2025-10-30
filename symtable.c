@@ -46,12 +46,14 @@ void hashTableInitItems(HashTable *hashT)
         hashT->items[indexOfItem].isDeleted = false;
     }
 }
+
+// TODO v celém symtable.* opravit názvy proměnných a přesunout dokumentační komentáře na správné místo a obecná oprava chování, hashTableInsertItem neumí signalizovat že došlo k chybě (index = -1)
 /**
  * @brief Funkce vloží prvek do pole položek hashovací tabulky a vrátí index, na kterém byla položka uložena.
  * V případě, že index, který vypočítala hashovací funkce je již obsazený postupuje dál polem a hledá první volný index
  * @return Funkce vraci index v poli polozek
  */
-int hashTableInsertItem(HashTable *hashT, char *key, Token token)
+int hashTableInsertItem(HashTable *hashT, char *key, SemanticSymbol token)
 {
     int indexToStore = hashItem(key); // zahashovani retezce na index v poli polozek hashovaci tabulky
     if (hashT->tableSize >= hashT->tableCapacity)
@@ -79,7 +81,7 @@ int hashTableInsertItem(HashTable *hashT, char *key, Token token)
         strcpy(hashT->items[indexToStore + shift].key, key);
         hashT->items[indexToStore + shift].isDeleted = false;
         hashT->items[indexToStore + shift].isEmpty = false;
-        hashT->items[indexToStore + shift].token = token;
+        hashT->items[indexToStore + shift].symbol = token;
 
         hashT->tableSize++;
         return indexToStore + shift;
@@ -96,7 +98,7 @@ int hashTableInsertItem(HashTable *hashT, char *key, Token token)
         strcpy(hashT->items[indexToStore].key, key);
         hashT->items[indexToStore].isDeleted = false;
         hashT->items[indexToStore].isEmpty = false;
-        hashT->items[indexToStore].token = token;
+        hashT->items[indexToStore].symbol = token;
 
         hashT->tableSize++;
 
