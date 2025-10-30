@@ -166,6 +166,7 @@ AstNodeType getAstNodeTypeFromTokenType(TokenType type)
     case TOKEN_LTE:         return AST_LTE;     // <=
     case TOKEN_LPAREN:      return AST_LPAREN;     // (
     case TOKEN_RPAREN:      return AST_RPAREN;     // )
+    case TOKEN_NEGACE:      return AST_NOT;     // !
 
     default:
         printError(SYNTAX_ERROR, "(PSA) Nelze prevést TokenType na AstNodeType, neznámý token\n");
@@ -221,24 +222,21 @@ void findPrecedenceRule(DynamicPrecedenceStackPtr stack, DynamicAstNodeStackPtr 
             p2 = stackPrecedenceRead(stack);
             stackPrecedencePop(stack); // vyhodim vyraz
             stackPrecedencePop(stack); // vyhodim <
-            switch (p2.type)
+            if (p1.type == TOKEN_EXPRESSION && p2.type == TOKEN_NEGACE)
             {
-            case TOKEN_NOT:
-                {
-                    AstNode **kids = NULL;
-                    // vyberu si ze zasobniku 1 identifikator
-                    AstNode *child = stackAstNodeRead(stackA);
-                    stackAstNodePop(stackA);
-                    kids[0] = child;
-                    AstNode *newRoot = ast_new(AST_NOT, 1, kids);
-                    stackAstNodePush(stackA, newRoot);
-                }
-                break;
-            default:
-                printError(SYNTAX_ERROR, "(PSA) Nenalezene pravidlo pro precedencni analyzu\n");
-                memorySafeExit(SYNTAX_ERROR);
-                break;
+                AstNode **kids = NULL;
+                kids = malloc(sizeof(AstNode*) * 1);
+                // vyberu si ze zasobniku 2 identifikatory
+                AstNode *firstChild = stackAstNodeRead(stackA);
+                stackAstNodePop(stackA);
+                kids[0] = firstChild;
+                AstNode *newRoot = ast_new(getAstNodeTypeFromTokenType(p2.type), 1, kids); // vytvoření stromu s jedním dítětem, který bude ten výraz
+                stackAstNodePush(stackA, newRoot);
+                
+                p2.type = TOKEN_EXPRESSION; // vratim na klasicky zasobnik jenom expression
+                stackPrecedencePush(stack, p2);
             }
+    
         break;
 
         case 3: // E -> E op E
@@ -323,10 +321,10 @@ void printStack(DynamicPrecedenceStackPtr stack)
     printf("\n");
 }
 /**
- * co mam teda vracet? Vracim ukazatel na koren stromu, ktery vytvorim z vyrazu
-   tvořím si podstromečky
+ * @brief Funkce provede precedenční analýzu nad výrazem, v případě, že je výraz správný vrací ukazatel na kořen stromu, který vytvoří
+ * @param token aktuální token, který přišel od překladače 
  */
-AstNode* parseExpression(Token *token,int flag)
+AstNode* parseExpression(Token *token, int flag)
 {
     DynamicPrecedenceStackPtr stackP = stackPrecedenceConstruct(DEFAULT_INIT_ELEMENT_COUNT); // zásobník pro precedeční analýzu
     DynamicAstNodeStackPtr stackA = stackAstNodeConstruct(DEFAULT_INIT_ELEMENT_COUNT); // Zásobník uzlů, na které budou odkládány zpracované výrazy
