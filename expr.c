@@ -271,17 +271,16 @@ void findPrecedenceRule(DynamicPrecedenceStackPtr stack, DynamicAstNodeStackPtr 
                 p2.type = TOKEN_EXPRESSION; // vratim na klasicky zasobnik jenom expression
                 stackPrecedencePush(stack, p2);
 
-            }else if (p1.type == TOKEN_RPAREN && p3.type == TOKEN_LPAREN &&         //  E -> (E)
+            }else if (p1.type == TOKEN_RPAREN && p3.type == TOKEN_LPAREN &&  //  E -> (E)
                 p2.type == TOKEN_EXPRESSION)
             {
                 stackPrecedencePush(stack, p2);
             }
         break;
-            
-            
-
 
         default:
+            printError(SYNTAX_ERROR, "(PSA) pravidlo gramatiky nebylo nalezeno\n");
+            memorySafeExit(SYNTAX_ERROR);
             break;
 
     }
