@@ -322,15 +322,17 @@ void printStack(DynamicPrecedenceStackPtr stack)
 }
 /**
  * @brief Funkce provede precedenční analýzu nad výrazem, v případě, že je výraz správný vrací ukazatel na kořen stromu, který vytvoří
- * @param token aktuální token, který přišel od překladače 
+ * @param token aktuální token, který přišel od překladače
+ * @param flag Celočíselná hodnota udávající, kde byla funkce volána (výraz ve v podmínce, ...)
  */
 AstNode* parseExpression(Token *token, int flag)
 {
+    printf("%d FLAG\n", flag);
     DynamicPrecedenceStackPtr stackP = stackPrecedenceConstruct(DEFAULT_INIT_ELEMENT_COUNT); // zásobník pro precedeční analýzu
     DynamicAstNodeStackPtr stackA = stackAstNodeConstruct(DEFAULT_INIT_ELEMENT_COUNT); // Zásobník uzlů, na které budou odkládány zpracované výrazy
 
     Token actualToken = *token; // aktuální token na vstupu, se kterým pracuji
-
+    int endFlag = 0;
     Token dollar; // $
     dollar.type = TOKEN_DOLLAR;
     Token stop; // >
@@ -355,14 +357,33 @@ AstNode* parseExpression(Token *token, int flag)
             stackPrecedencePush(stackP, tmpTop);
         }
 
-        if (actualToken.type == TOKEN_NEW_LINE && StackTop.type == TOKEN_DOLLAR) 
+        if ((flag == -1 && actualToken.type == TOKEN_RPAREN && StackTop.type == TOKEN_DOLLAR)
+            || (actualToken.type == TOKEN_NEW_LINE && StackTop.type == TOKEN_DOLLAR)) 
         {   // abych mohl koncit potrebuji mit na vstupu token new line a u zasobniku ukazovat jen na $
-            actualToken.type = TOKEN_PSA_END;
+            printf("splnila se podminka\n");
+            endFlag = TOKEN_PSA_END;
         }
         
         printf("%d Aktualni token %s a stacktop: %s [%d, %d]\n",poradiCount++, token_type_to_string(actualToken.type), token_type_to_string(stackPrecedenceRead(stackP).type), operatorToPush(StackTop), operatorToPush(actualToken));
 
-        
+        if (endFlag == TOKEN_PSA_END) // TODO ošestrit konec výrazu když dostanu flag 0, tzn. že tam může být NEW LINE a výraz pokračovat
+        {
+            while (!checkDollarExpression(stackP))
+            {
+                findPrecedenceRule(stackP, stackA);
+                printf("Final etapa pico: ");
+                printStack(stackP);
+            }
+            
+            AstNode* root = stackAstNodeRead(stackA);
+            printf("string %s\n", ast_node_type_to_string(root->kind));
+            printf("Final etapa pico: ");
+            printStack(stackP);
+            stackAstNodeDestruct(stackA);
+            stackPrecedenceDestruct(stackP);
+            *token = actualToken;
+            return root; // koren, ktery vracim Kubovi na cely vyraz
+        }        
         // ošetření toho, že první token musí být nějaký identifikátor, nelze začít operátorem
         // if (!firstOK)
         // {
@@ -389,28 +410,11 @@ AstNode* parseExpression(Token *token, int flag)
         {
 
             case R: // >
+
                 printf("\tOperace >\n");
                 findPrecedenceRule(stackP, stackA); // najde pravidlo z gramatiky a na precedence zasobnik vrati E
-
                 printf("\t\t\t%d > (%d, %d) ",poradiCount++, operatorToPush(StackTop), operatorToPush(actualToken));
                 printStack(stackP);
-
-                if (actualToken.type == TOKEN_NEW_LINE)
-                {
-                    while (!checkDollarExpression(stackP))
-                    {
-                        findPrecedenceRule(stackP, stackA);
-                        printf("Final etapa pico: ");
-                        printStack(stackP);
-                    }
-                    
-                    AstNode* root = stackAstNodeRead(stackA);
-                    printf("string %s\n", ast_node_type_to_string(root->kind));
-                    stackAstNodeDestruct(stackA);
-                    stackPrecedenceDestruct(stackP);
-                    *token = actualToken;
-                    return root; // koren, ktery vracim Kubovi na cely vyraz
-                }
 
             break;
 
