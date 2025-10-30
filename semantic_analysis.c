@@ -5,130 +5,119 @@
 #include <limits.h>
 
 /* TODO
-- Nějaká struktura pro ukládání úrovní tabulek
 - Nějaká struktura pro ukládání zatím nedefinovaných funkcí (potřeba hlídat, že definice je v nějaké
 NADŘAZENÉ tabulce (a ne v tabulce na stejné/nižší úrovni))
         - Asi to bude hashovací tabulka (která bude mimo zásobník)
 
-- Funkce pro posun stromem
-- Funkce pro validaci různých častých struktur (vracející bool zda je vše ok)
 - Funkce pro úklid mnou vytvořené paměti v případě chyby (pro přidání do memoryClean())
 */
 
-/*
-Rovnou upraví jméno funkce aby odpovídalo počtu parametrů (v tom AST)
-*/
-
 /**
- * @brief
+ * @brief Ukazatel na zásobník pro ukládání jednotlivých rámců
  *
  */
 static DynamicHashTablePtrStackPtr scopesStack = NULL;
 
 /**
- * @brief 
+ * @brief Pomocná funkce pro ověření existence funkce main
  * 
  */
 bool foundMainFunction = false;
 
 
 /**
- * @brief
+ * @brief Vytvoří zásobník
  *
- * @return true
- * @return false
+ * @return true Úspěch
+ * @return false Došlo k chybě
  */
 bool initiateScopeStack();
 
 /**
- * @brief Create a New Scope object
+ * @brief Přidá na zásobník nový rámec
  *
- * @return true
- * @return false
+ * @return true Úspěch
+ * @return false Došlo k chybě
  */
 bool createNewScope();
 
 /**
- * @brief
+ * @brief Odebere ze zásobníku rámec
  *
- * @return true
- * @return false
+ * @return true Úspěch
+ * @return false Došlo k chybě
  */
 bool deleteScope();
 
 /**
- * @brief
+ * @brief Prohledá všechny rámce a vrací ukazatel na první nalezený symbol
  *
- * @param key
- * @return SemanticSymbol*
+ * Začíná nejbližší rámcem (vrchol zásobníku)
+ * @param key Klíč hledaného symbolu
+ * @return SemanticSymbol* Ukazatel na nalezený symbol
  */
 SemanticSymbol* findSymbol(char* key);
 
 /**
- * @brief
+ * @brief Prohledá aktuální rámec (vrchol zásobníku) a vrací ukazatel na nalezený symbol
  *
- * @param key
- * @return SemanticSymbol*
+ * @param key Klíč hledaného symbolu
+ * @return SemanticSymbol* Ukazatel na nalezený symbol
  */
 SemanticSymbol* findSymbolCurrentScope(char* key);
 
 /**
- * @brief
+ * @brief Přidá symbol do globálního rámce (první vytvořený rámec)
  *
- * @param symbol
- * @return true
- * @return false
+ * @param symbol Symbol pro přidání
+ * @return true Úspěch
+ * @return false Došlo k chybě
  */
 bool insertSymbolGlobalScope(SemanticSymbol symbol);
 
 /**
- * @brief
+ * @brief Přidá symbol do aktuálního rámce
  *
- * @param symbol
- * @return true
- * @return false
+ * @param symbol Symbol pro přidání
+ * @return true Úspěch
+ * @return false Došlo k chybě
  */
 bool insertSymbolCurrentScope(SemanticSymbol symbol);
 
 /**
- * @brief Create a New Symbol object
+ * @brief Převede informace z AST uzlu do symbolu pro uložení do tabulky
  *
- * @param sourceNode
- * @param destSymbol
- * @return true
- * @return false
+ * @warning Pokud je cílový symbol funkce, tak ji přejmenuje v sourceNode i destSymbol na "nazevFunkce$pocetParametru"
+ * @param sourceNode Zdrojový AST uzel
+ * @param destSymbol Symbol pro upravení
+ * @param symbolType Typ cílového symbolu
+ * @return true Úspěch
+ * @return false Došlo k chybě
  */
 bool initNewSymbol(AstNode* sourceNode, SemanticSymbol* destSymbol, SemanticSymbolTypes symbolType);
 
-// TODO upravit aby nebyl plagiat a špatné typy
-int numPlaces(int n) {
-    int r = 1;
-    if (n < 0)
-        n = (n == INT_MIN) ? INT_MAX : -n;
-    while (n > 9) {
-        n /= 10;
-        r++;
-    }
-    return r;
-}
 
-// bude vracet něco jiného, asi ukazatel na hodnotu v tabulce checkPossibleScopes(/*TODO hodnota pro
-// hash a hledání*/)
-//  Začne na stackTop a pojede až k 0
+/**
+ * @brief Počet znaků potřebných pro uložení čísla jako řetězce
+ * 
+ * K počtu ještě přičte 1 pro uložení '\0' 
+ * @param n Číslo
+ * @return size_t Počet znaků
+ */
+size_t digitsCount(size_t n);
 
-// Možná hashtable s těmi mými hodnotami?
+// TODO všude přidat kontrolu chyb u bool funkcí (existuje v GCC nějaký flag, co tě nenechá ignorovat výstup funkce?)
 
 // idk_co findDeclarationInUndeclaredCalls(/*idk co*/);
 
-// Nějaká ta funkce na zpracování jednotlivých uzlů (v případě potřeby bude volat sama sebe na
-// určité svoje pod-uzly) Měla by vracet nějakou užitečnou hodnotu... ale jakou bude hodně záležet
-// na typu uzlu... (jak nadřazeného tak podřazeného)
-
-/*
-Návratové hodnoty funkce na post order průchod
-
-*/
-
+/**
+ * @brief Funkce pro rekurzivní procházení stromu
+ *
+ * Chování a návratový kód závisí na typu vstupního uzlu.  
+ * @param currentNode Vstupní uzel
+ * @param parentNodeType Uzel nadřazený vstupnímu uzlu
+ * @return RecursiveSemanticAnalysisReturnValues Návratový kód
+ */
 RecursiveSemanticAnalysisReturnValues recursiveNodeWalker(AstNode*    currentNode,
                                                           AstNodeType parentNodeType);
 
@@ -139,11 +128,17 @@ bool startSematicValidation(AstNode* root) {
         return false;
     }
 
+    initiateScopeStack();
     for (size_t i = 0; i < root->arity; i++) {
         if (recursiveNodeWalker(root->child[i], AST_PROGRAM) != OK) {
             freeSematicsMemory();
             return false;
         }
+    }
+
+    if(foundMainFunction == false) {
+        printError(SEMANTICS_ERROR_OTHERS, "Chybi funkce 'main'!\n");
+        return false;
     }
     return true;
 
@@ -225,17 +220,19 @@ RecursiveSemanticAnalysisReturnValues recursiveNodeWalker(AstNode*    currentNod
 
     switch (currentNode->kind) {
         case (AST_PROGRAM): {
+            printLog("AST_PROGRAM\n");
             // Toto bych neměl dostat znovu (už jej zpracovalo @see startSematicValidation() )
             return ERROR;
             break;
         }
         case (AST_PROLOG): {
+            printLog("AST_PROLOG\n");
             // TODO Huh co tady
-            printWarning("Neni implementovano1!\n");
-            return ERROR;
+            return OK;
             break;
         }
         case (AST_MAIN_CLASS): {
+            printLog("AST_MAIN_CLASS\n");
             if (currentNode->child[0]->value.has_str == false ||
                 strncmp(currentNode->child[0]->value.str, "Program", 8) != 0) {
                 printError(SEMANTICS_ERROR_OTHERS, "Neplatny nazev '%s', ocekavan 'Program'!\n",
@@ -249,6 +246,7 @@ RecursiveSemanticAnalysisReturnValues recursiveNodeWalker(AstNode*    currentNod
             break;
         }
         case (AST_MAIN_CLASS_BLOCK): {
+            printLog("AST_MAIN_CLASS_BLOCK\n");
             createNewScope();
             for (size_t i = 0; i < currentNode->arity; i++) {
                 if (recursiveNodeWalker(currentNode->child[i], AST_MAIN_CLASS_BLOCK) != OK) {
@@ -259,6 +257,7 @@ RecursiveSemanticAnalysisReturnValues recursiveNodeWalker(AstNode*    currentNod
             break;
         }
         case (AST_BLOCK): {
+            printLog("AST_BLOCK\n");
             createNewScope();
             for (size_t i = 0; i < currentNode->arity; i++) {
                 if (recursiveNodeWalker(currentNode->child[i], AST_BLOCK) != OK) {
@@ -269,15 +268,15 @@ RecursiveSemanticAnalysisReturnValues recursiveNodeWalker(AstNode*    currentNod
             break;
         }
         case (AST_STATEMENT): {
+            printLog("AST_STATEMENT\n");
             break;
         }
         case (AST_STATEMENT_LIST): {
+            printLog("AST_STATEMENT_LIST\n");
             break;
         }
         case (AST_FUNC_DEC): {
-            // Vezmu jméno a počet parametrů a spojím na jmeno$pocetParam
-            // Vyhledám klíč v databázi (řvu pokud existuje)
-            // Přidám nový do scope
+            printLog("AST_FUNC_DEC\n");
 
             if(strncmp(currentNode->child[0]->value.str, "main", 5) == 0) {
                 // TODO asi chyba pro víc main
@@ -285,7 +284,6 @@ RecursiveSemanticAnalysisReturnValues recursiveNodeWalker(AstNode*    currentNod
             }
 
             SemanticSymbol newSymbol;
-
             initNewSymbol(currentNode, &newSymbol, FUNCTION);
 
             SemanticSymbol* foundSymbol = findSymbol(currentNode->child[0]->value.str);
@@ -307,14 +305,17 @@ RecursiveSemanticAnalysisReturnValues recursiveNodeWalker(AstNode*    currentNod
             break;
         }
         case (AST_PARAM): {
+            printLog("AST_PARAM\n");
             // TODO tady asi něco bude
             return OK;
             break;
         }
         case (AST_FUNC_CALL): {
+            printLog("AST_FUNC_CALL\n");
             break;
         }
         case (AST_VAR): {
+            printLog("AST_VAR\n");
 
             SemanticSymbol newSymbol;
 
@@ -331,95 +332,133 @@ RecursiveSemanticAnalysisReturnValues recursiveNodeWalker(AstNode*    currentNod
             break;
         }
         case (AST_ASSIGN): {
+            printLog("AST_ASSIGN\n");
             break;
         }
         case (AST_IF): {
+            printLog("AST_IF\n");
             break;
         }
         case (AST_WHILE): {
+            printLog("AST_WHILE\n");
             break;
         }
         case (AST_FOR): {
+            printLog("AST_FOR\n");
             break;
         }
         case (AST_BREAK): {
+            printLog("AST_BREAK\n");
             break;
         }
         case (AST_CONTINUE): {
+            printLog("AST_CONTINUE\n");
             break;
         }
         case (AST_RETURN): {
+            printLog("AST_RETURN\n");
             // TODO odstranění věcí za?
             return OK;
             break;
         }
         case (AST_IDENTIFIER): {
+            printLog("AST_IDENTIFIER\n");
             break;
         }
         case (AST_GLOBAL_ID): {
+            printLog("AST_GLOBAL_ID\n");
             break;
         }
         case (AST_INT_LIT): {
+            printLog("AST_INT_LIT\n");
             break;
         }
         case (AST_FLOAT_LIT): {
+            printLog("AST_FLOAT_LIT\n");
             break;
         }
         case (AST_STRING_LIT): {
+            printLog("AST_STRING_LIT\n");
             break;
         }
         case (AST_EMPTY): {
+            printLog("AST_EMPTY\n");
             // TODO
             return OK;
             break;
         }
+        case (AST_NULL): {
+            printLog("AST_NULL\n");
+            break;
+        }
         case (AST_PLUS): {
+            printLog("AST_PLUS\n");
             break;
         }
         case (AST_MINUS): {
+            printLog("AST_MINUS\n");
             break;
         }
         case (AST_MUL): {
+            printLog("AST_MUL\n");
             break;
         }
         case (AST_DIV): {
+            printLog("AST_DIV\n");
             break;
         }
         case (AST_EQ): {
+            printLog("AST_EQ\n");
             break;
         }
         case (AST_LT): {
+            printLog("AST_LT\n");
             break;
         }
         case (AST_GT): {
+            printLog("AST_GT\n");
             break;
         }
         case (AST_NOT): {
+            printLog("AST_NOT\n");
             break;
         }
         case (AST_AND): {
+            printLog("AST_AND\n");
             break;
         }
         case (AST_OR): {
+            printLog("AST_OR\n");
             break;
         }
         case (AST_IS): {
+            printLog("AST_IS\n");
             break;
         }
         case (AST_GTE): {
+            printLog("AST_GTE\n");
             break;
         }
         case (AST_LTE): {
+            printLog("AST_LTE\n");
             break;
         }
     }
-
-    printLog("End of (%s)\n", __func__);
     return OK;
 }
 
 void freeSematicsMemory() {
-    // TODO
+    if(scopesStack == NULL) {
+        printLog("(%s) volano na prazdny scopeStack.\n", __func__);
+        return;
+    }
+
+    while (stackHashTablePtrIsEmpty(scopesStack) != true) {
+        hashTableDealloc(stackHashTablePtrRead(scopesStack));
+        stackHashTablePtrPop(scopesStack);
+    }
+
+    stackHashTablePtrDestruct(scopesStack);
 }
 
 bool initiateScopeStack() {
@@ -542,7 +581,7 @@ bool initNewSymbol(AstNode* sourceNode, SemanticSymbol* destSymbol,
     switch (symbolType) {
         case (FUNCTION): {
             unsigned newNameLength =
-                strlen(sourceNode->value.str) + numPlaces(sourceNode->child[1]->arity)+1;
+                strlen(sourceNode->child[0]->value.str) + 1 + digitsCount(sourceNode->child[1]->arity); // prostor pro separátor '$'
 
             char* newName = malloc(sizeof(char) * newNameLength);
 
@@ -553,16 +592,18 @@ bool initNewSymbol(AstNode* sourceNode, SemanticSymbol* destSymbol,
 
             destSymbol->name = newName;
 
-            sprintf(destSymbol->name, "%s$%lu", sourceNode->child[0]->value.str,
+            snprintf(destSymbol->name, newNameLength ,"%s$%lu", sourceNode->child[0]->value.str,
                     sourceNode->child[1]->arity);
             destSymbol->paramCount = sourceNode->child[1]->arity;
 
             free(sourceNode->child[0]->value.str);
             sourceNode->child[0]->value.str = newName;
+            break;
         }
         case (VARIABLE): {
             destSymbol->name = sourceNode->child[0]->value.str;
             destSymbol->dataType = NULL_VAL; // TODO tady to bude jinak pro 'var x' a 'var x = 5'
+            break;
         }
         case (GLOBAL): {
         }
@@ -579,6 +620,30 @@ bool initNewSymbol(AstNode* sourceNode, SemanticSymbol* destSymbol,
     }
 
     return true;
+}
+
+size_t digitsCount(size_t n) {
+// TODO nějak chytřeji udělat...
+
+    if(n < 10) {
+        return 2; // číslice a \0
+    }
+
+    if(n < 100) {
+        return 3; // číslice a \0
+    }
+
+        if(n < 1000) {
+        return 4; // číslice a \0
+    }
+
+        if(n < 10000) {
+        return 5; // číslice a \0
+    }
+
+    // TODO
+    printWarning("NENI IMPLEMEnTOVANO %s", __func__);
+    return 50;
 }
 
 // TODO patička

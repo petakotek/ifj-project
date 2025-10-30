@@ -9,11 +9,17 @@
 #include "ast_strom.h"
 #include "dynamic_stack.h"
 
-
+/**
+ * @brief Funkce pro zahájení sémantické kontroly
+ * 
+ * @param root Vrchol abstraktního syntaktického stromu
+ * @return true Sémantická kontrola je v pořádku
+ * @return false Byla nalezena sémantická chyba
+ */
 bool startSematicValidation(AstNode* root);
 
 /**
- * @brief 
+ * @brief Uklidí paměť používanou sémantickou analýzou
  * 
  */
 void freeSematicsMemory();

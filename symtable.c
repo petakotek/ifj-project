@@ -172,7 +172,8 @@ int hashTableSearchItem(HashTable *hashT, char *key)
         // Pokud narazíme na prázdnou pozici, klíč není v tabulce
         if (hashT->items[currentIndex].key == NULL)
         {
-            printError(INTERNAL_ERROR, "Prvek \"%s\" v tabulce nebyl nalezen\n", key);
+            // TODOD tohle je blbost mít jako error... proto hledáme
+            //printError(INTERNAL_ERROR, "Prvek \"%s\" v tabulce nebyl nalezen\n", key);
             return -1;
         }
 
