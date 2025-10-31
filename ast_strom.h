@@ -72,6 +72,8 @@ typedef enum AstNodeType {
     AST_IS,         // is
     AST_GTE,        // >=
     AST_LTE,        // <=
+    AST_LPAREN,     // (
+    AST_RPAREN,     // )
     AST_NULL
 } AstNodeType;
 
