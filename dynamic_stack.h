@@ -20,7 +20,7 @@
  * @brief Základní velikost zásobníku (možné použít při inicializaci)
  *
  */
-#define DEFAULT_INIT_ELEMENT_COUNT 300
+#define DEFAULT_INIT_ELEMENT_COUNT 20
 
 /**
  * @brief Makro pro deklaraci zásobníku pro určitý datový typ
