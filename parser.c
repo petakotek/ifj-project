@@ -626,6 +626,7 @@ void Func_dec_tail_func(DynamicSymbolStackPtr Stack, Token token)
     {
         // Vetva: ( Param ) Block
         pushCheck(stackSymbolPush(Stack, makeReduce(AST_FUNC_DEC, 3)));
+        pushCheck(stackSymbolPush(Stack, makeReduce(AST_BLOCK,1)));
         pushCheck(stackSymbolPush(Stack, makeTerm(TOKEN_BLOCK_END)));
         pushCheck(stackSymbolPush(Stack, makeNonterm(N_Func_block_content_check)));
         pushCheck(stackSymbolPush(Stack, makeTerm(TOKEN_BLOCK_STAR)));
