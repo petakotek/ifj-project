@@ -18,45 +18,6 @@ bool mock_resize_called = false;
 char *mock_resize_return = NULL;
 
 
-// Zjednodušená definice pro testy
-typedef void* DynamiclabelStackStackPtr;
-
-// Mock pro funkci printError a memorySafeExit
-void printError(int error_code, const char *message) {
-    mock_error_called++;
-    // V testech nevoláme skutečný exit
-}
-
-void memorySafeExit(int error_code) {
-    // V testech nevoláme skutečný exit, jen zvýšíme počítadlo
-    mock_error_called++;
-}
-
-// Mock pro stacklabelStackIsEmpty
-bool stacklabelStackIsEmpty(DynamiclabelStackStackPtr label_stack) {
-    if (mock_stack_read_count < sizeof(mock_stack_empty_flags)/sizeof(bool)) {
-        return mock_stack_empty_flags[mock_stack_read_count];
-    }
-    return true; // Defaultně prázdný
-}
-
-// Mock pro stacklabelStackRead (pro testy s prefixy)
-char *stacklabelStackRead(DynamiclabelStackStackPtr label_stack) {
-    // Simulace čtení (a "vyprazdňování" stacku)
-    if (mock_stack_read_count == 0) {
-        mock_stack_empty_flags[0] = false; // První čtení
-        mock_stack_empty_flags[1] = true;  // Po prvním čtení už bude prázdný
-        mock_stack_read_count = 1;
-        return "prefix"; // Pevně daný prefix pro test
-    }
-    return NULL;
-}
-
-// Mock pro stacklabelStackPush
-void stacklabelStackPush(DynamiclabelStackStackPtr label_stack, char *label) {
-    mock_stack_push_result = label;
-}
-
 // Mock pro resize_label_name
 char *resize_label_name(char *old_label, size_t *old_size) {
     mock_resize_called = true;
