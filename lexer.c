@@ -255,6 +255,13 @@ char *substring(size_t start, size_t end) {
             return "COMMA";
         case TOKEN_NEGACE:
         	return "NEGACE";
+        case TOKEN_DOLLAR:
+            return "DOLLAR";
+        case TOKEN_EXPRESSION:
+            return "EXPRESSION";
+        case TOKEN_STOP:
+            return "STOP";
+
         default:
             return "UNKNOWN_TOKEN";
     }

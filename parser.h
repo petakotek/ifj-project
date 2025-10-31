@@ -62,6 +62,11 @@ typedef enum
     N_New_line_check,
     N_Opt_newlines,
     N_Start,
+    N_lExpr,
+    N_cExpr,
+    N_Block_content_check,
+    N_oExpr,
+    N_Func_block_content_check,
 } Nonterm;
 
 AstNode* parser();
@@ -309,8 +314,14 @@ void Return_expr_func(DynamicSymbolStackPtr Stack, Token token);
 /**
  * @brief Funkcia na zaobchádzanie s netermínalom Expr
  * @param Stack Inicializovaný Stack na ktorom sú strukturý Symbol neterminálov a terminálov
+ * @param gLookahead ukazatel na aktualny token, cez ktory sa zaroven vrati token z precedencnej analyzy
+ * @param AstStack stack uzlov
+ * @param flag typ int ->  0  na konci vyrazu moze byt TOKEN_NEW_LINE || TOKEN_RPAREN || TOKEN_BLOCK_END
+ *  -1  na konci vyrazu musi byt TOKEN_RPAREN
+ *  1 na konci vyrazu moze byt TOKEN_COMMA || TOKEN_RPAREN
+ *  -2 na konci musi byt TOKEN_BLOCK_END
  */
-void Expr_func(DynamicSymbolStackPtr Stack,Token *gLookahead, DynamicAstNodeStackPtr gAstStack);
+void Expr_func(DynamicSymbolStackPtr Stack,Token *gLookahead, DynamicAstNodeStackPtr AstStack,int flag);
 
 /**
  * @brief Funkcia na zaobchádzanie s netermínalom ElseBody
@@ -330,5 +341,7 @@ void  New_line_func(DynamicSymbolStackPtr Stack, Token token);
 void Opt_newlines_func(DynamicSymbolStackPtr Stack, Token token);
 
 Symbol makeTermValueAndCaptureIdentifier(const char *exact);
+void Block_content_func_check(DynamicSymbolStackPtr Stack, Token token);
+void Func_block_content_check(DynamicSymbolStackPtr Stack, Token token);
 
 #endif // PARSER_H

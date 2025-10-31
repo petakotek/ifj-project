@@ -32,7 +32,6 @@ int main(){
 	//print_and_free_tokens();
 	// tvorba stromu pres parser
 	AstNode *AST;
-
 	AST = parser();
 	//funkcia ast_dump -> funkcia na kontrolny vypis ast stromu
 	ast_dump(AST);

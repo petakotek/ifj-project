@@ -137,17 +137,24 @@
             return false;                                                                         \
         }                                                                                         \
                                                                                                   \
-        if (wantedSize < stack->maxSize && stack->nextTopElement > wantedSize) {                  \
-            printWarning("(%s) Zmenseni zasobniku zpusobilo ztratu dat!\n", __func__);            \
+        if (wantedSize < stack->nextTopElement) {                                                 \
+            printWarning(                                                                             \
+                "(%s) Zastavena zmena velikosti zasobniku, protoze by doslo ke ztrate dat! "      \
+                "Pozadovana velikost: %u, vrchol zasobniku: %u.\n",                               \
+                __func__, wantedSize, stack->nextTopElement);                                     \
+            return true;                                                                          \
         }                                                                                         \
                                                                                                   \
         void* newStackarray = realloc(stack->array, memorySize);                                  \
         if (newStackarray == NULL) {                                                              \
             printWarning(                                                                         \
-                "(%s) Realokace zasobniku selhala! Pozadovany pocet prvku: %u. Pozadovana "       \
+                "(%s) Realokace zasobniku selhala! Pozadovany maximalni pocet prvku: %u. Pozadovana "       \
                 "velikost v "                                                                     \
-                "pameti: %u.\n",                                                                  \
-                __func__, wantedSize, memorySize);                                                \
+                "pameti: %u. Stavajici maximalni pocet prvku: %u. Stavajici "                     \
+                "velikost v "                                                                     \
+                "pameti: %u. Vrchol zasobniku: %u.\n",                                                                  \
+                __func__, wantedSize, memorySize, stack->maxSize, stack->maxSize * sizeof(TYPE), stack->nextTopElement); \
+            exit(1);                                                                              \
             return false;                                                                         \
         }                                                                                         \
                                                                                                   \
@@ -160,10 +167,6 @@
             stack->nextDownsizeAt = 0;                                                            \
         } else {                                                                                  \
             stack->nextDownsizeAt = stack->maxSize / 4;                                           \
-        }                                                                                         \
-                                                                                                  \
-        if (stack->nextTopElement > wantedSize) {                                                 \
-            stack->nextTopElement = wantedSize;                                                   \
         }                                                                                         \
                                                                                                   \
         stack->resized = true;                                                                    \
