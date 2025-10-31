@@ -5,7 +5,8 @@
  * Soubor: lexer.h
  * Popis:
  */
-#pragma once
+ #ifndef LEXER_H
+ #define LEXER_H
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -174,3 +175,4 @@ void lexer_free(void);
 Token lexer_token_next();
 char *token_type_to_string(TokenType type);
 extern char *source;
+#endif
