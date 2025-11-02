@@ -151,7 +151,7 @@ char *emitBinaryOp(AstNode *node,  DynamiclabelStackStackPtr labels, int counter
 void emitPlus(AstNode *node, DynamiclabelStackStackPtr label_stack, int counter, DynamicEmitOpStackPtr op_stack) {
     emitBinaryOp(node, label_stack, counter, op_stack);
 
-    // Labely generované pomocí tvojí funkce
+
     char *label_ok = generatorLable("ok", label_stack, counter);
     char *label_concat = generatorLable("concat", label_stack, counter);
     char *label_add     = generatorLable("add", label_stack, counter);
@@ -171,6 +171,7 @@ void emitPlus(AstNode *node, DynamiclabelStackStackPtr label_stack, int counter,
     printN("JUMPIFEQ %s TF@t1 string@string", label_concat);
     printN("JUMPIFEQ %s TF@t1 string@int", label_add);
     printN("JUMPIFEQ %s TF@t1 string@float", label_add);
+    stacklabelStackRead(label_stack);
     printN("JUMP %s", label_err);
 
     // --- ADD větev ---
@@ -193,10 +194,20 @@ void emitPlus(AstNode *node, DynamiclabelStackStackPtr label_stack, int counter,
 
     // --- KONEC ---
     printN("LABEL %s", label_end);
+
+   stacklabelStackRead(label_stack);
+    stacklabelStackRead(label_stack);
+    stacklabelStackRead(label_stack);
+    stacklabelStackRead(label_stack);
+    stacklabelStackRead(label_stack);
 }
 void emit_equal(AstNode *node, DynamiclabelStackStackPtr label_stack, int counter,char *end) {
     emit_command(node->child[0], label_stack, counter,NULL);
     printN("JUMPIFNEQ %s %s %s", end);
+}
+void emit_assigned(AstNode *node,DynamiclabelStackStackPtr label_stack,int counter,DynamicEmitOpStackPtr op_emit){
+	emit_command(node->child[1],label_stack,counter,op_emit);
+	printN("POPS LF@%s",node->child[0]->value.str);
 }
 void emit_while(AstNode *node,DynamiclabelStackStackPtr label_stack,int while_counter){
 	while_counter ++;

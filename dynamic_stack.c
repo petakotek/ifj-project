@@ -178,5 +178,5 @@ DEFINE_STACK(char *, labelStack)
 DEFINE_STACK(Symbol, Symbol)
 DEFINE_STACK(AstNode*, AstNode)
 DEFINE_STACK(Token, Precedence)
-DEFINE_STACK(AstNode*, EmitOp);
+DEFINE_STACK(AstNode*, EmitOp)
 /*** konec dynamic_stack.c ***/

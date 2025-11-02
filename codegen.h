@@ -10,4 +10,5 @@
 void emit_prolog();
 void emit_command(AstNode *node,DynamiclabelStackStackPtr label_stack,int counter,DynamicEmitOpStackPtr op_emit);
 char *generatorLable(char *func_name, DynamiclabelStackStackPtr label_stack, int counter);
+void codegen_generate(AstNode *root);
 #endif

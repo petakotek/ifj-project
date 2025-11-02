@@ -45,7 +45,8 @@ typedef enum AstNodeType {
     AST_IF,
     AST_WHILE,
     AST_FOR,
-    AST_BREAK, AST_CONTINUE,
+    AST_BREAK,
+    AST_CONTINUE,
     AST_RETURN,
 
     // listy
@@ -71,6 +72,9 @@ typedef enum AstNodeType {
     AST_IS,         // is
     AST_GTE,        // >=
     AST_LTE,        // <=
+    AST_LPAREN,     // (
+    AST_RPAREN,     // )
+    AST_NULL
 } AstNodeType;
 
 
@@ -85,7 +89,7 @@ typedef enum AstNodeType {
  *
  */
 typedef struct AstValue {
-    long long int         int_val;
+    long long   int_val;
     double       float_val;
     char       *str;       // pre IDENTIFIER / GLOBAL_ID / STRING_LIT
     bool        has_str;
