@@ -669,7 +669,9 @@ void Param_func(DynamicSymbolStackPtr Stack, Token token)
     }
     else if (token.type == TOKEN_RPAREN)
     {
-        pushCheck(stackSymbolPush(Stack, makeReduce(AST_PARAM, 0))); // eps
+        pushCheck(stackSymbolPush(Stack, makeReduce(AST_PARAM, 1))); // eps
+        pushCheck(stackSymbolPush(Stack, makeReduce(AST_EMPTY, 0)));
+        
     }
     else
     {
