@@ -20,10 +20,9 @@ static DynamicHashTablePtrStackPtr scopesStack = NULL;
 
 /**
  * @brief Pomocná funkce pro ověření existence funkce main
- * 
+ *
  */
 bool foundMainFunction = false;
-
 
 /**
  * @brief Vytvoří zásobník
@@ -87,7 +86,8 @@ bool insertSymbolCurrentScope(SemanticSymbol symbol);
 /**
  * @brief Převede informace z AST uzlu do symbolu pro uložení do tabulky
  *
- * @warning Pokud je cílový symbol funkce, tak ji přejmenuje v sourceNode i destSymbol na "nazevFunkce$pocetParametru"
+ * @warning Pokud je cílový symbol funkce, tak ji přejmenuje v sourceNode i destSymbol na
+ * "nazevFunkce$pocetParametru"
  * @param sourceNode Zdrojový AST uzel
  * @param destSymbol Symbol pro upravení
  * @param symbolType Typ cílového symbolu
@@ -96,24 +96,24 @@ bool insertSymbolCurrentScope(SemanticSymbol symbol);
  */
 bool initNewSymbol(AstNode* sourceNode, SemanticSymbol* destSymbol, SemanticSymbolTypes symbolType);
 
-
 /**
  * @brief Počet znaků potřebných pro uložení čísla jako řetězce
- * 
- * K počtu ještě přičte 1 pro uložení '\0' 
+ *
+ * K počtu ještě přičte 1 pro uložení '\0'
  * @param n Číslo
  * @return size_t Počet znaků
  */
 size_t digitsCount(size_t n);
 
-// TODO všude přidat kontrolu chyb u bool funkcí (existuje v GCC nějaký flag, co tě nenechá ignorovat výstup funkce?)
+// TODO všude přidat kontrolu chyb u bool funkcí (existuje v GCC nějaký flag, co tě nenechá
+// ignorovat výstup funkce?)
 
 // idk_co findDeclarationInUndeclaredCalls(/*idk co*/);
 
 /**
  * @brief Funkce pro rekurzivní procházení stromu
  *
- * Chování a návratový kód závisí na typu vstupního uzlu.  
+ * Chování a návratový kód závisí na typu vstupního uzlu.
  * @param currentNode Vstupní uzel
  * @param parentNodeType Uzel nadřazený vstupnímu uzlu
  * @return RecursiveSemanticAnalysisReturnValues Návratový kód
@@ -136,7 +136,7 @@ bool startSematicValidation(AstNode* root) {
         }
     }
 
-    if(foundMainFunction == false) {
+    if (foundMainFunction == false) {
         printError(SEMANTICS_ERROR_OTHERS, "Chybi funkce 'main'!\n");
         return false;
     }
@@ -258,13 +258,18 @@ RecursiveSemanticAnalysisReturnValues recursiveNodeWalker(AstNode*    currentNod
         }
         case (AST_BLOCK): {
             printLog("AST_BLOCK\n");
-            createNewScope();
+            if (parentNodeType != AST_FUNC_DEC) {
+                printLog("Creating new scope\n");
+                createNewScope();
+            }
             for (size_t i = 0; i < currentNode->arity; i++) {
                 if (recursiveNodeWalker(currentNode->child[i], AST_BLOCK) != OK) {
                     return ERROR;
                 }
             }
+
             deleteScope();
+
             break;
         }
         case (AST_STATEMENT): {
@@ -273,12 +278,17 @@ RecursiveSemanticAnalysisReturnValues recursiveNodeWalker(AstNode*    currentNod
         }
         case (AST_STATEMENT_LIST): {
             printLog("AST_STATEMENT_LIST\n");
+            for (size_t i = 0; i < currentNode->arity; i++) {
+                if (recursiveNodeWalker(currentNode->child[i], AST_PARAM) != OK) {
+                    return ERROR;
+                }
+            }
             break;
         }
         case (AST_FUNC_DEC): {
             printLog("AST_FUNC_DEC\n");
 
-            if(strncmp(currentNode->child[0]->value.str, "main", 5) == 0) {
+            if (strncmp(currentNode->child[0]->value.str, "main", 5) == 0) {
                 // TODO asi chyba pro víc main
                 foundMainFunction = true;
             }
@@ -286,27 +296,34 @@ RecursiveSemanticAnalysisReturnValues recursiveNodeWalker(AstNode*    currentNod
             SemanticSymbol newSymbol;
             initNewSymbol(currentNode, &newSymbol, FUNCTION);
 
-            SemanticSymbol* foundSymbol = findSymbol(currentNode->child[0]->value.str);
+            SemanticSymbol* foundSymbol = findSymbol(newSymbol.name);
             if (foundSymbol != NULL) {
                 // Možná i u funkce prohledat jen current scope?
-                printError(SEMANTICS_ERROR_REDEF, "Funkce '%s' v danem bloku jiz existuje!", currentNode->child[0]->value.str);
+                printError(SEMANTICS_ERROR_REDEF, "Funkce '%s' v danem bloku jiz existuje!",
+                           newSymbol.name);
                 return ERROR;
             }
 
             insertSymbolCurrentScope(newSymbol);
 
-
-            if(recursiveNodeWalker(currentNode->child[1], AST_FUNC_DEC ) != OK) {
+            if (recursiveNodeWalker(currentNode->child[1], AST_FUNC_DEC) != OK) {
                 return ERROR;
             }
-            if(recursiveNodeWalker(currentNode->child[2], AST_FUNC_DEC) != OK) {
+            if (recursiveNodeWalker(currentNode->child[2], AST_FUNC_DEC) != OK) {
                 return ERROR;
             }
             break;
         }
         case (AST_PARAM): {
             printLog("AST_PARAM\n");
-            // TODO tady asi něco bude
+
+            createNewScope();
+            for (size_t i = 0; i < currentNode->arity; i++) {
+                if (recursiveNodeWalker(currentNode->child[i], AST_PARAM) != OK) {
+                    return ERROR;
+                }
+            }
+
             return OK;
             break;
         }
@@ -321,9 +338,10 @@ RecursiveSemanticAnalysisReturnValues recursiveNodeWalker(AstNode*    currentNod
 
             initNewSymbol(currentNode, &newSymbol, VARIABLE);
 
-            SemanticSymbol* foundSymbol = findSymbolCurrentScope(currentNode->child[0]->value.str);
+            SemanticSymbol* foundSymbol = findSymbolCurrentScope(newSymbol.name);
             if (foundSymbol != NULL) {
-                printError(SEMANTICS_ERROR_REDEF, "Promena '%s' v danem bloku jiz existuje!", currentNode->child[0]->value.str);
+                printError(SEMANTICS_ERROR_REDEF, "Promena '%s' v danem bloku jiz existuje!\n",
+                           newSymbol.name);
                 return ERROR;
             }
 
@@ -363,6 +381,23 @@ RecursiveSemanticAnalysisReturnValues recursiveNodeWalker(AstNode*    currentNod
         }
         case (AST_IDENTIFIER): {
             printLog("AST_IDENTIFIER\n");
+
+            if (parentNodeType == AST_PARAM) {
+                SemanticSymbol newSymbol;
+
+                initNewSymbol(currentNode, &newSymbol, FUNCTION_PARAMETER);
+
+                SemanticSymbol* foundSymbol = findSymbolCurrentScope(newSymbol.name);
+
+                if (foundSymbol != NULL) {
+                    printError(SEMANTICS_ERROR_REDEF, "Promena '%s' v danem bloku jiz existuje!\n",
+                               newSymbol.name);
+                    return ERROR;
+                }
+
+                insertSymbolCurrentScope(newSymbol);
+            }
+
             break;
         }
         case (AST_GLOBAL_ID): {
@@ -443,12 +478,25 @@ RecursiveSemanticAnalysisReturnValues recursiveNodeWalker(AstNode*    currentNod
             printLog("AST_LTE\n");
             break;
         }
+        case (AST_LPAREN): {
+            printLog("AST_LPAREN\n");
+            break;
+        }
+        case (AST_RPAREN): {
+            printLog("AST_RPAREN\n");
+            break;
+        }
+        default: {
+            printWarning("(%s) Neznamy stav: %i!\n", __func__, currentNode->kind);
+            return ERROR;
+        }
     }
+    // TODO nebylo lepší to explicitně vracet v těch statementech?
     return OK;
 }
 
 void freeSematicsMemory() {
-    if(scopesStack == NULL) {
+    if (scopesStack == NULL) {
         printLog("(%s) volano na prazdny scopeStack.\n", __func__);
         return;
     }
@@ -520,11 +568,11 @@ SemanticSymbol* findSymbolCurrentScope(char* key) {
     }
 
     if (stackHashTablePtrIsEmpty(scopesStack) == true) {
+        printLog("Prazdny zasobnik!\n");
         return NULL;
     }
 
     int index = hashTableSearchItem(stackHashTablePtrRead(scopesStack), key);
-
     if (index == -1) {
         return NULL;
     }
@@ -577,13 +625,19 @@ bool initNewSymbol(AstNode* sourceNode, SemanticSymbol* destSymbol,
     }
 
     destSymbol->symbolType = symbolType;
-    destSymbol->scope = scopesStack->nextTopElement - 1; // v global přepíšu
+    destSymbol->scope      = scopesStack->nextTopElement - 1;  // v global přepíšu
     switch (symbolType) {
         case (FUNCTION): {
             unsigned newNameLength =
-                strlen(sourceNode->child[0]->value.str) + 1 + digitsCount(sourceNode->child[1]->arity); // prostor pro separátor '$'
+                strlen(sourceNode->child[0]->value.str) + 1 +
+                digitsCount(sourceNode->child[1]->arity);  // prostor pro separátor '$'
 
             char* newName = malloc(sizeof(char) * newNameLength);
+
+            size_t numberOfParams = sourceNode->child[1]->arity;
+            if (numberOfParams != 0) {
+                numberOfParams--;  // kompenzace za AST_EMPTY - // TODO udělat nějak líp
+            }
 
             if (newName == NULL) {
                 printError(INTERNAL_ERROR, "(%s) Selhala alokace pameti!", __func__);
@@ -592,8 +646,8 @@ bool initNewSymbol(AstNode* sourceNode, SemanticSymbol* destSymbol,
 
             destSymbol->name = newName;
 
-            snprintf(destSymbol->name, newNameLength ,"%s$%lu", sourceNode->child[0]->value.str,
-                    sourceNode->child[1]->arity);
+            snprintf(destSymbol->name, newNameLength, "%s$%lu", sourceNode->child[0]->value.str,
+                     numberOfParams);
             destSymbol->paramCount = sourceNode->child[1]->arity;
 
             free(sourceNode->child[0]->value.str);
@@ -601,8 +655,12 @@ bool initNewSymbol(AstNode* sourceNode, SemanticSymbol* destSymbol,
             break;
         }
         case (VARIABLE): {
-            destSymbol->name = sourceNode->child[0]->value.str;
-            destSymbol->dataType = NULL_VAL; // TODO tady to bude jinak pro 'var x' a 'var x = 5'
+            destSymbol->name     = sourceNode->child[0]->value.str;
+            destSymbol->dataType = NULL_VAL;  // TODO tady to bude jinak pro 'var x' a 'var x = 5'
+            break;
+        }
+        case (FUNCTION_PARAMETER): {
+            destSymbol->name = sourceNode->value.str;
             break;
         }
         case (GLOBAL): {
@@ -623,22 +681,22 @@ bool initNewSymbol(AstNode* sourceNode, SemanticSymbol* destSymbol,
 }
 
 size_t digitsCount(size_t n) {
-// TODO nějak chytřeji udělat...
+    // TODO nějak chytřeji udělat...
 
-    if(n < 10) {
-        return 2; // číslice a \0
+    if (n < 10) {
+        return 2;  // číslice a \0
     }
 
-    if(n < 100) {
-        return 3; // číslice a \0
+    if (n < 100) {
+        return 3;  // číslice a \0
     }
 
-        if(n < 1000) {
-        return 4; // číslice a \0
+    if (n < 1000) {
+        return 4;  // číslice a \0
     }
 
-        if(n < 10000) {
-        return 5; // číslice a \0
+    if (n < 10000) {
+        return 5;  // číslice a \0
     }
 
     // TODO

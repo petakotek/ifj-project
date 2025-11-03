@@ -35,6 +35,11 @@ typedef enum {
      *
      */
     GETTER,
+    /**
+     * @brief Parametr u deklarace funkce
+     * 
+     */
+     FUNCTION_PARAMETER
 } SemanticSymbolTypes;
 
 /**
