@@ -36,6 +36,7 @@ typedef enum AstNodeType {
     AST_FUNC_DEC,
     AST_PARAM,
     AST_FUNC_CALL,
+    AST_IFJ_CALL,
 
     // premenné / priradenie
     AST_VAR,

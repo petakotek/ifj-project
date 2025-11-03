@@ -31,5 +31,6 @@ typedef struct Symbol
     size_t reduce_arity;     // koľko detí zozbierať
     AstNodeType reduce_kind;
     bool capture_value;
+    bool freeNeeded;
 } Symbol;
 #endif
