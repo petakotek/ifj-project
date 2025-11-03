@@ -1172,7 +1172,5 @@ void tokenFree(Token *token)
         default:
             break;
     }
-
     *token = (Token){0};
-
 }
