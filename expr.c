@@ -465,7 +465,6 @@ AstNode* parseExpression(Token *token, int flag)
 
                 printf("\t\t\t%d < (%d, %d) ",poradiCount++, operatorToPush(StackTop), operatorToPush(actualToken));
                 printStack(stackP);
-                tokenFree(&actualToken);
                 actualToken = lexer_token_next();
             break;
 
@@ -473,7 +472,6 @@ AstNode* parseExpression(Token *token, int flag)
                 stackPrecedencePush(stackP, actualToken);
                 printf("\t\t\t%d = (%d, %d) ",poradiCount++, operatorToPush(StackTop), operatorToPush(actualToken));
                 printStack(stackP);
-                tokenFree(&actualToken);
                 actualToken = lexer_token_next();
             break;
 

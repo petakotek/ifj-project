@@ -248,25 +248,21 @@ AstNode *parser()
                 case N_Expr:
                     Expr_func(Stack, gLookahead, AstStack, 0);
                     token = *gLookahead;
-                    tokenFree(gLookahead);
                     printf("precedencna odovzdala token jeho type je = %d\n",token.type);
                     break;
                 case N_cExpr:
                     Expr_func(Stack, gLookahead, AstStack, 1);
                     token = *gLookahead;
-                    tokenFree(gLookahead);
                     printf("precedencna odovzdala token jeho type je = %d\n",token.type);
                     break;
                 case N_lExpr:
                     Expr_func(Stack, gLookahead, AstStack, -1);
                     token = *gLookahead;
-                    tokenFree(gLookahead);
                     printf("precedencna odovzdala token jeho type je = %d\n",token.type);
                     break;
                 case N_oExpr:
                     Expr_func(Stack, gLookahead, AstStack, -2);
                     token = *gLookahead;
-                    tokenFree(gLookahead);
                     printf("precedencna odovzdala token jeho type je = %d\n",token.type);
                     break;
                 case N_Else_body:
