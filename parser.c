@@ -555,6 +555,7 @@ void smth_list_func(DynamicSymbolStackPtr Stack, Token token)
         case TOKEN_KEYWORD_RETURN:   pushCheck(stackSymbolPush(Stack, makeNonterm(N_Return)));        return;
         case TOKEN_KEYWORD_VAR:      pushCheck(stackSymbolPush(Stack, makeNonterm(N_Var)));           return;
         case TOKEN_KEYWORD_IF:       pushCheck(stackSymbolPush(Stack, makeNonterm(N_If)));            return;
+        case TOKEN_KEYWORD_ELSE:     pushCheck(stackSymbolPush(Stack, makeNonterm(N_Else)));          return;
         case TOKEN_KEYWORD_WHILE:    pushCheck(stackSymbolPush(Stack, makeNonterm(N_While)));         return;
         case TOKEN_KEYWORD_FOR:      pushCheck(stackSymbolPush(Stack, makeNonterm(N_For)));           return;
         case TOKEN_KEYWORD_BREAK:    pushCheck(stackSymbolPush(Stack, makeNonterm(N_Break)));         return;
@@ -863,7 +864,7 @@ void If_func(DynamicSymbolStackPtr Stack)
     // If -> if ( Expr ) Block Else
     stackSymbolPop(Stack);;
     // deti: Expr, Block, Else => arity = 3
-    pushCheck(stackSymbolPush(Stack, makeReduce(AST_IF, 3)));
+    pushCheck(stackSymbolPush(Stack, makeReduce(AST_IF, 2)));
     pushCheck(stackSymbolPush(Stack, makeNonterm(N_Else)));
     pushCheck(stackSymbolPush(Stack, makeNonterm(N_Block)));
     pushCheck(stackSymbolPush(Stack, makeTerm(TOKEN_RPAREN)));
@@ -878,13 +879,12 @@ void Else_func(DynamicSymbolStackPtr Stack, Token token)
 
     if (token.type == TOKEN_KEYWORD_ELSE) {
         // else Block | else If  => 1 dieťa (Block alebo If)
-        pushCheck(stackSymbolPush(Stack, makeReduce(AST_IF, 1)));
+        pushCheck(stackSymbolPush(Stack, makeReduce(AST_ELSE, 1)));
         // Rozhodnutie necháme na ďalší krok (podľa lookaheadu po spárovaní ELSE)
         pushCheck(stackSymbolPush(Stack, makeNonterm(N_Else_body)));
         pushCheck(stackSymbolPush(Stack, makeTerm(TOKEN_KEYWORD_ELSE)));
     } else {
         // eps
-        pushCheck(stackSymbolPush(Stack, makeReduce(AST_IF, 0)));
     }
 }
 
@@ -1172,7 +1172,5 @@ void tokenFree(Token *token)
         default:
             break;
     }
-
     *token = (Token){0};
-
 }
