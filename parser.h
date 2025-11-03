@@ -67,15 +67,16 @@ typedef enum
     N_Block_content_check,
     N_oExpr,
     N_Func_block_content_check,
+    N_callIfj,
 } Nonterm;
 
 AstNode* parser();
 
 /**
  * @brief pomocná funkcia na vytvorenie struktury terminalu
- * @param T Terminal z enum Term
+ * @param tokenType Terminal z enum Term
  */
-Symbol makeTerm(TokenType T);
+Symbol makeTerm(TokenType tokenType);
 
 /**
  * @brief pomocná funkcia pre vytvorenie struktúry termu
@@ -343,5 +344,7 @@ void Opt_newlines_func(DynamicSymbolStackPtr Stack, Token token);
 Symbol makeTermValueAndCaptureIdentifier(const char *exact);
 void Block_content_func_check(DynamicSymbolStackPtr Stack, Token token);
 void Func_block_content_check(DynamicSymbolStackPtr Stack, Token token);
+void tokenFree(Token *token);
+void callIfjfunc(DynamicSymbolStackPtr Stack, Token token);
 
 #endif // PARSER_H

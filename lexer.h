@@ -173,6 +173,7 @@ void lexer_free(void);
  *          vrací TOKEN_EOF; při chybě může vrátit ERROR_TOKEN
  */
 Token lexer_token_next();
+TokenType match_identifikator(const char *identifikator);
 char *token_type_to_string(TokenType type);
 extern char *source;
 #endif
