@@ -1,4 +1,5 @@
 #include "codegen.h"
+#include <stdbool.h>
 #include <stdio.h>
 #include "ast_strom.h"
 #include "dynamic_stack.h"
@@ -42,56 +43,73 @@ char *resize_label_name(char *prefix,size_t *size){
 * @param func_name jmeno funcke ktere chceme pripojit
 * @return ukazatel na vysledny label
 */
-char *generatorLable(char *func_name, DynamiclabelStackStackPtr label_stack, int counter) {
-    size_t size_of_buffer = 128;
-    char *result_label = (char *)malloc(size_of_buffer);
-    if (result_label == NULL) {
-    printError(INTERNAL_ERROR, "error behem tvoreni lablu ");
-    memorySafeExit(INTERNAL_ERROR);
-    }
-    //vlozeni func_name do bufferu kdyz nevejde hazime error
-    int current_len = snprintf(result_label, size_of_buffer, "%s", func_name);
-    if (current_len < 0 || (size_t)current_len >= size_of_buffer) {
-        free(result_label);
-        printError(INTERNAL_ERROR, "error behem tvoreni lablu ");
-        memorySafeExit(INTERNAL_ERROR);
-    }
-    while (!stacklabelStackIsEmpty(label_stack)) {
-        char *prefix = stacklabelStackRead(label_stack);
-        size_t prefix_len = strlen(prefix);
-        if (current_len + prefix_len + 5 >= size_of_buffer) {
-            result_label = resize_label_name(result_label, &size_of_buffer);
-            if (result_label == NULL) {
-            printError(INTERNAL_ERROR, "error behem tvoreni lablu ");
+char *generatorLable(char *func_name, DynamiclabelStackStackPtr label_stack, int counter, bool pridaniDoStacku) {
+        size_t size_of_buffer = 128;
+        char *result_label = (char *)malloc(size_of_buffer);
+        if (result_label == NULL) {
+            printError(INTERNAL_ERROR, "Error allocating memory for label");
             memorySafeExit(INTERNAL_ERROR);
+        }
+
+        int current_len = 0;
+
+        //Získání existujícího prefixu ze zásobníku (pokud existuje)
+        if (!stacklabelStackIsEmpty(label_stack)) {
+            char *prefix = stacklabelStackRead(label_stack);
+            size_t prefix_len = strlen(prefix);
+
+            // ve chvili kdyby nas buffer byl uz na zacatku maly
+            if (prefix_len + 1 + 10 >= size_of_buffer) {
+                result_label = resize_label_name(result_label, &size_of_buffer);
+                if (result_label == NULL) {
+                    printError(INTERNAL_ERROR, "Error resizing label buffer");
+                    memorySafeExit(INTERNAL_ERROR);
+                }
+            }
+
+            // Zkopírování existujícího prefixu: "fun$1$while$1" to co jsme precetli ze stacku
+            current_len = snprintf(result_label, size_of_buffer, "%s", prefix);
+            if (current_len < 0 || (size_t)current_len >= size_of_buffer) {
+                free(result_label);
+                printError(INTERNAL_ERROR, "Error during initial label copy");
+                memorySafeExit(INTERNAL_ERROR);
             }
         }
-        int written = snprintf(result_label + current_len, size_of_buffer - current_len, "%s", prefix);
-        if (written > 0) {
-            current_len += written;
-        } else {
-            break;
+
+        // 2. Přidání nového bloku jako suffix: "$if$3"
+        // Formát: $TypBloku$CisloBloku
+        size_t remaining_space = size_of_buffer - current_len;
+
+        int written = snprintf(result_label + current_len, remaining_space, "$%s$%d", func_name, counter);
+
+        if (written <= 0 || (size_t)written >= remaining_space) {
+            // potřebna resize
+            if ((size_t)written >= remaining_space) {
+                 result_label = resize_label_name(result_label, &size_of_buffer);
+                 if (result_label == NULL) {
+                    printError(INTERNAL_ERROR, "Error resizing label buffer (suffix)");
+                    memorySafeExit(INTERNAL_ERROR);
+                }
+                 remaining_space = size_of_buffer - current_len;
+                 // znovu zapsani
+                 written = snprintf(result_label + current_len, remaining_space, "$%s$%d", func_name, counter);
+            }
+
+            if (written <= 0) {
+                 free(result_label);
+                 printError(INTERNAL_ERROR, "Error during suffix creation");
+                 memorySafeExit(INTERNAL_ERROR);
+            }
         }
-    }
-    if (current_len + 1 + 10 >= size_of_buffer) {
-        result_label = resize_label_name(result_label, &size_of_buffer);
-        if (result_label == NULL) {
-        printError(INTERNAL_ERROR, "error behem tvoreni lablu ");
-        memorySafeExit(INTERNAL_ERROR);
+        current_len += written;
+
+        if (pridaniDoStacku) {
+        // Uložení plného label na zásobník
+        // pro funkce a if-else while-for pro dalsi zanoreni
+        stacklabelStackPush(label_stack, result_label);
         }
-    }
-    result_label[current_len] = '$';
-    current_len++;
-
-    size_t remaining_space = size_of_buffer - current_len;
-
-    int written_counter = snprintf(result_label + current_len,remaining_space,"%d",counter);
-
-    if (written_counter > 0) {
-        current_len += written_counter;
-    }
-    stacklabelStackPush(label_stack, result_label);
-    return result_label;
+        //a jeho vraceni
+        return result_label;
 }
 /*
 *@brief zajisti aby globalni promene byly inicializovany hned na zacatku
@@ -152,11 +170,11 @@ void emitPlus(AstNode *node, DynamiclabelStackStackPtr label_stack, int counter,
     emitBinaryOp(node, label_stack, counter, op_stack);
 
 
-    char *label_ok = generatorLable("ok", label_stack, counter);
-    char *label_concat = generatorLable("concat", label_stack, counter);
-    char *label_add     = generatorLable("add", label_stack, counter);
-    char *label_end     = generatorLable("end", label_stack, counter);
-    char *label_err     = generatorLable("err", label_stack, counter);
+    char *label_ok = generatorLable("ok", label_stack, counter,false);
+    char *label_concat = generatorLable("concat", label_stack, counter,false);
+    char *label_add     = generatorLable("add", label_stack, counter,false);
+    char *label_end     = generatorLable("end", label_stack, counter,false);
+    char *label_err     = generatorLable("err", label_stack, counter,false);
 
     // Typová kontrola
     printN("POPS TF@rhs");
@@ -212,13 +230,13 @@ void emit_assigned(AstNode *node,DynamiclabelStackStackPtr label_stack,int count
 void emit_while(AstNode *node,DynamiclabelStackStackPtr label_stack,int while_counter){
 	while_counter ++;
 	emit_command(node->child[0],label_stack,while_counter,NULL);
-	char * label = generatorLable("while",label_stack,while_counter);
+	char * label = generatorLable("while",label_stack,while_counter,true);
 	printf("LABEL %s \n",label);
 	emit_command(node->child[1], label_stack, while_counter,NULL);
 	/*
 	* nejak se dostat k podmince ve strome
 	*/
-	char *label_end = generatorLable("end",label_stack,while_counter);
+	char *label_end = generatorLable("end",label_stack,while_counter,false);
 	printf("LABEL %s \n",label_end);
 	printf("JUMPIFEQ  %s GF@cond bool@false",label_end);
 

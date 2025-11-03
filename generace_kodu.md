@@ -54,14 +54,7 @@ void emit_command(ASTNode *cmd, SymbolTable *symtab) {
 
 ## Dynamická kontrola typu
 
-Nemame implicitni konverze zakazany
-chyby ktere muzou nastat:
-
-    Čtení nebo zápis do neexistující proměnné vede k chybě č. 54.
-
-    Čtení neinicializované proměnné vede k chybě č. 56.
-
-    Použití operace nad nevhodnými typy operandů vede k chybě č. 53.
+Nemame implicitni konverze zakazany vestavene funkce na zvladnuti konverze
 
 Pro každou operaci, která vyžaduje specifický typ, vložíme instrukce pro běhové kontroly.
 Ve chvíli, kdy potkáme něco jako `x = a + b`, vkládáme typovou kontrolu, kterou interpret provede za běhu.
@@ -183,3 +176,5 @@ Vestavěné funkce dostupné v jazyce odpovídají instrukcím IFJcode25 nebo je
 | Ifj.ord(s,i)             | STRI2INT s kontrolou indexu                     |
 | Ifj.chr(i)               | INT2CHAR s kontrolou validní hodnoty           |
 | Převody typů             | INT2FLOAT, FLOAT2INT, INT2STR, FLOAT2STR       |
+
+rozdeleni:
