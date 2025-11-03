@@ -712,7 +712,7 @@ Token lexer_token_next() {
                 } else if (c == '.') {
                     stav = FLOAT_NUMBER;
                     lexer->pos++;
-                } else if (c == ' ' || c == '\n' || c == EOF || c == ')') {
+                } else if (!isdigit(c)) {
                     token.type             = TOKEN_INTEGER;
                     token.value.identifier = substring(zacatek, lexer->pos);
                     token.line             = radek;
