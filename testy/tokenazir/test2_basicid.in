@@ -2,4 +2,5 @@ if
 else
 while
 for
-var "String"
+var """ String   """
+!=
