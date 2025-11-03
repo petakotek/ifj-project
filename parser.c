@@ -248,21 +248,25 @@ AstNode *parser()
                 case N_Expr:
                     Expr_func(Stack, gLookahead, AstStack, 0);
                     token = *gLookahead;
+                    tokenFree(gLookahead);
                     printf("precedencna odovzdala token jeho type je = %d\n",token.type);
                     break;
                 case N_cExpr:
                     Expr_func(Stack, gLookahead, AstStack, 1);
                     token = *gLookahead;
+                    tokenFree(gLookahead);
                     printf("precedencna odovzdala token jeho type je = %d\n",token.type);
                     break;
                 case N_lExpr:
                     Expr_func(Stack, gLookahead, AstStack, -1);
                     token = *gLookahead;
+                    tokenFree(gLookahead);
                     printf("precedencna odovzdala token jeho type je = %d\n",token.type);
                     break;
                 case N_oExpr:
                     Expr_func(Stack, gLookahead, AstStack, -2);
                     token = *gLookahead;
+                    tokenFree(gLookahead);
                     printf("precedencna odovzdala token jeho type je = %d\n",token.type);
                     break;
                 case N_Else_body:
@@ -555,6 +559,7 @@ void smth_list_func(DynamicSymbolStackPtr Stack, Token token)
         case TOKEN_KEYWORD_RETURN:   pushCheck(stackSymbolPush(Stack, makeNonterm(N_Return)));        return;
         case TOKEN_KEYWORD_VAR:      pushCheck(stackSymbolPush(Stack, makeNonterm(N_Var)));           return;
         case TOKEN_KEYWORD_IF:       pushCheck(stackSymbolPush(Stack, makeNonterm(N_If)));            return;
+        case TOKEN_KEYWORD_ELSE:     pushCheck(stackSymbolPush(Stack, makeNonterm(N_Else)));          return;
         case TOKEN_KEYWORD_WHILE:    pushCheck(stackSymbolPush(Stack, makeNonterm(N_While)));         return;
         case TOKEN_KEYWORD_FOR:      pushCheck(stackSymbolPush(Stack, makeNonterm(N_For)));           return;
         case TOKEN_KEYWORD_BREAK:    pushCheck(stackSymbolPush(Stack, makeNonterm(N_Break)));         return;
@@ -863,7 +868,7 @@ void If_func(DynamicSymbolStackPtr Stack)
     // If -> if ( Expr ) Block Else
     stackSymbolPop(Stack);;
     // deti: Expr, Block, Else => arity = 3
-    pushCheck(stackSymbolPush(Stack, makeReduce(AST_IF, 3)));
+    pushCheck(stackSymbolPush(Stack, makeReduce(AST_IF, 2)));
     pushCheck(stackSymbolPush(Stack, makeNonterm(N_Else)));
     pushCheck(stackSymbolPush(Stack, makeNonterm(N_Block)));
     pushCheck(stackSymbolPush(Stack, makeTerm(TOKEN_RPAREN)));
@@ -878,13 +883,12 @@ void Else_func(DynamicSymbolStackPtr Stack, Token token)
 
     if (token.type == TOKEN_KEYWORD_ELSE) {
         // else Block | else If  => 1 dieťa (Block alebo If)
-        pushCheck(stackSymbolPush(Stack, makeReduce(AST_IF, 1)));
+        pushCheck(stackSymbolPush(Stack, makeReduce(AST_ELSE, 1)));
         // Rozhodnutie necháme na ďalší krok (podľa lookaheadu po spárovaní ELSE)
         pushCheck(stackSymbolPush(Stack, makeNonterm(N_Else_body)));
         pushCheck(stackSymbolPush(Stack, makeTerm(TOKEN_KEYWORD_ELSE)));
     } else {
         // eps
-        pushCheck(stackSymbolPush(Stack, makeReduce(AST_IF, 0)));
     }
 }
 

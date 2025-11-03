@@ -24,7 +24,7 @@ int main(){
 	//volani funcke na nacteni souboru
 	source_file = read_all_stdin();
 	if (source_file == NULL) {
-        fprintf(stderr, "Chyba: selhalo načítání vstupů\n");
+		fprintf(stderr, "Chyba: selhalo načítání vstupů\n");
         return 1;
     }
 	// inicializovani struktury staraji se o cteni ze souboru

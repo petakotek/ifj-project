@@ -273,6 +273,7 @@ const char *ast_node_type_to_string(AstNodeType kind) {
         case AST_EMPTY: return "EMPTY";
         case AST_NULL: return "NULL";
         case AST_IFJ_CALL: return "IFJ_CALL";
+        case AST_ELSE: return "ELSE";
         default:                   return "UNKNOWN_AST_NODE";
     }
 }
