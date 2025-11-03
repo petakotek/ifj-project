@@ -65,6 +65,7 @@ typedef enum {
     /**
      * @brief Nemá hodnotu (např při vytvoření proměnné bez přiřazení)
      *
+     * @note Používán jako základní hodnota (např. při deklaraci funkce)
      */
     NULL_VAL,
 } SemanticSymbolDataType;
@@ -99,6 +100,11 @@ typedef enum {
      *
      */
     NULL_DATA,
+    /**
+     * @brief Výstupem zpracování uzlu je bool hodnota
+     * 
+     */
+    BOOLEAN_DATA,
     /**
      * @brief Funkce dostala ukazatel na NULL jako vstupní hodnotu
      *

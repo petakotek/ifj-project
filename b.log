@@ -6,37 +6,15 @@
       [FUNC_DEC]
         [IDENTIFIER] (str="main")
         [PARAM]
-          [IDENTIFIER] (str="xy")
-          [IDENTIFIER] (str="arg2")
-          [IDENTIFIER] (str="super")
-          [IDENTIFIER] (str="nice")
-          [IDENTIFIER] (str="osemdesat")
           [EMPTY]
         [BLOCK]
           [STATEMENT_LIST]
-            [RETURN]
             [VAR]
               [IDENTIFIER] (str="y")
               [EMPTY]
             [VAR]
               [IDENTIFIER] (str="x")
-              [EMPTY]
-      [FUNC_DEC]
-        [IDENTIFIER] (str="error")
-        [PARAM]
-          [IDENTIFIER] (str="s")
-          [EMPTY]
-        [BLOCK]
-          [STATEMENT_LIST]
-            [VAR]
-              [IDENTIFIER] (str="x")
-              [EMPTY]
-            [RETURN]
-      [FUNC_DEC]
-        [IDENTIFIER] (str="erorr_errorr")
-        [PARAM]
-          [IDENTIFIER] (str="osem")
-          [EMPTY]
-        [BLOCK]
-          [STATEMENT_LIST]
-            [RETURN]
+              [ASSIGN]
+                [STRING_PLUS]
+                  [INT_LIT] (int=5)
+                  [INT_LIT] (int=10)

@@ -6,7 +6,7 @@ class Program {
         var x
     }
 
-    static error(s){
+    static error(){
         var x
         return
     }
