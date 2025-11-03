@@ -114,6 +114,7 @@ char* read_all_stdin(void) {
     }
 
     size_t total_size = 0;
+    size_t check_zero_read = 0;
     size_t capacity = INITIAL_CAPACITY;
 
     while (1) {

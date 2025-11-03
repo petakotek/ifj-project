@@ -772,6 +772,7 @@ Token lexer_token_next() {
                     token.type             = TOKEN_INTEGER;
                     token.value.identifier = "0";
                     token.line             = radek;
+                    goto token_found;
                 }
                 break;
             }

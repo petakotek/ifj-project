@@ -1,5 +1,5 @@
 # IFJ25
-CC = gcc
+CC = cc
 CFLAGS = -std=c11 -Wall -Wextra -O2 -pedantic -Werror=implicit-function-declaration -g
 
 SRC = main.c lexer.c  parser.c support_functions.c symtable.c dynamic_stack.c ast_strom.c expr.c codegen.c
