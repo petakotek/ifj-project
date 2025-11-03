@@ -95,6 +95,8 @@ int operatorToPush(Token token)
                             return INDEX_ID;
         case TOKEN_FLOAT:
                             return INDEX_ID;
+        case TOKEN_STRING:
+                            return INDEX_ID;
 
 
 
@@ -167,6 +169,7 @@ AstNodeType getAstNodeTypeFromTokenType(TokenType type)
     case TOKEN_LPAREN:      return AST_LPAREN;     // (
     case TOKEN_RPAREN:      return AST_RPAREN;     // )
     case TOKEN_NEGACE:      return AST_NOT;     // !
+    case TOKEN_STRING:      return AST_STRING_LIT; // string
 
     default:
         printError(SYNTAX_ERROR, "(PSA) Nelze prevést TokenType na AstNodeType, neznámý token\n");
@@ -194,13 +197,25 @@ void findPrecedenceRule(DynamicPrecedenceStackPtr stack, DynamicAstNodeStackPtr 
         printError(SYNTAX_ERROR, "(PSA) stack je ve findPrecedenceRule NULL\n");
         memorySafeExit(SYNTAX_ERROR);
     }
-    
-    DynamicPrecedenceStack tmp = *stack; // zkopiruji si stack a spocitam si pocet prvku, ktere na zasobniku jsou
-    while (stackPrecedenceRead(&tmp).type != TOKEN_STOP)
+    DynamicPrecedenceStackPtr stackTmp;
+    stackTmp = stackPrecedenceConstruct(DEFAULT_INIT_ELEMENT_COUNT);
+    while (stackPrecedenceRead(stack).type != TOKEN_STOP)
     {
-        stackPrecedencePop(&tmp);
+        Token stackTop = stackPrecedenceRead(stack);
+        stackPrecedencePop(stack); // vyberu z puvodniho ale dam si na jiny zasobnik, potom tam vse vratim
+        stackPrecedencePush(stackTmp, stackTop);
         count++;
     }
+    // hodim na zasobnik vse zpet
+    while (!stackPrecedenceIsEmpty(stackTmp))
+    {
+        Token stackTop = stackPrecedenceRead(stackTmp);
+        stackPrecedencePop(stackTmp); 
+        stackPrecedencePush(stack, stackTop);
+    }
+    stackPrecedenceDestruct(stackTmp); // uvolnim nakonec nepouzivany zasobnik
+
+
     printf("\t\t\tparam count %d\n", count);
     switch (count)
     {
@@ -310,13 +325,22 @@ bool checkDollarExpression(DynamicPrecedenceStackPtr stack)
 
 void printStack(DynamicPrecedenceStackPtr stack)
 {
-    DynamicPrecedenceStack tmp = *stack; // zkopiruji si stack a spocitam si pocet prvku, ktere na zasobniku jsou
-    while (!stackPrecedenceIsEmpty(&tmp))
+    DynamicPrecedenceStackPtr stackTmp;
+    stackTmp = stackPrecedenceConstruct(DEFAULT_INIT_ELEMENT_COUNT); // zkopiruji si stack a spocitam si pocet prvku, ktere na zasobniku jsou
+    while (!stackPrecedenceIsEmpty(stack))
     {
-        Token tokenRead = stackPrecedenceRead(&tmp);
-        stackPrecedencePop(&tmp);
+        Token tokenRead = stackPrecedenceRead(stack);
+        stackPrecedencePop(stack);
         printf("%s ", token_type_to_string(tokenRead.type));
+        stackPrecedencePush(stackTmp, tokenRead);
     }
+    while (!stackPrecedenceIsEmpty(stackTmp))
+    {
+         Token topToken = stackPrecedenceRead(stackTmp);
+         stackPrecedencePop(stackTmp);
+         stackPrecedencePush(stack, topToken);
+    }
+    stackPrecedenceDestruct(stackTmp); // uvolnim docasny zasobnik
 
     printf("\n");
 }
