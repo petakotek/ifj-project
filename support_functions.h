@@ -8,8 +8,7 @@
  */
 
 #ifndef SUPPORT_FUNCTIONS
-
-#define SUPPORT_FUNCTIONS 1
+#define SUPPORT_FUNCTIONS
 
 // ----------------- Závislosti -----------------
 #include <stdarg.h>
@@ -17,6 +16,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include "lexer.h"
+//#include "semantic_analysis.h" // TODO něco to rozbíjí
+extern void freeSematicsMemory();
 
 // ----------------- Datové typy -----------------
 /**
@@ -67,6 +68,7 @@ void memorySafeExit(enum errorCodes errCode);
  *
  * Zadání specifikuje, že veškeré výpisy chyb, varování nebo ladění máme provádět na standardní
  * chybový výstup
+ * @note Nepřidává znak nového řádku na konec fmt!
  * @param errCode Kód chyby
  * @param fmt Text a formát pro vypsání
  * @param ... Parametry požadované formátem
@@ -78,6 +80,7 @@ void printError(enum errorCodes errCode, const char *fmt, ...);
  *
  * Zadání specifikuje, že veškeré výpisy chyb, varování nebo ladění máme provádět na standardní
  * chybový výstup
+ * @note Nepřidává znak nového řádku na konec fmt!
  * @param fmt Text a formát pro vypsání
  * @param ... Parametry požadované formátem
  */
@@ -88,6 +91,7 @@ void printWarning(const char *fmt, ...);
  *
  * Zadání specifikuje, že veškeré výpisy chyb, varování nebo ladění máme provádět na standardní
  * chybový výstup
+ * @note Nepřidává znak nového řádku na konec fmt!
  * @param fmt Text a formát pro vypsání
  * @param ... Parametry požadované formátem
  */
