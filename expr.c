@@ -276,8 +276,8 @@ void findPrecedenceRule(DynamicPrecedenceStackPtr stack, DynamicAstNodeStackPtr 
                 stackAstNodePop(stackA);
                 AstNode *secondChild = stackAstNodeRead(stackA);
                 stackAstNodePop(stackA);
-                kids[0] = firstChild;
-                kids[1] = secondChild;
+                kids[1] = firstChild;
+                kids[0] = secondChild;
                 AstNode *newRoot = ast_new(getAstNodeTypeFromTokenType(p2.type), 2, kids);
                 stackAstNodePush(stackA, newRoot);
                 

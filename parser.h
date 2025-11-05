@@ -67,7 +67,7 @@ typedef enum
     N_Block_content_check,
     N_oExpr,
     N_Func_block_content_check,
-    N_callIfj,
+    N_callIfj,    
 } Nonterm;
 
 AstNode* parser();

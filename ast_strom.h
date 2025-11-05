@@ -45,6 +45,7 @@ typedef enum AstNodeType {
     // riadiace štruktúry
     AST_IF,
     AST_ELSE,
+    AST_ELSE_IF,
     AST_WHILE,
     AST_FOR,
     AST_BREAK,
