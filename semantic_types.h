@@ -11,12 +11,12 @@
  */
 typedef enum {
     /**
-     * @brief Deklarace lokální proměnné // TODO nebo volání neexistující
+     * @brief Deklarace lokální proměnné
      *
      */
     VARIABLE,
     /**
-     * @brief Deklarace globální proměnné // TODO nebo volání neexistující
+     * @brief Deklarace globální proměnné
      *
      */
     GLOBAL,
@@ -37,9 +37,9 @@ typedef enum {
     GETTER,
     /**
      * @brief Parametr u deklarace funkce
-     * 
+     *
      */
-     FUNCTION_PARAMETER
+    FUNCTION_PARAMETER
 } SemanticSymbolTypes;
 
 /**
@@ -47,6 +47,7 @@ typedef enum {
  *
  */
 typedef enum {
+    A,
     /**
      * @brief Celé nebo desetinné číslo
      *
@@ -68,6 +69,12 @@ typedef enum {
      * @note Používán jako základní hodnota (např. při deklaraci funkce)
      */
     NULL_VAL,
+    /**
+     * @brief Nelze určit hodnotu (parametry a návratová hodnota funkcí)
+     *
+     * @note Všechny operátory berou tento typ jako validní
+     */
+    UNKNOWN_VAL
 } SemanticSymbolDataType;
 
 /**
@@ -96,15 +103,22 @@ typedef enum {
      */
     STRING_DATA,
     /**
+     * @brief Výstupem zpracování uzlu je bool hodnota
+     *
+     */
+    BOOLEAN_DATA,
+    /**
      * @brief Výstupem zpracování uzlu (a jeho potomků) je hodnota null
      *
      */
     NULL_DATA,
     /**
-     * @brief Výstupem zpracování uzlu je bool hodnota
-     * 
+     * @brief Nelze určit hodnotu (parametry a návratová hodnota funkcí)
+     *
+     * @note Všechny operátory berou tuto hodnotu jako validní, ale snaží se ji nevracet (domýšlí si
+     * na základě sémantických pravidel nebo druhého operandu vhodnou návratovou hodnotu)
      */
-    BOOLEAN_DATA,
+    UNKNOWN_DATA,
     /**
      * @brief Funkce dostala ukazatel na NULL jako vstupní hodnotu
      *
@@ -121,29 +135,34 @@ typedef enum {
 typedef struct {
     /**
      * @brief Název symbolu
-     * 
+     *
      */
-    char*                  name;
+    char* name;
     /**
      * @brief Typ symbolu
-     * 
+     *
      */
-    SemanticSymbolTypes    symbolType;
+    SemanticSymbolTypes symbolType;
     /**
      * @brief Příslušný rámec symbolu
-     * 
+     *
      */
-    unsigned               scope;
+    unsigned scope;
     /**
      * @brief Datový typ dat, která symbol obsahuje
-     * 
+     *
      */
     SemanticSymbolDataType dataType;
     /**
      * @brief Počet parametrů
+     *
+     */
+    size_t paramCount;
+    /**
+     * @brief Návratová hodnota funkce
      * 
      */
-    size_t                 paramCount;
+    SemanticSymbolDataType returnValue;
 } SemanticSymbol;
 
 #endif

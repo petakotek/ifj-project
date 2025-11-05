@@ -1,7 +1,7 @@
 // TODO hlavička
 
 #ifndef SEMANTIC_ANALYSIS
-#define SEMANTIC_ANALYSIS 1
+#define SEMANTIC_ANALYSIS
 
 #include "semantic_types.h"
 #include "symtable.h"
