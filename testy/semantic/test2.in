@@ -3,6 +3,9 @@ class Program {
     static main(x,y,z) {
         return
     }
+    static main() {
+        return
+    }
 }
 
 
