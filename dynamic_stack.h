@@ -14,14 +14,15 @@
 #include <stdlib.h>
 
 #include "support_functions.h"
-#include "symbol.h"
 #include "symtable.h"
+#include "symbol.h"
 
 /**
  * @brief Základní velikost zásobníku (možné použít při inicializaci)
  *
  */
 #define DEFAULT_INIT_ELEMENT_COUNT 20
+
 
 /**
  * @brief Makro pro deklaraci zásobníku pro určitý datový typ
@@ -99,7 +100,7 @@
     /**                                                                                                   \
      * @brief Vrátí data z vrcholu zásobníku (nemaže zásobník)                                     \
      *                                                                                                    \
-     * @warning Očekává, že zásobník existuje a není prázdný. Jinak nedefinované chování!     \
+     * @attention Očekává, že zásobník existuje a není prázdný. Jinak nedefinované chování!     \
      * @param stack Ukazatel na zásobník                                                                \
      * @return Data z vrcholu                                                                             \
      */                                                                                                   \
@@ -127,7 +128,7 @@
     /**                                                                                                   \
      * @brief Zajišťuje dealokaci dat i metadat zásobníku                                             \
      *                                                                                                    \
-     * @warning Pokud jsou položky zásobníku ukazatele, je potřeba dealokaci cílů ukazatelů        \
+     * @attention Pokud jsou položky zásobníku ukazatele, je potřeba dealokaci cílů ukazatelů        \
      * zajistit zvlášť. Zásobník tuto variantu nekontroluje!                                         \
      * @param stack Ukazatel na zásobník                                                                \
      */                                                                                                   \
