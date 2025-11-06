@@ -1,0 +1,21 @@
+import "ifj25" for Ifj
+class Program {
+    static main(xy,arg2,super,nice,osemdesat) {
+        var x = 5
+        __y = 1
+        {
+            var z = __y + 2
+        }
+    }
+
+    static a() {
+        var x = __y + "as"
+
+        var x = __y + "as"
+        var x = __y + "as"
+        var x = __y + "as"
+        var x = __y + "as"
+        var x = __y + "as"
+        var x = __y + "as"
+    }
+}

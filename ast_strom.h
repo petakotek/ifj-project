@@ -41,6 +41,7 @@ typedef enum AstNodeType {
     // riadiace štruktúry
     AST_IF,
     AST_ELSE,
+    AST_ELSE_IF,
     AST_WHILE,
     AST_FOR,
     AST_BREAK,
@@ -72,19 +73,20 @@ typedef enum AstNodeType {
     AST_LTE,        // <=
     AST_LPAREN,     // (
     AST_RPAREN,     // )
-    AST_NULL
+    AST_NULL,
+    AST_NOTEQ
 } AstNodeType;
 
 
 /**
  * @brief struktura na uchovavanie hodnoty tokenu pre abstraktny syntakticky strom
- * @param int_value typ int -> uchovanie hodnoty tokenu pre cele cislo 
+ * @param int_value typ int -> uchovanie hodnoty tokenu pre cele cislo
  * @param float_val typ float -> uchovanie hodnoty tokenu pre desatine cislo
  * @param str typ *char -> uchovanie hodnoty tokenu pre premennu, globalnu premennu a pre retazec
  * @param has_str typ bool -> nastavime true ak zapisujeme do str
  * @param is_int typ bool -> nastavime true ak zapisujeme do int_val
  * @param is_float typ bool -> nastavime true ak zapisujeme do float_val
- *  
+ *
  */
 typedef struct AstValue {
     long long   int_val;

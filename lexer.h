@@ -48,6 +48,8 @@ typedef enum{
     GT,        // >
     START,	//*
     DOT, // .
+    DOUBLE_DOT, // ..
+    TRIPLE_DOT, // ...
     COMMA,
     LTE, // <=
     GTE ,// >=
@@ -60,7 +62,7 @@ typedef enum{
     DOUBLE_QUO,//""
     END_QUO,   //ukoncovaci stavy pro block string
     END_DOUBLE_QUO,
-    DOUBLE_DOT, // :
+    COLON, // :
     QUESTION_MARK, // ?
     DOUBLE_MINUS, // --
     ZNAK_HEXA  //stav kdy ve stringu dostaneme hexa cislo a tim doplnime znak
@@ -97,7 +99,7 @@ typedef enum {
     TOKEN_LTE,
     TOKEN_GTE,
     TOKEN_NOT,
-    TOKEN_DOUBLE_DOT,
+    TOKEN_COLON,
     TOKEN_AND,
     TOKEN_OR,
     TOKEN_ERROR,
@@ -129,6 +131,8 @@ typedef enum {
     TOKEN_STOP,
     TOKEN_EXPRESSION,
     TOKEN_PSA_END,
+    TOKEN_DOUBLE_DOT,
+    TOKEN_TRIPLE_DOT
 } TokenType;
 
 typedef union {
