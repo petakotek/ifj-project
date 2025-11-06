@@ -337,5 +337,6 @@ void Block_content_func_check(DynamicSymbolStackPtr Stack, Token token);
 void Func_block_content_check(DynamicSymbolStackPtr Stack, Token token);
 void tokenFree(Token *token);
 void callIfjfunc(DynamicSymbolStackPtr Stack, Token token);
+void token_move(Token *dst, Token *src);
 
 #endif // PARSER_H

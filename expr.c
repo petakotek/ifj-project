@@ -57,6 +57,32 @@ typedef enum{
 } operators_t;
 
 
+void tokennFree(Token *token)
+{
+    if (!token) 
+    {
+        return;
+    }
+
+    switch (token->type) {
+        case TOKEN_IDENTIFIER:
+        case TOKEN_GLOBAL_ID:
+        case TOKEN_STRING:
+        case TOKEN_INTEGER:
+        case TOKEN_FLOAT:
+            if (token->value.identifier) 
+            {
+                free(token->value.identifier);
+                token->value.identifier = NULL;
+            }
+            break;
+
+        default:
+            break;
+    }
+    *token = (Token){0};
+}
+
 // Na zaklade aktualniho tokenu urci, jaky operator se bude vkladat na zasobnik
 int operatorToPush(Token token)
 {
@@ -230,6 +256,7 @@ void findPrecedenceRule(DynamicPrecedenceStackPtr stack, DynamicAstNodeStackPtr 
             stackPrecedencePop(stack); // vyhodim <
             AstNode* newNode = NULL;
             newNode = new_leaf(getAstNodeTypeFromTokenType(p1.type), p1);
+            tokennFree(&p1);
             stackAstNodePush(stackA, newNode); // hodim na zasobnik uzel
             p1.type = TOKEN_EXPRESSION;
             stackPrecedencePush(stack, p1);
@@ -283,6 +310,7 @@ void findPrecedenceRule(DynamicPrecedenceStackPtr stack, DynamicAstNodeStackPtr 
                 kids[0] = firstChild;
                 kids[1] = secondChild;
                 AstNode *newRoot = ast_new(getAstNodeTypeFromTokenType(p2.type), 2, kids);
+                free(kids);
                 stackAstNodePush(stackA, newRoot);
                 
                 p2.type = TOKEN_EXPRESSION; // vratim na klasicky zasobnik jenom expression
@@ -323,7 +351,7 @@ bool checkDollarExpression(DynamicPrecedenceStackPtr stack)
     {
         return false;
     }
-     
+    
     return true;
 }
 
@@ -340,9 +368,10 @@ void printStack(DynamicPrecedenceStackPtr stack)
     }
     while (!stackPrecedenceIsEmpty(stackTmp))
     {
-         Token topToken = stackPrecedenceRead(stackTmp);
-         stackPrecedencePop(stackTmp);
-         stackPrecedencePush(stack, topToken);
+        Token topToken = stackPrecedenceRead(stackTmp);
+        stackPrecedencePop(stackTmp);
+        stackPrecedencePush(stack, topToken);
+
     }
     stackPrecedenceDestruct(stackTmp); // uvolnim docasny zasobnik
 
