@@ -1,5 +1,9 @@
 /**
- * @brief Soubor s funkcí pro zpracování výrazu
+ * Fakulta informačních technologií VUT Brno
+ *
+ * Implementace precedeční analýzy pro překladač jazyka Wren pro projekt do předmětu IFJ
+ * @file expr.c
+ * @author Petr Kotek (xkotekp00)
  */
 
 #ifndef EXPR_C
@@ -9,35 +13,30 @@
 #include "dynamic_stack.h"
 #include "support_functions.h"
 
-/**
- * TODO: vyřešit ukončování výrazu? Například počítáním závorek? Popřípadě pokud závorka
- * není a je tam znak nového řádku tak projít nový řádek a podívat se dál? O 2 tokeny?
- * 
- * TODO: zkontrolovat precedeční tabulku, jestli dává smysl a je správná!!!
- */
 
 typedef enum {
     R, // >
     L, // <
     E, // =
-    N, // empty space
+    N, // prázdné místo
 
 } precedentRules;
 
-int PSA_TABLE[12][12] = {
-//   0  1  2  3  4  5  6  7  8  9  10 11
-    {R, L, R, R, R, L, R, R, L, R, L, R}, // + -
-    {R, R, R, R, R, L, R, R, L, R, L, R}, // * /
-    {L, L, R, R, R, L, R, R, L, R, L, R}, // < > >= <=
-    {L, L, L, R, R, L, R, R, L, R, L, R}, // is
-    {L, L, L, L, R, L, R, R, L, R, L, R}, // == !=
-    {R, R, R, R, R, R, R, R, L, R, L, R}, // negace !
-    {L, L, L, L, L, L, R, R, L, R, L, R}, // &&
-    {L, L, L, L, L, L, L, R, L, R, L, R}, // ||
-    {R, R, R, R, R, N, R, R, N, R, N, R}, // id
-    {L, L, L, L, L, L, L, L, L, N, L, N}, // dollar
-    {L, L, L, L, L, L, L, L, L, N, L, E}, // (
-    {R, R, R, R, R, N, R, R, N, R, N, R}, // )
+int PSA_TABLE[13][13] = {
+//   0  1  2  3  4  5  6  7  8  9  10 11 12
+    {R, L, R, R, R, L, R, R, L, R, L, R, N}, // + -
+    {R, R, R, R, R, L, R, R, L, R, L, R, N}, // * /
+    {L, L, R, R, R, L, R, R, L, R, L, R, N}, // < > >= <=
+    {L, L, L, R, R, L, R, R, L, R, L, R, N}, // is
+    {L, L, L, L, R, L, R, R, L, R, L, R, N}, // == !=
+    {R, R, R, R, R, R, R, R, L, R, L, R, N}, // negace !
+    {L, L, L, L, L, L, R, R, L, R, L, R, N}, // &&
+    {L, L, L, L, L, L, L, R, L, R, L, R, N}, // ||
+    {R, R, R, R, R, N, R, R, N, R, N, R, R}, // id
+    {L, L, L, L, L, L, L, L, L, N, L, N, L}, // dollar
+    {L, L, L, L, L, L, L, L, L, N, L, E, N}, // (
+    {R, R, R, R, R, N, R, R, N, R, N, R, R}, // )
+    {N, N, N, N, N, L, N, N, L, N, L, R, R}, // ../...
 };
 
  // vsechny operatory, ktere se mohou vyskytnout ve vyrazu
@@ -54,6 +53,7 @@ typedef enum{
     INDEX_DOLLAR,       // 9    dollar
     INDEX_LP,           // 10   (
     INDEX_RP,           // 11   )
+    INDEX_DOTS,         // 12   ../...
 } operators_t;
 
 
@@ -111,6 +111,9 @@ int operatorToPush(Token token)
         // )
         case TOKEN_RPAREN:  return INDEX_RP;
 
+        case TOKEN_DOUBLE_DOT: return INDEX_DOTS;
+        case TOKEN_TRIPLE_DOT: return INDEX_DOTS;
+
        
         // jinak je to $
         default:
@@ -138,7 +141,7 @@ int operatorToPush(Token token)
  * 14) E :: E <= E
  * 15) E :: E >= E
  * 16) E :: E ? E : E       /// ?:
- * 
+ *
  */
 
 /**
@@ -172,8 +175,8 @@ AstNodeType getAstNodeTypeFromTokenType(TokenType type)
     case TOKEN_NEGACE:      return AST_NOT;     // !
     case TOKEN_STRING:      return AST_STRING_LIT; // string
     case TOKEN_NOT:         return AST_NEQ; // !=
-    // case TOKEN_DOUBLE_DOT:  return AST_DOUBLE_DOT;
-    // case TOKEN_TRIPLE_DOT   return AST_DOUBLE_DOT;
+    case TOKEN_DOUBLE_DOT:  return AST_DOUBLE_DOT;
+    case TOKEN_TRIPLE_DOT:   return AST_TRIPLE_DOT;
 
     default:
         printError(SYNTAX_ERROR, "(PSA) Nelze prevést TokenType na AstNodeType, neznámý token\n");
@@ -183,6 +186,37 @@ AstNodeType getAstNodeTypeFromTokenType(TokenType type)
     }
 }
 
+/**
+ * @brief Funkce uvolňuje nevyužívaný token
+ * @param token ukazatel na strukturu tokenu, který má být uvolněn
+ * @return Funkce nemá žádnou návratovou hodnotu
+ */
+void tokenPrecedenceFree(Token *token)
+{
+    if (!token) 
+    {
+        return;
+    }
+
+    switch (token->type)
+    {
+        case TOKEN_IDENTIFIER:
+        case TOKEN_GLOBAL_ID:
+        case TOKEN_STRING:
+        case TOKEN_INTEGER:
+        case TOKEN_FLOAT:
+            if (token->value.identifier) 
+            {
+                free(token->value.identifier);
+                token->value.identifier = NULL;
+            }
+            break;
+
+        default:
+            break;
+    }
+    *token = (Token){0};
+}
 
 /**
  * @brief Funkce nalezne pravidlo z gramatiky precedenční analýzy a sestaví mini podstrom,
@@ -230,6 +264,9 @@ void findPrecedenceRule(DynamicPrecedenceStackPtr stack, DynamicAstNodeStackPtr 
             stackPrecedencePop(stack); // vyhodim <
             AstNode* newNode = NULL;
             newNode = new_leaf(getAstNodeTypeFromTokenType(p1.type), p1);
+
+            tokenPrecedenceFree(&p1); // uvolneni nepotrebneho tokenu
+
             stackAstNodePush(stackA, newNode); // hodim na zasobnik uzel
             p1.type = TOKEN_EXPRESSION;
             stackPrecedencePush(stack, p1);
@@ -283,6 +320,7 @@ void findPrecedenceRule(DynamicPrecedenceStackPtr stack, DynamicAstNodeStackPtr 
                 kids[0] = firstChild;
                 kids[1] = secondChild;
                 AstNode *newRoot = ast_new(getAstNodeTypeFromTokenType(p2.type), 2, kids);
+                free(kids); // uvolneni deti, nebudou uz potreba
                 stackAstNodePush(stackA, newRoot);
                 
                 p2.type = TOKEN_EXPRESSION; // vratim na klasicky zasobnik jenom expression
@@ -373,6 +411,7 @@ AstNode* parseExpression(Token *token, int flag)
 
     bool firstOK = false; // kontrola, ze prvni token, ktery prijimam je nejaky identifikator
     bool checkEmptyIf = false;
+    bool expectingNewLineAfterOperator = true;
     // dokud neni na zasobniku jenom $E && nemam na vstupu token, ktery mi vsechno ukoncuje
     while (actualToken.type != TOKEN_PSA_END) // 
     {
@@ -395,11 +434,41 @@ AstNode* parseExpression(Token *token, int flag)
                 return NULL;
             }
         }
+        
+        if (operatorToPush(StackTop) == INDEX_ID)
+        {
+            expectingNewLineAfterOperator = true;
+        }
 
+        if (actualToken.type == TOKEN_NEW_LINE && (operatorToPush(StackTop) == INDEX_ID || operatorToPush(StackTop) == INDEX_DOLLAR))
+        {
+            endFlag = TOKEN_PSA_END;
+        }else{
+            expectingNewLineAfterOperator = true;
+        }
+        
+        if (expectingNewLineAfterOperator)
+        {
+            // pokud za operatorem dostanu znak noveho radku, posunu se o jeden token napred
+            if (operatorToPush(StackTop) != INDEX_DOLLAR && operatorToPush(StackTop) != INDEX_ID && actualToken.type == TOKEN_NEW_LINE)
+            {
+                actualToken = lexer_token_next();
+                if (operatorToPush(actualToken) != INDEX_ID)
+                {
+                    endFlag = TOKEN_PSA_END;
+                }
+            }
+            
+            
+        }
+        
+        
+        // podminky, ktere mohou nastat pri ukoncovani vyrazu, kazda je unikatni
         if ((flag == -1 && actualToken.type == TOKEN_RPAREN && StackTop.type == TOKEN_DOLLAR)
             || (actualToken.type == TOKEN_NEW_LINE && StackTop.type == TOKEN_DOLLAR)
             || (actualToken.type == TOKEN_COMMA && StackTop.type == TOKEN_DOLLAR) // оddělení výrazů ve funkce čárkou
-            || (actualToken.type == TOKEN_RPAREN && StackTop.type == TOKEN_DOLLAR && flag == 1)) // ukončení funkce levou závorkou
+            || (actualToken.type == TOKEN_RPAREN && StackTop.type == TOKEN_DOLLAR && flag == 1) // ukončení funkce levou závorkou
+            || (actualToken.type == TOKEN_BLOCK_END && flag == -2 && StackTop.type == TOKEN_DOLLAR)) // ukonceni volani vyrazu v jednoradkove funkci
         {   // abych mohl koncit potrebuji mit na vstupu token new line a u zasobniku ukazovat jen na $
             printf("splnila se podminka\n");
             printStack(stackP);
