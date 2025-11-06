@@ -6,6 +6,8 @@
 #define EXPR_C
 
 #include "expr.h"
+#include "dynamic_stack.h"
+#include "support_functions.h"
 
 /**
  * TODO: vyřešit ukončování výrazu? Například počítáním závorek? Popřípadě pokud závorka

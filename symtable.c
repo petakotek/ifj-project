@@ -11,6 +11,11 @@
 
 #include "support_functions.h"
 
+#include <string.h>
+#include <stdlib.h>
+#include <stdio.h>
+
+
 #define TABLE_CAPACITY 200  // nastavení počtu položek tabulky
 
 /**

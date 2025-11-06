@@ -10,10 +10,7 @@
 #ifndef DYNAMIC_STACK
 #define DYNAMIC_STACK 1
 
-#include <stdbool.h>
-#include <stdlib.h>
 
-#include "support_functions.h"
 #include "symbol.h"
 #include "symtable.h"
 

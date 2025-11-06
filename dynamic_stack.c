@@ -9,6 +9,12 @@
 
 #include "dynamic_stack.h"
 
+#include "support_functions.h"
+
+
+#include <stdbool.h>
+#include <stdlib.h>
+
 /**
  * @brief Makro pro definici zásobníkových funkcí pro určitý datový typ
  *

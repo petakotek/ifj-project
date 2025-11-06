@@ -11,12 +11,9 @@
 #ifndef SYMTABLE_H
 #define SYMTABLE_H
 
-#include <stdbool.h>
-#include <stdio.h>
-#include <stdlib.h>
+#include "semantic_analysis.h"
 
-#include "semantic_types.h"
-#include "support_functions.h"
+#include <stdbool.h>
 
 /**
  * @brief Struktura položky v hashovací tabulce

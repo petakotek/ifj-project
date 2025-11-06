@@ -9,8 +9,6 @@
  #define LEXER_H
 
 #include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
 /*
 *Definice typu tokenu v lexeru
 */

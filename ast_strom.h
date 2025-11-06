@@ -7,15 +7,11 @@
 
 #ifndef AST_STROM_H
 #define AST_STROM_H
-#include <string.h>
-#include <stdbool.h>
-#include <stdlib.h>
+
 #include "lexer.h"
-#include "support_functions.h"
-#include <stdio.h>
-#include <assert.h>
 
-
+#include <stdlib.h>
+#include <stdbool.h>
 
 /**
  * @brief enum ktory obsahuje typy (nazvi) uzlov

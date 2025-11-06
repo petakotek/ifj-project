@@ -11,16 +11,7 @@
 #ifndef PARSER_H
 #define PARSER_H
 
-#include <stdio.h>
-#include <stdbool.h>
-#include <string.h>
-
-#include "lexer.h"
-#include "support_functions.h"
 #include "dynamic_stack.h"
-#include "symbol.h"
-#include "ast_strom.h"
-#include "expr.h"
 
 /**
  * @brief Definicia neterminálov

@@ -6,14 +6,12 @@
  */
 #include "lexer.h"
 
+#include "support_functions.h"
+
 #include <ctype.h>
-#include <stdbool.h>
-#include <stddef.h>
-#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 
-#include "support_functions.h"
 /*
  * Proměna  která je potřebna byti viditelnou v celem souboru
  * Kdyz tak predelat a predavat pres argumenty

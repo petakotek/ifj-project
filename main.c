@@ -4,13 +4,16 @@
  * Soubor: main.c
  * Popis: Vstupni bod do programu spojuje jednotlivé moduly
  */
-#include <stddef.h>
-#include <stdio.h>
-#include <stdlib.h>
+
 #include "parser.h"
 #include "ast_strom.h"
 #include "support_functions.h"
 #include "semantic_analysis.h"
+
+#include <stddef.h>
+#include <stdio.h>
+#include <stdlib.h>
+
 #define SYMBOL_SIZE 201
 #define LITERAL_SIZE 101
 int main(){

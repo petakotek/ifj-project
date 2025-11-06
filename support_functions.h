@@ -10,16 +10,6 @@
 #ifndef SUPPORT_FUNCTIONS
 #define SUPPORT_FUNCTIONS
 
-// ----------------- Závislosti -----------------
-#include <stdarg.h>
-#include <stdbool.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include "lexer.h"
-//#include "semantic_analysis.h" // TODO něco to rozbíjí
-extern void freeSematicsMemory();
-
-// ----------------- Datové typy -----------------
 /**
  * @brief Číselník s jednotlivými návratovými kódy, jak definuje zadání
  *
@@ -55,7 +45,6 @@ enum errorCodes {
     RUNTIME_SEMANTICS_ERROR_UNCOMPATIBLE = 26,
 };
 
-// ----------------- deklarace veřejných funkcí -----------------
 /**
  * @brief Ukončuje běh programu, zajistí vyčištění paměti a vrací zadaný chybový kód
  *
@@ -96,6 +85,8 @@ void printWarning(const char *fmt, ...);
  * @param ... Parametry požadované formátem
  */
 void printLog(const char *fmt, ...);
+
+// TODO pepoooooooo!
 void print_and_free_tokens();
 /**
 * @brief Funkce na nacteni vstupu do retezce tak a abychom se vyhli fseek

@@ -11,6 +11,17 @@
 
 #include "parser.h"
 
+#include "lexer.h"
+#include "support_functions.h"
+#include "symbol.h"
+#include "ast_strom.h"
+#include "expr.h"
+
+#include <string.h>
+#include <stdbool.h>
+#include <stdio.h>
+#include <stdlib.h>
+
 AstNode *parser()
 {
     DynamicAstNodeStackPtr AstStack = stackAstNodeConstruct(DEFAULT_INIT_ELEMENT_COUNT);

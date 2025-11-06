@@ -2,7 +2,12 @@
 
 #include "semantic_analysis.h"
 
+#include "dynamic_stack.h"
+#include "support_functions.h"
+#include "symtable.h"
+
 #include <limits.h>
+#include <string.h>
 
 // TODO promyslet zda má význam aby většina funkcí něco vracela (bool), spousta z nich může rovnou
 // ukončit vykonávání programu, pokud funkce co je používají nevytváří paměť
