@@ -2,17 +2,20 @@
 
 #include "semantic_analysis.h"
 
+#include <limits.h>
+#include <string.h>
+
 #include "dynamic_stack.h"
 #include "support_functions.h"
 #include "symtable.h"
-
-#include <limits.h>
-#include <string.h>
 
 // TODO promyslet zda má význam aby většina funkcí něco vracela (bool), spousta z nich může rovnou
 // ukončit vykonávání programu, pokud funkce co je používají nevytváří paměť
 // přidat to jako @attention (viz funkce pro práci s tabulkou volání)
 // Pokud tam bool dává smysl, tak povinně kontrolovat!
+
+// TODO ověřit, že nedochází k úniku paměti při ukončení neplánovaně
+// TODO všude kde vrací error popravit program (pokud nehrozí ztráta paměti!)
 
 /**
  * @brief Ukazatel na zásobník pro ukládání jednotlivých rámců
@@ -366,6 +369,7 @@ RecursiveSemanticAnalysisReturnValues recursiveNodeWalker(AstNode*    currentNod
 
             SemanticSymbol* foundSymbol = findSymbol(newSymbol.name);
             if (foundSymbol != NULL) {
+                free(newSymbol.name);
                 printError(SEMANTICS_ERROR_REDEF, "Funkce '%s' jiz existuje!", newSymbol.name);
                 memorySafeExit(SEMANTICS_ERROR_REDEF);
                 return ERROR;
@@ -404,12 +408,15 @@ RecursiveSemanticAnalysisReturnValues recursiveNodeWalker(AstNode*    currentNod
         case (AST_BLOCK): {
             printLog("AST_BLOCK\n");
             if (parentNodeType != AST_FUNC_DEC) {
-                printLog("Creating new scope\n");
                 createNewScope();
             }
             for (size_t i = 0; i < currentNode->arity; i++) {
-                if (recursiveNodeWalker(currentNode->child[i], AST_BLOCK) != OK) {
+                RecursiveSemanticAnalysisReturnValues childValue =
+                    recursiveNodeWalker(currentNode->child[i], AST_BLOCK);
+                if (childValue == ERROR) {
                     return ERROR;
+                } else if (childValue != OK) {
+                    return childValue;
                 }
             }
 
@@ -425,8 +432,12 @@ RecursiveSemanticAnalysisReturnValues recursiveNodeWalker(AstNode*    currentNod
         case (AST_STATEMENT_LIST): {
             printLog("AST_STATEMENT_LIST\n");
             for (size_t i = 0; i < currentNode->arity; i++) {
-                if (recursiveNodeWalker(currentNode->child[i], AST_STATEMENT_LIST) != OK) {
+                RecursiveSemanticAnalysisReturnValues childValue =
+                    recursiveNodeWalker(currentNode->child[i], AST_STATEMENT_LIST);
+                if (childValue == ERROR) {
                     return ERROR;
+                } else if (childValue != OK) {
+                    return childValue;
                 }
             }
 
@@ -484,39 +495,62 @@ RecursiveSemanticAnalysisReturnValues recursiveNodeWalker(AstNode*    currentNod
             }
 
             insertSymbolCurrentScope(newSymbol);
-
-            SemanticSymbol* fs = findSymbol(newSymbol.name);
-
-            if (fs == NULL) {
-                printError(SEMANTICS_ERROR_UNDEF, "Promena '%s' neexistuje!\n",
-                           currentNode->value.str);
-                memorySafeExit(SEMANTICS_ERROR_UNDEF);
-            }
-
             return OK;
             break;
         }
         case (AST_ASSIGN): {
             printLog("AST_ASSIGN\n");
 
-            // TODO u identifier to není tak jednoduché!
-            return recursiveNodeWalker(currentNode->child[0], AST_ASSIGN);
+            if (parentNodeType == AST_VAR || parentNodeType == AST_GLOBAL_ID) {
+                return recursiveNodeWalker(currentNode->child[0], AST_ASSIGN);
+            }
+
+            RecursiveSemanticAnalysisReturnValues leftChild =
+                recursiveNodeWalker(currentNode->child[0], AST_ASSIGN);
+            RecursiveSemanticAnalysisReturnValues rightChild =
+                recursiveNodeWalker(currentNode->child[1], AST_ASSIGN);
+
+            if (leftChild != IDENTIFIER) {
+                printError(SEMANTICS_ERROR_OTHERS,
+                           "(=) Levy operand prirazeni musi byt promenna!\n");
+                memorySafeExit(SEMANTICS_ERROR_OTHERS);
+            }
+
+            SemanticSymbol* leftSymbol = findSymbol(currentNode->child[0]->value.str);
+            if (leftSymbol == NULL) {
+                printError(SEMANTICS_ERROR_UNDEF, "(=) Prirazeni do nedefinovane promenne!\n");
+                memorySafeExit(SEMANTICS_ERROR_UNDEF);
+            }
+
+            if (rightChild == IDENTIFIER) {
+                SemanticSymbol* rightSymbol = findSymbol(currentNode->child[1]->value.str);
+                if (rightSymbol == NULL) {
+                    printError(SEMANTICS_ERROR_UNDEF, "(=) Cteni nedefinovane promenne!\n");
+                    memorySafeExit(SEMANTICS_ERROR_UNDEF);
+                }
+
+                leftSymbol->dataType = rightSymbol->dataType;
+                return OK;
+            }
+
+            leftSymbol->dataType = convertSemanticReturnValueToSemanticDataType(rightChild);
+            return OK;
 
             break;
         }
         case (AST_IF): {
             printLog("AST_IF\n");
-            // TODO
+            // TODO AST_IF
             break;
         }
         case (AST_WHILE): {
             printLog("AST_WHILE\n");
-            // TODO
+            // TODO AST_WHILE
             break;
         }
         case (AST_FOR): {
             printLog("AST_FOR\n");
-            // TODO
+            // TODO FOR
             break;
         }
         case (AST_IDENTIFIER): {
@@ -538,13 +572,17 @@ RecursiveSemanticAnalysisReturnValues recursiveNodeWalker(AstNode*    currentNod
 
                 insertSymbolCurrentScope(newSymbol);
                 return OK;
-            } else {  // TODO Možná bude potřeba else if
+            } else {
                 SemanticSymbol* foundSymbol = findSymbol(currentNode->value.str);
 
                 if (foundSymbol == NULL) {
                     printError(SEMANTICS_ERROR_UNDEF, "Promena '%s' neexistuje!\n",
                                currentNode->value.str);
                     memorySafeExit(SEMANTICS_ERROR_UNDEF);
+                }
+
+                if (parentNodeType == AST_ASSIGN) {
+                    return IDENTIFIER;
                 }
 
                 return convertSemanticDataTypeToSemanticReturnValue(foundSymbol->dataType);
@@ -567,20 +605,18 @@ RecursiveSemanticAnalysisReturnValues recursiveNodeWalker(AstNode*    currentNod
                 SemanticSymbolDataType varDataType =
                     convertSemanticReturnValueToSemanticDataType(childValue);
 
-                initNewSymbol(currentNode, &newSymbol, VARIABLE, varDataType, NULL_VAL);
+                initNewSymbol(currentNode, &newSymbol, GLOBAL, varDataType, NULL_VAL);
 
                 SemanticSymbol* foundSymbol = findSymbol(newSymbol.name);
                 if (foundSymbol != NULL) {
-                    printError(SEMANTICS_ERROR_REDEF, "Globalni '%s' jiz existuje!\n",
-                               newSymbol.name);
-                    memorySafeExit(SEMANTICS_ERROR_REDEF);
-                    return ERROR;
+                    // Jedná se o přiřazení nového hodnoty již existující globální proměnné
+                    foundSymbol->dataType = newSymbol.dataType;
+                    return OK;
                 }
 
                 insertSymbolGlobalScope(newSymbol);
                 return OK;
-            } else {  // TODO možná bude if else
-
+            } else {
                 SemanticSymbol* foundSymbol = findSymbol(currentNode->value.str);
 
                 if (foundSymbol == NULL) {
@@ -588,6 +624,9 @@ RecursiveSemanticAnalysisReturnValues recursiveNodeWalker(AstNode*    currentNod
                     return NULL_DATA;
                 }
 
+                if (parentNodeType == AST_ASSIGN) {
+                    return IDENTIFIER;
+                }
                 return convertSemanticDataTypeToSemanticReturnValue(foundSymbol->dataType);
             }
 
@@ -613,9 +652,9 @@ RecursiveSemanticAnalysisReturnValues recursiveNodeWalker(AstNode*    currentNod
             printLog("AST_PLUS\n");
 
             RecursiveSemanticAnalysisReturnValues leftChild =
-                recursiveNodeWalker(currentNode->child[1], AST_PLUS);
-            RecursiveSemanticAnalysisReturnValues rightChild =
                 recursiveNodeWalker(currentNode->child[0], AST_PLUS);
+            RecursiveSemanticAnalysisReturnValues rightChild =
+                recursiveNodeWalker(currentNode->child[1], AST_PLUS);
 
             if (leftChild == NUMBER_DATA && rightChild == NUMBER_DATA) {
                 return NUMBER_DATA;
@@ -650,9 +689,9 @@ RecursiveSemanticAnalysisReturnValues recursiveNodeWalker(AstNode*    currentNod
             printLog("AST_MINUS\n");
 
             RecursiveSemanticAnalysisReturnValues leftChild =
-                recursiveNodeWalker(currentNode->child[1], AST_MINUS);
-            RecursiveSemanticAnalysisReturnValues rightChild =
                 recursiveNodeWalker(currentNode->child[0], AST_MINUS);
+            RecursiveSemanticAnalysisReturnValues rightChild =
+                recursiveNodeWalker(currentNode->child[1], AST_MINUS);
 
             if (leftChild == NUMBER_DATA && rightChild == NUMBER_DATA) {
                 return NUMBER_DATA;
@@ -687,9 +726,9 @@ RecursiveSemanticAnalysisReturnValues recursiveNodeWalker(AstNode*    currentNod
             printLog("AST_MUL\n");
 
             RecursiveSemanticAnalysisReturnValues leftChild =
-                recursiveNodeWalker(currentNode->child[1], AST_MUL);
-            RecursiveSemanticAnalysisReturnValues rightChild =
                 recursiveNodeWalker(currentNode->child[0], AST_MUL);
+            RecursiveSemanticAnalysisReturnValues rightChild =
+                recursiveNodeWalker(currentNode->child[1], AST_MUL);
 
             if (leftChild == NUMBER_DATA && rightChild == NUMBER_DATA) {
                 return NUMBER_DATA;
@@ -724,9 +763,9 @@ RecursiveSemanticAnalysisReturnValues recursiveNodeWalker(AstNode*    currentNod
             printLog("AST_DIV\n");
 
             RecursiveSemanticAnalysisReturnValues leftChild =
-                recursiveNodeWalker(currentNode->child[1], AST_DIV);
-            RecursiveSemanticAnalysisReturnValues rightChild =
                 recursiveNodeWalker(currentNode->child[0], AST_DIV);
+            RecursiveSemanticAnalysisReturnValues rightChild =
+                recursiveNodeWalker(currentNode->child[1], AST_DIV);
 
             if (leftChild == NUMBER_DATA && rightChild == NUMBER_DATA) {
                 return NUMBER_DATA;
@@ -757,9 +796,9 @@ RecursiveSemanticAnalysisReturnValues recursiveNodeWalker(AstNode*    currentNod
             printLog("AST_EQ\n");
 
             RecursiveSemanticAnalysisReturnValues leftChild =
-                recursiveNodeWalker(currentNode->child[1], AST_EQ);
-            RecursiveSemanticAnalysisReturnValues rightChild =
                 recursiveNodeWalker(currentNode->child[0], AST_EQ);
+            RecursiveSemanticAnalysisReturnValues rightChild =
+                recursiveNodeWalker(currentNode->child[1], AST_EQ);
 
             if (leftChild == ERROR || rightChild == ERROR) {
                 printError(SEMANTICS_ERROR_UNCOMPATIBLE, "(==) Doslo k chybe!\n");
@@ -775,9 +814,9 @@ RecursiveSemanticAnalysisReturnValues recursiveNodeWalker(AstNode*    currentNod
             printLog("AST_LT\n");
 
             RecursiveSemanticAnalysisReturnValues leftChild =
-                recursiveNodeWalker(currentNode->child[1], AST_LT);
-            RecursiveSemanticAnalysisReturnValues rightChild =
                 recursiveNodeWalker(currentNode->child[0], AST_LT);
+            RecursiveSemanticAnalysisReturnValues rightChild =
+                recursiveNodeWalker(currentNode->child[1], AST_LT);
 
             if (leftChild == ERROR || rightChild == ERROR) {
                 printError(SEMANTICS_ERROR_UNCOMPATIBLE, "(<) Doslo k chybe!\n");
@@ -793,9 +832,9 @@ RecursiveSemanticAnalysisReturnValues recursiveNodeWalker(AstNode*    currentNod
             printLog("AST_GT\n");
 
             RecursiveSemanticAnalysisReturnValues leftChild =
-                recursiveNodeWalker(currentNode->child[1], AST_GT);
-            RecursiveSemanticAnalysisReturnValues rightChild =
                 recursiveNodeWalker(currentNode->child[0], AST_GT);
+            RecursiveSemanticAnalysisReturnValues rightChild =
+                recursiveNodeWalker(currentNode->child[1], AST_GT);
 
             if (leftChild == ERROR || rightChild == ERROR) {
                 printError(SEMANTICS_ERROR_UNCOMPATIBLE, "(>) Doslo k chybe!\n");
@@ -811,9 +850,9 @@ RecursiveSemanticAnalysisReturnValues recursiveNodeWalker(AstNode*    currentNod
             printLog("AST_GTE\n");
 
             RecursiveSemanticAnalysisReturnValues leftChild =
-                recursiveNodeWalker(currentNode->child[1], AST_GTE);
-            RecursiveSemanticAnalysisReturnValues rightChild =
                 recursiveNodeWalker(currentNode->child[0], AST_GTE);
+            RecursiveSemanticAnalysisReturnValues rightChild =
+                recursiveNodeWalker(currentNode->child[1], AST_GTE);
 
             if (leftChild == ERROR || rightChild == ERROR) {
                 printError(SEMANTICS_ERROR_UNCOMPATIBLE, "(>=) Doslo k chybe!\n");
@@ -829,9 +868,9 @@ RecursiveSemanticAnalysisReturnValues recursiveNodeWalker(AstNode*    currentNod
             printLog("AST_LTE\n");
 
             RecursiveSemanticAnalysisReturnValues leftChild =
-                recursiveNodeWalker(currentNode->child[1], AST_LTE);
-            RecursiveSemanticAnalysisReturnValues rightChild =
                 recursiveNodeWalker(currentNode->child[0], AST_LTE);
+            RecursiveSemanticAnalysisReturnValues rightChild =
+                recursiveNodeWalker(currentNode->child[1], AST_LTE);
 
             if (leftChild == ERROR || rightChild == ERROR) {
                 printError(SEMANTICS_ERROR_UNCOMPATIBLE, "(<=) Doslo k chybe!\n");
@@ -846,14 +885,14 @@ RecursiveSemanticAnalysisReturnValues recursiveNodeWalker(AstNode*    currentNod
         case (AST_NOT): {
             printLog("AST_NOT\n");
 
-            RecursiveSemanticAnalysisReturnValues rightChild =
-                recursiveNodeWalker(currentNode->child[0], AST_NOT);
+            RecursiveSemanticAnalysisReturnValues onlyChild =
+                recursiveNodeWalker(currentNode->child[0], AST_NOT);  // Negace má pouze jedno dítě
 
-            if (rightChild == BOOLEAN_DATA) {
+            if (onlyChild == BOOLEAN_DATA) {
                 return BOOLEAN_DATA;
             }
 
-            if (rightChild == UNKNOWN_DATA) {
+            if (onlyChild == UNKNOWN_DATA) {
                 return BOOLEAN_DATA;  // Výsledek logické negace bude vždy bool hodnota
             }
 
@@ -867,9 +906,9 @@ RecursiveSemanticAnalysisReturnValues recursiveNodeWalker(AstNode*    currentNod
             printLog("AST_AND\n");
 
             RecursiveSemanticAnalysisReturnValues leftChild =
-                recursiveNodeWalker(currentNode->child[1], AST_AND);
-            RecursiveSemanticAnalysisReturnValues rightChild =
                 recursiveNodeWalker(currentNode->child[0], AST_AND);
+            RecursiveSemanticAnalysisReturnValues rightChild =
+                recursiveNodeWalker(currentNode->child[1], AST_AND);
 
             if (leftChild == BOOLEAN_DATA && rightChild == BOOLEAN_DATA) {
                 return BOOLEAN_DATA;
@@ -900,9 +939,9 @@ RecursiveSemanticAnalysisReturnValues recursiveNodeWalker(AstNode*    currentNod
             printLog("AST_OR\n");
 
             RecursiveSemanticAnalysisReturnValues leftChild =
-                recursiveNodeWalker(currentNode->child[1], AST_OR);
-            RecursiveSemanticAnalysisReturnValues rightChild =
                 recursiveNodeWalker(currentNode->child[0], AST_OR);
+            RecursiveSemanticAnalysisReturnValues rightChild =
+                recursiveNodeWalker(currentNode->child[1], AST_OR);
 
             if (leftChild == BOOLEAN_DATA && rightChild == BOOLEAN_DATA) {
                 return BOOLEAN_DATA;
@@ -938,15 +977,11 @@ RecursiveSemanticAnalysisReturnValues recursiveNodeWalker(AstNode*    currentNod
         case (AST_RETURN): {
             printLog("AST_RETURN\n");
 
-            // TODO Občas vrací hodnotu (pokud má dítě)
-
             RecursiveSemanticAnalysisReturnValues returnDataType = NULL_DATA;
 
-            // TODO předělat na kind check: currentNode->child[0]->kind != AST_EMPTY
-            if (currentNode->arity != 0) {
+            if (currentNode->child[0]->kind != AST_EMPTY) {
                 RecursiveSemanticAnalysisReturnValues childValue =
                     recursiveNodeWalker(currentNode->child[0], AST_RETURN);
-
                 if (childValue == ERROR) {
                     return ERROR;
                 }
@@ -958,6 +993,21 @@ RecursiveSemanticAnalysisReturnValues recursiveNodeWalker(AstNode*    currentNod
             return returnDataType;
             break;
         }
+            // TODO vestavěné funkce!
+            /*
+                term == libovolný datový typ
+                Ifj.read_str() -> String | Null
+                Ifj.read_num() -> Num | Null
+                Ifj.write(term) -> Null
+                Ifj.floor(term) -> Num
+                Ifj.str(term) -> String
+                Ifj.length(String) -> Num
+                Ifj.substring(String, Num, Num) -> String | Null
+                Ifj.strcmp(String, String) -> Num
+                Ifj.ord(String, Num) -> Num
+                Ifj.chr(Num) -> String
+            */
+
         case (AST_EMPTY): {
             printLog("AST_EMPTY\n");
             // Pomocný uzel u parametrů funkce
@@ -1271,6 +1321,9 @@ SemanticSymbolDataType convertSemanticReturnValueToSemanticDataType(
         case (UNKNOWN_DATA): {
             return UNKNOWN_VAL;
         }
+        case (NULL_DATA): {
+            return NULL_VAL;
+        }
         default: {
             printWarning("Nevhodna navratova hodnota %i\n", returnedValue);
             return NULL_VAL;
@@ -1292,6 +1345,9 @@ RecursiveSemanticAnalysisReturnValues convertSemanticDataTypeToSemanticReturnVal
         }
         case (UNKNOWN_VAL): {
             return UNKNOWN_DATA;
+        }
+        case (NULL_VAL): {
+            return NULL_DATA;
         }
         default: {
             printWarning("Nevhodny datovy typ %i\n", dataType);

@@ -49,7 +49,6 @@ typedef enum {
  *
  */
 typedef enum {
-    A,
     /**
      * @brief Celé nebo desetinné číslo
      *
@@ -121,6 +120,13 @@ typedef enum {
      * na základě sémantických pravidel nebo druhého operandu vhodnou návratovou hodnotu)
      */
     UNKNOWN_DATA,
+    /**
+     * @brief Zpracovaný uzel je identifikátor
+     * 
+     * @note Nerozlišuje jestli lokální nebo globální
+     * @note Existenci operátoru si ověřuje zpracovaný uzel
+     */
+    IDENTIFIER,
     /**
      * @brief Funkce dostala ukazatel na NULL jako vstupní hodnotu
      *
