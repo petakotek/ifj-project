@@ -381,7 +381,7 @@ void emit_command(AstNode *node, DynamiclabelStackStackPtr label_stack, int coun
         // Deklarace a volání
         case AST_FUNC_DEC:
             // Nová implementace: definice funkce
-            // emit_func_dec(node, label_stack, counter);
+            emitChildren(node, label_stack, counter, op_emit);
             break;
         case AST_PARAM:
             // Nová implementace: parametr funkce
