@@ -13,4 +13,5 @@ char *generatorLable(char *func_name, DynamiclabelStackStackPtr label_stack, int
 void codegen_generate(AstNode *root);
 char *resize_label_name(char *prefix,size_t *size);
 void emitPlus(AstNode *node, DynamiclabelStackStackPtr label_stack, int counter, DynamicEmitOpStackPtr op_stack);
+void emit_assigned(AstNode *node,DynamiclabelStackStackPtr label_stack,int counter,DynamicEmitOpStackPtr op_emit);
 #endif

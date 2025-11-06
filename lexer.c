@@ -45,7 +45,6 @@ void lexer_free(void) {
         free(lexer);
         lexer = NULL;
     } else {
-        printLog("lexer je null hrozba double free \n");
     }
 }
 /*

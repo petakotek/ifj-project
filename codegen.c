@@ -328,42 +328,163 @@ void emit_while(AstNode *node,DynamiclabelStackStackPtr label_stack,int while_co
 *@params ukazatel na uzel
 *@params ukazatel na hash_table
 */
-void emit_command(AstNode *node,DynamiclabelStackStackPtr label_stack,int counter,DynamicEmitOpStackPtr op_emit) {
-	ast_node_type_to_string(node->kind);
+void emit_command(AstNode *node, DynamiclabelStackStackPtr label_stack, int counter, DynamicEmitOpStackPtr op_emit) {
+    ast_node_type_to_string(node->kind);
     switch (node->kind) {
+        // High-level a seznamy (už byly implementovány s emitChildren)
         case AST_PROLOG:
-        	emit_prolog();
-        break;
+            emit_prolog();
+            break;
         case AST_PROGRAM:
         case AST_BLOCK:
         case AST_MAIN_CLASS:
         case AST_MAIN_CLASS_BLOCK:
         case AST_STATEMENT_LIST:
-        	emitChildren(node,label_stack,counter,op_emit);
-         	break;
-        case AST_PLUS:
-        	emitPlus(node, label_stack,counter,op_emit);
+            emitChildren(node, label_stack, counter, op_emit);
+            break;
+
+        // Literály (byly implementovány, ale jen komentáře)
         case AST_FLOAT_LIT:
-        	//emit_float(node);
-         	break;
+            //emit_float(node);
+            break;
         case AST_INT_LIT:
-       	//	emit_int(node);
-        	break;
+            //emit_int(node);
+            break;
         case AST_STRING_LIT:
-        	//emit_string(node);
-         	break;
+            //emit_string(node);
+            break;
+
+        // Kontrolní struktury (WHILE a FOR už byly)
         case AST_WHILE:
-            //  emit_while(node,label_stack,counter);
-              break;
-        case AST_FUNC_CALL:
-          //  emit_funcall(node);
+            // emit_while(node,label_stack,counter);
             break;
         case AST_FOR:
-       //		emit_for();
-        	break;
+            // emit_for();
+            break;
+        case AST_IF:
+            // Nová implementace: podmineny skok
+            // emit_if(node, label_stack, counter);
+            break;
+        case AST_BREAK:
+            // Nová implementace: preruseni cyklu
+            // emit_break(node, label_stack);
+            break;
+        case AST_CONTINUE:
+            // Nová implementace: pokracovani cyklu
+            // emit_continue(node, label_stack);
+            break;
+        case AST_RETURN:
+            // Nová implementace: navrat z funkce
+            // emit_return(node);
+            break;
+
+        // Deklarace a volání
+        case AST_FUNC_DEC:
+            // Nová implementace: definice funkce
+            // emit_func_dec(node, label_stack, counter);
+            break;
+        case AST_PARAM:
+            // Nová implementace: parametr funkce
+            // (Obvykle se zpracovává v rámci AST_FUNC_DEC nebo AST_FUNC_CALL)
+            break;
+        case AST_FUNC_CALL:
+            // emit_funcall(node);
+            break;
+
+        // Proměnné / Přiřazení
+        case AST_VAR:
+            // Nová implementace: deklarace/inicializace proměnné
+            // emit_var_dec(node);
+            break;
+        case AST_ASSIGN:
+             emit_assign(node, op_emit);
+            break;
+
+        // Listy
+        case AST_IDENTIFIER:
+            // Nová implementace: nacteni hodnoty promenne
+            // emit_identifier(node);
+            break;
+        case AST_GLOBAL_ID:
+            // Nová implementace: nacteni globalni promenne
+            // emit_global_id(node);
+            break;
+
+        case AST_EMPTY:
+            // Nová implementace: Prazdny uzel (nic nedelat)
+            break;
+
+        // Operace (Expression)
+        case AST_PLUS:
+            emitPlus(node, label_stack, counter, op_emit); // Byla implementována, jen pro úplnost.
+            break;
+        case AST_MINUS:
+            // Nová implementace: Odčítání
+            // emitMinus(node, op_emit);
+            break;
+        case AST_MUL:
+            // Nová implementace: Násobení
+            // emitMul(node, op_emit);
+            break;
+        case AST_DIV:
+            // Nová implementace: Dělení
+            // emitDiv(node, op_emit);
+            break;
+        case AST_EQ:
+            // Nová implementace: Porovnání ==
+            // emitEq(node, op_emit);
+            break;
+        case AST_LT:
+            // Nová implementace: Porovnání <
+            // emitLt(node, op_emit);
+            break;
+        case AST_GT:
+            // Nová implementace: Porovnání >
+            // emitGt(node, op_emit);
+            break;
+        case AST_NOT:
+            // Nová implementace: Logická negace !
+            // emitNot(node, op_emit);
+            break;
+        case AST_AND:
+            // Nová implementace: Logické AND &&
+            // emitAnd(node, op_emit);
+            break;
+        case AST_OR:
+            // Nová implementace: Logické OR ||
+            // emitOr(node, op_emit);
+            break;
+        case AST_IS:
+            // Nová implementace: Porovnání 'is'
+            // emitIs(node, op_emit);
+            break;
+        case AST_GTE:
+            // Nová implementace: Porovnání >=
+            // emitGte(node, op_emit);
+            break;
+        case AST_LTE:
+            // Nová implementace: Porovnání <=
+            // emitLte(node, op_emit);
+            break;
+        case AST_LPAREN:
+            // Nová implementace: Levá závorka (Obvykle zpracováváno jako součást expression)
+            // emitChildren(node, label_stack, counter, op_emit);
+            break;
+        case AST_RPAREN:
+            // Nová implementace: Pravá závorka (Obvykle zpracováváno jako součást expression)
+            // emitChildren(node, label_stack, counter, op_emit);
+            break;
+        case AST_STATEMENT:
+            // Nová implementace: Samostatný příkaz (Obvykle by měl mít dceřinný uzel, který se zpracuje)
+            emitChildren(node, label_stack, counter, op_emit);
+            break;
+        case AST_NULL:
+            // Nová implementace: Reprezentace literálu NULL
+            // emit_null(node);
+            break;
         default:
-        	printError(INTERNAL_ERROR, "Chyba v generatoru neznamy uzel");
-         	memorySafeExit(INTERNAL_ERROR);
+            printError(INTERNAL_ERROR, "Chyba v generatoru neznamy uzel");
+            memorySafeExit(INTERNAL_ERROR);
     }
 }
 void codegen_generate(AstNode *root){
