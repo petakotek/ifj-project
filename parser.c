@@ -872,8 +872,8 @@ void Call_assign_list_func(DynamicSymbolStackPtr Stack, Token token)
     // Global_assign -> GLOBAL_ID = Expr
     stackSymbolPop(Stack);;
     // AST_ASSIGN(Expr) => arity = 1
-    pushCheck(stackSymbolPush(Stack, makeReduce(AST_GLOBAL_ID, 1)));
-    pushCheck(stackSymbolPush(Stack, makeReduce(AST_ASSIGN,2)));
+    pushCheck(stackSymbolPush(Stack, makeReduce(AST_GLOBAL_ID, 2)));
+    pushCheck(stackSymbolPush(Stack, makeReduce(AST_ASSIGN,1)));
     pushCheck(stackSymbolPush(Stack, makeNonterm(N_Expr)));
     pushCheck(stackSymbolPush(Stack, makeTerm(TOKEN_ASSIGN)));
     pushCheck(stackSymbolPush(Stack, makeTermWithValue(TOKEN_GLOBAL_ID)));
