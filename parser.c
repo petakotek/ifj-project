@@ -588,7 +588,6 @@ void smth_list_func(DynamicSymbolStackPtr Stack, Token token)
             }
         case TOKEN_GLOBAL_ID:        pushCheck(stackSymbolPush(Stack, makeNonterm(N_Global_assign))); return;
         case TOKEN_BLOCK_STAR:
-            pushCheck(stackSymbolPush(Stack, makeTerm(TOKEN_NEW_LINE)));
             pushCheck(stackSymbolPush(Stack, makeNonterm(N_Block))); 
             return;
 
