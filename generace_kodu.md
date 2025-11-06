@@ -16,7 +16,7 @@ emit_seznam(ASTNode *root, SymbolTable *symtab);
 ```
 
 
-ve funkci emit_seznam pro každé dítě  zleva v AST postupně voláme funkci tahle funkce bude volana v kazde funkci jelikoz jedeme post:
+ve funkci emit_seznam pro každé dítě  zleva v AST postupně voláme funkci tahle funkce bude volana v kazde funkci jelikoz jedeme postORder:
 
 ```c
 void emit_command(ASTNode *cmd, SymbolTable *symtab);
@@ -177,4 +177,10 @@ Vestavěné funkce dostupné v jazyce odpovídají instrukcím IFJcode25 nebo je
 | Ifj.chr(i)               | INT2CHAR s kontrolou validní hodnoty           |
 | Převody typů             | INT2FLOAT, FLOAT2INT, INT2STR, FLOAT2STR       |
 
-rozdeleni:
+## Rozdeleni:
+Jeden clovek ma nastarost celkove aritmetické operace/porovnani a kontrola typu
+
+Druhy clovek vytvoreni for,while,if-else,funkce (delani hops hops na labels)
+je tam funkce na generovani labelu kterou jsem tak nejak testoval
+
+Treti clovek vytvoreni getteru a setteru(vubec netusim jak je udelat) a scopy (bloky  vytvareni novych ramcu pro kazdy scopy atd)
