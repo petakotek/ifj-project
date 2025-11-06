@@ -137,69 +137,111 @@ void emit_push_value(AstNode *node, DynamiclabelStackStackPtr label_stack, int c
     }
     stackEmitOpPush(op_stack, node);
 }
-
 char *checkTopStack(AstNode *node, DynamiclabelStackStackPtr label_stack, int counter, DynamicEmitOpStackPtr op_stack) {
+	if(!stackEmitOpIsEmpty(op_stack)){
     AstNode *tmp_check = stackEmitOpRead(op_stack);
-
     if (tmp_check == node->child[0]) {
         stackEmitOpPush(op_stack, tmp_check);
         return "LEFT_TOP";
     }
-    if (stacklabelStackRead(label_stack) == node->child[1]->value.str) {
-    stackEmitOpPush(op_stack, tmp_check);
+    if (tmp_check == node->child[1]) {
+    	stackEmitOpPush(op_stack, tmp_check);
         return "RIGHT_TOP";
     }
-
-    stackEmitOpPush(op_stack, tmp_check);
+	}
     return "NONE_ON_STACK";
 }
 
-char *emitBinaryOp(AstNode *node,  DynamiclabelStackStackPtr labels, int counter,DynamicEmitOpStackPtr op_stack) {
+char *emitBinaryOp(AstNode *node,  DynamiclabelStackStackPtr labels, int counter,DynamicEmitOpStackPtr op_stack,int flag_to_stack) {
 	char *tmp = checkTopStack(node,labels,counter,op_stack);
 	if(strcmp(tmp,"LEFT_TOP") == 0){
 		emit_push_value(node->child[0], labels,counter,op_stack);
 	}else if(strcmp(tmp,"RIGH_TOP") == 0){
 		emit_push_value(node->child[1],labels,counter,op_stack);
 	}else{
+		if(flag_to_stack == 1){
+			//TODO nejaky exit ve chvili kdyz se s funkci musi pracovat ve vyrazu
+			printN("error");
+		}
 		emit_push_value(node->child[0],labels,counter,op_stack);
 		emit_push_value(node->child[1],labels,counter,op_stack);
 	}
     return "STACK_TOP";
 }
+/*
+* Dostaneme zasobnik zkontrolujeme zda je neco na vrchu pokud jo udelame types coz nam da na vrchol typ na vrchol a potom si pushneme dite a dame na nej types
+* zasobnik
+* type
+* promena (dite)
+* type
+* promena ze zasobnika
+* JUMPIFEQS/JUMPIFNEQS ⟨label⟩
+*/
 void emitPlus(AstNode *node, DynamiclabelStackStackPtr label_stack, int counter, DynamicEmitOpStackPtr op_stack) {
-    emitBinaryOp(node, label_stack, counter, op_stack);
+	int flag_to_stack = 0;
+	if(node->child[0]->kind == AST_FUNC_CALL){
+		emit_command(node->child[0], label_stack, counter, op_stack);
+		flag_to_stack = 1;
+	}
+	if(node->child[1]->kind == AST_FUNC_CALL){
+		emit_command(node->child[1], label_stack, counter, op_stack);
+		flag_to_stack = 1;
+	}
+    emitBinaryOp(node, label_stack, counter, op_stack,flag_to_stack);
+    // Po emitBinaryOp máme na zásobníku: [hodnota_left, hodnota_right]
 
+    char *label_ok = generatorLable("ok", label_stack, counter, false);
+    char *label_concat = generatorLable("concat", label_stack, counter, false);
+    char *label_add = generatorLable("add", label_stack, counter, false);
+    char *label_end = generatorLable("end", label_stack, counter, false);
+    char *label_err = generatorLable("err", label_stack, counter, false);
 
-    char *label_ok = generatorLable("ok", label_stack, counter,false);
-    char *label_concat = generatorLable("concat", label_stack, counter,false);
-    char *label_add     = generatorLable("add", label_stack, counter,false);
-    char *label_end     = generatorLable("end", label_stack, counter,false);
-    char *label_err     = generatorLable("err", label_stack, counter,false);
+    // Typová kontrola pomocí zásobníku
+    // Stav zásobníku: [left_value, right_value]
 
-    // Typová kontrola
-    printN("POPS TF@rhs");
-    printN("POPS TF@lhs");
-    printN("TYPE TF@t1 TF@lhs");
-    printN("TYPE TF@t2 TF@rhs");
+    // Zjistíme typ pravého operandu (right)
+    printN("TYPES");  // zásobník: [left_value,	right_type]
 
-    printN("JUMPIFEQ %s TF@t1 TF@t2", label_ok);
-    printN("JUMP %s", label_err);
+    // Dočasně uložíme typ pravého operandu
+    printN("POPS TF@type_right");  // zásobník: [left_value]
 
+    // Zjistíme typ levého operandu (left)
+    printN("TYPES");  // zásobník: [type_left]
+
+    // Vrátíme typ pravého operandu zpět
+    printN("PUSHS TF@type_right");  // zásobník: [type_left, type_right]
+
+    // Porovnání, zda jsou typy stejné
+    printN("JUMPIFEQS %s", label_ok);  // pokud type_left == type_right
+    printN("JUMP %s", label_err);  // jinak chyba
+
+    // --- Kontrola konkrétního typu ---
     printN("LABEL %s", label_ok);
-    printN("JUMPIFEQ %s TF@t1 string@string", label_concat);
-    printN("JUMPIFEQ %s TF@t1 string@int", label_add);
-    printN("JUMPIFEQ %s TF@t1 string@float", label_add);
-    stacklabelStackRead(label_stack);
+    // Máme na zásobníku pořád type_right (nebo type_left, jsou stejné)
+    printN("PUSHS string@string");
+    printN("JUMPIFEQS %s", label_concat);
+
+    // Obnovíme typ pro další porovnání
+    printN("PUSHS TF@type_right");
+    printN("PUSHS string@int");
+    printN("JUMPIFEQS %s", label_add);
+
+    printN("PUSHS TF@type_right");
+    printN("PUSHS string@float");
+    printN("JUMPIFEQS %s", label_add);
+
+    // Pokud to není ani string, ani int, ani float
     printN("JUMP %s", label_err);
 
-    // --- ADD větev ---
+    // --- ADD větev (pro int a float) ---
     printN("LABEL %s", label_add);
+    // Musíme znovu načíst původní hodnoty
     printN("PUSHS TF@lhs");
     printN("PUSHS TF@rhs");
     printN("ADDS");
     printN("JUMP %s", label_end);
 
-    // --- CONCAT větev ---
+    // --- CONCAT větev (pro string) ---
     printN("LABEL %s", label_concat);
     printN("PUSHS TF@lhs");
     printN("PUSHS TF@rhs");
@@ -213,11 +255,49 @@ void emitPlus(AstNode *node, DynamiclabelStackStackPtr label_stack, int counter,
     // --- KONEC ---
     printN("LABEL %s", label_end);
 
-   stacklabelStackRead(label_stack);
-    stacklabelStackRead(label_stack);
-    stacklabelStackRead(label_stack);
-    stacklabelStackRead(label_stack);
-    stacklabelStackRead(label_stack);
+}
+void emitMinus(AstNode *node, DynamiclabelStackStackPtr label_stack, int counter, DynamicEmitOpStackPtr op_stack) {
+	int flag_to_stack = 0;
+	if(node->child[0]->kind == AST_FUNC_CALL){
+		emit_command(node->child[0], label_stack, counter, op_stack);
+		flag_to_stack = 1;
+	}
+	if(node->child[1]->kind == AST_FUNC_CALL){
+		emit_command(node->child[1], label_stack, counter, op_stack);
+		flag_to_stack = 1;
+	}
+    emitBinaryOp(node, label_stack, counter, op_stack,flag_to_stack);
+    // Po emitBinaryOp máme na zásobníku: [hodnota_left, hodnota_right]
+    char *label_ok = generatorLable("ok", label_stack, counter, false);
+    char *label_err = generatorLable("error", label_stack, counter, false);
+    char *label_end = generatorLable("end",label_stack, counter, false);
+    // Zjistíme typ pravého operandu (right)
+    printN("TYPES");  // zásobník: [left_value,	right_type]
+
+    // Dočasně uložíme typ pravého operandu
+    printN("POPS TF@type_right");  // zásobník: [left_value]
+
+    // Zjistíme typ levého operandu (left)
+    printN("TYPES");  // zásobník: [type_left]
+
+    // Vrátíme typ pravého operandu zpět
+    printN("PUSHS TF@type_right");  // zásobník: [type_left, type_right]
+
+    // Porovnání, zda jsou typy stejné
+    printN("JUMPIFEQS %s", label_ok);  // pokud type_left == type_right
+    printN("JUMP %s", label_err);  // jinak chyba
+    printN("LABEL %s", label_ok);
+    printN("PUSHS TF@lhs");
+    printN("PUSHS TF@rhs");
+    printN("SUBS");
+    printN("JUMP %s", label_end);
+    // --- CHYBA ---
+    printN("LABEL %s", label_err);
+    printN("EXIT int@4");
+
+    // --- KONEC ---
+    printN("LABEL %s", label_end);
+
 }
 void emit_equal(AstNode *node, DynamiclabelStackStackPtr label_stack, int counter,char *end) {
     emit_command(node->child[0], label_stack, counter,NULL);
