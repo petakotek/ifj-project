@@ -290,7 +290,7 @@ void append_char(char **buf, int *delka, int *kapacita, char c) {
 }
 Token lexer_token_next() {
     // inicializace bufferu na string
-    char *buf = malloc(INIT_CAPACITY); /* U kazdeho returnu pred kterem se pointer na buffer nepreda
+    char *buf = calloc(INIT_CAPACITY,sizeof(char)); /* U kazdeho returnu pred kterem se pointer na buffer nepreda
                                         MUSI BYT FREE!!! jinak memory leak typicky nasobky 32byt */
     int   kapacity = INIT_CAPACITY;
     int   delak    = 0;

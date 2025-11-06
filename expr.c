@@ -276,8 +276,8 @@ void findPrecedenceRule(DynamicPrecedenceStackPtr stack, DynamicAstNodeStackPtr 
                 stackAstNodePop(stackA);
                 AstNode *secondChild = stackAstNodeRead(stackA);
                 stackAstNodePop(stackA);
-                kids[0] = firstChild;
-                kids[1] = secondChild;
+                kids[1] = firstChild;
+                kids[0] = secondChild;
                 AstNode *newRoot = ast_new(getAstNodeTypeFromTokenType(p2.type), 2, kids);
                 stackAstNodePush(stackA, newRoot);
                 
@@ -465,7 +465,6 @@ AstNode* parseExpression(Token *token, int flag)
 
                 printf("\t\t\t%d < (%d, %d) ",poradiCount++, operatorToPush(StackTop), operatorToPush(actualToken));
                 printStack(stackP);
-                tokenFree(&actualToken);
                 actualToken = lexer_token_next();
             break;
 
@@ -473,7 +472,6 @@ AstNode* parseExpression(Token *token, int flag)
                 stackPrecedencePush(stackP, actualToken);
                 printf("\t\t\t%d = (%d, %d) ",poradiCount++, operatorToPush(StackTop), operatorToPush(actualToken));
                 printStack(stackP);
-                tokenFree(&actualToken);
                 actualToken = lexer_token_next();
             break;
 
