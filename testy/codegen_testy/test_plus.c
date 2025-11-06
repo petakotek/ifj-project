@@ -18,8 +18,9 @@ int main(){
 	AstNode *nodeLeftCh = calloc(1, sizeof(AstNode));
 	AstNode *nodeRightCh = calloc(1, sizeof(AstNode));
 	AstNode *nodeParent = calloc(1, sizeof(AstNode));
-
-	if (!nodeLeftCh || !nodeRightCh || !nodeParent) {
+	AstNode *nodeVar = calloc(1, sizeof(AstNode));
+	AstNode *nodeAssigned = calloc(1, sizeof(AstNode));
+	if (!nodeLeftCh || !nodeRightCh || !nodeParent || !nodeAssigned) {
 	    fprintf(stderr, "Allocation failed\n");
 	    exit(1);
 	}
@@ -42,7 +43,10 @@ int main(){
 	nodeParent->child[0] = nodeLeftCh;
 	nodeParent->child[1] = nodeRightCh;
 	nodeParent->is_leaf = false;
+	nodeAssigned->child[1] = nodeParent;
+	nodeAssigned->child[0]
 	emitPlus(nodeParent, label_stack, counter, op_stack);
+	emit_assigned(AstNode *node, DynamiclabelStackStackPtr label_stack, int counter, DynamicEmitOpStackPtr op_emit)
 	free(nodeLeftCh);
 	free(nodeRightCh);
 	free(nodeParent);
