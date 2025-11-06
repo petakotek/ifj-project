@@ -6,10 +6,12 @@
  */
 #include "ast_strom.h"
 
+#include "support_functions.h"
+
 #include <string.h>
 #include <stdbool.h>
+#include <stdlib.h>
 #include <stdio.h>
-#include "support_functions.h"
 
 AstNode *build_classblock_flat(size_t n, AstNode **kids) {
     if (n == 0) {

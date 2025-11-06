@@ -3,9 +3,6 @@
 #define EXPR_H
 
 #include "ast_strom.h"
-#include "dynamic_stack.h"
-
-
 
 AstNode* parseExpression(Token *token,int flag);
 

@@ -8,11 +8,20 @@
  */
 
 #include "support_functions.h"
+
+#include "lexer.h"
+#include "semantic_analysis.h"
+
+#include <stdlib.h>
+#include <stdio.h>
+#include <stdbool.h>
+#include <stdarg.h>
+
 /*
 * Definujeme zakladni kapacitu cteni souboru
 */
 #define INITIAL_CAPACITY 1024
-// ----------------- deklarace pomocných funkcí -----------------
+
 /**
  * @brief Zajišťuje volání destruktorů dynamicky alokovaných struktur
  *
@@ -21,8 +30,6 @@
  */
 bool memoryClean();
 
-
-// ----------------- Implementace funkcí -----------------
 void printError(enum errorCodes errCode, const char *fmt, ...) {
     va_list args;
     va_start(args, fmt);
@@ -51,6 +58,7 @@ bool memoryClean() {
     // TODO jednotlivé funkce pro vyčištění struktur a podobně
     // TODO už můžu přidat lexer_free() a zavření souboru/free na načtený soubor
     lexer_free();
+    freeSematicsMemory();
     printWarning("Funkce memoryClean není implementovaná!\n");
     return false;
 }
@@ -60,6 +68,8 @@ void memorySafeExit(enum errorCodes errCode) {
     memoryClean();
     exit(errCode);
 }
+
+// TODO pepoooooooooo!
 /*
 *sorry pouze testovaci funkce ta se bude mazat tezce vygenerovana gemini
 */

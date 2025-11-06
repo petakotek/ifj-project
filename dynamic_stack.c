@@ -9,6 +9,12 @@
 
 #include "dynamic_stack.h"
 
+#include "support_functions.h"
+
+
+#include <stdbool.h>
+#include <stdlib.h>
+
 /**
  * @brief Makro pro definici zásobníkových funkcí pro určitý datový typ
  *
@@ -176,5 +182,7 @@
 
 DEFINE_STACK(Symbol, Symbol)
 DEFINE_STACK(AstNode*, AstNode)
+DEFINE_STACK(HashTable*, HashTablePtr)
 DEFINE_STACK(Token, Precedence)
+
 /*** konec dynamic_stack.c ***/

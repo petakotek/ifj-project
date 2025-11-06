@@ -4,12 +4,16 @@
  * Soubor: main.c
  * Popis: Vstupni bod do programu spojuje jednotlivé moduly
  */
-#include <stddef.h>
-#include <stdio.h>
-#include <stdlib.h>
+
 #include "parser.h"
 #include "ast_strom.h"
 #include "support_functions.h"
+#include "semantic_analysis.h"
+
+#include <stddef.h>
+#include <stdio.h>
+#include <stdlib.h>
+
 #define SYMBOL_SIZE 201
 #define LITERAL_SIZE 101
 int main(){
@@ -37,6 +41,12 @@ int main(){
 	//funkcia ast_dump -> funkcia na kontrolny vypis ast stromu
 	ast_dump(AST);
 	lexer_free();
+
+	bool output;
+	output = startSematicValidation(AST);
+	printf("Vysledek sem_anal: %i\n", output);
+
+	ast_dump(AST);
 	//free ast stromu
 	ast_free_whole(AST);
 	*/

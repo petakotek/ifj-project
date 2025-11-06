@@ -12,11 +12,10 @@
 #ifndef SYMBOL_H
 #define SYMBOL_H
 
-#include <stdbool.h>
 #include "lexer.h"
 #include "ast_strom.h"
 
-
+#include <stdbool.h>
 
 /**
  * @brief Štruktúra terminalov/neterminálov vkladaná na zásobník
@@ -33,4 +32,5 @@ typedef struct Symbol
     bool capture_value;
     bool freeNeeded;
 } Symbol;
+
 #endif
