@@ -1,5 +1,6 @@
 import "ifj25" for Ifj
 class Program {
+    // Globální proměnné
     static main(xy,arg2,super,nice,osemdesat) {
         var x = 5
         __z =  "A"
@@ -10,5 +11,6 @@ class Program {
     }
     static main() {
         var x = __z + "as"
+        var y = __sda
     }
 }

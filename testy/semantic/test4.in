@@ -1,5 +1,6 @@
 import "ifj25" for Ifj
 class Program {
+    // Volání funkce
     static main() {
         return
     }
