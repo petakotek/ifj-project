@@ -709,21 +709,14 @@ Token lexer_token_next() {
                 } else if (c == '.') {
                     stav = FLOAT_NUMBER;
                     lexer->pos++;
-                } else if (c == ' ' || c == '\n' || c == EOF || c == ')') {
-                    token.type             = TOKEN_INTEGER;
-                    token.value.identifier = substring(zacatek, lexer->pos);
-                    token.line             = radek;
-                    goto token_found;
                 } else if (c == 'e') {
                     stav = DIGIT_EXP;
                     lexer->pos++;
                 } else {
-                    free(buf);
-                    printError(LEX_ERROR,
-                               "nezname pismeno v lexer_token_next"
-                               "%c on line : %lu \n",
-                               c, lexer->pos);
-                    memorySafeExit(LEX_ERROR);
+                token.type             = TOKEN_INTEGER;
+                token.value.identifier = substring(zacatek, lexer->pos);
+                token.line             = radek;
+                goto token_found;
                 }
                 break;
             }
