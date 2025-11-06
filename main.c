@@ -49,6 +49,7 @@ int main(){
 	//ast_dump(AST);
 	//free ast stromu
 	ast_free_whole(AST);
+	
 	free(source_file);
 
 }

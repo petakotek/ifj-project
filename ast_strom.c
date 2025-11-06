@@ -275,6 +275,7 @@ const char *ast_node_type_to_string(AstNodeType kind) {
         case AST_GTE:                  return "STRING_GTE";
         case AST_LTE:                  return "STRING_LTE";
         case AST_EQ:                  return "STRING_EQ";
+        case AST_NEQ:               return "STRING_NEQ"; // !=
         case AST_LPAREN:                  return "STRING_LPAREN";
         case AST_RPAREN:                  return "STRING_RPAREN";
         case AST_NOT:                  return "STRING_NEGACE";
@@ -284,6 +285,8 @@ const char *ast_node_type_to_string(AstNodeType kind) {
         case AST_IFJ_CALL: return "IFJ_CALL";
         case AST_ELSE: return "ELSE";
         case AST_ELSE_IF: return "ELSE IF";
+        // case AST_DOUBLE_DOT:            return "DOUBLE_DOT";
+        // case AST_TRIPLE_DOT:            return "TRIPLE_DOT";
         default:                   return "UNKNOWN_AST_NODE";
     }
 }
