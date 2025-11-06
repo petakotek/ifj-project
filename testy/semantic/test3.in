@@ -1,9 +1,10 @@
 import "ifj25" for Ifj
 class Program {
+    // Vnoření a překrývání proměnných
     static main() {
         var z
         {
-            var y
+            var z
         }
         return
     }

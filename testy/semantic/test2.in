@@ -1,5 +1,6 @@
 import "ifj25" for Ifj
 class Program {
+    // Povinně main() pak už klidně main s parametry
     static main(x,y,z) {
         return
     }

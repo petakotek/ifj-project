@@ -27,7 +27,7 @@ enum errorCodes {
     SEMANTICS_ERROR_UNDEF = 3,
     /// Sémantická chyba -- redefinice funkce či proměnné.
     SEMANTICS_ERROR_REDEF = 4,
-    /// Statická sémantická chyba -- neočekávaný počet argumentů při volání funkce nebo
+    /// Statická sémantická chyba -- neočekávaný počet argumentů při volání funkce nebo @see SEMANTIC_ERROR_INCORRECT
     SEMANTICS_ERROR_UNEXPECTED = 5,
     /// Statická sémantická chyba -- špatný typ parametru vestavěné funkce.
     SEMANTICS_ERROR_INCORRECT = 5,

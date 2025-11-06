@@ -1,0 +1,11 @@
+import "ifj25" for Ifj
+class Program {
+    // Správné rozsahy platnosti a chování a správné pořadí při vyhodnocení příkazu
+static main() {
+    var x = 1
+    {
+        var x = x + 1
+    }
+    return
+}
+}
