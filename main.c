@@ -33,8 +33,8 @@ int main(){
     }
 	// inicializovani struktury staraji se o cteni ze souboru
 	lexer_init(source_file);
-	print_and_free_tokens();
-	/*
+	//print_and_free_tokens();
+	
 	// tvorba stromu pres parser
 	AstNode *AST;
 	AST = parser();
@@ -42,14 +42,13 @@ int main(){
 	ast_dump(AST);
 	lexer_free();
 
-	bool output;
-	output = startSematicValidation(AST);
-	printf("Vysledek sem_anal: %i\n", output);
+	//bool output;
+	//output = startSematicValidation(AST);
+	//printf("Vysledek sem_anal: %i\n", output);
 
-	ast_dump(AST);
+	//ast_dump(AST);
 	//free ast stromu
 	ast_free_whole(AST);
-	*/
 	free(source_file);
 
 }
