@@ -282,6 +282,8 @@ const char *ast_node_type_to_string(AstNodeType kind) {
         case AST_IFJ_CALL: return "IFJ_CALL";
         case AST_ELSE: return "ELSE";
         case AST_ELSE_IF: return "ELSE IF";
+        // case AST_DOUBLE_DOT:            return "DOUBLE_DOT";
+        // case AST_TRIPLE_DOT:            return "TRIPLE_DOT";
         default:                   return "UNKNOWN_AST_NODE";
     }
 }
