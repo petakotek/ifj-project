@@ -1,5 +1,9 @@
 /**
- * @brief Soubor s funkcí pro zpracování výrazu
+ * Fakulta informačních technologií VUT Brno
+ *
+ * Implementace precedeční analýzy pro překladač jazyka Wren pro projekt do předmětu IFJ
+ * @file expr.c
+ * @author Petr Kotek (xkotekp00)
  */
 
 #ifndef EXPR_C
@@ -9,35 +13,30 @@
 #include "dynamic_stack.h"
 #include "support_functions.h"
 
-/**
- * TODO: vyřešit ukončování výrazu? Například počítáním závorek? Popřípadě pokud závorka
- * není a je tam znak nového řádku tak projít nový řádek a podívat se dál? O 2 tokeny?
- * 
- * TODO: zkontrolovat precedeční tabulku, jestli dává smysl a je správná!!!
- */
 
 typedef enum {
     R, // >
     L, // <
     E, // =
-    N, // empty space
+    N, // prázdné místo
 
 } precedentRules;
 
-int PSA_TABLE[12][12] = {
-//   0  1  2  3  4  5  6  7  8  9  10 11
-    {R, L, R, R, R, L, R, R, L, R, L, R}, // + -
-    {R, R, R, R, R, L, R, R, L, R, L, R}, // * /
-    {L, L, R, R, R, L, R, R, L, R, L, R}, // < > >= <=
-    {L, L, L, R, R, L, R, R, L, R, L, R}, // is
-    {L, L, L, L, R, L, R, R, L, R, L, R}, // == !=
-    {R, R, R, R, R, R, R, R, L, R, L, R}, // negace !
-    {L, L, L, L, L, L, R, R, L, R, L, R}, // &&
-    {L, L, L, L, L, L, L, R, L, R, L, R}, // ||
-    {R, R, R, R, R, N, R, R, N, R, N, R}, // id
-    {L, L, L, L, L, L, L, L, L, N, L, N}, // dollar
-    {L, L, L, L, L, L, L, L, L, N, L, E}, // (
-    {R, R, R, R, R, N, R, R, N, R, N, R}, // )
+int PSA_TABLE[13][13] = {
+//   0  1  2  3  4  5  6  7  8  9  10 11 12
+    {R, L, R, R, R, L, R, R, L, R, L, R, N}, // + -
+    {R, R, R, R, R, L, R, R, L, R, L, R, N}, // * /
+    {L, L, R, R, R, L, R, R, L, R, L, R, N}, // < > >= <=
+    {L, L, L, R, R, L, R, R, L, R, L, R, N}, // is
+    {L, L, L, L, R, L, R, R, L, R, L, R, N}, // == !=
+    {R, R, R, R, R, R, R, R, L, R, L, R, N}, // negace !
+    {L, L, L, L, L, L, R, R, L, R, L, R, N}, // &&
+    {L, L, L, L, L, L, L, R, L, R, L, R, N}, // ||
+    {R, R, R, R, R, N, R, R, N, R, N, R, R}, // id
+    {L, L, L, L, L, L, L, L, L, N, L, N, N}, // dollar
+    {L, L, L, L, L, L, L, L, L, N, L, E, N}, // (
+    {R, R, R, R, R, N, R, R, N, R, N, R, R}, // )
+    {N, N, N, N, N, L, N, N, L, N, L, N, R}, // ../...
 };
 
  // vsechny operatory, ktere se mohou vyskytnout ve vyrazu
@@ -54,6 +53,7 @@ typedef enum{
     INDEX_DOLLAR,       // 9    dollar
     INDEX_LP,           // 10   (
     INDEX_RP,           // 11   )
+    INDEX_DOTS,         // 12   ../...
 } operators_t;
 
 
@@ -111,6 +111,8 @@ int operatorToPush(Token token)
         // )
         case TOKEN_RPAREN:  return INDEX_RP;
 
+        case TOKEN_DOUBLE_DOT:  return INDEX_DOTS;
+        case TOKEN_TRIPLE_DOT:  return INDEX_DOTS;
        
         // jinak je to $
         default:
@@ -172,8 +174,8 @@ AstNodeType getAstNodeTypeFromTokenType(TokenType type)
     case TOKEN_NEGACE:      return AST_NOT;     // !
     case TOKEN_STRING:      return AST_STRING_LIT; // string
     case TOKEN_NOT:         return AST_NEQ; // !=
-    // case TOKEN_DOUBLE_DOT:  return AST_DOUBLE_DOT;
-    // case TOKEN_TRIPLE_DOT   return AST_DOUBLE_DOT;
+    case TOKEN_DOUBLE_DOT:  return AST_DOUBLE_DOT;
+    case TOKEN_TRIPLE_DOT:   return AST_TRIPLE_DOT;
 
     default:
         printError(SYNTAX_ERROR, "(PSA) Nelze prevést TokenType na AstNodeType, neznámý token\n");
@@ -373,6 +375,7 @@ AstNode* parseExpression(Token *token, int flag)
 
     bool firstOK = false; // kontrola, ze prvni token, ktery prijimam je nejaky identifikator
     bool checkEmptyIf = false;
+    bool expectRPAREN = false;
     // dokud neni na zasobniku jenom $E && nemam na vstupu token, ktery mi vsechno ukoncuje
     while (actualToken.type != TOKEN_PSA_END) // 
     {
@@ -395,11 +398,25 @@ AstNode* parseExpression(Token *token, int flag)
                 return NULL;
             }
         }
+        
+        if (flag == 0)
+        {
+            if (actualToken.type == TOKEN_LPAREN)
+            {
+                expectRPAREN = true;
+            }
+            if (actualToken.type == TOKEN_RPAREN)
+            {
+                expectRPAREN = false;
+            }
+        }
+        
 
         if ((flag == -1 && actualToken.type == TOKEN_RPAREN && StackTop.type == TOKEN_DOLLAR)
             || (actualToken.type == TOKEN_NEW_LINE && StackTop.type == TOKEN_DOLLAR)
             || (actualToken.type == TOKEN_COMMA && StackTop.type == TOKEN_DOLLAR) // оddělení výrazů ve funkce čárkou
-            || (actualToken.type == TOKEN_RPAREN && StackTop.type == TOKEN_DOLLAR && flag == 1)) // ukončení funkce levou závorkou
+            || (actualToken.type == TOKEN_RPAREN && StackTop.type == TOKEN_DOLLAR && flag == 1) // ukončení funkce levou závorkou s vice parametry 
+            || (actualToken.type == TOKEN_RPAREN && StackTop.type == TOKEN_DOLLAR && flag == 0 && expectRPAREN == false)) // byla volana funkce s jednim parametrem
         {   // abych mohl koncit potrebuji mit na vstupu token new line a u zasobniku ukazovat jen na $
             printf("splnila se podminka\n");
             printStack(stackP);
@@ -427,25 +444,25 @@ AstNode* parseExpression(Token *token, int flag)
             return root; // koren, ktery vracim Kubovi na cely vyraz
         }        
         // ošetření toho, že první token musí být nějaký identifikátor, nelze začít operátorem
-        if (!firstOK)
-        {
-            switch (actualToken.type)
-            {
-            case TOKEN_IDENTIFIER:
-            case TOKEN_GLOBAL_ID:
-            case TOKEN_INTEGER:
-            case TOKEN_STRING:
-            case TOKEN_FLOAT:
-            case TOKEN_NEGACE:
-                firstOK = true;
-                break;
+        // if (!firstOK)
+        // {
+        //     switch (actualToken.type)
+        //     {
+        //     case TOKEN_IDENTIFIER:
+        //     case TOKEN_GLOBAL_ID:
+        //     case TOKEN_INTEGER:
+        //     case TOKEN_STRING:
+        //     case TOKEN_FLOAT:
+        //     case TOKEN_NEGACE:
+        //         firstOK = true;
+        //         break;
             
-            default:
-                printError(SYNTAX_ERROR, "(PSA) prvni odeslany token neni identifikator\n");
-                memorySafeExit(SYNTAX_ERROR);
-                break;
-            }
-        }
+        //     default:
+        //         printError(SYNTAX_ERROR, "(PSA) prvni odeslany token neni identifikator\n");
+        //         memorySafeExit(SYNTAX_ERROR);
+        //         break;
+        //     }
+        // }
         
         // radky a sloupce
         switch (PSA_TABLE[operatorToPush(StackTop)][operatorToPush(actualToken)])

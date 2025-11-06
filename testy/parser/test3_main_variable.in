@@ -2,9 +2,9 @@ import "ifj25" for Ifj
 class Program {
 static main() {
     
-    if (a != b) {
-        var x = y+5
-    }
+        for (a in 1..100) {
+            var x = x + 1
+        }
 
     }
 }

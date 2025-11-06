@@ -75,7 +75,9 @@ typedef enum AstNodeType {
     AST_LPAREN,     // (
     AST_RPAREN,     // )
     AST_NULL,
-    AST_NOTEQ
+    AST_NOTEQ,
+    AST_TRIPLE_DOT,
+    AST_DOUBLE_DOT,
 } AstNodeType;
 
 
