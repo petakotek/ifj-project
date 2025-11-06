@@ -998,7 +998,6 @@ void Return_expr_func(DynamicSymbolStackPtr Stack, Token token)
         case TOKEN_NEW_LINE:
         case TOKEN_BLOCK_END:
         case TOKEN_RPAREN:
-            pushCheck(stackSymbolPush(Stack, makeReduce(AST_RETURN, 1)));
             pushCheck(stackSymbolPush(Stack, makeReduce(AST_EMPTY, 0)));
             break; // ε – žiadny uzol, aritu už rozhodol Return_func
 
