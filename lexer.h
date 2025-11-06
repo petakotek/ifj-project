@@ -98,7 +98,7 @@ typedef enum {
     TOKEN_QUESTION_MARK,
     TOKEN_LTE,
     TOKEN_GTE,
-    TOKEN_NOT,
+    TOKEN_NOT, // !=
     TOKEN_COLON,
     TOKEN_AND,
     TOKEN_OR,

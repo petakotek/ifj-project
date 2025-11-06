@@ -78,7 +78,7 @@ int operatorToPush(Token token)
                             return INDEX_IS;
         // == !=
         case TOKEN_EQ:      return INDEX_EQ;
-        case TOKEN_NOT:     return INDEX_NEG;
+        case TOKEN_NOT:     return INDEX_EQ;
 
         // !
         case TOKEN_NEGACE:     return INDEX_NEG; // Pepa prida token negaci
@@ -162,7 +162,6 @@ AstNodeType getAstNodeTypeFromTokenType(TokenType type)
     case TOKEN_EQ:          return AST_EQ;      // ==
     case TOKEN_LT:          return AST_LT;      // <
     case TOKEN_GT:          return AST_GT;      // >
-    case TOKEN_NOT:         return AST_NOT;     // !
     case TOKEN_AND:         return AST_AND;     // &&
     case TOKEN_OR:          return AST_OR;      // ||
     case TOKEN_KEYWORD_IS:  return AST_IS;      // is
@@ -172,6 +171,7 @@ AstNodeType getAstNodeTypeFromTokenType(TokenType type)
     case TOKEN_RPAREN:      return AST_RPAREN;     // )
     case TOKEN_NEGACE:      return AST_NOT;     // !
     case TOKEN_STRING:      return AST_STRING_LIT; // string
+    case TOKEN_NOT:         return AST_NEQ; // !=
     // case TOKEN_DOUBLE_DOT:  return AST_DOUBLE_DOT;
     // case TOKEN_TRIPLE_DOT   return AST_DOUBLE_DOT;
 
