@@ -4,6 +4,7 @@ static main() {
     // Výrazy a statická typová kontrola
     var y = 1
     var x = y+ 5
+    var qwrf = y+ 5.2
     var x2 = "aaa"
     var z = x2 + "c"
 
@@ -17,14 +18,15 @@ static main() {
     var abe = 1 >= "a"
     var abf = abe && abc
     var abg = abf || ab
+    var sad = 1 != 2
 
-   /* var ysads = 1
+    var ysads = 1
     var da = -1
-    var daa = -ysads */
+    var daa = -ysads
 
   var v = w + z
   var a = 1 - 5
- var b = "a" * 5
+ var b = "a" * a
  var d = 1 * 5
  var c = 1 / 5
 }

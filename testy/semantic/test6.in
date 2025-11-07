@@ -3,7 +3,7 @@ class Program {
     // Globální proměnné
     static main(xy,arg2,super,nice,osemdesat) {
         var x = 5
-        __z =  "A"
+        __z = "A"
         __y = 1
         {
             var z = __y + 2

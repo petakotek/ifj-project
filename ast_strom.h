@@ -8,10 +8,10 @@
 #ifndef AST_STROM_H
 #define AST_STROM_H
 
-#include "lexer.h"
-
-#include <stdlib.h>
 #include <stdbool.h>
+#include <stdlib.h>
+
+#include "lexer.h"
 
 /**
  * @brief enum ktory obsahuje typy (nazvi) uzlov
@@ -56,35 +56,32 @@ typedef enum AstNodeType {
     AST_STRING_LIT,
     AST_BOOL_LIT,
 
-
-	AST_EMPTY,
+    AST_EMPTY,
 
     // expression
-    AST_PLUS,       // +
-    AST_MINUS,      // -
-    AST_MUL,        // *
-    AST_DIV,        // /
-    AST_EQ,         // ==
-    AST_NEQ,
-    AST_LT,         // <
-    AST_GT,         // >
-    AST_NOT,        // !
-    AST_AND,        // &&
-    AST_OR,         // ||
-    AST_IS,         // is
-    AST_GTE,        // >=
-    AST_LTE,        // <=
-    AST_LPAREN,     // (
-    AST_RPAREN,     // )
-    AST_NULL,
-    AST_NOTEQ,
-    AST_TRIPLE_DOT,
-    AST_DOUBLE_DOT,
-
-    AST_KEYWORD_NUM,
-    AST_KEYWORD_STRING,
+    AST_PLUS,            // +
+    AST_MINUS,           // -
+    AST_MUL,             // *
+    AST_DIV,             // /
+    AST_EQ,              // ==
+    AST_NEQ,             // !=
+    AST_LT,              // <
+    AST_GT,              // >
+    AST_NOT,             // !
+    AST_AND,             // &&
+    AST_OR,              // ||
+    AST_IS,              // is
+    AST_GTE,             // >=
+    AST_LTE,             // <=
+    AST_LPAREN,          // (
+    AST_RPAREN,          // )
+    AST_NULL,            // Prázdný blok
+    AST_TRIPLE_DOT,      // ...
+    AST_DOUBLE_DOT,      // ..
+    
+    AST_KEYWORD_NUM,     // Num
+    AST_KEYWORD_STRING,  // String
 } AstNodeType;
-
 
 /**
  * @brief struktura na uchovavanie hodnoty tokenu pre abstraktny syntakticky strom
@@ -98,14 +95,14 @@ typedef enum AstNodeType {
  *
  */
 typedef struct AstValue {
-    long long   int_val;
-    double      float_val;
-    char       *str;       // pre IDENTIFIER / GLOBAL_ID / STRING_LIT / BOOl_LIT
-    bool        has_str;
-    bool        is_int;
-    bool        is_float;
-    bool        is_bool;
-} AstValue; 
+    long long int_val;
+    double    float_val;
+    char     *str;  // pre IDENTIFIER / GLOBAL_ID / STRING_LIT / BOOl_LIT
+    bool      has_str;
+    bool      is_int;
+    bool      is_float;
+    bool      is_bool;
+} AstValue;
 
 /**
  * @brief struktura uzla
@@ -118,13 +115,12 @@ typedef struct AstValue {
  * (teda pouziva sa ak is_leaf = true)
  */
 typedef struct AstNode {
-    AstNodeType kind;
-    size_t      arity;
+    AstNodeType      kind;
+    size_t           arity;
     struct AstNode **child;
-    bool is_leaf;
-    AstValue value;          // platný len ak is_leaf == true
+    bool             is_leaf;
+    AstValue         value;  // platný len ak is_leaf == true
 } AstNode;
-
 
 /**
  * @brief funkcia na vytvorenie listu aj s konkretnou hodnotou
@@ -132,7 +128,7 @@ typedef struct AstNode {
  * @param kind predstavuje typ listu ktorý sa ma vytvoriť (názov)
  * @param token token ktoreho hodnotu chceme dat do listu
  * @return Astnode*
-*/
+ */
 AstNode *new_leaf(AstNodeType kind, Token token);
 
 /**
@@ -177,10 +173,10 @@ const char *ast_node_type_to_string(AstNodeType kind);
  * @brief pomocna funkcia pre vypis celeho stromu
  * @param root koren uzla ktory chceme vypisat
  */
-void ast_dump(const AstNode *root);
+void     ast_dump(const AstNode *root);
 AstNode *build_param_flat(size_t n, AstNode **kids);
 AstNode *build_stmtlist_flat(size_t n, AstNode **kids);
 AstNode *build_classblock_flat(size_t n, AstNode **kids);
 AstNode *build_ifchain_flat(size_t n, AstNode **kids);
 
-#endif // AST_STROM_H
+#endif  // AST_STROM_H

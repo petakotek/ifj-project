@@ -3,9 +3,9 @@
 #ifndef SEMANTIC_ANALYSIS
 #define SEMANTIC_ANALYSIS
 
-#include "ast_strom.h"
-
 #include <stddef.h>
+
+#include "ast_strom.h"
 
 /**
  * @brief Číselník typů sémantických symbolů
@@ -50,10 +50,21 @@ typedef enum {
  */
 typedef enum {
     /**
-     * @brief Celé nebo desetinné číslo
+     * @brief Číslo
      *
+     * Nelze určit zda je celé nebo desetinné
      */
     NUMBER_VAL,
+    /**
+     * @brief Celé číslo
+     *
+     */
+    INT_VAL,
+    /**
+     * @brief Desetinné číslo
+     *
+     */
+    FLOAT_VAL,
     /**
      * @brief Řetězec
      *
@@ -84,20 +95,32 @@ typedef enum {
  */
 typedef enum {
     /**
-     * @brief Uzel (a jeho potomci) je sémanticky v pořádku
+     * @brief Zpracování uzlu proběhlo v pořádku
      *
      */
     OK,
     /**
-     * @brief V uzlu (nebo jeho potomcích) je sémantická chyba
+     * @brief Při zpracování uzlu nastala sémantická chyba
      *
      */
     ERROR,
     /**
-     * @brief Výstupem zpracování uzlu (a jeho potomků) je číslo
+     * @brief Výstupem zpracování uzlu je číslo
      *
+     * Používáno v místech, kde nelze určit zda je číslo celé nebo desetinné
+     * @note Všechny operátory očekávající číslo jej akceptují jako validní
      */
     NUMBER_DATA,
+    /**
+     * @brief Výstupem zpracování uzlu je celé číslo
+     *
+     */
+    INT_DATA,
+    /**
+     * @brief Výsledkem zpracování uzlu je desetinné číslo
+     *
+     */
+    FLOAT_DATA,
     /**
      * @brief Výstupem zpracování uzlu (a jeho potomků) je řetězec
      *
@@ -122,11 +145,16 @@ typedef enum {
     UNKNOWN_DATA,
     /**
      * @brief Zpracovaný uzel je identifikátor
-     * 
+     *
      * @note Nerozlišuje jestli lokální nebo globální
      * @note Existenci operátoru si ověřuje zpracovaný uzel
      */
     IDENTIFIER,
+    /**
+     * @brief zpracovaný uzel je klíčové slovo pro datový typ
+     * 
+     */
+    DATATYPE_KEYWORD,
     /**
      * @brief Funkce dostala ukazatel na NULL jako vstupní hodnotu
      *
@@ -168,15 +196,14 @@ typedef struct {
     size_t paramCount;
     /**
      * @brief Návratová hodnota funkce
-     * 
+     *
      */
     SemanticSymbolDataType returnValue;
 } SemanticSymbol;
 
-
 /**
  * @brief Funkce pro zahájení sémantické kontroly
- * 
+ *
  * @param root Vrchol abstraktního syntaktického stromu
  * @return true Sémantická kontrola je v pořádku
  * @return false Byla nalezena sémantická chyba
@@ -185,7 +212,7 @@ bool startSematicValidation(AstNode* root);
 
 /**
  * @brief Uklidí paměť používanou sémantickou analýzou
- * 
+ *
  */
 void freeSematicsMemory();
 
