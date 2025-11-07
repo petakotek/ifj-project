@@ -810,6 +810,22 @@ RecursiveSemanticAnalysisReturnValues recursiveNodeWalker(AstNode*    currentNod
 
             break;
         }
+        case (AST_NEQ): {
+            RecursiveSemanticAnalysisReturnValues leftChild =
+                recursiveNodeWalker(currentNode->child[0], AST_EQ);
+            RecursiveSemanticAnalysisReturnValues rightChild =
+                recursiveNodeWalker(currentNode->child[1], AST_EQ);
+
+            if (leftChild == ERROR || rightChild == ERROR) {
+                printError(SEMANTICS_ERROR_UNCOMPATIBLE, "(!=) Doslo k chybe!\n");
+                memorySafeExit(SEMANTICS_ERROR_UNCOMPATIBLE);
+                return ERROR;
+            }
+            // Porovnat lze cokoliv, ale výsledek bude vždy bool hodnota
+            return BOOLEAN_DATA;
+
+            break;
+        }
         case (AST_LT): {
             printLog("AST_LT\n");
 
