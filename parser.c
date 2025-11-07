@@ -274,6 +274,7 @@ AstNode *parser()
                     break;
                 case N_lExpr:
                     Expr_func(Stack, gLookahead, AstStack, -1);
+                    printf("%d",1);
                     token = *gLookahead;
                     printf("precedencna odovzdala token jeho type je = %d\n",token.type);
                     break;
@@ -762,7 +763,6 @@ void Func_call_func(DynamicSymbolStackPtr Stack, Token token)
         pushCheck(stackSymbolPush(Stack, makeReduce(AST_FUNC_CALL, 2)));
         pushCheck(stackSymbolPush(Stack, makeTerm(TOKEN_RPAREN)));
         pushCheck(stackSymbolPush(Stack, makeNonterm(N_Var_arg)));
-        pushCheck(stackSymbolPush(Stack, makeTerm(TOKEN_LPAREN)));
         pushCheck(stackSymbolPush(Stack, makeTermWithValue(TOKEN_IDENTIFIER)));
         pushCheck(stackSymbolPush(Stack, makeTerm(TOKEN_DOT)));
         pushCheck(stackSymbolPush(Stack, makeTerm(TOKEN_KEYWORD_IFJ)));
@@ -1158,7 +1158,7 @@ void AssignIfjIdCheckFunc(DynamicSymbolStackPtr Stack, Token token)
     
     else
     {
-        pushCheck(stackSymbolPush(Stack, makeNonterm(N_lExpr)));
+        pushCheck(stackSymbolPush(Stack, makeNonterm(N_Expr)));
     }
 }
 
