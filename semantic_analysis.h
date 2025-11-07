@@ -151,6 +151,11 @@ typedef enum {
      */
     IDENTIFIER,
     /**
+     * @brief zpracovaný uzel je klíčové slovo pro datový typ
+     * 
+     */
+    DATATYPE_KEYWORD,
+    /**
      * @brief Funkce dostala ukazatel na NULL jako vstupní hodnotu
      *
      * Zda se jedná o chybu rozhodne volající funkce

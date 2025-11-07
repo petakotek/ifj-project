@@ -400,7 +400,7 @@ RecursiveSemanticAnalysisReturnValues recursiveNodeWalker(AstNode*    currentNod
 
             createNewScope();
             for (size_t i = 0; i < currentNode->arity; i++) {
-                if (recursiveNodeWalker(currentNode->child[i], AST_PARAM) != OK) {
+                if (recursiveNodeWalker(currentNode->child[i], AST_PARAM) == ERROR) {
                     return ERROR;
                 }
             }
@@ -439,8 +439,6 @@ RecursiveSemanticAnalysisReturnValues recursiveNodeWalker(AstNode*    currentNod
                     recursiveNodeWalker(currentNode->child[i], AST_STATEMENT_LIST);
                 if (childValue == ERROR) {
                     return ERROR;
-                } else if (childValue != OK) {
-                    return childValue;
                 }
             }
 
@@ -541,9 +539,19 @@ RecursiveSemanticAnalysisReturnValues recursiveNodeWalker(AstNode*    currentNod
 
             break;
         }
+        case (AST_IF_CHAIN): {
+            printLog("AST_IF_CHAIN\n");
+            // TODO ast if chain
+            break;
+        }
         case (AST_IF): {
             printLog("AST_IF\n");
             // TODO AST_IF
+            break;
+        }
+        case (AST_ELSE): {
+            printLog("AST_ELSE\n");
+            // TODO ast_else
             break;
         }
         case (AST_WHILE): {
@@ -645,9 +653,24 @@ RecursiveSemanticAnalysisReturnValues recursiveNodeWalker(AstNode*    currentNod
             return FLOAT_DATA;
             break;
         }
+        case (AST_BOOL_LIT): {
+            printLog("AST_BOOL_LIT\n");
+            return BOOLEAN_DATA;
+            break;
+        }
         case (AST_STRING_LIT): {
             printLog("AST_STRING_LIT\n");
             return STRING_DATA;
+            break;
+        }
+        case (AST_KEYWORD_NUM): {
+            printLog("AST_KEYWORD_NUM\n");
+            return DATATYPE_KEYWORD;
+            break;
+        }
+        case (AST_KEYWORD_STRING): {
+            printLog("AST_KEYWORD_STRING\n");
+            return DATATYPE_KEYWORD;
             break;
         }
         case (AST_PLUS): {
@@ -712,40 +735,62 @@ RecursiveSemanticAnalysisReturnValues recursiveNodeWalker(AstNode*    currentNod
         case (AST_MINUS): {
             printLog("AST_MINUS\n");
 
-            RecursiveSemanticAnalysisReturnValues leftChild =
-                recursiveNodeWalker(currentNode->child[0], AST_MINUS);
-            RecursiveSemanticAnalysisReturnValues rightChild =
-                recursiveNodeWalker(currentNode->child[1], AST_MINUS);
+            if (currentNode->arity == 1) {
+                RecursiveSemanticAnalysisReturnValues onlyChild =
+                    recursiveNodeWalker(currentNode->child[0], AST_MINUS);
 
-            if (leftChild == NUMBER_DATA && rightChild == NUMBER_DATA) {
-                return NUMBER_DATA;
-            }
-
-            if (leftChild == INT_DATA && rightChild == INT_DATA) {
-                return INT_DATA;
-            }
-
-            if (leftChild == FLOAT_DATA && rightChild == FLOAT_DATA) {
-                return NUMBER_DATA;
-            }
-
-            if ((leftChild == INT_DATA && rightChild == FLOAT_DATA) ||
-                (leftChild == FLOAT_DATA && rightChild == INT_DATA)) {
-                return NUMBER_DATA;
-            }
-
-            if (leftChild == UNKNOWN_DATA || rightChild == UNKNOWN_DATA) {
-                if (leftChild == NUMBER_DATA || leftChild == INT_DATA || leftChild == FLOAT_DATA) {
+                if (onlyChild == NUMBER_DATA) {
                     return NUMBER_DATA;
                 }
 
-                if (rightChild == NUMBER_DATA || rightChild == INT_DATA ||
-                    rightChild == FLOAT_DATA) {
+                if (onlyChild == INT_DATA) {
+                    return INT_DATA;
+                }
+
+                if (onlyChild == FLOAT_DATA) {
+                    return FLOAT_DATA;
+                }
+
+                if (onlyChild == UNKNOWN_DATA) {
+                    return UNKNOWN_DATA;
+                }
+            } else {
+                RecursiveSemanticAnalysisReturnValues leftChild =
+                    recursiveNodeWalker(currentNode->child[0], AST_MINUS);
+                RecursiveSemanticAnalysisReturnValues rightChild =
+                    recursiveNodeWalker(currentNode->child[1], AST_MINUS);
+
+                if (leftChild == NUMBER_DATA && rightChild == NUMBER_DATA) {
                     return NUMBER_DATA;
                 }
 
-                if (leftChild == UNKNOWN_DATA && rightChild == UNKNOWN_DATA) {
-                    return NUMBER_DATA;  // výsledek odčítání je vždy číslo
+                if (leftChild == INT_DATA && rightChild == INT_DATA) {
+                    return INT_DATA;
+                }
+
+                if (leftChild == FLOAT_DATA && rightChild == FLOAT_DATA) {
+                    return NUMBER_DATA;
+                }
+
+                if ((leftChild == INT_DATA && rightChild == FLOAT_DATA) ||
+                    (leftChild == FLOAT_DATA && rightChild == INT_DATA)) {
+                    return NUMBER_DATA;
+                }
+
+                if (leftChild == UNKNOWN_DATA || rightChild == UNKNOWN_DATA) {
+                    if (leftChild == NUMBER_DATA || leftChild == INT_DATA ||
+                        leftChild == FLOAT_DATA) {
+                        return NUMBER_DATA;
+                    }
+
+                    if (rightChild == NUMBER_DATA || rightChild == INT_DATA ||
+                        rightChild == FLOAT_DATA) {
+                        return NUMBER_DATA;
+                    }
+
+                    if (leftChild == UNKNOWN_DATA && rightChild == UNKNOWN_DATA) {
+                        return NUMBER_DATA;  // výsledek odčítání je vždy číslo
+                    }
                 }
             }
 
@@ -795,13 +840,13 @@ RecursiveSemanticAnalysisReturnValues recursiveNodeWalker(AstNode*    currentNod
                 }
 
                 if (rightChild == NUMBER_DATA || rightChild == INT_DATA) {
-                    return UNKNOWN_DATA;  // V tomto případě nelze rozhodnout zda se jedná o operaci
-                                          // s řetězcem nebo celým číslem
+                    return UNKNOWN_DATA;  // V tomto případě nelze rozhodnout zda se jedná o
+                                          // operaci s řetězcem nebo celým číslem
                 }
 
                 if (rightChild == FLOAT_DATA) {
-                    return NUMBER_DATA;  // Desetinné číslo v pravém operandu znamená, že výsledek
-                                         // bude určitě desetinné číslo
+                    return NUMBER_DATA;  // Desetinné číslo v pravém operandu znamená, že
+                                         // výsledek bude určitě desetinné číslo
                 }
 
                 if (leftChild == UNKNOWN_DATA && rightChild == UNKNOWN_DATA) {
@@ -834,8 +879,8 @@ RecursiveSemanticAnalysisReturnValues recursiveNodeWalker(AstNode*    currentNod
             }
 
             if (leftChild == FLOAT_DATA && rightChild == FLOAT_DATA) {
-                return NUMBER_DATA;  // Nelze určit zda výsledek dělení dvou desetinných čísel bude
-                                     // desetinný nebo celý
+                return NUMBER_DATA;  // Nelze určit zda výsledek dělení dvou desetinných čísel
+                                     // bude desetinný nebo celý
             }
 
             if ((leftChild == INT_DATA && rightChild == FLOAT_DATA) ||
@@ -1060,8 +1105,39 @@ RecursiveSemanticAnalysisReturnValues recursiveNodeWalker(AstNode*    currentNod
         }
         case (AST_IS): {
             printLog("AST_IS\n");
-            // TODO co to jeee???
-            // Pro datové typy idk
+
+            RecursiveSemanticAnalysisReturnValues leftChild =
+                recursiveNodeWalker(currentNode->child[0], AST_IS);
+            RecursiveSemanticAnalysisReturnValues rightChild =
+                recursiveNodeWalker(currentNode->child[1], AST_IS);
+
+            if (leftChild == OK || leftChild == ERROR || leftChild == IDENTIFIER ||
+                leftChild == GOT_NODE_NULL) {
+                printError(SEMANTICS_ERROR_UNCOMPATIBLE,
+                           "(is) Leva strana operatoru musi mit jako vysledek datovy typ!\n");
+                memorySafeExit(SEMANTICS_ERROR_UNCOMPATIBLE);
+                return ERROR;
+            }
+
+            if (rightChild != DATATYPE_KEYWORD) {
+                printError(SEMANTICS_ERROR_UNCOMPATIBLE,
+                           "(is) Prava strana operatoru musi byt nazev datoveho typu!\n");
+                memorySafeExit(SEMANTICS_ERROR_UNCOMPATIBLE);
+                return ERROR;
+            }
+
+            return BOOLEAN_DATA;
+
+            break;
+        }
+        case (AST_DOUBLE_DOT): {
+            printLog("AST_DOUBLE_DOT\n");
+            // TODO
+            break;
+        }
+        case (AST_TRIPLE_DOT): {
+            printLog("AST_TRIPLE_DOT\n");
+            // TODO
             break;
         }
         case (AST_RETURN): {
