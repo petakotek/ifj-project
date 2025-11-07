@@ -65,7 +65,7 @@ typedef enum AstNodeType {
     AST_MUL,        // *
     AST_DIV,        // /
     AST_EQ,         // ==
-    AST_NEQ,
+    AST_NEQ,        // !=
     AST_LT,         // <
     AST_GT,         // >
     AST_NOT,        // !
@@ -77,7 +77,6 @@ typedef enum AstNodeType {
     AST_LPAREN,     // (
     AST_RPAREN,     // )
     AST_NULL,
-    AST_NOTEQ,
     AST_TRIPLE_DOT,
     AST_DOUBLE_DOT,
 } AstNodeType;
