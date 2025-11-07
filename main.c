@@ -4,14 +4,10 @@
  * Soubor: main.c
  * Popis: Vstupni bod do programu spojuje jednotlivé moduly
  */
-<<<<<<< HEAD
 #include <stddef.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include "codegen.h"
-=======
-
->>>>>>> f7a21dc0dab726f96f029fac7d05d514d5f44b5d
 #include "parser.h"
 #include "ast_strom.h"
 #include "support_functions.h"
@@ -48,11 +44,11 @@ int main(){
 	ast_dump(AST);
 	codegen_generate(AST);
 	lexer_free();
-
+/*
 	bool output;
 	output = startSematicValidation(AST);
 	printf("Vysledek sem_anal: %i\n", output);
-
+*/
 	//ast_dump(AST);
 	//free ast stromu
 	ast_free_whole(AST);

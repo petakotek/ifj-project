@@ -14,4 +14,12 @@ void codegen_generate(AstNode *root);
 char *resize_label_name(char *prefix,size_t *size);
 void emitPlus(AstNode *node, DynamiclabelStackStackPtr label_stack, int counter, DynamicEmitOpStackPtr op_stack);
 void emit_assigned(AstNode *node,DynamiclabelStackStackPtr label_stack,int counter,DynamicEmitOpStackPtr op_emit);
+
+// Pomocná struktura pro ukládání proměnných behem projizdeni uzlem funkce
+// abych si na zacatku funkce nadefinovali vsechny promenen ktere budou pouzity
+typedef struct {
+    char **var_names;  // pole jmen var proměnných
+    int count;         // počet proměnných pro resize
+    int capacity;      // kapacita pole pro resize
+} VarList;
 #endif

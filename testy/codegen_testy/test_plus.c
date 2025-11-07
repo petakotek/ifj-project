@@ -44,9 +44,9 @@ int main(){
 	nodeParent->child[1] = nodeRightCh;
 	nodeParent->is_leaf = false;
 	nodeAssigned->child[1] = nodeParent;
-	nodeAssigned->child[0]
+	nodeAssigned->child[0] = NULL;
 	emitPlus(nodeParent, label_stack, counter, op_stack);
-	emit_assigned(AstNode *node, DynamiclabelStackStackPtr label_stack, int counter, DynamicEmitOpStackPtr op_emit)
+	emit_assigned(AstNode *node, DynamiclabelStackStackPtr label_stack, int counter, DynamicEmitOpStackPtr op_emit);
 	free(nodeLeftCh);
 	free(nodeRightCh);
 	free(nodeParent);

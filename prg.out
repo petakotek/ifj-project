@@ -1,0 +1,74 @@
+.IFJcode25
+JUMP $$main
+$$main
+#main
+PUSHFRAME
+DEFVAR LF@x
+DEFVAR LF@type_right
+CREATEFRAME
+PUSHS int@1
+PUSHS int@1
+TYPES
+POPS LF@type_right
+TYPES
+PUSHS LF@type_right
+JUMPIFEQS $ok$0
+JUMP $err$0
+LABEL $ok$0
+PUSHS string@string
+JUMPIFEQS $concat$0
+PUSHS LF@type_right
+PUSHS string@int
+JUMPIFEQS $add$0
+PUSHS LF@type_right
+PUSHS string@float
+JUMPIFEQS $add$0
+JUMP $err$0
+LABEL $add$0
+PUSHS LF@lhs
+PUSHS LF@rhs
+ADDS
+JUMP $end$0
+LABEL $concat$0
+PUSHS LF@lhs
+PUSHS LF@rhs
+CONCATS
+JUMP $end$0
+LABEL $err$0
+EXIT int@4
+LABEL $end$0
+POPS LF@x
+PUSHS int@1
+PUSHS int@1
+TYPES
+POPS LF@type_right
+TYPES
+PUSHS LF@type_right
+JUMPIFEQS $ok$0
+JUMP $err$0
+LABEL $ok$0
+PUSHS string@string
+JUMPIFEQS $concat$0
+PUSHS LF@type_right
+PUSHS string@int
+JUMPIFEQS $add$0
+PUSHS LF@type_right
+PUSHS string@float
+JUMPIFEQS $add$0
+JUMP $err$0
+LABEL $add$0
+PUSHS LF@lhs
+PUSHS LF@rhs
+ADDS
+JUMP $end$0
+LABEL $concat$0
+PUSHS LF@lhs
+PUSHS LF@rhs
+CONCATS
+JUMP $end$0
+LABEL $err$0
+EXIT int@4
+LABEL $end$0
+POPS LF@x
+POPFRAME
+RETURN
