@@ -76,9 +76,9 @@ typedef enum AstNodeType {
     AST_LTE,        // <=
     AST_LPAREN,     // (
     AST_RPAREN,     // )
-    AST_NULL,
-    AST_TRIPLE_DOT,
-    AST_DOUBLE_DOT,
+    AST_NULL,       // Prázdný blok
+    AST_TRIPLE_DOT, // ...
+    AST_DOUBLE_DOT, // ..
 } AstNodeType;
 
 
