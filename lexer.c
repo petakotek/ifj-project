@@ -6,14 +6,12 @@
  */
 #include "lexer.h"
 
+#include "support_functions.h"
+
 #include <ctype.h>
-#include <stdbool.h>
-#include <stddef.h>
-#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 
-#include "support_functions.h"
 /*
  * Proměna  která je potřebna byti viditelnou v celem souboru
  */
@@ -222,8 +220,8 @@ char *substring(size_t start, size_t end) {
             return "GTE";
         case TOKEN_NOT:
             return "NOT";
-        case TOKEN_DOUBLE_DOT:
-            return "DOUBLE_DOT";
+        case TOKEN_COLON:
+            return "COLON";
         case TOKEN_AND:
             return "AND";
         case TOKEN_OR:
@@ -260,7 +258,10 @@ char *substring(size_t start, size_t end) {
             return "EXPRESSION";
         case TOKEN_STOP:
             return "STOP";
-
+        case TOKEN_DOUBLE_DOT:
+        	return "DOUBLE_DOT";
+        case TOKEN_TRIPLE_DOT:
+        	return "TRIPLE_DOT";
         default:
             return "UNKNOWN_TOKEN";
     }
@@ -285,7 +286,8 @@ void append_char(char **buf, int *delka, int *kapacita, char c) {
 }
 Token lexer_token_next() {
     // inicializace bufferu na string
-    char *buf = malloc(INIT_CAPACITY); /* Musi se dojit na konec pomoci goto jinak MUSI BYT FREE!!! jinak memory leak typicky nasobky 32byt */
+
+    char *buf = calloc(INIT_CAPACITY, sizeof(char)); /* Musi se dojit na konec pomoci goto jinak MUSI BYT FREE!!! jinak memory leak typicky nasobky 32byt */
     int   kapacity = INIT_CAPACITY;
     int   delak    = 0;
     Token token    = {0};
@@ -464,8 +466,8 @@ Token lexer_token_next() {
                     token.type = TOKEN_COMMA;
                     goto token_found;
 
-                case DOUBLE_DOT:
-                    token.type = TOKEN_DOUBLE_DOT;
+                case COLON:
+                    token.type = TOKEN_COLON;
                     goto token_found;
 
                 case QUESTION_MARK:
@@ -625,7 +627,7 @@ Token lexer_token_next() {
                     stav = DOT;
                     lexer->pos++;
                 } else if (c == ':') {
-                    stav = DOUBLE_DOT;
+                    stav = COLON;
                     lexer->pos++;
                 } else if (c == '?') {
                     stav = QUESTION_MARK;
@@ -706,22 +708,15 @@ Token lexer_token_next() {
                 } else if (c == '.') {
                     stav = FLOAT_NUMBER;
                     lexer->pos++;
-                } else if (c == ' ' || c == '\n' || c == EOF || c == ')') {
-                    token.type             = TOKEN_INTEGER;
-                    token.value.identifier = substring(zacatek, lexer->pos);
-                    token.line             = radek;
-                    goto token_found;
                 } else if (c == 'e') {
                     stav = DIGIT_EXP;
                     lexer->pos++;
                 } else {
-                    free(buf);
-                    printError(LEX_ERROR,
-                               "nezname pismeno v lexer_token_next"
-                               "%c on line : %lu \n",
-                               c, lexer->pos);
-                    memorySafeExit(LEX_ERROR);
-                }
+	                token.type             = TOKEN_INTEGER;
+	                token.value.identifier = substring(zacatek, lexer->pos);
+	                token.line             = radek;
+	                goto token_found;
+	                }
                 break;
             }
             /*
@@ -733,18 +728,18 @@ Token lexer_token_next() {
                     lexer->pos++;
                 } else if (isdigit(c)) {
                     lexer->pos++;
-                } else if (c == ' ' || c == '\n' || c == '\0' || c == ')') {
+                } else{
+                	if(c == '.'){
+                 	lexer->pos--;
+                  	token.type             = TOKEN_INTEGER;
+	                token.value.identifier = substring(zacatek, lexer->pos);
+	                token.line             = radek;
+	                goto token_found;
+                 	}
                     token.type             = TOKEN_FLOAT;
                     token.value.identifier = substring(zacatek, lexer->pos);
                     token.line             = radek;
                     goto token_found;
-                } else {
-                    free(buf);
-                    printError(LEX_ERROR,
-                               "nezname pismeno v lexer_token_next"
-                               "%c on line : %lu",
-                               c, lexer->pos);
-                    memorySafeExit(LEX_ERROR);
                 }
                 break;
             }
@@ -781,18 +776,11 @@ Token lexer_token_next() {
             case HEXA_NUM: {
                 if (isxdigit(c)) {
                     lexer->pos++;
-                } else if (c == ' ' || c == '\n' || c == '\0') {
-                    token.type             = TOKEN_HEXA;
-                    token.value.identifier = substring(zacatek, lexer->pos);
-                    token.line             = radek;
-                    goto token_found;
-                } else {
-                    free(buf);
-                    printError(LEX_ERROR,
-                               "neznamy charakter v lexer_token_next"
-                               "%c on line : %lu",
-                               c, lexer->pos);
-                    memorySafeExit(LEX_ERROR);
+                }else {
+	                token.type             = TOKEN_HEXA;
+	                token.value.identifier = substring(zacatek, lexer->pos);
+	                token.line             = radek;
+	                goto token_found;
                 }
                 break;
             }
@@ -803,36 +791,22 @@ Token lexer_token_next() {
             case DIGIT_EXP: {
                 if (isdigit(c)) {
                     lexer->pos++;
-                } else if (c == ' ' || c == '\n' || c == '\0') {
-                    token.type             = TOKEN_INTEGER_EXP;
-                    token.value.identifier = substring(zacatek, lexer->pos);
-                    token.line             = radek;
-                    goto token_found;
-                } else {
-                    free(buf);
-                    printError(LEX_ERROR,
-                               "neznamy charakter v lexer_token_next"
-                               "%c on line : %lu",
-                               c, lexer->pos);
-                    memorySafeExit(LEX_ERROR);
+                }else {
+	                token.type             = TOKEN_INTEGER_EXP;
+	                token.value.identifier = substring(zacatek, lexer->pos);
+	                token.line             = radek;
+	                goto token_found;
                 }
                 break;
             }
             case FLOAT_EXP: {
                 if (isdigit(c)) {
                     lexer->pos++;
-                } else if (c == ' ' || c == '\n' || c == '\0') {
-                    token.type             = TOKEN_FLOAT_EXP;
-                    token.value.identifier = substring(zacatek, lexer->pos);
-                    token.line             = radek;
-                    goto token_found;
                 } else {
-                    free(buf);
-                    printError(LEX_ERROR,
-                               "neznamy charakter v lexer_token_next"
-                               "%c on line : %lu",
-                               c, lexer->pos);
-                    memorySafeExit(LEX_ERROR);
+	                token.type             = TOKEN_FLOAT_EXP;
+	                token.value.identifier = substring(zacatek, lexer->pos);
+	                token.line             = radek;
+	                goto token_found;
                 }
                 break;
             }
@@ -1117,13 +1091,35 @@ Token lexer_token_next() {
                 goto token_found;
             }
             case DOT: {
-                token.type = TOKEN_DOT;
-                token.line = radek;
-                goto token_found;
+                if(c == '.'){
+                	stav = DOUBLE_DOT;
+                 	lexer->pos++;
+                }else {
+                	token.type = TOKEN_DOT;
+                 	token.line = radek;
+	                goto token_found;
+                }
+                break;
+            }
+            case DOUBLE_DOT:{
+                if(c == '.'){
+                   	stav = TRIPLE_DOT;
+                   	lexer->pos++;
+                }else {
+                   	token.type = TOKEN_DOUBLE_DOT;
+                   	token.line = radek;
+                    goto token_found;
+                }
+                break;
+            }
+            case TRIPLE_DOT:{
+	               	token.type = TOKEN_TRIPLE_DOT;
+	               	token.line = radek;
+	                goto token_found;
             }
             // tercelarni operatory
-            case DOUBLE_DOT: {
-                token.type = TOKEN_DOUBLE_DOT;
+            case COLON: {
+                token.type = TOKEN_COLON;
                 token.line = radek;
                 goto token_found;
             }

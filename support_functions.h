@@ -8,17 +8,8 @@
  */
 
 #ifndef SUPPORT_FUNCTIONS
+#define SUPPORT_FUNCTIONS
 
-#define SUPPORT_FUNCTIONS 1
-
-// ----------------- Závislosti -----------------
-#include <stdarg.h>
-#include <stdbool.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include "lexer.h"
-
-// ----------------- Datové typy -----------------
 /**
  * @brief Číselník s jednotlivými návratovými kódy, jak definuje zadání
  *
@@ -36,7 +27,7 @@ enum errorCodes {
     SEMANTICS_ERROR_UNDEF = 3,
     /// Sémantická chyba -- redefinice funkce či proměnné.
     SEMANTICS_ERROR_REDEF = 4,
-    /// Statická sémantická chyba -- neočekávaný počet argumentů při volání funkce nebo
+    /// Statická sémantická chyba -- neočekávaný počet argumentů při volání funkce nebo @see SEMANTIC_ERROR_INCORRECT
     SEMANTICS_ERROR_UNEXPECTED = 5,
     /// Statická sémantická chyba -- špatný typ parametru vestavěné funkce.
     SEMANTICS_ERROR_INCORRECT = 5,
@@ -54,7 +45,6 @@ enum errorCodes {
     RUNTIME_SEMANTICS_ERROR_UNCOMPATIBLE = 26,
 };
 
-// ----------------- deklarace veřejných funkcí -----------------
 /**
  * @brief Ukončuje běh programu, zajistí vyčištění paměti a vrací zadaný chybový kód
  *
@@ -67,6 +57,7 @@ void memorySafeExit(enum errorCodes errCode);
  *
  * Zadání specifikuje, že veškeré výpisy chyb, varování nebo ladění máme provádět na standardní
  * chybový výstup
+ * @note Nepřidává znak nového řádku na konec fmt!
  * @param errCode Kód chyby
  * @param fmt Text a formát pro vypsání
  * @param ... Parametry požadované formátem
@@ -78,6 +69,7 @@ void printError(enum errorCodes errCode, const char *fmt, ...);
  *
  * Zadání specifikuje, že veškeré výpisy chyb, varování nebo ladění máme provádět na standardní
  * chybový výstup
+ * @note Nepřidává znak nového řádku na konec fmt!
  * @param fmt Text a formát pro vypsání
  * @param ... Parametry požadované formátem
  */
@@ -88,10 +80,13 @@ void printWarning(const char *fmt, ...);
  *
  * Zadání specifikuje, že veškeré výpisy chyb, varování nebo ladění máme provádět na standardní
  * chybový výstup
+ * @note Nepřidává znak nového řádku na konec fmt!
  * @param fmt Text a formát pro vypsání
  * @param ... Parametry požadované formátem
  */
 void printLog(const char *fmt, ...);
+
+// TODO pepoooooooo!
 void print_and_free_tokens();
 /**
 * @brief Funkce na nacteni vstupu do retezce tak a abychom se vyhli fseek

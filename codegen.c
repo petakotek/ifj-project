@@ -251,7 +251,7 @@ void emitPlus(AstNode *node, DynamiclabelStackStackPtr label_stack, int counter,
     printN("LABEL %s", label_concat);
     printN("PUSHS LF@lhs");
     printN("PUSHS LF@rhs");
-    printN("CONCAT");
+    printN("CONCATS");
     printN("JUMP %s", label_end);
 
     // --- CHYBA ---

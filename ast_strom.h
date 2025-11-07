@@ -7,15 +7,11 @@
 
 #ifndef AST_STROM_H
 #define AST_STROM_H
-#include <string.h>
-#include <stdbool.h>
-#include <stdlib.h>
+
 #include "lexer.h"
-#include "support_functions.h"
-#include <stdio.h>
-#include <assert.h>
 
-
+#include <stdlib.h>
+#include <stdbool.h>
 
 /**
  * @brief enum ktory obsahuje typy (nazvi) uzlov
@@ -36,6 +32,7 @@ typedef enum AstNodeType {
     AST_FUNC_DEC,
     AST_PARAM,
     AST_FUNC_CALL,
+    AST_IFJ_CALL,
 
     // premenné / priradenie
     AST_VAR,
@@ -43,6 +40,8 @@ typedef enum AstNodeType {
 
     // riadiace štruktúry
     AST_IF,
+    AST_ELSE,
+    AST_ELSE_IF,
     AST_WHILE,
     AST_FOR,
     AST_BREAK,
@@ -64,6 +63,7 @@ typedef enum AstNodeType {
     AST_MUL,        // *
     AST_DIV,        // /
     AST_EQ,         // ==
+    AST_NEQ,
     AST_LT,         // <
     AST_GT,         // >
     AST_NOT,        // !
@@ -74,7 +74,10 @@ typedef enum AstNodeType {
     AST_LTE,        // <=
     AST_LPAREN,     // (
     AST_RPAREN,     // )
-    AST_NULL
+    AST_NULL,
+    AST_NOTEQ,
+    AST_TRIPLE_DOT,
+    AST_DOUBLE_DOT,
 } AstNodeType;
 
 

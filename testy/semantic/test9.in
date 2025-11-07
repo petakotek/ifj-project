@@ -1,0 +1,12 @@
+import "ifj25" for Ifj
+class Program {
+    // Úprava hodnoty mimo var
+static main() {
+    var x = "a"
+    __y = "a"
+    x = 5
+    __y = 2
+    var y = x + __y
+    return
+}
+}

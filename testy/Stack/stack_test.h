@@ -6,6 +6,8 @@
  * @author Vojtěch Voldřich (xvoldrv00)
  */
 
+#ifndef STAKC_TEST
+#define STAKC_TEST
 #include "dynamic_stack.h"
 #include "support_functions.h"
 
@@ -15,5 +17,5 @@
 DynamicStringStackPtr testInit(unsigned size, char* testName);
 void testDestruct(DynamicStringStackPtr stack);
 void printStack(DynamicStringStackPtr stack);
-
+#endif
  /*** konec stackTest.c ***/

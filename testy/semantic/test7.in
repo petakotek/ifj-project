@@ -1,0 +1,15 @@
+import "ifj25" for Ifj
+class Program {
+    // Pozdější deklarace funkcí
+    static main() {
+        func()
+    }
+
+    static a() {
+        return 1
+    }
+
+    static func() {
+        return
+    }
+}

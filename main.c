@@ -4,13 +4,23 @@
  * Soubor: main.c
  * Popis: Vstupni bod do programu spojuje jednotlivé moduly
  */
+<<<<<<< HEAD
 #include <stddef.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include "codegen.h"
+=======
+
+>>>>>>> f7a21dc0dab726f96f029fac7d05d514d5f44b5d
 #include "parser.h"
 #include "ast_strom.h"
 #include "support_functions.h"
+#include "semantic_analysis.h"
+
+#include <stddef.h>
+#include <stdio.h>
+#include <stdlib.h>
+
 #define SYMBOL_SIZE 201
 #define LITERAL_SIZE 101
 int main(){
@@ -25,7 +35,7 @@ int main(){
 	//volani funcke na nacteni souboru
 	source_file = read_all_stdin();
 	if (source_file == NULL) {
-        fprintf(stderr, "Chyba: selhalo načítání vstupů\n");
+		fprintf(stderr, "Chyba: selhalo načítání vstupů\n");
         return 1;
     }
 	// inicializovani struktury staraji se o cteni ze souboru
@@ -38,7 +48,14 @@ int main(){
 	ast_dump(AST);
 	codegen_generate(AST);
 	lexer_free();
+
+	bool output;
+	output = startSematicValidation(AST);
+	printf("Vysledek sem_anal: %i\n", output);
+
+	//ast_dump(AST);
 	//free ast stromu
 	ast_free_whole(AST);
 free(source_file);
+
 }

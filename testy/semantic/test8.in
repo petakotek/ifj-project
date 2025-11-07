@@ -1,0 +1,17 @@
+import "ifj25" for Ifj
+class Program {
+    // Návratové hodnoty funkcí
+    static main() {
+        var a = 2
+        c(a + 1)
+        //var x = b()
+    }
+
+    static b() {
+        return 1
+    }
+
+    static c() {
+        return 
+    }
+}

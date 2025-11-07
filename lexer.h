@@ -9,8 +9,6 @@
  #define LEXER_H
 
 #include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
 /*
 *Definice typu tokenu v lexeru
 */
@@ -50,6 +48,8 @@ typedef enum{
     GT,        // >
     START,	//*
     DOT, // .
+    DOUBLE_DOT, // ..
+    TRIPLE_DOT, // ...
     COMMA,
     LTE, // <=
     GTE ,// >=
@@ -62,7 +62,7 @@ typedef enum{
     DOUBLE_QUO,//""
     END_QUO,   //ukoncovaci stavy pro block string
     END_DOUBLE_QUO,
-    DOUBLE_DOT, // :
+    COLON, // :
     QUESTION_MARK, // ?
     DOUBLE_MINUS, // --
     ZNAK_HEXA  //stav kdy ve stringu dostaneme hexa cislo a tim doplnime znak
@@ -98,8 +98,8 @@ typedef enum {
     TOKEN_QUESTION_MARK,
     TOKEN_LTE,
     TOKEN_GTE,
-    TOKEN_NOT,
-    TOKEN_DOUBLE_DOT,
+    TOKEN_NOT, // !=
+    TOKEN_COLON,
     TOKEN_AND,
     TOKEN_OR,
     TOKEN_ERROR,
@@ -131,6 +131,8 @@ typedef enum {
     TOKEN_STOP,
     TOKEN_EXPRESSION,
     TOKEN_PSA_END,
+    TOKEN_DOUBLE_DOT,
+    TOKEN_TRIPLE_DOT
 } TokenType;
 
 typedef union {
@@ -173,6 +175,7 @@ void lexer_free(void);
  *          vrací TOKEN_EOF; při chybě může vrátit ERROR_TOKEN
  */
 Token lexer_token_next();
+TokenType match_identifikator(const char *identifikator);
 char *token_type_to_string(TokenType type);
 extern char *source;
 extern char *buf;

@@ -10,11 +10,9 @@
 #ifndef DYNAMIC_STACK
 #define DYNAMIC_STACK 1
 
-#include <stdbool.h>
-#include <stdlib.h>
 
-#include "support_functions.h"
 #include "symbol.h"
+#include "symtable.h"
 
 /**
  * @brief Základní velikost zásobníku (možné použít při inicializaci)
@@ -98,7 +96,7 @@
     /**                                                                                                   \
      * @brief Vrátí data z vrcholu zásobníku (nemaže zásobník)                                     \
      *                                                                                                    \
-     * @warning Očekává, že zásobník existuje a není prázdný. Jinak nedefinované chování!     \
+     * @attention Očekává, že zásobník existuje a není prázdný. Jinak nedefinované chování!     \
      * @param stack Ukazatel na zásobník                                                                \
      * @return Data z vrcholu                                                                             \
      */                                                                                                   \
@@ -126,7 +124,7 @@
     /**                                                                                                   \
      * @brief Zajišťuje dealokaci dat i metadat zásobníku                                             \
      *                                                                                                    \
-     * @warning Pokud jsou položky zásobníku ukazatele, je potřeba dealokaci cílů ukazatelů        \
+     * @attention Pokud jsou položky zásobníku ukazatele, je potřeba dealokaci cílů ukazatelů        \
      * zajistit zvlášť. Zásobník tuto variantu nekontroluje!                                         \
      * @param stack Ukazatel na zásobník                                                                \
      */                                                                                                   \
@@ -135,8 +133,10 @@
 //  DECLARE_STACK(char*, String) // Slouží pro testování
 DECLARE_STACK(Symbol, Symbol)
 DECLARE_STACK(AstNode*, AstNode)
+DECLARE_STACK(HashTable*, HashTablePtr)
 DECLARE_STACK(Token, Precedence)
 DECLARE_STACK(char *, labelStack)
 DECLARE_STACK(AstNode*, EmitOp)
+
 #endif
 /*** konec dynamic_stack.h ***/

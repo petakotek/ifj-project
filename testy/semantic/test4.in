@@ -1,0 +1,20 @@
+import "ifj25" for Ifj
+class Program {
+    // Volání funkce
+    static main() {
+        return
+    }
+
+    static error(){
+        var x
+        return
+    }
+
+    static erorr_errorr(osem){
+        return
+    }
+
+    static functionTest() {
+        error()
+    }
+}

@@ -10,5 +10,15 @@ class Program {
 
     static a() {
         var x = __y + "as"
+<<<<<<< HEAD
+=======
+
+        var x = __y + "as"
+        var x = __y + "as"
+        var x = __y + "as"
+        var x = __y + "as"
+        var x = __y + "as"
+        var x = __y + "as"
+>>>>>>> f7a21dc0dab726f96f029fac7d05d514d5f44b5d
     }
 }

@@ -6,10 +6,12 @@
  */
 #include "ast_strom.h"
 
+#include "support_functions.h"
+
 #include <string.h>
 #include <stdbool.h>
+#include <stdlib.h>
 #include <stdio.h>
-#include "support_functions.h"
 
 AstNode *build_classblock_flat(size_t n, AstNode **kids) {
     if (n == 0) {
@@ -234,13 +236,20 @@ char *dup_cstr(const char *string) {
 
 const char *ast_node_type_to_string(AstNodeType kind) {
     switch (kind) {
-        case AST_PROGRAM:          return "PROGRAM";
-        case AST_PROLOG:           return "PROLOG";
-        case AST_MAIN_CLASS:       return "MAIN_CLASS";
-        case AST_MAIN_CLASS_BLOCK: return "MAIN_CLASS_BLOCK";
-        case AST_BLOCK:            return "BLOCK";
-        case AST_STATEMENT:        return "STATEMENT";
-        case AST_STATEMENT_LIST:   return "STATEMENT_LIST";
+        case AST_PROGRAM:
+            return "PROGRAM";
+        case AST_PROLOG:
+            return "PROLOG";
+        case AST_MAIN_CLASS: 
+            return "MAIN_CLASS";
+        case AST_MAIN_CLASS_BLOCK:
+            return "MAIN_CLASS_BLOCK";
+        case AST_BLOCK:
+            return "BLOCK";
+        case AST_STATEMENT:
+            return "STATEMENT";
+        case AST_STATEMENT_LIST:
+            return "STATEMENT_LIST";
         case AST_FUNC_DEC:         return "FUNC_DEC";
         case AST_PARAM:            return "PARAM";
         case AST_FUNC_CALL:        return "FUNC_CALL";
@@ -257,21 +266,27 @@ const char *ast_node_type_to_string(AstNodeType kind) {
         case AST_INT_LIT:          return "INT_LIT";
         case AST_FLOAT_LIT:        return "FLOAT_LIT";
         case AST_STRING_LIT:       return "STRING_LIT";
-    case AST_PLUS:                  return "STRING_PLUS";
-    case AST_MINUS:                  return "STRING_MINUS";
-    case AST_MUL:                  return "STRING_MUL";
-    case AST_DIV:                  return "STRING_DIV";
-    case AST_GT:                  return "STRING_GT";
-    case AST_LT:                  return "STRING_LT";
-    case AST_GTE:                  return "STRING_GTE";
-    case AST_LTE:                  return "STRING_LTE";
-    case AST_EQ:                  return "STRING_EQ";
-    case AST_LPAREN:                  return "STRING_LPAREN";
-    case AST_RPAREN:                  return "STRING_RPAREN";
-    case AST_NOT:                  return "STRING_NEGACE";
-    case AST_OR:                  return "STRING_OR";
+        case AST_PLUS:             return "STRING_PLUS";
+        case AST_MINUS:                  return "STRING_MINUS";
+        case AST_MUL:                  return "STRING_MUL";
+        case AST_DIV:                  return "STRING_DIV";
+        case AST_GT:                  return "STRING_GT";
+        case AST_LT:                  return "STRING_LT";
+        case AST_GTE:                  return "STRING_GTE";
+        case AST_LTE:                  return "STRING_LTE";
+        case AST_EQ:                  return "STRING_EQ";
+        case AST_NEQ:               return "STRING_NEQ"; // !=
+        case AST_LPAREN:                  return "STRING_LPAREN";
+        case AST_RPAREN:                  return "STRING_RPAREN";
+        case AST_NOT:                  return "STRING_NEGACE";
+        case AST_OR:                  return "STRING_OR";
         case AST_EMPTY: return "EMPTY";
         case AST_NULL: return "NULL";
+        case AST_IFJ_CALL: return "IFJ_CALL";
+        case AST_ELSE: return "ELSE";
+        case AST_ELSE_IF: return "ELSE IF";
+        case AST_DOUBLE_DOT:            return "DOUBLE_DOT";
+        case AST_TRIPLE_DOT:            return "TRIPLE_DOT";
         default:                   return "UNKNOWN_AST_NODE";
     }
 }

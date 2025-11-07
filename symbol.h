@@ -12,11 +12,10 @@
 #ifndef SYMBOL_H
 #define SYMBOL_H
 
-#include <stdbool.h>
 #include "lexer.h"
 #include "ast_strom.h"
 
-
+#include <stdbool.h>
 
 /**
  * @brief Štruktúra terminalov/neterminálov vkladaná na zásobník
@@ -31,5 +30,7 @@ typedef struct Symbol
     size_t reduce_arity;     // koľko detí zozbierať
     AstNodeType reduce_kind;
     bool capture_value;
+    bool freeNeeded;
 } Symbol;
+
 #endif
