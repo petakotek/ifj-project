@@ -348,8 +348,10 @@ const char *ast_node_type_to_string(AstNodeType kind) {
         case AST_IF_CHAIN: return "IF CHAIN";
         case AST_DOUBLE_DOT:            return "DOUBLE_DOT";
         case AST_TRIPLE_DOT:            return "TRIPLE_DOT";
-        case AST_BOOL_LIT:
-            return "BOOL_LIT";
+        case AST_BOOL_LIT:          return "BOOL_LIT";
+        case AST_KEYWORD_NUM:       return "KEYWORD_NUM";
+        case AST_KEYWORD_STRING:       return "KEYWORD_STRING";
+        case AST_IS:                return "STRING_IS";
         default:                   return "UNKNOWN_AST_NODE";
     }
 }
