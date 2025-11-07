@@ -732,6 +732,10 @@ Token lexer_token_next() {
                 } else{
                 	if(c == '.'){
                  	lexer->pos--;
+                  	token.type             = TOKEN_INTEGER;
+	                token.value.identifier = substring(zacatek, lexer->pos);
+	                token.line             = radek;
+	                goto token_found;
                  	}
                     token.type             = TOKEN_FLOAT;
                     token.value.identifier = substring(zacatek, lexer->pos);

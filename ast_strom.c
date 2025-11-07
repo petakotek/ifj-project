@@ -13,6 +13,64 @@
 #include <stdlib.h>
 #include <stdio.h>
 
+// Plochý builder pre if-chain (rovnaký pattern ako build_stmtlist_flat):
+// Očakávaný tvar z parsera: IF_CHAIN(2) = [head, tail], kde
+//   head je buď AST_BRANCH(cond, block) alebo AST_ELSE(block)
+//   tail je IF_CHAIN (pravorekurzívny zvyšok) alebo EMPTY
+AstNode *build_ifchain_flat(size_t n, AstNode **kids) {
+    // ε
+    if (n == 0) {
+        AstNode *node = calloc(1, sizeof *node);
+        if (!node) { printError(INTERNAL_ERROR, "alloc IF_CHAIN(0)"); memorySafeExit(INTERNAL_ERROR); }
+        node->kind = AST_IF_CHAIN;
+        node->arity = 0;
+        return node;
+    }
+
+    // (head, EMPTY) -> len [head]
+    if (n == 2 && kids[1] && kids[1]->kind == AST_EMPTY) {
+        AstNode *flat1[1] = { kids[0] };
+        return ast_new(AST_IF_CHAIN, 1, flat1);
+    }
+
+    // (head, tail IF_CHAIN) -> head + tail.children...
+    if (n == 2 && kids[1] && kids[1]->kind == AST_IF_CHAIN) {
+        size_t tail = kids[1]->arity;
+        AstNode **flat = malloc(sizeof(AstNode*) * (tail + 1));
+        if (!flat) { printError(INTERNAL_ERROR, "alloc ifchain flat"); memorySafeExit(INTERNAL_ERROR); }
+
+        flat[0] = kids[0];
+        if (tail) memcpy(&flat[1], kids[1]->child, sizeof(AstNode*) * tail);
+
+        AstNode *node = ast_new(AST_IF_CHAIN, tail + 1, flat);
+        free(flat);
+
+        // uvoľni len obal tail-u
+        free(kids[1]->child);
+        free(kids[1]);
+
+        // Validácia: najviac jedno ELSE a musí byť posledné
+        bool seen_else = false;
+        for (size_t i = 0; i < node->arity; ++i) {
+            AstNode *ch = node->child[i];
+            if (ch && ch->kind == AST_ELSE) {
+                if (seen_else || i != node->arity - 1) {
+                    printError(SYNTAX_ERROR, "Else je duplicitné alebo nie je posledné");
+                    memorySafeExit(SYNTAX_ERROR);
+                }
+                seen_else = true;
+            } else if (seen_else) {
+                printError(SYNTAX_ERROR, "Po 'else' už nemôžu nasledovať ďalšie vetvy");
+                memorySafeExit(SYNTAX_ERROR);
+            }
+        }
+        return node;
+    }
+
+    // fallback – ak parser niekde pošle len head bez tailu
+    return ast_new(AST_IF_CHAIN, n, kids);
+}
+
 AstNode *build_classblock_flat(size_t n, AstNode **kids) {
     if (n == 0) {
         AstNode *node = (AstNode*)calloc(1, sizeof(AstNode));
@@ -172,7 +230,7 @@ void ast_free_whole(AstNode *node) {
     }
     if (node->is_leaf) 
     {
-        if (node->value.has_str) 
+        if (node->value.has_str || node->value.is_bool) 
         {
             free(node->value.str);
             node->value.str = NULL;
@@ -211,6 +269,9 @@ void ast_value_from_token(AstValue *out, AstNodeType kind, Token *token) {
             out->has_str = true;
             out->str = dup_cstr(token->value.identifier);
             break;
+        case AST_BOOL_LIT:
+            out->is_bool = true;
+            out->str = dup_cstr(token->value.identifier);
         default:
             // pre nelistové alebo iné typy nič nekopíruj
             break;
@@ -284,9 +345,11 @@ const char *ast_node_type_to_string(AstNodeType kind) {
         case AST_NULL: return "NULL";
         case AST_IFJ_CALL: return "IFJ_CALL";
         case AST_ELSE: return "ELSE";
-        case AST_ELSE_IF: return "ELSE IF";
+        case AST_IF_CHAIN: return "IF CHAIN";
         case AST_DOUBLE_DOT:            return "DOUBLE_DOT";
         case AST_TRIPLE_DOT:            return "TRIPLE_DOT";
+        case AST_BOOL_LIT:
+            return "BOOL_LIT";
         default:                   return "UNKNOWN_AST_NODE";
     }
 }
@@ -308,7 +371,7 @@ static void ast_dump_rec(const AstNode *n, int depth, const AstNode *parent) {
     fprintf(stderr, "%*s[%s]", depth * 2, "", ast_node_type_to_string(n->kind));
 
     if (n->is_leaf) {
-        if (n->value.has_str && n->value.str)
+        if ((n->value.has_str || n->value.is_bool) && n->value.str)
             fprintf(stderr, " (str=\"%s\")", n->value.str);
         else if (n->value.is_int)
             fprintf(stderr, " (int=%lld)", n->value.int_val);

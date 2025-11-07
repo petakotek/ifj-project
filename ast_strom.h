@@ -41,7 +41,7 @@ typedef enum AstNodeType {
     // riadiace štruktúry
     AST_IF,
     AST_ELSE,
-    AST_ELSE_IF,
+    AST_IF_CHAIN,
     AST_WHILE,
     AST_FOR,
     AST_BREAK,
@@ -54,6 +54,8 @@ typedef enum AstNodeType {
     AST_INT_LIT,
     AST_FLOAT_LIT,
     AST_STRING_LIT,
+    AST_BOOL_LIT,
+
 
 	AST_EMPTY,
 
@@ -89,16 +91,18 @@ typedef enum AstNodeType {
  * @param has_str typ bool -> nastavime true ak zapisujeme do str
  * @param is_int typ bool -> nastavime true ak zapisujeme do int_val
  * @param is_float typ bool -> nastavime true ak zapisujeme do float_val
+ * @param is_bool typ bool -> nastavime true ak zapisujem AST_BOOL
  *
  */
 typedef struct AstValue {
     long long   int_val;
-    double       float_val;
-    char       *str;       // pre IDENTIFIER / GLOBAL_ID / STRING_LIT
+    double      float_val;
+    char       *str;       // pre IDENTIFIER / GLOBAL_ID / STRING_LIT / BOOl_LIT
     bool        has_str;
     bool        is_int;
     bool        is_float;
-} AstValue;
+    bool        is_bool;
+} AstValue; 
 
 /**
  * @brief struktura uzla
@@ -114,7 +118,6 @@ typedef struct AstNode {
     AstNodeType kind;
     size_t      arity;
     struct AstNode **child;
-
     bool is_leaf;
     AstValue value;          // platný len ak is_leaf == true
 } AstNode;
@@ -175,6 +178,6 @@ void ast_dump(const AstNode *root);
 AstNode *build_param_flat(size_t n, AstNode **kids);
 AstNode *build_stmtlist_flat(size_t n, AstNode **kids);
 AstNode *build_classblock_flat(size_t n, AstNode **kids);
-
+AstNode *build_ifchain_flat(size_t n, AstNode **kids);
 
 #endif // AST_STROM_H

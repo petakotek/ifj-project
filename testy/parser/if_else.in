@@ -1,25 +1,17 @@
 import "ifj25" for Ifj
 class Program {
-    static main(xy,arg2,super,nice,osemdesat) {
-        var x 
-        {
-            var y
-        }
+    static main() {
         
-        if(osem) {
-            var osem
-    }
-    else if(5+5) {
-        var xd
+    if(osem) {
     }
     else if (5+5){
-        
+        while(a){
+        }
+    }
+    else if (isdone){
     }
     else{
-
+        return x
     }
 }
-    static x() {
-        return 
-    }
 }
