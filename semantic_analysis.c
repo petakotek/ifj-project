@@ -15,7 +15,10 @@
 // Pokud tam bool dává smysl, tak povinně kontrolovat!
 
 // TODO ověřit, že nedochází k úniku paměti při ukončení neplánovaně
-// TODO všude kde vrací error popravit program (pokud nehrozí ztráta paměti!)
+// TODO všude kde vrací error popravit program (pokud nehrozí ztráta paměti!) (Ohlídat aby to nikdy
+// nemohlo nastat) Práce s dynamickou pamětí probíhá jen při initSymbol a je nebezpečná až po
+// insertToScope Minimalizovat počet řádků mezitím
+// Poté odstranit zbytečné kontrolování ERROR když se tam stejně program nedostane
 
 /**
  * @brief Ukazatel na zásobník pro ukládání jednotlivých rámců
@@ -634,13 +637,12 @@ RecursiveSemanticAnalysisReturnValues recursiveNodeWalker(AstNode*    currentNod
         }
         case (AST_INT_LIT): {
             printLog("AST_INT_LIT\n");
-
-            return NUMBER_DATA;
+            return INT_DATA;
             break;
         }
         case (AST_FLOAT_LIT): {
             printLog("AST_FLOAT_LIT\n");
-            return NUMBER_DATA;
+            return FLOAT_DATA;
             break;
         }
         case (AST_STRING_LIT): {
@@ -660,17 +662,39 @@ RecursiveSemanticAnalysisReturnValues recursiveNodeWalker(AstNode*    currentNod
                 return NUMBER_DATA;
             }
 
+            if (leftChild == INT_DATA && rightChild == INT_DATA) {
+                return INT_DATA;
+            }
+
+            if (leftChild == FLOAT_DATA && rightChild == FLOAT_DATA) {
+                return NUMBER_DATA;
+            }
+
+            if ((leftChild == INT_DATA && rightChild == FLOAT_DATA) ||
+                (leftChild == FLOAT_DATA && rightChild == INT_DATA)) {
+                return NUMBER_DATA;
+            }
+
             if (leftChild == STRING_DATA && rightChild == STRING_DATA) {
                 return STRING_DATA;
             }
 
             if (leftChild == UNKNOWN_DATA || rightChild == UNKNOWN_DATA) {
-                if (leftChild == NUMBER_DATA || leftChild == STRING_DATA) {
-                    return leftChild;
+                if (leftChild == NUMBER_DATA || leftChild == INT_DATA || leftChild == FLOAT_DATA) {
+                    return NUMBER_DATA;
                 }
 
-                if (rightChild == NUMBER_DATA || rightChild == STRING_DATA) {
-                    return rightChild;
+                if (leftChild == STRING_DATA) {
+                    return STRING_DATA;
+                }
+
+                if (rightChild == NUMBER_DATA || rightChild == INT_DATA ||
+                    rightChild == FLOAT_DATA) {
+                    return NUMBER_DATA;
+                }
+
+                if (rightChild == STRING_DATA) {
+                    return STRING_DATA;
                 }
 
                 if (leftChild == UNKNOWN_DATA && rightChild == UNKNOWN_DATA) {
@@ -697,17 +721,27 @@ RecursiveSemanticAnalysisReturnValues recursiveNodeWalker(AstNode*    currentNod
                 return NUMBER_DATA;
             }
 
-            if (leftChild == STRING_DATA && rightChild == STRING_DATA) {
-                return STRING_DATA;
+            if (leftChild == INT_DATA && rightChild == INT_DATA) {
+                return INT_DATA;
+            }
+
+            if (leftChild == FLOAT_DATA && rightChild == FLOAT_DATA) {
+                return NUMBER_DATA;
+            }
+
+            if ((leftChild == INT_DATA && rightChild == FLOAT_DATA) ||
+                (leftChild == FLOAT_DATA && rightChild == INT_DATA)) {
+                return NUMBER_DATA;
             }
 
             if (leftChild == UNKNOWN_DATA || rightChild == UNKNOWN_DATA) {
-                if (leftChild == NUMBER_DATA) {
-                    return leftChild;
+                if (leftChild == NUMBER_DATA || leftChild == INT_DATA || leftChild == FLOAT_DATA) {
+                    return NUMBER_DATA;
                 }
 
-                if (rightChild == NUMBER_DATA) {
-                    return rightChild;
+                if (rightChild == NUMBER_DATA || rightChild == INT_DATA ||
+                    rightChild == FLOAT_DATA) {
+                    return NUMBER_DATA;
                 }
 
                 if (leftChild == UNKNOWN_DATA && rightChild == UNKNOWN_DATA) {
@@ -734,17 +768,40 @@ RecursiveSemanticAnalysisReturnValues recursiveNodeWalker(AstNode*    currentNod
                 return NUMBER_DATA;
             }
 
-            if (leftChild == STRING_DATA && rightChild == NUMBER_DATA) {
+            if (leftChild == INT_DATA && rightChild == INT_DATA) {
+                return INT_DATA;
+            }
+
+            if (leftChild == FLOAT_DATA && rightChild == FLOAT_DATA) {
+                return NUMBER_DATA;
+            }
+
+            if ((leftChild == INT_DATA && rightChild == FLOAT_DATA) ||
+                (leftChild == FLOAT_DATA && rightChild == INT_DATA)) {
+                return NUMBER_DATA;
+            }
+
+            if (leftChild == STRING_DATA && rightChild == INT_DATA) {
                 return STRING_DATA;
             }
 
             if (leftChild == UNKNOWN_DATA || rightChild == UNKNOWN_DATA) {
-                if (leftChild == NUMBER_DATA || leftChild == STRING_DATA) {
-                    return leftChild;
+                if (leftChild == NUMBER_DATA || leftChild == INT_DATA || leftChild == FLOAT_DATA) {
+                    return NUMBER_DATA;
                 }
 
-                if (rightChild == NUMBER_DATA) {
-                    return UNKNOWN_DATA;  // Pouze levý operand ovlivňuje datový typ
+                if (leftChild == STRING_DATA) {
+                    return STRING_DATA;
+                }
+
+                if (rightChild == NUMBER_DATA || rightChild == INT_DATA) {
+                    return UNKNOWN_DATA;  // V tomto případě nelze rozhodnout zda se jedná o operaci
+                                          // s řetězcem nebo celým číslem
+                }
+
+                if (rightChild == FLOAT_DATA) {
+                    return NUMBER_DATA;  // Desetinné číslo v pravém operandu znamená, že výsledek
+                                         // bude určitě desetinné číslo
                 }
 
                 if (leftChild == UNKNOWN_DATA && rightChild == UNKNOWN_DATA) {
@@ -771,13 +828,30 @@ RecursiveSemanticAnalysisReturnValues recursiveNodeWalker(AstNode*    currentNod
                 return NUMBER_DATA;
             }
 
+            if (leftChild == INT_DATA && rightChild == INT_DATA) {
+                return NUMBER_DATA;  // Nelze určit zda výsledek dělení dvou celých čísel bude
+                                     // desetinný nebo celý
+            }
+
+            if (leftChild == FLOAT_DATA && rightChild == FLOAT_DATA) {
+                return NUMBER_DATA;  // Nelze určit zda výsledek dělení dvou desetinných čísel bude
+                                     // desetinný nebo celý
+            }
+
+            if ((leftChild == INT_DATA && rightChild == FLOAT_DATA) ||
+                (leftChild == FLOAT_DATA && rightChild == INT_DATA)) {
+                return NUMBER_DATA;  // Nelze určit zda výsledek dělení dvou celých čísel bude
+                                     // desetinný nebo celý
+            }
+
             if (leftChild == UNKNOWN_DATA || rightChild == UNKNOWN_DATA) {
-                if (leftChild == NUMBER_DATA) {
-                    return leftChild;
+                if (leftChild == NUMBER_DATA || leftChild == INT_DATA || leftChild == FLOAT_DATA) {
+                    return NUMBER_DATA;
                 }
 
-                if (rightChild == NUMBER_DATA) {
-                    return rightChild;
+                if (rightChild == NUMBER_DATA || rightChild == INT_DATA ||
+                    rightChild == FLOAT_DATA) {
+                    return NUMBER_DATA;
                 }
 
                 if (leftChild == UNKNOWN_DATA && rightChild == UNKNOWN_DATA) {
@@ -1328,6 +1402,12 @@ SemanticSymbolDataType convertSemanticReturnValueToSemanticDataType(
         case (NUMBER_DATA): {
             return NUMBER_VAL;
         }
+        case (INT_DATA): {
+            return INT_VAL;
+        }
+        case (FLOAT_DATA): {
+            return FLOAT_VAL;
+        }
         case (STRING_DATA): {
             return STRING_VAL;
         }
@@ -1352,6 +1432,12 @@ RecursiveSemanticAnalysisReturnValues convertSemanticDataTypeToSemanticReturnVal
     switch (dataType) {
         case (NUMBER_VAL): {
             return NUMBER_DATA;
+        }
+        case (INT_VAL): {
+            return INT_DATA;
+        }
+        case (FLOAT_VAL): {
+            return FLOAT_DATA;
         }
         case (STRING_VAL): {
             return STRING_DATA;
