@@ -1,0 +1,20 @@
+import "ifj25" for Ifj
+class Program {
+    // Funkce s návratovou hodnotou ve výrazu, chování s UNKNOWN_DATA
+
+
+    static func() {
+        return 5
+    }
+
+    static func(a) {
+        return a
+    }
+
+    static main() {
+        var x = func()
+        var y = func() + 5
+        var z = y + func("a")
+    }
+
+}

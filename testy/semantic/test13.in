@@ -1,0 +1,16 @@
+import "ifj25" for Ifj
+class Program {
+// Vestavěné funkce
+    static main() {
+        Ifj.read_num()
+        Ifj.read_str()
+        Ifj.write("a")
+        Ifj.floor(5.2)
+        Ifj.str("a")
+        Ifj.length("String")
+        Ifj.substring("String", 1, 1)
+        Ifj.strcmp("String", "String")
+        Ifj.ord("String", 1)
+        Ifj.chr(32)
+    }
+}

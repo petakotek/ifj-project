@@ -3,7 +3,7 @@ class Program {
     // Návratové hodnoty funkcí
     static main() {
         var a = 2
-        c(a + 1)
+        //c(a + 1)
         //var x = b()
     }
 

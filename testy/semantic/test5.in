@@ -21,8 +21,8 @@ static main() {
     var sad = 1 != 2
 
     var ysads = 1
-    //var da = -1
-    //var daa = -ysads
+    var da = -1
+    var daa = -ysads
 
   var v = w + z
   var a = 1 - 5
