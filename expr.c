@@ -99,7 +99,10 @@ int operatorToPush(Token token)
                             return INDEX_ID;
         case TOKEN_STRING:
                             return INDEX_ID;
-
+        case TOKEN_TRUE:    return INDEX_ID;
+        case TOKEN_FALSE:    return INDEX_ID;
+        case TOKEN_KEYWORD_STRING: return INDEX_ID;
+        case TOKEN_KEYWORD_NUM:    return INDEX_ID;
 
 
         case TOKEN_EXPRESSION:  // nemuzu pocitat ze tam je identifikator kdyz tam je jenom expression abych a pridal <
@@ -154,29 +157,33 @@ AstNodeType getAstNodeTypeFromTokenType(TokenType type)
 {
     switch (type)
     {
-    case TOKEN_PLUS:        return AST_PLUS;    // +
-    case TOKEN_MINUS:       return AST_MINUS;   // -
-    case TOKEN_STAR:        return AST_MUL;     // *
-    case TOKEN_SLASH:       return AST_DIV;     // /
-    case TOKEN_IDENTIFIER:  return AST_IDENTIFIER; // identifikator
-    case TOKEN_INTEGER:     return AST_INT_LIT;   // integer literal
-    case TOKEN_FLOAT:       return AST_FLOAT_LIT; // float literal
-    case TOKEN_GLOBAL_ID:   return AST_GLOBAL_ID; // global identifier
-    case TOKEN_EQ:          return AST_EQ;      // ==
-    case TOKEN_LT:          return AST_LT;      // <
-    case TOKEN_GT:          return AST_GT;      // >
-    case TOKEN_AND:         return AST_AND;     // &&
-    case TOKEN_OR:          return AST_OR;      // ||
-    case TOKEN_KEYWORD_IS:  return AST_IS;      // is
-    case TOKEN_GTE:         return AST_GTE;     // >=
-    case TOKEN_LTE:         return AST_LTE;     // <=
-    case TOKEN_LPAREN:      return AST_LPAREN;     // (
-    case TOKEN_RPAREN:      return AST_RPAREN;     // )
-    case TOKEN_NEGACE:      return AST_NOT;     // !
-    case TOKEN_STRING:      return AST_STRING_LIT; // string
-    case TOKEN_NOT:         return AST_NEQ; // !=
-    case TOKEN_DOUBLE_DOT:  return AST_DOUBLE_DOT;
-    case TOKEN_TRIPLE_DOT:   return AST_TRIPLE_DOT;
+    case TOKEN_PLUS:            return AST_PLUS;    // +
+    case TOKEN_MINUS:           return AST_MINUS;   // -
+    case TOKEN_STAR:            return AST_MUL;     // *
+    case TOKEN_SLASH:           return AST_DIV;     // /
+    case TOKEN_IDENTIFIER:      return AST_IDENTIFIER; // identifikator
+    case TOKEN_INTEGER:         return AST_INT_LIT;   // integer literal
+    case TOKEN_FLOAT:           return AST_FLOAT_LIT; // float literal
+    case TOKEN_GLOBAL_ID:       return AST_GLOBAL_ID; // global identifier
+    case TOKEN_EQ:              return AST_EQ;      // ==
+    case TOKEN_LT:              return AST_LT;      // <
+    case TOKEN_GT:              return AST_GT;      // >
+    case TOKEN_AND:             return AST_AND;     // &&
+    case TOKEN_OR:              return AST_OR;      // ||
+    case TOKEN_KEYWORD_IS:      return AST_IS;      // is
+    case TOKEN_GTE:             return AST_GTE;     // >=
+    case TOKEN_LTE:             return AST_LTE;     // <=
+    case TOKEN_LPAREN:          return AST_LPAREN;     // (
+    case TOKEN_RPAREN:          return AST_RPAREN;     // )
+    case TOKEN_NEGACE:          return AST_NOT;     // !
+    case TOKEN_STRING:          return AST_STRING_LIT; // string
+    case TOKEN_NOT:             return AST_NEQ; // !=
+    case TOKEN_DOUBLE_DOT:      return AST_DOUBLE_DOT;
+    case TOKEN_TRIPLE_DOT:      return AST_TRIPLE_DOT;
+    case TOKEN_TRUE:            return AST_BOOL_LIT;
+    case TOKEN_FALSE:           return AST_BOOL_LIT;
+    case TOKEN_KEYWORD_NUM:     return AST_KEYWORD_NUM;
+    case TOKEN_KEYWORD_STRING:  return AST_KEYWORD_STRING;
 
     default:
         printError(SYNTAX_ERROR, "(PSA) Nelze prevést TokenType na AstNodeType, neznámý token\n");
@@ -205,6 +212,8 @@ void tokenPrecedenceFree(Token *token)
         case TOKEN_STRING:
         case TOKEN_INTEGER:
         case TOKEN_FLOAT:
+        case TOKEN_TRUE:
+        case TOKEN_FALSE:
             if (token->value.identifier) 
             {
                 free(token->value.identifier);
@@ -292,6 +301,22 @@ void findPrecedenceRule(DynamicPrecedenceStackPtr stack, DynamicAstNodeStackPtr 
                 p2.type = TOKEN_EXPRESSION; // vratim na klasicky zasobnik jenom expression
                 stackPrecedencePush(stack, p2);
             }
+            // E -> -E
+            if (p1.type == TOKEN_EXPRESSION && p2.type == TOKEN_MINUS)
+            {
+                AstNode **kids = NULL;
+                kids = malloc(sizeof(AstNode*) * 1);
+                // vyberu si ze zasobniku 2 identifikatory
+                AstNode *firstChild = stackAstNodeRead(stackA);
+                stackAstNodePop(stackA);
+                kids[0] = firstChild; // Levý uzel (i když by u unárních bylo přesnější dát pravý)
+                AstNode *newRoot = ast_new(AST_MINUS, 1, kids); // vytvoření stromu s jedním dítětem, který bude ten výraz
+                stackAstNodePush(stackA, newRoot);
+                
+                p2.type = TOKEN_EXPRESSION; // vratim na klasicky zasobnik jenom expression
+                stackPrecedencePush(stack, p2);
+            }
+            
     
         break;
 
@@ -357,6 +382,9 @@ bool checkFirstTokenType(Token actualToken)
     case TOKEN_FLOAT:
     case TOKEN_NEGACE:
     case TOKEN_LPAREN:
+    case TOKEN_TRUE:
+    case TOKEN_FALSE:
+    case TOKEN_MINUS:
         return true;
     
     default:
@@ -444,6 +472,7 @@ AstNode* parseExpression(Token *token, int flag)
     bool firstOK = false; // Pomocná proměnná pro kontrolu povoleného prvního tokenu
     bool checkEmptyIf = false;
     bool expectingNewLineAfterOperator = true;
+    bool expectingRPAREN = false;
     // dokud neni na zasobniku jenom $E && nemam na vstupu token, ktery mi vsechno ukoncuje
     while (actualToken.type != TOKEN_PSA_END) // 
     {
@@ -455,6 +484,12 @@ AstNode* parseExpression(Token *token, int flag)
             StackTop = stackPrecedenceRead(stackP);
             stackPrecedencePush(stackP, tmpTop);
         }
+
+        if (actualToken.type == TOKEN_LPAREN)
+        {
+            expectingRPAREN = true;
+        }
+        
 
         if (!checkEmptyIf) // voláno pouze jednou při prvním volání sestavení výrazu v if bloku
         {
@@ -508,7 +543,8 @@ AstNode* parseExpression(Token *token, int flag)
             || (actualToken.type == TOKEN_NEW_LINE && StackTop.type == TOKEN_DOLLAR) // ukonceni pouze na novy radek
             || (actualToken.type == TOKEN_COMMA && StackTop.type == TOKEN_DOLLAR) // оddělení výrazů ve funkce čárkou
             || (actualToken.type == TOKEN_RPAREN && StackTop.type == TOKEN_DOLLAR && flag == 1) // ukončení funkce pravou závorkou
-            || (actualToken.type == TOKEN_BLOCK_END && flag == -2 && StackTop.type == TOKEN_DOLLAR)) // ukonceni volani vyrazu v jednoradkove funkci
+            || (actualToken.type == TOKEN_BLOCK_END && flag == -2 && StackTop.type == TOKEN_DOLLAR) // ukonceni volani vyrazu v jednoradkove funkci
+            || (actualToken.type == TOKEN_RPAREN && flag == 0 && StackTop.type == TOKEN_DOLLAR && expectingRPAREN == false)) // volani funkce pouze s jednim parametrem
         {   // abych mohl koncit potrebuji mit na vstupu token new line a u zasobniku ukazovat jen na $
             printf("splnila se podminka\n");
             printStack(stackP);

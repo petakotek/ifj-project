@@ -80,6 +80,9 @@ typedef enum AstNodeType {
     AST_NOTEQ,
     AST_TRIPLE_DOT,
     AST_DOUBLE_DOT,
+
+    AST_KEYWORD_NUM,
+    AST_KEYWORD_STRING,
 } AstNodeType;
 
 
