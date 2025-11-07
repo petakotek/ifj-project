@@ -1158,7 +1158,7 @@ void AssignIfjIdCheckFunc(DynamicSymbolStackPtr Stack, Token token)
     
     else
     {
-        pushCheck(stackSymbolPush(Stack, makeNonterm(N_Expr)));
+        pushCheck(stackSymbolPush(Stack, makeNonterm(N_lExpr)));
     }
 }
 

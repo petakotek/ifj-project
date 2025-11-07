@@ -1468,7 +1468,7 @@ RecursiveSemanticAnalysisReturnValues handleBuildinFunctions(AstNode* functionCa
             memorySafeExit(SEMANTICS_ERROR_UNEXPECTED);
             return ERROR;
         }
-        printf("hare");
+
         return NUMBER_DATA;  // Předpokládám, že funkce nevrátí chybový datový typ
     }
     if (strncmp(functionName, "write", 6) == 0) {

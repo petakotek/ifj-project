@@ -78,6 +78,7 @@ typedef enum AstNodeType {
     AST_NULL,            // Prázdný blok
     AST_TRIPLE_DOT,      // ...
     AST_DOUBLE_DOT,      // ..
+    
     AST_KEYWORD_NUM,     // Num
     AST_KEYWORD_STRING,  // String
 } AstNodeType;
