@@ -285,7 +285,7 @@ void findPrecedenceRule(DynamicPrecedenceStackPtr stack, DynamicAstNodeStackPtr 
                 // vyberu si ze zasobniku 2 identifikatory
                 AstNode *firstChild = stackAstNodeRead(stackA);
                 stackAstNodePop(stackA);
-                kids[0] = firstChild;
+                kids[0] = firstChild; // Levý uzel (i když by u unárních bylo přesnější dát pravý)
                 AstNode *newRoot = ast_new(getAstNodeTypeFromTokenType(p2.type), 1, kids); // vytvoření stromu s jedním dítětem, který bude ten výraz
                 stackAstNodePush(stackA, newRoot);
                 
@@ -317,8 +317,8 @@ void findPrecedenceRule(DynamicPrecedenceStackPtr stack, DynamicAstNodeStackPtr 
                 stackAstNodePop(stackA);
                 AstNode *secondChild = stackAstNodeRead(stackA);
                 stackAstNodePop(stackA);
-                kids[0] = firstChild;
-                kids[1] = secondChild;
+                kids[1] = firstChild; // Pravý uzel
+                kids[0] = secondChild; // Levý uzel
                 AstNode *newRoot = ast_new(getAstNodeTypeFromTokenType(p2.type), 2, kids);
                 free(kids); // uvolneni deti, nebudou uz potreba
                 stackAstNodePush(stackA, newRoot);
