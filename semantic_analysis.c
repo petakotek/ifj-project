@@ -105,7 +105,6 @@ bool createUndeclaredFunctionCallsTable();
  * @brief Odstraní z tabulky volání na nedeklarované funkce všechna volání funkce odpovídající
  * functionSymbolName
  *
- * @attention Selhání operace ukončí program. Nevolat pokud by ukončení způsobilo únik paměti!
  * @param functionSymbolName Název funkce jejíž volání má být odstraněno ( @note zpracovaný pomocí
  * @see initNewSymbol() )
  */
@@ -114,7 +113,6 @@ void removeUndeclaredFunctionCall(char* functionSymbolName);
 /**
  * @brief Přidá
  *
- * @attention Selhání operace ukončí program. Nevolat pokud by ukončení způsobilo únik paměti!
  * @param functionSymbolName Název funkce jejíž volání má být odstraněno ( @note zpracovaný pomocí
  * @see initNewSymbol() )
  */
@@ -136,6 +134,15 @@ void insertUndeclaredFunctionCall(char* functionSymbolName, SemanticSymbol symbo
 bool initNewSymbol(AstNode* sourceNode, SemanticSymbol* destSymbol, SemanticSymbolTypes symbolType,
                    SemanticSymbolDataType symbolDataType,
                    SemanticSymbolDataType functionReturnValue);
+
+/**
+ * @brief Zpracovává sémantickou kontrolu volání vestavěných funkcí
+ *
+ * @param functionCallNode Uzel typu IFJ_CALL
+ * @return RecursiveSemanticAnalysisReturnValues Návratová hodnota volání funkce
+ */
+RecursiveSemanticAnalysisReturnValues handleBuildinFunctions(AstNode* functionCallNode);
+
 /**
  * @brief Počet znaků potřebných pro uložení čísla jako řetězce
  *
@@ -212,27 +219,28 @@ bool startSematicValidation(AstNode* root) {
     /*
     S využitím pomocných funkcí prochází strom shora dolů a:
         Při každém začátku bloku vytvoří novou tabulku symbolů
-            - Při hledání proměnných nebo funkcí hledá v tabulce odspoda nahoru (nejvíc lokální ->
-    globální)
-                - Pokud nenalezne volanou funkci nebo deklaraci dané proměnné uloží ji do struktury
+            - Při hledání proměnných nebo funkcí hledá v tabulce odspoda nahoru (nejvíc lokální
+    -> globální)
+                - Pokud nenalezne volanou funkci nebo deklaraci dané proměnné uloží ji do
+    struktury
     X
                 - Pokud nalezne tak Ok
-                - Při deklarování proměnné/funkce prohledává jen nejbližší úroveň tabulky (umožňuje
-    překrytí globálních věcí lokálními)
-                - pozor: var x = x + 6 je potřeba vyhodnocovat tak aby nejdřív hledalo x v "x+6" a
-    pak až vzniklo var x (musí to být jiná proměnná než ta právě deklarovaná)
-                    - To lze zajistit tak, že pokud najdu var x = tak to neuložím do tabulky dokud
-    nezpracuji část za = (abych znal datový typ)
+                - Při deklarování proměnné/funkce prohledává jen nejbližší úroveň tabulky
+    (umožňuje překrytí globálních věcí lokálními)
+                - pozor: var x = x + 6 je potřeba vyhodnocovat tak aby nejdřív hledalo x v "x+6"
+    a pak až vzniklo var x (musí to být jiná proměnná než ta právě deklarovaná)
+                    - To lze zajistit tak, že pokud najdu var x = tak to neuložím do tabulky
+    dokud nezpracuji část za = (abych znal datový typ)
                     - U pouze var x \n do tabulky přidám s typem Null a hodnotou null
-        - Při skončení bloku stoupám o úroveň výše (potřeba zajistit aby další klesnutí kleslo do
-    jiné tabulky => každé klesnutí = vytvořím novou)
+        - Při skončení bloku stoupám o úroveň výše (potřeba zajistit aby další klesnutí kleslo
+    do jiné tabulky => každé klesnutí = vytvořím novou)
             - Je potřeba nějak ukládat jakou tabulku prohledávat a jaké jsou jí nadřazené...
-                - To udělám pomocí zásobníku ukazatelů na tabulky, čím vyšší tabulky tím víc lokální
-    je Při prohledávání jdu od shora dolů (což size ruší pravidla zásobníku, ale to nevadí) Při
-    opuštění bloku tabulku zahodím, hodnot z ní mě nezajímají Pokud narazím na volání nedeklarované
-    funkce tak si uložím název parametry a tak bokem a taky scope (např 3 na zásobníku) Pokud
-    narazím na deklaraci funkce s tímto názvem a parametry tak ověřím, že je scope vyšší než scope
-    daného volání (0,1,2)
+                - To udělám pomocí zásobníku ukazatelů na tabulky, čím vyšší tabulky tím víc
+    lokální je Při prohledávání jdu od shora dolů (což size ruší pravidla zásobníku, ale to
+    nevadí) Při opuštění bloku tabulku zahodím, hodnot z ní mě nezajímají Pokud narazím na
+    volání nedeklarované funkce tak si uložím název parametry a tak bokem a taky scope (např 3
+    na zásobníku) Pokud narazím na deklaraci funkce s tímto názvem a parametry tak ověřím, že je
+    scope vyšší než scope daného volání (0,1,2)
                         - Pokud ano tak mohu volání prohlásit za OK\
                         - Pokud něco nesedí (scope/název/počet argumentů) tak jedu dál
 
@@ -242,20 +250,20 @@ bool startSematicValidation(AstNode* root) {
 
 
     Deklarace proměnných: Kontrola, zda lokální proměnná definovaná příkazem var idl není v
-    aktuálním bloku definována vícekrát (jinak chyba 4). Po deklaraci je její hodnota nastavena na
-    null.
+    aktuálním bloku definována vícekrát (jinak chyba 4). Po deklaraci je její hodnota nastavena
+    na null.
 
-    Přiřazení hodnoty: Levý operand přiřazovacího příkazu musí být lokální, globální proměnná nebo
-    statický setter. Kontrola kompatibility přiřazované hodnoty (výrazu) s očekávaným typem proměnné
-    alespoň pro literály, ostatní typové kontroly probíhají až za běhu. Pokud levý operand je
-    statický setter, přiřazení se interpretuje jako volání funkce.
+    Přiřazení hodnoty: Levý operand přiřazovacího příkazu musí být lokální, globální proměnná
+    nebo statický setter. Kontrola kompatibility přiřazované hodnoty (výrazu) s očekávaným typem
+    proměnné alespoň pro literály, ostatní typové kontroly probíhají až za běhu. Pokud levý
+    operand je statický setter, přiřazení se interpretuje jako volání funkce.
 
     Podmínky v příkazech if a while: Výrazy mohou být libovolného typu, pravdivost se určuje
     pravidly z textu (null je nepravdivé, jinak hodnota evaluačně pravdivá). Sémantika kontroly
     správnosti výrazů v podmínkách.
 
-    Volání funkcí: Kontrola, zda počet parametrů funkce odpovídá definici (chyba 5). Parametry musí
-    být správných typů minimálně u literálů. Volání statických getterů a setterů správně
+    Volání funkcí: Kontrola, zda počet parametrů funkce odpovídá definici (chyba 5). Parametry
+    musí být správných typů minimálně u literálů. Volání statických getterů a setterů správně
     interpretovat.
 
     Typová kontrola ve výrazech:
@@ -1159,21 +1167,11 @@ RecursiveSemanticAnalysisReturnValues recursiveNodeWalker(AstNode*    currentNod
             return returnDataType;
             break;
         }
-            // TODO vestavěné funkce!
-            /*
-                term == libovolný datový typ
-                Ifj.read_str() -> String | Null
-                Ifj.read_num() -> Num | Null
-                Ifj.write(term) -> Null
-                Ifj.floor(term) -> Num
-                Ifj.str(term) -> String
-                Ifj.length(String) -> Num
-                Ifj.substring(String, Num, Num) -> String | Null
-                Ifj.strcmp(String, String) -> Num
-                Ifj.ord(String, Num) -> Num
-                Ifj.chr(Num) -> String
-            */
-
+        case (AST_IFJ_CALL): {
+            printLog("AST_IFJ_CALL\n");
+            return handleBuildinFunctions(currentNode);
+            break;
+        }
         case (AST_EMPTY): {
             printLog("AST_EMPTY\n");
             // Pomocný uzel u parametrů funkce
@@ -1210,13 +1208,9 @@ RecursiveSemanticAnalysisReturnValues recursiveNodeWalker(AstNode*    currentNod
             return ERROR;
             break;
         }
-        default: {
-            printWarning("(%s) Neznamy stav: %i!\n", __func__, currentNode->kind);
-            return ERROR;
-        }
     }
 
-    printWarning("(%s) dosahla konce s parametrem: %i!\n", __func__, currentNode->kind);
+    printWarning("(%s) Neznamy stav: %i!\n", __func__, currentNode->kind);
     return ERROR;
 }
 
@@ -1449,6 +1443,220 @@ bool initNewSymbol(AstNode* sourceNode, SemanticSymbol* destSymbol, SemanticSymb
     }
 
     return true;
+}
+
+RecursiveSemanticAnalysisReturnValues handleBuildinFunctions(AstNode* functionCallNode) {
+    char* functionName = functionCallNode->child[0]->value.str;
+
+    if (strncmp(functionName, "read_str", 9) == 0) {
+        printLog("read_str\n");
+
+        if (functionCallNode->child[1]->arity != 1) {
+            printError(SEMANTICS_ERROR_UNEXPECTED, "(Ifj.read_str) Nevhodny pocet parametru!\n");
+            memorySafeExit(SEMANTICS_ERROR_UNEXPECTED);
+            return ERROR;
+        }
+
+        return STRING_DATA;  // Předpokládám, že funkce nevrátí chybový datový typ
+    }
+
+    if (strncmp(functionName, "read_num", 9) == 0) {
+        printLog("read_num\n");
+
+        if (functionCallNode->child[1]->arity != 1) {
+            printError(SEMANTICS_ERROR_UNEXPECTED, "(Ifj.read_num) Nevhodny pocet parametru!\n");
+            memorySafeExit(SEMANTICS_ERROR_UNEXPECTED);
+            return ERROR;
+        }
+        printf("hare");
+        return NUMBER_DATA;  // Předpokládám, že funkce nevrátí chybový datový typ
+    }
+    if (strncmp(functionName, "write", 6) == 0) {
+        printLog("write\n");
+
+        if (functionCallNode->child[1]->arity != 2) {
+            printError(SEMANTICS_ERROR_UNEXPECTED, "(Ifj.write) Nevhodny pocet parametru!\n");
+            memorySafeExit(SEMANTICS_ERROR_UNEXPECTED);
+            return ERROR;
+        }
+
+        if (recursiveNodeWalker(functionCallNode->child[1], AST_IFJ_CALL) == ERROR) {
+            printError(SEMANTICS_ERROR_INCORRECT, "(Ifj.write) Nevhodny parametr!\n");
+            memorySafeExit(SEMANTICS_ERROR_INCORRECT);
+            return ERROR;
+        }
+
+        return NULL_DATA;
+    }
+    if (strncmp(functionName, "floor", 6) == 0) {
+        printLog("floor\n");
+
+        if (functionCallNode->child[1]->arity != 2) {
+            printError(SEMANTICS_ERROR_UNEXPECTED, "(Ifj.floor) Nevhodny pocet parametru!\n");
+            memorySafeExit(SEMANTICS_ERROR_UNEXPECTED);
+            return ERROR;
+        }
+
+        RecursiveSemanticAnalysisReturnValues onlyChild =
+            recursiveNodeWalker(functionCallNode->child[1]->child[0], AST_IFJ_CALL);
+        if (onlyChild == NUMBER_DATA || onlyChild == FLOAT_DATA || onlyChild == INT_DATA ||
+            onlyChild == UNKNOWN_DATA) {
+            return INT_DATA;
+        }
+
+        printError(SEMANTICS_ERROR_INCORRECT, "(Ifj.floor) Nevhodny parametr!\n");
+        memorySafeExit(SEMANTICS_ERROR_INCORRECT);
+        return ERROR;
+    }
+    if (strncmp(functionName, "str", 4) == 0) {
+        printLog("str\n");
+
+        if (functionCallNode->child[1]->arity != 2) {
+            printError(SEMANTICS_ERROR_UNEXPECTED, "(Ifj.str) Nevhodny pocet parametru!\n");
+            memorySafeExit(SEMANTICS_ERROR_UNEXPECTED);
+            return ERROR;
+        }
+
+        if (recursiveNodeWalker(functionCallNode->child[1], AST_IFJ_CALL) == ERROR) {
+            printError(SEMANTICS_ERROR_INCORRECT, "(Ifj.str) Nevhodny parametr!\n");
+            memorySafeExit(SEMANTICS_ERROR_INCORRECT);
+            return ERROR;
+        }
+        return STRING_DATA;
+    }
+    if (strncmp(functionName, "length", 7) == 0) {
+        printLog("length\n");
+
+        if (functionCallNode->child[1]->arity != 2) {
+            printError(SEMANTICS_ERROR_UNEXPECTED, "(Ifj.length) Nevhodny pocet parametru!\n");
+            memorySafeExit(SEMANTICS_ERROR_UNEXPECTED);
+            return ERROR;
+        }
+
+        RecursiveSemanticAnalysisReturnValues onlyChild =
+            recursiveNodeWalker(functionCallNode->child[1]->child[0], AST_IFJ_CALL);
+        if (onlyChild == STRING_DATA || onlyChild == UNKNOWN_DATA) {
+            return INT_DATA;
+        }
+
+        printError(SEMANTICS_ERROR_INCORRECT, "(Ifj.length) Nevhodny parametr!\n");
+        memorySafeExit(SEMANTICS_ERROR_INCORRECT);
+        return ERROR;
+    }
+    if (strncmp(functionName, "substring", 10) == 0) {
+        printLog("substring\n");
+
+        if (functionCallNode->child[1]->arity != 4) {
+            printError(SEMANTICS_ERROR_UNEXPECTED, "(Ifj.substring) Nevhodny pocet parametru!\n");
+            memorySafeExit(SEMANTICS_ERROR_UNEXPECTED);
+            return ERROR;
+        }
+
+        RecursiveSemanticAnalysisReturnValues firstChild =
+            recursiveNodeWalker(functionCallNode->child[1]->child[0], AST_IFJ_CALL);
+        if (firstChild != STRING_DATA && firstChild != UNKNOWN_DATA) {
+            printError(SEMANTICS_ERROR_INCORRECT, "(Ifj.substring) Nevhodny prvni parametr!\n");
+            memorySafeExit(SEMANTICS_ERROR_INCORRECT);
+            return ERROR;
+        }
+
+        RecursiveSemanticAnalysisReturnValues secondChild =
+            recursiveNodeWalker(functionCallNode->child[1]->child[1], AST_IFJ_CALL);
+        if (secondChild != NUMBER_DATA && secondChild != INT_DATA && secondChild != UNKNOWN_DATA) {
+            printError(SEMANTICS_ERROR_INCORRECT, "(Ifj.substring) Nevhodny druhy parametr!\n");
+            memorySafeExit(SEMANTICS_ERROR_INCORRECT);
+            return ERROR;
+        }
+
+        RecursiveSemanticAnalysisReturnValues thirdChild =
+            recursiveNodeWalker(functionCallNode->child[1]->child[2], AST_IFJ_CALL);
+        if (thirdChild != NUMBER_DATA && thirdChild != INT_DATA && thirdChild != UNKNOWN_DATA) {
+            printError(SEMANTICS_ERROR_INCORRECT, "(Ifj.substring) Nevhodny treti parametr!\n");
+            memorySafeExit(SEMANTICS_ERROR_INCORRECT);
+            return ERROR;
+        }
+
+        return STRING_DATA;  // Předpokládám, že funkce nevrátí chybový datový typ
+    }
+    if (strncmp(functionName, "strcmp", 7) == 0) {
+        printLog("strcmp\n");
+
+        if (functionCallNode->child[1]->arity != 3) {
+            printError(SEMANTICS_ERROR_UNEXPECTED, "(Ifj.strcmp) Nevhodny pocet parametru!\n");
+            memorySafeExit(SEMANTICS_ERROR_UNEXPECTED);
+            return ERROR;
+        }
+
+        RecursiveSemanticAnalysisReturnValues firstChild =
+            recursiveNodeWalker(functionCallNode->child[1]->child[0], AST_IFJ_CALL);
+        if (firstChild != STRING_DATA && firstChild != UNKNOWN_DATA) {
+            printError(SEMANTICS_ERROR_INCORRECT, "(Ifj.strcmp) Nevhodny prvni parametr!\n");
+            memorySafeExit(SEMANTICS_ERROR_INCORRECT);
+            return ERROR;
+        }
+
+        RecursiveSemanticAnalysisReturnValues secondChild =
+            recursiveNodeWalker(functionCallNode->child[1]->child[0], AST_IFJ_CALL);
+        if (secondChild != STRING_DATA && secondChild != UNKNOWN_DATA) {
+            printError(SEMANTICS_ERROR_INCORRECT, "(Ifj.strcmp) Nevhodny druhy parametr!\n");
+            memorySafeExit(SEMANTICS_ERROR_INCORRECT);
+            return ERROR;
+        }
+
+        return INT_DATA;
+    }
+
+    if (strncmp(functionName, "ord", 4) == 0) {
+        printLog("ord\n");
+
+        if (functionCallNode->child[1]->arity != 3) {
+            printError(SEMANTICS_ERROR_UNEXPECTED, "(Ifj.ord) Nevhodny pocet parametru!\n");
+            memorySafeExit(SEMANTICS_ERROR_UNEXPECTED);
+            return ERROR;
+        }
+
+        RecursiveSemanticAnalysisReturnValues firstChild =
+            recursiveNodeWalker(functionCallNode->child[1]->child[0], AST_IFJ_CALL);
+        if (firstChild != STRING_DATA && firstChild != UNKNOWN_DATA) {
+            printError(SEMANTICS_ERROR_INCORRECT, "(Ifj.ord) Nevhodny prvni parametr!\n");
+            memorySafeExit(SEMANTICS_ERROR_INCORRECT);
+            return ERROR;
+        }
+
+        RecursiveSemanticAnalysisReturnValues secondChild =
+            recursiveNodeWalker(functionCallNode->child[1]->child[1], AST_IFJ_CALL);
+        if (secondChild != NUMBER_DATA && secondChild != INT_DATA && secondChild != UNKNOWN_DATA) {
+            printError(SEMANTICS_ERROR_INCORRECT, "(Ifj.ord) Nevhodny druhy parametr!\n");
+            memorySafeExit(SEMANTICS_ERROR_INCORRECT);
+            return ERROR;
+        }
+
+        return INT_DATA;
+    }
+
+    if (strncmp(functionName, "chr", 4) == 0) {
+        printLog("chr\n");
+
+        if (functionCallNode->child[1]->arity != 2) {
+            printError(SEMANTICS_ERROR_UNEXPECTED, "(Ifj.chr) Nevhodny pocet parametru!\n");
+            memorySafeExit(SEMANTICS_ERROR_UNEXPECTED);
+            return ERROR;
+        }
+
+        RecursiveSemanticAnalysisReturnValues firstChild =
+            recursiveNodeWalker(functionCallNode->child[1]->child[0], AST_IFJ_CALL);
+        if (firstChild != NUMBER_DATA && firstChild != INT_DATA && firstChild != UNKNOWN_DATA) {
+            printError(SEMANTICS_ERROR_INCORRECT, "(Ifj.char) Nevhodny parametr!\n");
+            memorySafeExit(SEMANTICS_ERROR_INCORRECT);
+            return ERROR;
+        }
+
+        return STRING_DATA;
+    }
+
+    printError(SEMANTICS_ERROR_UNDEF, "Neznama vestavena funkce: '%s'!\n", functionName);
+    memorySafeExit(SEMANTICS_ERROR_UNDEF);
+    return ERROR;
 }
 
 size_t digitsCount(size_t n) {
