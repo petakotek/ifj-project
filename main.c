@@ -48,7 +48,7 @@ int main(){
 	bool output;
 	output = startSematicValidation(AST);
 	printf("Vysledek sem_anal: %i\n", output);
-	*/
+
 
 	//ast_dump(AST);
 	//free ast stromu
