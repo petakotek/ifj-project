@@ -338,7 +338,6 @@ void Opt_newlines_func(DynamicSymbolStackPtr Stack, Token token);
 
 Symbol makeTermValueAndCaptureIdentifier(const char *exact);
 void Block_content_func_check(DynamicSymbolStackPtr Stack, Token token);
-void Func_block_content_check(DynamicSymbolStackPtr Stack, Token token);
 void tokenFree(Token *token);
 void callIfjfunc(DynamicSymbolStackPtr Stack, Token token);
 void Else_item_func(DynamicSymbolStackPtr Stack, Token token);
