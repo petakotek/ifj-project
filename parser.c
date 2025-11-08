@@ -457,6 +457,7 @@ void Func_block_content_check(DynamicSymbolStackPtr Stack, Token token)
         case TOKEN_FLOAT:
         case TOKEN_STRING:
         case TOKEN_LPAREN:
+            pushCheck(stackSymbolPush(Stack, makeReduce(AST_BLOCK, 1)));
             pushCheck(stackSymbolPush(Stack, makeReduce(AST_STATEMENT_LIST, 1)));
             pushCheck(stackSymbolPush(Stack, makeNonterm(N_oExpr)));
             return;
@@ -916,8 +917,8 @@ void If_func(DynamicSymbolStackPtr Stack)
 
     // 1) prvá vetva ako BRANCH(cond, block)
     pushCheck(stackSymbolPush(Stack, makeReduce(AST_IF, 2)));
-    pushCheck(stackSymbolPush(Stack, makeNonterm(N_Opt_newlines)));
     pushCheck(stackSymbolPush(Stack, makeNonterm(N_Block)));
+    pushCheck(stackSymbolPush(Stack, makeReduce(AST_CONDITION, 1)));
     pushCheck(stackSymbolPush(Stack, makeTerm(TOKEN_RPAREN)));
     pushCheck(stackSymbolPush(Stack, makeNonterm(N_lExpr)));
     pushCheck(stackSymbolPush(Stack, makeTerm(TOKEN_LPAREN)));
@@ -937,7 +938,6 @@ void Else_chain_func(DynamicSymbolStackPtr Stack, Token token)
         pushCheck(stackSymbolPush(Stack, makeTerm(TOKEN_KEYWORD_ELSE)));
         return;
     }
-
     // ε
     pushCheck(stackSymbolPush(Stack, makeReduce(AST_EMPTY, 0)));
 }
@@ -949,8 +949,8 @@ void Else_item_func(DynamicSymbolStackPtr Stack, Token token)
     if (token.type == TOKEN_KEYWORD_IF) {
         // else if ( lExpr ) NEW_LINE Block   => premeníme na BRANCH(cond, block)
         pushCheck(stackSymbolPush(Stack, makeReduce(AST_IF, 2)));
-        pushCheck(stackSymbolPush(Stack, makeNonterm(N_Opt_newlines)));
         pushCheck(stackSymbolPush(Stack, makeNonterm(N_Block)));
+        pushCheck(stackSymbolPush(Stack, makeReduce(AST_CONDITION, 1)));
         pushCheck(stackSymbolPush(Stack, makeTerm(TOKEN_RPAREN)));
         pushCheck(stackSymbolPush(Stack, makeNonterm(N_lExpr)));
         pushCheck(stackSymbolPush(Stack, makeTerm(TOKEN_LPAREN)));
@@ -1033,6 +1033,7 @@ void Return_expr_func(DynamicSymbolStackPtr Stack, Token token)
             pushCheck(stackSymbolPush(Stack, makeNonterm(N_Expr)));
             break;
         case TOKEN_LPAREN:
+            pushCheck(stackSymbolPush(Stack, makeTerm(TOKEN_RPAREN)));
             pushCheck(stackSymbolPush(Stack, makeNonterm(N_lExpr)));
             break;
 
@@ -1133,7 +1134,7 @@ void callIfjCheckfunc(DynamicSymbolStackPtr Stack, Token token)
         printError(SYNTAX_ERROR, "Ocakavany nazov funkcie po 'ifj.'");
         memorySafeExit(SYNTAX_ERROR);
     }
-    char *words[] = {"read_str","read_num","write", "floor","str","length","substring","strcmp","ord","chr"};
+    char *words[] = {"read_str","read_num","write", "floor","str","length","substring","strcmp","ord","chr","read_bool"};
     size_t count = sizeof(words) / sizeof(words[0]);
     bool allowed = false;
     for (size_t i = 0; i < count; i++)

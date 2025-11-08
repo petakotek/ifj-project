@@ -44,7 +44,7 @@ int main(){
 	ast_dump(AST);
 	lexer_free();
 
-	
+	/*
 	bool output;
 	output = startSematicValidation(AST);
 	printf("Vysledek sem_anal: %i\n", output);

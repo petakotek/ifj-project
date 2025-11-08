@@ -354,6 +354,7 @@ const char *ast_node_type_to_string(AstNodeType kind) {
         case AST_IS:                return "STRING_IS";
         case AST_GETTER: return "GETTER";
         case AST_SETTER: return "SETTER";
+        case AST_CONDITION: return"CONDITION";
         default:                   return "UNKNOWN_AST_NODE";
     }
 }

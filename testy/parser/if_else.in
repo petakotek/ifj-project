@@ -3,15 +3,14 @@ class Program {
     static main() {
         
     if(osem) {
-    }
-    else if (5+5){
-        while(a){
+    } else if (5+5){
+        while(a) {
         }
-    }
-    else if (isdone){
-    }
-    else {
+    } else if (isdone) {
+    } else {
         return x
     }
+    return 50+50
 }
+
 }

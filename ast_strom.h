@@ -44,6 +44,7 @@ typedef enum AstNodeType {
     AST_IF,
     AST_ELSE,
     AST_IF_CHAIN,
+    AST_CONDITION,
     AST_WHILE,
     AST_FOR,
     AST_BREAK,
