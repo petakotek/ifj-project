@@ -352,6 +352,7 @@ void Program_func(DynamicSymbolStackPtr Stack)
     pushCheck(stackSymbolPush(Stack, makeNonterm(N_Opt_newlines)));
     pushCheck(stackSymbolPush(Stack,makeTerm(TOKEN_NEW_LINE)));
     pushCheck(stackSymbolPush(Stack,makeNonterm(N_Prolog)));
+    pushCheck(stackSymbolPush(Stack, makeNonterm(N_Opt_newlines)));
 }
 
 void Prolog_func(DynamicSymbolStackPtr Stack)
@@ -361,11 +362,13 @@ void Prolog_func(DynamicSymbolStackPtr Stack)
     pushCheck(stackSymbolPush(Stack, makeReduce(AST_PROLOG,0)));
     
     pushCheck(stackSymbolPush(Stack,makeTerm(TOKEN_KEYWORD_IFJ)));
+    pushCheck(stackSymbolPush(Stack, makeNonterm(N_Opt_newlines)));
     pushCheck(stackSymbolPush(Stack,makeTerm(TOKEN_KEYWORD_FOR)));
     Token ifj25;
     ifj25.value.identifier = "ifj25";
     ifj25.type = TOKEN_STRING;
     pushCheck(stackSymbolPush(Stack,makeTermValue(ifj25)));
+    pushCheck(stackSymbolPush(Stack, makeNonterm(N_Opt_newlines)));
     pushCheck(stackSymbolPush(Stack,makeTerm(TOKEN_KEYWORD_IMPORT)));
 }
 
@@ -678,9 +681,14 @@ void Func_dec_tail_func(DynamicSymbolStackPtr Stack, Token token)
     else if (token.type == TOKEN_ASSIGN)
     {
         // Vetva: = ( identifier ) Block (getter/setter)
-        pushCheck(stackSymbolPush(Stack, makeReduce(AST_FUNC_DEC, 3)));
-        pushCheck(stackSymbolPush(Stack, makeNonterm(N_Block)));
+        pushCheck(stackSymbolPush(Stack, makeReduce(AST_SETTER, 3)));
+        pushCheck(stackSymbolPush(Stack, makeTerm(TOKEN_NEW_LINE)));
+        pushCheck(stackSymbolPush(Stack, makeTerm(TOKEN_BLOCK_END)));
+        pushCheck(stackSymbolPush(Stack, makeNonterm(N_Func_block_content_check)));
+        pushCheck(stackSymbolPush(Stack, makeTerm(TOKEN_BLOCK_STAR)));
         pushCheck(stackSymbolPush(Stack, makeTerm(TOKEN_RPAREN)));
+        pushCheck(stackSymbolPush(Stack, makeReduce(AST_PARAM, 2)));
+        pushCheck(stackSymbolPush(Stack, makeReduce(AST_EMPTY, 0)));
         pushCheck(stackSymbolPush(Stack, makeTermWithValue(TOKEN_IDENTIFIER)));
         pushCheck(stackSymbolPush(Stack, makeTerm(TOKEN_LPAREN)));
         pushCheck(stackSymbolPush(Stack, makeTerm(TOKEN_ASSIGN)));
@@ -688,8 +696,11 @@ void Func_dec_tail_func(DynamicSymbolStackPtr Stack, Token token)
     else if (token.type == TOKEN_BLOCK_STAR)
     {
         // Vetva: Block
-        pushCheck(stackSymbolPush(Stack, makeReduce(AST_FUNC_DEC, 3)));
-        pushCheck(stackSymbolPush(Stack, makeNonterm(N_Block)));
+        pushCheck(stackSymbolPush(Stack, makeReduce(AST_GETTER, 3)));
+        pushCheck(stackSymbolPush(Stack, makeTerm(TOKEN_NEW_LINE)));
+        pushCheck(stackSymbolPush(Stack, makeTerm(TOKEN_BLOCK_END)));
+        pushCheck(stackSymbolPush(Stack, makeNonterm(N_Func_block_content_check)));
+        pushCheck(stackSymbolPush(Stack, makeTerm(TOKEN_BLOCK_STAR)));
         pushCheck(stackSymbolPush(Stack, makeReduce(AST_PARAM, 1)));
         pushCheck(stackSymbolPush(Stack, makeReduce(AST_EMPTY, 0)));
     }
@@ -905,6 +916,7 @@ void If_func(DynamicSymbolStackPtr Stack)
 
     // 1) prvá vetva ako BRANCH(cond, block)
     pushCheck(stackSymbolPush(Stack, makeReduce(AST_IF, 2)));
+    pushCheck(stackSymbolPush(Stack, makeNonterm(N_Opt_newlines)));
     pushCheck(stackSymbolPush(Stack, makeNonterm(N_Block)));
     pushCheck(stackSymbolPush(Stack, makeTerm(TOKEN_RPAREN)));
     pushCheck(stackSymbolPush(Stack, makeNonterm(N_lExpr)));
@@ -937,6 +949,7 @@ void Else_item_func(DynamicSymbolStackPtr Stack, Token token)
     if (token.type == TOKEN_KEYWORD_IF) {
         // else if ( lExpr ) NEW_LINE Block   => premeníme na BRANCH(cond, block)
         pushCheck(stackSymbolPush(Stack, makeReduce(AST_IF, 2)));
+        pushCheck(stackSymbolPush(Stack, makeNonterm(N_Opt_newlines)));
         pushCheck(stackSymbolPush(Stack, makeNonterm(N_Block)));
         pushCheck(stackSymbolPush(Stack, makeTerm(TOKEN_RPAREN)));
         pushCheck(stackSymbolPush(Stack, makeNonterm(N_lExpr)));

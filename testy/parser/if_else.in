@@ -10,7 +10,7 @@ class Program {
     }
     else if (isdone){
     }
-    else{
+    else {
         return x
     }
 }
