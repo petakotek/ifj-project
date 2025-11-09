@@ -168,7 +168,7 @@ void varListDescrution(VarList *list){
 	free(list->var_names);
 	free(list);
 }
-void add_binop_tmps(VarList* vars, const char* func, int id) {
+void add_binop_tmps(VarList* vars, const char* func, int id,bool concat) {
     char buf[128];
     snprintf(buf, sizeof buf, "%s_ln_%d", func, id);
     varlist_add(vars, buf);
@@ -176,6 +176,10 @@ void add_binop_tmps(VarList* vars, const char* func, int id) {
     varlist_add(vars, buf);
     snprintf(buf, sizeof buf, "%s_ty_%d", func, id);
     varlist_add(vars, buf);
+    if(concat == true){
+	    snprintf(buf, sizeof buf, "%s_rs_%d", func, id);
+	    varlist_add(vars, buf);
+    }
 }
 tmpValue *ConstuctorTmpValue(){
 	tmpValue *tmpStruct = malloc(sizeof(tmpValue));
@@ -208,6 +212,9 @@ void collectLocalVars(AstNode *node, VarList *vars,tmpValue *tmpStruct) {
               break;
 
           case AST_PLUS:
+	          node->tmp_id = tmpStruct->value_counter++;
+	          add_binop_tmps(vars, tmpStruct->func_name, node->tmp_id,true);
+	          break;
           case AST_MINUS:
           case AST_MUL:
           case AST_DIV:
@@ -219,7 +226,7 @@ void collectLocalVars(AstNode *node, VarList *vars,tmpValue *tmpStruct) {
           case AST_AND:
           case AST_OR: {
               node->tmp_id = tmpStruct->value_counter++;
-              add_binop_tmps(vars, tmpStruct->func_name, node->tmp_id);
+              add_binop_tmps(vars, tmpStruct->func_name, node->tmp_id,false);
               break;
           }
 
@@ -283,7 +290,11 @@ void emitFuncDec(AstNode *root, int counter,DynamicEmitOpStackPtr op_stack){
 	}
 	stacklabelStackDestruct(label_stack);
 	DestructorTmpValue(tmpStruct);
-	printN("RETURN");
+	if(main == true){
+		printN("EXIT int@0");
+	}else{
+		printN("RETURN");
+	}
 	}
 void emit_push_value(AstNode *node, DynamiclabelStackStackPtr label_stack, int counter,
                      DynamicEmitOpStackPtr op_stack) {
@@ -338,7 +349,7 @@ char *emitBinaryOp(AstNode *node, DynamiclabelStackStackPtr labels, int counter,
  * JUMPIFEQS/JUMPIFNEQS ⟨label⟩
  */
 void emitPlus(AstNode *node, DynamiclabelStackStackPtr label_stack, int counter,
-              DynamicEmitOpStackPtr op_stack,char *func_name,AstNode *node_vysledek) {
+              DynamicEmitOpStackPtr op_stack,char *func_name) {
     int flag_to_stack = 0;
     if (node->child[0]->kind == AST_FUNC_CALL) {
         emit_command(node->child[0], label_stack, counter, op_stack,NULL);
@@ -351,10 +362,11 @@ void emitPlus(AstNode *node, DynamiclabelStackStackPtr label_stack, int counter,
     emitBinaryOp(node, label_stack, counter, op_stack, flag_to_stack);
     // Po emitBinaryOp máme na zásobníku: [hodnota_left, hodnota_right]
     int id = node->tmp_id;
-    char ln[128], rn[128], ty[128];
+    char ln[128], rn[128], ty[128],rs[128];
     snprintf(ln, sizeof ln, "%s_ln_%d", func_name, id);
     snprintf(rn, sizeof rn, "%s_rn_%d", func_name, id);
     snprintf(ty, sizeof ty, "%s_ty_%d", func_name, id);
+    snprintf(rs, sizeof rs, "%s_rs_%d", func_name, id);
 
     int size_for_label = strlen(func_name)+20;
     char label_ok[size_for_label], label_add[size_for_label], label_concat[size_for_label], label_end[size_for_label], label_err[size_for_label];
@@ -384,29 +396,28 @@ void emitPlus(AstNode *node, DynamiclabelStackStackPtr label_stack, int counter,
 
     // Vrátíme typ pravého operandu zpět
     printN("PUSHS LF@%s",ty);  // zásobník: [type_left, type_right]
-
-    // Porovnání, zda jsou typy stejné
-    printN("JUMPIFEQS %s", label_ok);  // pokud type_left == type_right
-    printN("JUMP %s", label_err);      // jinak chyba
-
-    // --- Kontrola konkrétního typu ---
-    printN("LABEL %s", label_ok);
-    // Máme na zásobníku pořád type_right (nebo type_left, jsou stejné)
-    printN("PUSHS string@string");
-    printN("JUMPIFEQS %s", label_concat);
-
-    // Obnovíme typ pro další porovnání
-    printN("PUSHS LF@%s",ty);
-    printN("PUSHS string@int");
-    printN("JUMPIFEQS %s", label_add);
-
-    printN("PUSHS LF@%s",ty);
-    printN("PUSHS string@float");
-    printN("JUMPIFEQS %s", label_add);
-
-    // Pokud to není ani string, ani int, ani float
+// Porovnání, že typy jsou stejné
+    printN("PUSHS LF@%s", ty);          // [type_left, type_right]
+    printN("JUMPIFEQS %s", label_ok);
     printN("JUMP %s", label_err);
 
+    printN("LABEL %s", label_ok);
+    // Je to string?
+    printN("PUSHS LF@%s", ty);          // [right_type]
+    printN("PUSHS string@string");      // [right_type, "string"]
+    printN("JUMPIFEQS %s", label_concat);
+
+    // Je to int?
+    printN("PUSHS LF@%s", ty);          // [right_type]
+    printN("PUSHS string@int");         // [right_type, "int"]
+    printN("JUMPIFEQS %s", label_add);
+
+    // Je to float?
+    printN("PUSHS LF@%s", ty);          // [right_type]
+    printN("PUSHS string@float");       // [right_type, "float"]
+    printN("JUMPIFEQS %s", label_add);
+
+    printN("JUMP %s", label_err);
     // --- ADD větev (pro int a float) ---
     printN("LABEL %s", label_add);
     // Musíme znovu načíst původní hodnoty
@@ -414,65 +425,84 @@ void emitPlus(AstNode *node, DynamiclabelStackStackPtr label_stack, int counter,
     printN("PUSHS LF@%s",rn);
     printN("ADDS");
     printN("JUMP %s", label_end);
-//TODO dodelat
     // --- CONCAT větev (pro string) ---
     printN("LABEL %s", label_concat);
-    printN("CONCAT LF@%s LF@%s LF@%s",ln,rn,node_vysledek->value.str);
-    printN("PUSH %s",n)
+    printN("CONCAT LF@%s LF@%s LF@%s",ln,rn,rs);
+    printN("PUSHS LF@%s",rs);
     printN("JUMP %s", label_end);
 
     // --- CHYBA ---
     printN("LABEL %s", label_err);
     printN("EXIT int@4");
-    // ---prizareni ze stacku
-    printN("POPS LF@%",node_vysledek->value.str);
     // --- KONEC ---
     printN("LABEL %s", label_end);
 	printN("");
 }
 void emitMinus(AstNode *node, DynamiclabelStackStackPtr label_stack, int counter,
                DynamicEmitOpStackPtr op_stack,char *func_name) {
-    int flag_to_stack = 0;
-    if (node->child[0]->kind == AST_FUNC_CALL) {
-        emit_command(node->child[0], label_stack, counter, op_stack,NULL);
-        flag_to_stack = 1;
-    }
-    if (node->child[1]->kind == AST_FUNC_CALL) {
-        emit_command(node->child[1], label_stack, counter, op_stack,NULL);
-        flag_to_stack = 1;
-    }
-    emitBinaryOp(node, label_stack, counter, op_stack, flag_to_stack);
-    // Po emitBinaryOp máme na zásobníku: [hodnota_left, hodnota_right]
-    char *label_ok  = generatorLable("ok", label_stack, counter, false);
-    char *label_err = generatorLable("error", label_stack, counter, false);
-    char *label_end = generatorLable("end", label_stack, counter, false);
-    // Zjistíme typ pravého operandu (right)
-    printN("TYPES");  // zásobník: [left_value,	right_type]
+        int flag_to_stack = 0;
+        if (node->child[0]->kind == AST_FUNC_CALL) {
+            emit_command(node->child[0], label_stack, counter, op_stack,NULL);
+            flag_to_stack = 1;
+        }
+        if (node->child[1]->kind == AST_FUNC_CALL) {
+            emit_command(node->child[1], label_stack, counter, op_stack,NULL);
+            flag_to_stack = 1;
+        }
+        emitBinaryOp(node, label_stack, counter, op_stack, flag_to_stack);
+        // Po emitBinaryOp máme na zásobníku: [hodnota_left, hodnota_right]
+        int id = node->tmp_id;
+        char ln[128], rn[128], ty[128];
+        snprintf(ln, sizeof ln, "%s_ln_%d", func_name, id);
+        snprintf(rn, sizeof rn, "%s_rn_%d", func_name, id);
+        snprintf(ty, sizeof ty, "%s_ty_%d", func_name, id);
 
-    // Dočasně uložíme typ pravého operandu
-    printN("POPS LF@type_right");  // zásobník: [left_value]
+        int size_for_label = strlen(func_name)+20;
+        char label_ok[size_for_label], label_add[size_for_label], label_concat[size_for_label], label_end[size_for_label], label_err[size_for_label];
+        snprintf(label_ok,  sizeof label_ok,  "%s$ok$%d",     func_name, id);
+        snprintf(label_end, sizeof label_end, "%s$end$%d",    func_name, id);
+        snprintf(label_err, sizeof label_err, "%s$err$%d",    func_name, id);
+        //  Ulozeni do docasnych promenychg
+        printN("POPS LF@%s",rn);  // Uložíme pravou hodnotu (right)
+        printN("POPS LF@%s",ln);  // Uložíme levou hodnotu (left)
 
-    // Zjistíme typ levého operandu (left)
-    printN("TYPES");  // zásobník: [type_left]
+        // vratime zpatky
+        printN("PUSHS LF@%s",ln);
+        printN("PUSHS LF@%s",rn);
+        // Typová kontrola pomocí zásobníku
+        // Stav zásobníku: [left_value, right_value]
 
-    // Vrátíme typ pravého operandu zpět
-    printN("PUSHS LF@type_right");  // zásobník: [type_left, type_right]
+        // Zjistíme typ pravého operandu (right)
+        printN("TYPES");  // zásobník: [left_value,	right_type]
 
-    // Porovnání, zda jsou typy stejné
-    printN("JUMPIFEQS %s", label_ok);  // pokud type_left == type_right
-    printN("JUMP %s", label_err);      // jinak chyba
-    printN("LABEL %s", label_ok);
-    printN("PUSHS LF@lhs");
-    printN("PUSHS LF@rhs");
-    printN("SUBS");
-    printN("JUMP %s", label_end);
-    // --- CHYBA ---
-    printN("LABEL %s", label_err);
-    printN("EXIT int@4");
+        // Dočasně uložíme typ pravého operandu
+        printN("POPS LF@%s",ty);  // zásobník: [left_value]
 
-    // --- KONEC ---
-    printN("LABEL %s", label_end);
-    counter++;
+        // Zjistíme typ levého operandu (left)
+        printN("TYPES");  // zásobník: [type_left]
+
+        // Vrátíme typ pravého operandu zpět
+        printN("PUSHS LF@%s",ty);  // zásobník: [type_left, type_right]
+    // Porovnání, že typy jsou stejné
+        printN("PUSHS LF@%s", ty);          // [type_left, type_right]
+        printN("JUMPIFEQS %s", label_ok);
+        printN("JUMP %s", label_err);
+
+        printN("LABEL %s", label_ok);
+        printN("PUSHS LF@%s", ty);
+        printN("PUSHS string@string");
+        printN("JUMPIFEQS %s", label_err);
+
+        printN("PUSHS LF@%s",rn);
+        printN("PUSHS LF@%s",ln);
+        printN("SUBS");
+        printN("JUMP %s", label_end);
+        // --- CHYBA ---
+        printN("LABEL %s", label_err);
+        printN("EXIT int@4");
+        // --- KONEC ---
+        printN("LABEL %s", label_end);
+	printN("");
 }
 void emit_equal(AstNode *node, DynamiclabelStackStackPtr label_stack, int counter, char *end) {
     emit_command(node->child[0], label_stack, counter, NULL,NULL);
@@ -481,10 +511,12 @@ void emit_equal(AstNode *node, DynamiclabelStackStackPtr label_stack, int counte
 void emit_assigned(AstNode *node, DynamiclabelStackStackPtr label_stack, int counter,
                    DynamicEmitOpStackPtr op_emit, char *func_name) {
     emit_command(node->child[1], label_stack, counter, op_emit, func_name);
+    printN("POPS LF@%s",node->child[0]->value.str);
 }
 void emit_var(AstNode *node, DynamiclabelStackStackPtr label_stack, int counter,
               DynamicEmitOpStackPtr op_emit, char *func_name){
 	emit_command(node->child[1]->child[0], label_stack, counter, op_emit, func_name);
+	printN("POPS LF@%s",node->child[0]->value.str);
 }
 /*
 void emit_while(AstNode *node, DynamiclabelStackStackPtr label_stack, int while_counter) {
@@ -595,6 +627,7 @@ void emit_command(AstNode *node, DynamiclabelStackStackPtr label_stack, int coun
             break;
         case AST_MINUS:
             // Nová implementace: Odčítání
+            emitMinus(node, label_stack, counter, op_emit,func_name);  // Byla implementována, jen pro úplnost.
             // emitMinus(node, op_emit);
             break;
         case AST_MUL:
