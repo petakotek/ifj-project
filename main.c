@@ -38,6 +38,11 @@ int main(){
 	lexer_init(source_file);
 //	print_and_free_tokens();
 //tvorba stromu pres parser
+	 //print_and_free_tokens();
+	//exit(0);
+	//print_and_free_tokens();
+	//exit(0);
+	// tvorba stromu pres parser
 	AstNode *AST;
 	AST = parser();
 	//funkcia ast_dump -> funkcia na kontrolny vypis ast stromu
@@ -49,6 +54,13 @@ int main(){
 	output = startSematicValidation(AST);
 	printf("Vysledek sem_anal: %i\n", output);
 */
+
+	/*
+	bool output;
+	output = startSematicValidation(AST);
+	printf("Vysledek sem_anal: %i\n", output);
+	*/
+
 	//ast_dump(AST);
 	//free ast stromu
 	ast_free_whole(AST);

@@ -10,9 +10,10 @@ class Program {
 
 
 static main(xy,arg2,super,nice,osemdesat) {
-    return
+    
     var y 
     var x
+    return 
 
 
 
@@ -22,14 +23,12 @@ static main(xy,arg2,super,nice,osemdesat) {
 
     static error(s){
         var x
-        return
-    }
+        }
 
 
     static erorr_errorr(osem){
         return
-    }
-
+        }
 }
 
 

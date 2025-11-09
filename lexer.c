@@ -829,7 +829,10 @@ Token lexer_token_next() {
             }
             case LINE_COMMENT: {
                 if (c == '\n') {
-                    stav = START_LEX;
+                	token.type = TOKEN_NEW_LINE;
+                 	token.line = radek;
+                  	lexer->pos++;
+                	goto token_found;
                 }
                 lexer->pos++;
                 break;

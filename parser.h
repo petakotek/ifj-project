@@ -58,7 +58,11 @@ typedef enum
     N_Block_content_check,
     N_oExpr,
     N_Func_block_content_check,
-    N_callIfj,    
+    N_callIfj,
+    N_Else_chain,
+    N_Else_item,
+    N_callIfjCheck,
+    N_AssignIfjIdCheck,
 } Nonterm;
 
 AstNode* parser();
@@ -334,9 +338,10 @@ void Opt_newlines_func(DynamicSymbolStackPtr Stack, Token token);
 
 Symbol makeTermValueAndCaptureIdentifier(const char *exact);
 void Block_content_func_check(DynamicSymbolStackPtr Stack, Token token);
-void Func_block_content_check(DynamicSymbolStackPtr Stack, Token token);
 void tokenFree(Token *token);
 void callIfjfunc(DynamicSymbolStackPtr Stack, Token token);
-void token_move(Token *dst, Token *src);
-
+void Else_item_func(DynamicSymbolStackPtr Stack, Token token);
+void Else_chain_func(DynamicSymbolStackPtr Stack, Token token);
+void callIfjCheckfunc(DynamicSymbolStackPtr Stack, Token token);
+void AssignIfjIdCheckFunc(DynamicSymbolStackPtr Stack, Token token);
 #endif // PARSER_H

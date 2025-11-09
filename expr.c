@@ -1,7 +1,7 @@
 /**
  * Fakulta informačních technologií VUT Brno
  *
- * Implementace precedeční analýzy pro překladač jazyka Wren pro projekt do předmětu IFJ
+ * Implementace precedeční analýzy pro překladač jazyka Wren pro projekt do předmětu IFJ 2025
  * @file expr.c
  * @author Petr Kotek (xkotekp00)
  */
@@ -33,7 +33,7 @@ int PSA_TABLE[13][13] = {
     {L, L, L, L, L, L, R, R, L, R, L, R, N}, // &&
     {L, L, L, L, L, L, L, R, L, R, L, R, N}, // ||
     {R, R, R, R, R, N, R, R, N, R, N, R, R}, // id
-    {L, L, L, L, L, L, L, L, L, N, L, N, L}, // dollar
+    {L, L, L, L, L, L, L, L, L, N, L, N, L}, // dolar
     {L, L, L, L, L, L, L, L, L, N, L, E, N}, // (
     {R, R, R, R, R, N, R, R, N, R, N, R, R}, // )
     {N, N, N, N, N, L, N, N, L, N, L, R, R}, // ../...
@@ -99,7 +99,10 @@ int operatorToPush(Token token)
                             return INDEX_ID;
         case TOKEN_STRING:
                             return INDEX_ID;
-
+        case TOKEN_TRUE:    return INDEX_ID;
+        case TOKEN_FALSE:    return INDEX_ID;
+        case TOKEN_KEYWORD_STRING: return INDEX_ID;
+        case TOKEN_KEYWORD_NUM:    return INDEX_ID;
 
 
         case TOKEN_EXPRESSION:  // nemuzu pocitat ze tam je identifikator kdyz tam je jenom expression abych a pridal <
@@ -154,29 +157,33 @@ AstNodeType getAstNodeTypeFromTokenType(TokenType type)
 {
     switch (type)
     {
-    case TOKEN_PLUS:        return AST_PLUS;    // +
-    case TOKEN_MINUS:       return AST_MINUS;   // -
-    case TOKEN_STAR:        return AST_MUL;     // *
-    case TOKEN_SLASH:       return AST_DIV;     // /
-    case TOKEN_IDENTIFIER:  return AST_IDENTIFIER; // identifikator
-    case TOKEN_INTEGER:     return AST_INT_LIT;   // integer literal
-    case TOKEN_FLOAT:       return AST_FLOAT_LIT; // float literal
-    case TOKEN_GLOBAL_ID:   return AST_GLOBAL_ID; // global identifier
-    case TOKEN_EQ:          return AST_EQ;      // ==
-    case TOKEN_LT:          return AST_LT;      // <
-    case TOKEN_GT:          return AST_GT;      // >
-    case TOKEN_AND:         return AST_AND;     // &&
-    case TOKEN_OR:          return AST_OR;      // ||
-    case TOKEN_KEYWORD_IS:  return AST_IS;      // is
-    case TOKEN_GTE:         return AST_GTE;     // >=
-    case TOKEN_LTE:         return AST_LTE;     // <=
-    case TOKEN_LPAREN:      return AST_LPAREN;     // (
-    case TOKEN_RPAREN:      return AST_RPAREN;     // )
-    case TOKEN_NEGACE:      return AST_NOT;     // !
-    case TOKEN_STRING:      return AST_STRING_LIT; // string
-    case TOKEN_NOT:         return AST_NEQ; // !=
-    case TOKEN_DOUBLE_DOT:  return AST_DOUBLE_DOT;
-    case TOKEN_TRIPLE_DOT:   return AST_TRIPLE_DOT;
+    case TOKEN_PLUS:            return AST_PLUS;    // +
+    case TOKEN_MINUS:           return AST_MINUS;   // -
+    case TOKEN_STAR:            return AST_MUL;     // *
+    case TOKEN_SLASH:           return AST_DIV;     // /
+    case TOKEN_IDENTIFIER:      return AST_IDENTIFIER; // identifikator
+    case TOKEN_INTEGER:         return AST_INT_LIT;   // integer literal
+    case TOKEN_FLOAT:           return AST_FLOAT_LIT; // float literal
+    case TOKEN_GLOBAL_ID:       return AST_GLOBAL_ID; // global identifier
+    case TOKEN_EQ:              return AST_EQ;      // ==
+    case TOKEN_LT:              return AST_LT;      // <
+    case TOKEN_GT:              return AST_GT;      // >
+    case TOKEN_AND:             return AST_AND;     // &&
+    case TOKEN_OR:              return AST_OR;      // ||
+    case TOKEN_KEYWORD_IS:      return AST_IS;      // is
+    case TOKEN_GTE:             return AST_GTE;     // >=
+    case TOKEN_LTE:             return AST_LTE;     // <=
+    case TOKEN_LPAREN:          return AST_LPAREN;     // (
+    case TOKEN_RPAREN:          return AST_RPAREN;     // )
+    case TOKEN_NEGACE:          return AST_NOT;     // !
+    case TOKEN_STRING:          return AST_STRING_LIT; // string
+    case TOKEN_NOT:             return AST_NEQ; // !=
+    case TOKEN_DOUBLE_DOT:      return AST_DOUBLE_DOT;
+    case TOKEN_TRIPLE_DOT:      return AST_TRIPLE_DOT;
+    case TOKEN_TRUE:            return AST_BOOL_LIT;
+    case TOKEN_FALSE:           return AST_BOOL_LIT;
+    case TOKEN_KEYWORD_NUM:     return AST_KEYWORD_NUM;
+    case TOKEN_KEYWORD_STRING:  return AST_KEYWORD_STRING;
 
     default:
         printError(SYNTAX_ERROR, "(PSA) Nelze prevést TokenType na AstNodeType, neznámý token\n");
@@ -205,6 +212,8 @@ void tokenPrecedenceFree(Token *token)
         case TOKEN_STRING:
         case TOKEN_INTEGER:
         case TOKEN_FLOAT:
+        case TOKEN_TRUE:
+        case TOKEN_FALSE:
             if (token->value.identifier) 
             {
                 free(token->value.identifier);
@@ -285,13 +294,29 @@ void findPrecedenceRule(DynamicPrecedenceStackPtr stack, DynamicAstNodeStackPtr 
                 // vyberu si ze zasobniku 2 identifikatory
                 AstNode *firstChild = stackAstNodeRead(stackA);
                 stackAstNodePop(stackA);
-                kids[0] = firstChild;
+                kids[0] = firstChild; // Levý uzel (i když by u unárních bylo přesnější dát pravý)
                 AstNode *newRoot = ast_new(getAstNodeTypeFromTokenType(p2.type), 1, kids); // vytvoření stromu s jedním dítětem, který bude ten výraz
                 stackAstNodePush(stackA, newRoot);
                 
                 p2.type = TOKEN_EXPRESSION; // vratim na klasicky zasobnik jenom expression
                 stackPrecedencePush(stack, p2);
             }
+            // E -> -E
+            if (p1.type == TOKEN_EXPRESSION && p2.type == TOKEN_MINUS)
+            {
+                AstNode **kids = NULL;
+                kids = malloc(sizeof(AstNode*) * 1);
+                // vyberu si ze zasobniku 2 identifikatory
+                AstNode *firstChild = stackAstNodeRead(stackA);
+                stackAstNodePop(stackA);
+                kids[0] = firstChild; // Levý uzel (i když by u unárních bylo přesnější dát pravý)
+                AstNode *newRoot = ast_new(AST_MINUS, 1, kids); // vytvoření stromu s jedním dítětem, který bude ten výraz
+                stackAstNodePush(stackA, newRoot);
+                
+                p2.type = TOKEN_EXPRESSION; // vratim na klasicky zasobnik jenom expression
+                stackPrecedencePush(stack, p2);
+            }
+            
     
         break;
 
@@ -317,8 +342,8 @@ void findPrecedenceRule(DynamicPrecedenceStackPtr stack, DynamicAstNodeStackPtr 
                 stackAstNodePop(stackA);
                 AstNode *secondChild = stackAstNodeRead(stackA);
                 stackAstNodePop(stackA);
-                kids[0] = firstChild;
-                kids[1] = secondChild;
+                kids[1] = firstChild; // Pravý uzel
+                kids[0] = secondChild; // Levý uzel
                 AstNode *newRoot = ast_new(getAstNodeTypeFromTokenType(p2.type), 2, kids);
                 free(kids); // uvolneni deti, nebudou uz potreba
                 stackAstNodePush(stackA, newRoot);
@@ -341,6 +366,40 @@ void findPrecedenceRule(DynamicPrecedenceStackPtr stack, DynamicAstNodeStackPtr 
     }
 }
 
+/**
+ * @brief Funkce zkotroluje první přijatý token, pokud aktuální token nesmí být prvním, funkce ukončí program
+ * @param actualToken Token, který se zkotroluje
+ * @return Funkce vrací hodnotu true v případě povoleného token na vstupu, jinak ukončuje program
+ */
+bool checkFirstTokenType(Token actualToken)
+{
+    switch (actualToken.type)
+    {
+    case TOKEN_IDENTIFIER:
+    case TOKEN_GLOBAL_ID:
+    case TOKEN_INTEGER:
+    case TOKEN_STRING:
+    case TOKEN_FLOAT:
+    case TOKEN_NEGACE:
+    case TOKEN_LPAREN:
+    case TOKEN_TRUE:
+    case TOKEN_FALSE:
+    case TOKEN_MINUS:
+        return true;
+    
+    default:
+        printError(SYNTAX_ERROR, "(PSA) prvni odeslany token neni identifikator\n");
+        memorySafeExit(SYNTAX_ERROR);
+        break;
+    }
+    return false;
+}
+
+/**
+ * @brief Funkce zkotroluje, že na zásobníku je jenom výraz a dolar
+ * @param stack zásobník precedenční analýzy
+ * @return Návratovou hodnotou je true v přípradě, že na zásobníku je pouze výraz a dolar, jinak false
+ */
 bool checkDollarExpression(DynamicPrecedenceStackPtr stack)
 {
     if (stack == NULL || stackPrecedenceIsEmpty(stack)) {
@@ -365,6 +424,7 @@ bool checkDollarExpression(DynamicPrecedenceStackPtr stack)
     return true;
 }
 
+// pomocná funkce pro výpis zásobníku, bude odstraněno
 void printStack(DynamicPrecedenceStackPtr stack)
 {
     DynamicPrecedenceStackPtr stackTmp;
@@ -404,14 +464,15 @@ AstNode* parseExpression(Token *token, int flag)
     Token stop; // >
     stop.type = TOKEN_STOP;
 
-    int poradiCount = 1;
+    int poradiCount = 1; // pomocná proměnná pro kontrolu pořadí operací. Potom SMAZAT
     
     stackPrecedencePush(stackP, dollar); // vložení $ na zasobnik
     Token StackTop;
 
-    bool firstOK = false; // kontrola, ze prvni token, ktery prijimam je nejaky identifikator
+    bool firstOK = false; // Pomocná proměnná pro kontrolu povoleného prvního tokenu
     bool checkEmptyIf = false;
     bool expectingNewLineAfterOperator = true;
+    bool expectingRPAREN = false;
     // dokud neni na zasobniku jenom $E && nemam na vstupu token, ktery mi vsechno ukoncuje
     while (actualToken.type != TOKEN_PSA_END) // 
     {
@@ -424,6 +485,12 @@ AstNode* parseExpression(Token *token, int flag)
             stackPrecedencePush(stackP, tmpTop);
         }
 
+        if (actualToken.type == TOKEN_LPAREN)
+        {
+            expectingRPAREN = true;
+        }
+        
+
         if (!checkEmptyIf) // voláno pouze jednou při prvním volání sestavení výrazu v if bloku
         {
             checkEmptyIf = true;
@@ -435,6 +502,8 @@ AstNode* parseExpression(Token *token, int flag)
             }
         }
         
+
+        // Handling nového řádku za operátorem
         if (operatorToPush(StackTop) == INDEX_ID)
         {
             expectingNewLineAfterOperator = true;
@@ -458,17 +527,24 @@ AstNode* parseExpression(Token *token, int flag)
                     endFlag = TOKEN_PSA_END;
                 }
             }
-            
-            
+        } // Handling nového řádku za operátorem
+
+
+        // Kontrola povoleného typu prvního tokenu
+        if (!firstOK)
+        {
+            firstOK = checkFirstTokenType(actualToken);
         }
+        
         
         
         // podminky, ktere mohou nastat pri ukoncovani vyrazu, kazda je unikatni
         if ((flag == -1 && actualToken.type == TOKEN_RPAREN && StackTop.type == TOKEN_DOLLAR)
-            || (actualToken.type == TOKEN_NEW_LINE && StackTop.type == TOKEN_DOLLAR)
+            || (actualToken.type == TOKEN_NEW_LINE && StackTop.type == TOKEN_DOLLAR) // ukonceni pouze na novy radek
             || (actualToken.type == TOKEN_COMMA && StackTop.type == TOKEN_DOLLAR) // оddělení výrazů ve funkce čárkou
-            || (actualToken.type == TOKEN_RPAREN && StackTop.type == TOKEN_DOLLAR && flag == 1) // ukončení funkce levou závorkou
-            || (actualToken.type == TOKEN_BLOCK_END && flag == -2 && StackTop.type == TOKEN_DOLLAR)) // ukonceni volani vyrazu v jednoradkove funkci
+            || (actualToken.type == TOKEN_RPAREN && StackTop.type == TOKEN_DOLLAR && flag == 1) // ukončení funkce pravou závorkou
+            || (actualToken.type == TOKEN_BLOCK_END && flag == -2 && StackTop.type == TOKEN_DOLLAR) // ukonceni volani vyrazu v jednoradkove funkci
+            || (actualToken.type == TOKEN_RPAREN && flag == 0 && StackTop.type == TOKEN_DOLLAR && expectingRPAREN == false)) // volani funkce pouze s jednim parametrem
         {   // abych mohl koncit potrebuji mit na vstupu token new line a u zasobniku ukazovat jen na $
             printf("splnila se podminka\n");
             printStack(stackP);
@@ -482,7 +558,7 @@ AstNode* parseExpression(Token *token, int flag)
             while (!checkDollarExpression(stackP)) // cyklus probíhá dokud není na zásobníku pouze dolar a výraz
             {
                 findPrecedenceRule(stackP, stackA); // upravuji výraz dokud nedostanu na zásobníku pouze dolar a výraz
-                printf("Final etapa pico: ");
+                printf("Final etapa: ");
                 printStack(stackP);
             }
             
@@ -496,25 +572,7 @@ AstNode* parseExpression(Token *token, int flag)
             return root; // koren, ktery vracim Kubovi na cely vyraz
         }        
         // ošetření toho, že první token musí být nějaký identifikátor, nelze začít operátorem
-        if (!firstOK)
-        {
-            switch (actualToken.type)
-            {
-            case TOKEN_IDENTIFIER:
-            case TOKEN_GLOBAL_ID:
-            case TOKEN_INTEGER:
-            case TOKEN_STRING:
-            case TOKEN_FLOAT:
-            case TOKEN_NEGACE:
-                firstOK = true;
-                break;
-            
-            default:
-                printError(SYNTAX_ERROR, "(PSA) prvni odeslany token neni identifikator\n");
-                memorySafeExit(SYNTAX_ERROR);
-                break;
-            }
-        }
+        
         
         // radky a sloupce
         switch (PSA_TABLE[operatorToPush(StackTop)][operatorToPush(actualToken)])
@@ -564,6 +622,7 @@ AstNode* parseExpression(Token *token, int flag)
 
             default: // stav ktery nesmi nastat
                 printError(SYNTAX_ERROR, "(PSA) Zadany vyraz neni syntakticky spravny\n");
+                memorySafeExit(SYNTAX_ERROR);
                 return NULL;
         }
     }
@@ -571,3 +630,5 @@ AstNode* parseExpression(Token *token, int flag)
 }
 
 #endif
+
+/* Konec souboru expr.c */
