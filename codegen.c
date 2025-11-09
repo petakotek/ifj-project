@@ -313,17 +313,37 @@ void emit_push_value(AstNode *node, DynamiclabelStackStackPtr label_stack, int c
     }
     stackEmitOpPush(op_stack, node);
 }
-void emitIfjFunc(AstNode *node){
-	if(strcmp(node->child[0]->value.str,"write") == 0){
-		if(node->kind == AST_STRING_LIT)
-		if(node->value.is_int) {
-			printN("WRITE %d",node->value.int_val);
-		}else if (node->value.is_float) {
-			printN("%a",node->value.float_val);
-		}else if (node->value.has_str) {
-			printN("%s",node->value.str);
-		}
-	}
+void emitIfjFunc(AstNode *node, DynamiclabelStackStackPtr label_stack, int counter,
+                 DynamicEmitOpStackPtr op_stack, char *func_name) {
+                 AstNode *callee = node->child[0];
+                 AstNode *params = node->child[1];
+
+    if (callee->kind == AST_IDENTIFIER && strcmp(callee->value.str, "write") == 0) {
+        // Projdi všechny parametry
+        for (int i = 0; i < params->arity; i++) {
+            AstNode *arg = params->child[i];
+            if (arg->kind == AST_EMPTY) continue;
+
+            if (arg->kind == AST_IDENTIFIER) {
+                printN("WRITE LF@%s", arg->value.str);
+            } else if (arg->kind == AST_STRING_LIT) {
+                printN("WRITE string@%s", arg->value.str);
+            } else if (arg->kind == AST_INT_LIT) {
+                printN("WRITE int@%lld", arg->value.int_val);
+            } else if (arg->kind == AST_FLOAT_LIT) {
+                printN("WRITE float@%a", arg->value.float_val);
+            } else {
+                emit_command(arg, label_stack, counter, op_stack, func_name);
+                char tmp[64];
+                snprintf(tmp, sizeof tmp, "%s$wtmp_%d_%d", func_name, node->tmp_id, i);
+                printN("POPS LF@%s", tmp);
+                printN("WRITE LF@%s", tmp);
+            }
+        }
+        return;
+    }
+
+
 }
 /*
  * Dostaneme zasobnik zkontrolujeme zda je neco na vrchu pokud jo udelame types coz nam da na vrchol
@@ -680,6 +700,7 @@ void emit_var(AstNode *node, DynamiclabelStackStackPtr label_stack, int counter,
 	emit_command(node->child[1]->child[0], label_stack, counter, op_emit, func_name);
 	printN("POPS LF@%s",node->child[0]->value.str);
 }
+
 /*
 void emit_while(AstNode *node, DynamiclabelStackStackPtr label_stack, int while_counter) {
     while_counter++;
@@ -855,6 +876,9 @@ void emit_command(AstNode *node, DynamiclabelStackStackPtr label_stack, int coun
             // Nová implementace: Reprezentace literálu NULL
             // emit_null(node);
             break;
+        case AST_IFJ_CALL:
+       		emitIfjFunc(node, label_stack, counter, op_emit,func_name);
+         	break;
         default:
         	printf("%s \n",ast_node_type_to_string(node->kind));
             printError(INTERNAL_ERROR, "Chyba v generatoru neznamy uzel");
