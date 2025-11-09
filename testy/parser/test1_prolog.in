@@ -3,5 +3,8 @@ class Program {
 static main() {
     var x = 1 + 1
     x = 4 - 2
+    var y = 8 / 9
+    var a = 5 * 9
+
     }
 }

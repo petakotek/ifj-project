@@ -17,9 +17,9 @@
 			11 < (0, 8) INTEGER STOP PLUS EXPRESSION STOP DOLLAR 
 12 Aktualni token NEW_LINE a stacktop: INTEGER [8, 9]
 			param count 1
-Final etapa pico: EXPRESSION PLUS EXPRESSION STOP DOLLAR 
+Final etapa: EXPRESSION PLUS EXPRESSION STOP DOLLAR 
 			param count 3
-Final etapa pico: EXPRESSION DOLLAR 
+Final etapa: EXPRESSION DOLLAR 
 string STRING_PLUS
 Final stack: EXPRESSION DOLLAR 
 precedencna odovzdala token jeho type je = 33
@@ -42,10 +42,60 @@ precedencna odovzdala token jeho type je = 33
 			11 < (0, 8) INTEGER STOP MINUS EXPRESSION STOP DOLLAR 
 12 Aktualni token NEW_LINE a stacktop: INTEGER [8, 9]
 			param count 1
-Final etapa pico: EXPRESSION MINUS EXPRESSION STOP DOLLAR 
+Final etapa: EXPRESSION MINUS EXPRESSION STOP DOLLAR 
 			param count 3
-Final etapa pico: EXPRESSION DOLLAR 
+Final etapa: EXPRESSION DOLLAR 
 string STRING_MINUS
+Final stack: EXPRESSION DOLLAR 
+precedencna odovzdala token jeho type je = 33
+0 FLAG
+1 Aktualni token INTEGER a stacktop: DOLLAR [9, 8]
+	Operace <
+		2 budu hazet na stack klasicky
+			3 < (9, 8) INTEGER STOP DOLLAR 
+4 Aktualni token SLASH a stacktop: INTEGER [8, 1]
+	Operace >
+			param count 1
+			5 > (8, 1) EXPRESSION DOLLAR 
+6 Aktualni token SLASH a stacktop: EXPRESSION [9, 1]
+	Operace <
+		7 budu hazet na stack slozite
+			8 < (9, 1) SLASH EXPRESSION STOP DOLLAR 
+9 Aktualni token INTEGER a stacktop: SLASH [1, 8]
+	Operace <
+		10 budu hazet na stack klasicky
+			11 < (1, 8) INTEGER STOP SLASH EXPRESSION STOP DOLLAR 
+12 Aktualni token NEW_LINE a stacktop: INTEGER [8, 9]
+			param count 1
+Final etapa: EXPRESSION SLASH EXPRESSION STOP DOLLAR 
+			param count 3
+Final etapa: EXPRESSION DOLLAR 
+string STRING_DIV
+Final stack: EXPRESSION DOLLAR 
+precedencna odovzdala token jeho type je = 33
+0 FLAG
+1 Aktualni token IDENTIFIER a stacktop: DOLLAR [9, 8]
+	Operace <
+		2 budu hazet na stack klasicky
+			3 < (9, 8) IDENTIFIER STOP DOLLAR 
+4 Aktualni token STAR a stacktop: IDENTIFIER [8, 1]
+	Operace >
+			param count 1
+			5 > (8, 1) EXPRESSION DOLLAR 
+6 Aktualni token STAR a stacktop: EXPRESSION [9, 1]
+	Operace <
+		7 budu hazet na stack slozite
+			8 < (9, 1) STAR EXPRESSION STOP DOLLAR 
+9 Aktualni token IDENTIFIER a stacktop: STAR [1, 8]
+	Operace <
+		10 budu hazet na stack klasicky
+			11 < (1, 8) IDENTIFIER STOP STAR EXPRESSION STOP DOLLAR 
+12 Aktualni token NEW_LINE a stacktop: IDENTIFIER [8, 9]
+			param count 1
+Final etapa: EXPRESSION STAR EXPRESSION STOP DOLLAR 
+			param count 3
+Final etapa: EXPRESSION DOLLAR 
+string STRING_MUL
 Final stack: EXPRESSION DOLLAR 
 precedencna odovzdala token jeho type je = 33
 .IFJcode25
@@ -61,6 +111,14 @@ DEFVAR LF@main_rs_0
 DEFVAR LF@main_ln_1
 DEFVAR LF@main_rn_1
 DEFVAR LF@main_ty_1
+DEFVAR LF@y
+DEFVAR LF@main_ln_2
+DEFVAR LF@main_rn_2
+DEFVAR LF@main_ty_2
+DEFVAR LF@a
+DEFVAR LF@main_ln_3
+DEFVAR LF@main_rn_3
+DEFVAR LF@main_ty_3
 PUSHS int@1
 PUSHS int@1
 POPS LF@main_rn_0
@@ -99,8 +157,8 @@ EXIT int@4
 LABEL main$end$0
 
 POPS LF@x
-PUSHS int@2
 PUSHS int@4
+PUSHS int@2
 POPS LF@main_rn_1
 POPS LF@main_ln_1
 PUSHS LF@main_ln_1
@@ -116,8 +174,8 @@ LABEL main$ok$1
 PUSHS LF@main_ty_1
 PUSHS string@string
 JUMPIFEQS main$err$1
-PUSHS LF@main_rn_1
 PUSHS LF@main_ln_1
+PUSHS LF@main_rn_1
 SUBS
 JUMP main$end$1
 LABEL main$err$1
@@ -125,5 +183,71 @@ EXIT int@4
 LABEL main$end$1
 
 POPS LF@x
+PUSHS int@4
+PUSHS int@5
+POPS LF@main_rn_2
+POPS LF@main_ln_2
+PUSHS LF@main_ln_2
+PUSHS LF@main_rn_2
+TYPES
+POPS LF@main_ty_2
+TYPES
+PUSHS LF@main_ty_2
+PUSHS LF@main_ty_2
+JUMPIFEQS main$ok$2
+JUMP main$err$2
+LABEL main$ok$2
+PUSHS LF@main_ty_2
+PUSHS string@string
+JUMPIFEQS main$err$2
+PUSHS LF@main_rn_2
+PUSHS int@0
+JUMPIFEQS main$float$2
+PUSHS LF@main_rn_2
+PUSHS float@0x0p+0
+JUMPIFEQS main$float$2
+PUSHS LF@main_ty_2
+PUSHS string@int
+JUMPIFEQS main$float$2
+PUSHS LF@main_ln_2
+PUSHS LF@main_rn_2
+DIVS
+JUMP main$end$2
+LABEL main$float$2
+INT2FLOAT LF@main_ln_2 LF@main_ln_2
+INT2FLOAT LF@main_rn_2 LF@main_rn_2
+PUSHS LF@main_rn_2
+PUSHS LF@main_ln_2
+DIVS
+JUMP main$end$2
+LABEL main$err$2
+EXIT int@4
+LABEL main$end$2
+
+POPS LF@y
+POPS LF@main_rn_3
+POPS LF@main_ln_3
+PUSHS LF@main_ln_3
+PUSHS LF@main_rn_3
+TYPES
+POPS LF@main_ty_3
+TYPES
+PUSHS LF@main_ty_3
+PUSHS LF@main_ty_3
+JUMPIFEQS main$ok$3
+JUMP main$err$3
+LABEL main$ok$3
+PUSHS LF@main_ty_3
+PUSHS string@string
+JUMPIFEQS main$err$3
+PUSHS LF@main_ln_3
+PUSHS LF@main_rn_3
+MULS
+JUMP main$end$3
+LABEL main$err$3
+EXIT int@4
+LABEL main$end$3
+
+POPS LF@a
 POPFRAME
 EXIT int@0
