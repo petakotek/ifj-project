@@ -912,6 +912,7 @@ void While_func(DynamicSymbolStackPtr Stack)
     // deti: Expr, Block => arity = 2
     pushCheck(stackSymbolPush(Stack, makeReduce(AST_WHILE, 2)));
     pushCheck(stackSymbolPush(Stack, makeNonterm(N_Block)));
+    pushCheck(stackSymbolPush(Stack, makeReduce(AST_CONDITION, 1)));
     pushCheck(stackSymbolPush(Stack, makeTerm(TOKEN_RPAREN)));
     pushCheck(stackSymbolPush(Stack, makeNonterm(N_lExpr)));
     pushCheck(stackSymbolPush(Stack, makeTerm(TOKEN_LPAREN)));
@@ -923,8 +924,9 @@ void For_func(DynamicSymbolStackPtr Stack)
     // For -> for ( IDENT in Expr ) Block
     stackSymbolPop(Stack);;
     // deti: Expr, Block => arity = 2  (IDENT v AST neukladáme)
-    pushCheck(stackSymbolPush(Stack, makeReduce(AST_FOR, 3)));
+    pushCheck(stackSymbolPush(Stack, makeReduce(AST_FOR, 2)));
     pushCheck(stackSymbolPush(Stack, makeNonterm(N_Block)));
+    pushCheck(stackSymbolPush(Stack, makeReduce(AST_CONDITION, 2)));
     pushCheck(stackSymbolPush(Stack, makeTerm(TOKEN_RPAREN)));
     pushCheck(stackSymbolPush(Stack, makeNonterm(N_lExpr)));
     pushCheck(stackSymbolPush(Stack, makeTerm(TOKEN_KEYWORD_IN)));
@@ -972,6 +974,7 @@ void Return_expr_func(DynamicSymbolStackPtr Stack, Token token)
         case TOKEN_LPAREN:
             pushCheck(stackSymbolPush(Stack, makeTerm(TOKEN_RPAREN)));
             pushCheck(stackSymbolPush(Stack, makeNonterm(N_lExpr)));
+            pushCheck(stackSymbolPush(Stack, makeTerm(TOKEN_LPAREN)));
             break;
 
         case TOKEN_NEW_LINE:
