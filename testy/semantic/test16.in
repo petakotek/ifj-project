@@ -1,0 +1,11 @@
+import "ifj25" for Ifj
+class Program {
+    // Multiline stringy
+
+    static main() { 
+        f()
+    }
+
+    static f() { 1 }
+
+}

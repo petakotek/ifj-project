@@ -20,6 +20,8 @@
 // insertToScope Minimalizovat počet řádků mezitím
 // Poté odstranit zbytečné kontrolování ERROR když se tam stejně program nedostane
 
+// TODO asi úplně drop ERROR a prostě popravím program hned všude
+
 /**
  * @brief Ukazatel na zásobník pro ukládání jednotlivých rámců
  *
@@ -467,12 +469,23 @@ RecursiveSemanticAnalysisReturnValues recursiveNodeWalker(AstNode*    currentNod
             } else {
                 functionReturnValue = foundSymbol->returnValue;
             }
-
+            // TODO oneline blocky (asi spíš v AST_BLOCK)
+            printLog("Val type: %i\n", functionReturnValue);
             if (parentNodeType == AST_ASSIGN) {
                 return convertSemanticDataTypeToSemanticReturnValue(functionReturnValue);
             }
             return OK;
 
+            break;
+        }
+        case (AST_SETTER): {
+            printLog("AST_SETTER\n");
+            // TODO setter
+            break;
+        }
+        case (AST_GETTER): {
+            printLog("AST_GETTER\n");
+            // TODO getter
             break;
         }
         case (AST_VAR): {
@@ -549,17 +562,56 @@ RecursiveSemanticAnalysisReturnValues recursiveNodeWalker(AstNode*    currentNod
         }
         case (AST_IF_CHAIN): {
             printLog("AST_IF_CHAIN\n");
-            // TODO ast if chain
+
+            for (size_t i = 0; i < currentNode->arity; i++) {
+                RecursiveSemanticAnalysisReturnValues childValue =
+                    recursiveNodeWalker(currentNode->child[i], AST_IF_CHAIN);
+                if (childValue == ERROR) {
+                    return ERROR;
+                }
+            }
+            return OK;
+
             break;
         }
         case (AST_IF): {
             printLog("AST_IF\n");
-            // TODO AST_IF
+
+            RecursiveSemanticAnalysisReturnValues conditionChildValue =
+                recursiveNodeWalker(currentNode->child[0], AST_IF);
+
+            if (conditionChildValue == OK ||
+                conditionChildValue == ERROR) {  // TODO asi ještě něco? Jak chápat zadání u if?
+                printError(SEMANTICS_ERROR_UNCOMPATIBLE, "(if) Neplatna podminka!\n");
+                memorySafeExit(SEMANTICS_ERROR_UNCOMPATIBLE);
+                return ERROR;
+            }
+
+            RecursiveSemanticAnalysisReturnValues blockValue =
+                recursiveNodeWalker(currentNode->child[1], AST_IF);
+
+            if (blockValue != OK) {  // TODO asi se změní nž budu řešit návratové typy funkcí
+                printError(SEMANTICS_ERROR_OTHERS, "(if) Neplatny blok!\n");
+                memorySafeExit(SEMANTICS_ERROR_OTHERS);
+                return ERROR;
+            }
+
+            return OK;
             break;
         }
         case (AST_ELSE): {
             printLog("AST_ELSE\n");
-            // TODO ast_else
+
+            RecursiveSemanticAnalysisReturnValues blockValue =
+                recursiveNodeWalker(currentNode->child[0], AST_ELSE);
+
+            if (blockValue != OK) {  // TODO asi se změní nž budu řešit návratové typy funkcí
+                printError(SEMANTICS_ERROR_OTHERS, "(else) Neplatny blok!\n");
+                memorySafeExit(SEMANTICS_ERROR_OTHERS);
+                return ERROR;
+            }
+
+            return OK;
             break;
         }
         case (AST_WHILE): {
@@ -1048,6 +1100,8 @@ RecursiveSemanticAnalysisReturnValues recursiveNodeWalker(AstNode*    currentNod
         case (AST_AND): {
             printLog("AST_AND\n");
 
+            // TODO bere cokoliv a vrací podle random pravidel
+            // https://wren.io/control-flow.html#logical-operators
             RecursiveSemanticAnalysisReturnValues leftChild =
                 recursiveNodeWalker(currentNode->child[0], AST_AND);
             RecursiveSemanticAnalysisReturnValues rightChild =
@@ -1080,6 +1134,9 @@ RecursiveSemanticAnalysisReturnValues recursiveNodeWalker(AstNode*    currentNod
         }
         case (AST_OR): {
             printLog("AST_OR\n");
+
+            // TODO bere cokoliv a vrací podle random pravidel
+            // https://wren.io/control-flow.html#logical-operators
 
             RecursiveSemanticAnalysisReturnValues leftChild =
                 recursiveNodeWalker(currentNode->child[0], AST_OR);
