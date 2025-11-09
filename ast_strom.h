@@ -117,6 +117,8 @@ typedef struct AstNode {
 
     bool is_leaf;
     AstValue value;          // platný len ak is_leaf == true
+    //pro generovani docasnych promenych pouziva pouze codegen
+    int tmp_id;
 } AstNode;
 
 

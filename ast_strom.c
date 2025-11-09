@@ -112,16 +112,16 @@ AstNode *ast_new(AstNodeType kind, size_t arity, AstNode **kids) {
         printError(INTERNAL_ERROR, "Chyba alokace: new_node");
         memorySafeExit(INTERNAL_ERROR);
     }
-    
+    new_node->tmp_id = 0;
 
     new_node->kind = kind;
     new_node->arity = arity;
 
-    if (arity > 0) 
+    if (arity > 0)
     {
-        
+
         //fprintf(stderr, "  -> Alokujem pole detí pre %zu uzlov\n", arity);
-        
+
         new_node->child = (AstNode**)malloc(sizeof(AstNode*) * arity);
         if (!new_node->child) {
             printError(INTERNAL_ERROR, "Chyba alokácie detí AST uzla\n");
@@ -129,15 +129,15 @@ AstNode *ast_new(AstNodeType kind, size_t arity, AstNode **kids) {
         }
         for (size_t i = 0; i < arity; ++i)
         {
-            
+
             //fprintf(stderr, "    -> Priraďujem dieťa[%zu] = %d\n", i, kids[i]->value);
-            
+
             new_node->child[i] = kids[i];
         }
 
     }
     //fprintf(stderr, "[AST-NEW] Uzol %s (%p) úspešne vytvorený\n", ast_node_type_to_string(new_node->kind),  (void*)new_node);
-    
+
 
     return new_node;
 }
@@ -153,26 +153,26 @@ AstNode *new_leaf(AstNodeType kind, Token token) {
     newLeaf->is_leaf = true;
 
     ast_value_from_token(&newLeaf->value, kind, &token);
-    
+
     //if (newLeaf->value.has_str)
     //    fprintf(stderr, "  -> String hodnota: '%s'\n", newLeaf->value.str);
     //else if (newLeaf->value.is_int)
     //    fprintf(stderr, "  -> Int hodnota: %d\n", newLeaf->value.int_val);
     //else if (newLeaf->value.is_float)
     //   fprintf(stderr, "  -> Float hodnota: %f\n", newLeaf->value.float_val);
-    
+
     return newLeaf;
 }
 
 
 void ast_free_whole(AstNode *node) {
-    if (!node) 
+    if (!node)
     {
         return;
     }
-    if (node->is_leaf) 
+    if (node->is_leaf)
     {
-        if (node->value.has_str) 
+        if (node->value.has_str)
         {
             free(node->value.str);
             node->value.str = NULL;
@@ -180,7 +180,7 @@ void ast_free_whole(AstNode *node) {
         free(node);
         return;
     }
-    for (size_t i = 0; i < node->arity; ++i) 
+    for (size_t i = 0; i < node->arity; ++i)
     {
         ast_free_whole(node->child[i]);
     }
@@ -192,7 +192,7 @@ void ast_free_whole(AstNode *node) {
 
 void ast_value_from_token(AstValue *out, AstNodeType kind, Token *token) {
     memset(out, 0, sizeof(*out));
-    switch (kind) 
+    switch (kind)
     {
         case AST_INT_LIT:
             out->is_int = true;
@@ -207,7 +207,7 @@ void ast_value_from_token(AstValue *out, AstNodeType kind, Token *token) {
             out->str = dup_cstr(token->value.identifier);
             break;
         case AST_IDENTIFIER:
-        case AST_GLOBAL_ID: 
+        case AST_GLOBAL_ID:
             out->has_str = true;
             out->str = dup_cstr(token->value.identifier);
             break;
@@ -218,7 +218,7 @@ void ast_value_from_token(AstValue *out, AstNodeType kind, Token *token) {
 }
 
 char *dup_cstr(const char *string) {
-    if (!string) 
+    if (!string)
     {
         return NULL;
     }
@@ -240,7 +240,7 @@ const char *ast_node_type_to_string(AstNodeType kind) {
             return "PROGRAM";
         case AST_PROLOG:
             return "PROLOG";
-        case AST_MAIN_CLASS: 
+        case AST_MAIN_CLASS:
             return "MAIN_CLASS";
         case AST_MAIN_CLASS_BLOCK:
             return "MAIN_CLASS_BLOCK";

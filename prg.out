@@ -1,74 +1,134 @@
+0 FLAG
+1 Aktualni token INTEGER a stacktop: DOLLAR [9, 8]
+	Operace <
+		2 budu hazet na stack klasicky
+			3 < (9, 8) INTEGER STOP DOLLAR 
+4 Aktualni token PLUS a stacktop: INTEGER [8, 0]
+	Operace >
+			param count 1
+			5 > (8, 0) EXPRESSION DOLLAR 
+6 Aktualni token PLUS a stacktop: EXPRESSION [9, 0]
+	Operace <
+		7 budu hazet na stack slozite
+			8 < (9, 0) PLUS EXPRESSION STOP DOLLAR 
+9 Aktualni token INTEGER a stacktop: PLUS [0, 8]
+	Operace <
+		10 budu hazet na stack klasicky
+			11 < (0, 8) INTEGER STOP PLUS EXPRESSION STOP DOLLAR 
+12 Aktualni token NEW_LINE a stacktop: INTEGER [8, 9]
+			param count 1
+Final etapa pico: EXPRESSION PLUS EXPRESSION STOP DOLLAR 
+			param count 3
+Final etapa pico: EXPRESSION DOLLAR 
+string STRING_PLUS
+Final stack: EXPRESSION DOLLAR 
+precedencna odovzdala token jeho type je = 33
+0 FLAG
+1 Aktualni token INTEGER a stacktop: DOLLAR [9, 8]
+	Operace <
+		2 budu hazet na stack klasicky
+			3 < (9, 8) INTEGER STOP DOLLAR 
+4 Aktualni token PLUS a stacktop: INTEGER [8, 0]
+	Operace >
+			param count 1
+			5 > (8, 0) EXPRESSION DOLLAR 
+6 Aktualni token PLUS a stacktop: EXPRESSION [9, 0]
+	Operace <
+		7 budu hazet na stack slozite
+			8 < (9, 0) PLUS EXPRESSION STOP DOLLAR 
+9 Aktualni token INTEGER a stacktop: PLUS [0, 8]
+	Operace <
+		10 budu hazet na stack klasicky
+			11 < (0, 8) INTEGER STOP PLUS EXPRESSION STOP DOLLAR 
+12 Aktualni token NEW_LINE a stacktop: INTEGER [8, 9]
+			param count 1
+Final etapa pico: EXPRESSION PLUS EXPRESSION STOP DOLLAR 
+			param count 3
+Final etapa pico: EXPRESSION DOLLAR 
+string STRING_PLUS
+Final stack: EXPRESSION DOLLAR 
+precedencna odovzdala token jeho type je = 33
 .IFJcode25
 JUMP $$main
-$$main
-#main
+LABEL $$main
+CREATEFRAME
 PUSHFRAME
 DEFVAR LF@x
-DEFVAR LF@type_right
-CREATEFRAME
+DEFVAR LF@main_ln_0
+DEFVAR LF@main_rn_0
+DEFVAR LF@main_ty_0
+DEFVAR LF@main_ln_1
+DEFVAR LF@main_rn_1
+DEFVAR LF@main_ty_1
 PUSHS int@1
 PUSHS int@1
+POPS LF@main_rn_0
+POPS LF@main_ln_0
+PUSHS LF@main_ln_0
+PUSHS LF@main_rn_0
 TYPES
-POPS LF@type_right
+POPS LF@main_ty_0
 TYPES
-PUSHS LF@type_right
-JUMPIFEQS $ok$0
-JUMP $err$0
-LABEL $ok$0
+PUSHS LF@main_ty_0
+JUMPIFEQS main$ok$0
+JUMP main$err$0
+LABEL main$ok$0
 PUSHS string@string
-JUMPIFEQS $concat$0
-PUSHS LF@type_right
+JUMPIFEQS main$concat$0
+PUSHS LF@main_ty_0
 PUSHS string@int
-JUMPIFEQS $add$0
-PUSHS LF@type_right
+JUMPIFEQS main$add$0
+PUSHS LF@main_ty_0
 PUSHS string@float
-JUMPIFEQS $add$0
-JUMP $err$0
-LABEL $add$0
-PUSHS LF@lhs
-PUSHS LF@rhs
+JUMPIFEQS main$add$0
+JUMP main$err$0
+LABEL main$add$0
+PUSHS LF@main_ln_0
+PUSHS LF@main_rn_0
 ADDS
-JUMP $end$0
-LABEL $concat$0
-PUSHS LF@lhs
-PUSHS LF@rhs
-CONCATS
-JUMP $end$0
-LABEL $err$0
+JUMP main$end$0
+LABEL main$concat$0
+CONCATS LF@main_ln_0 LF@main_rn_0
+JUMP main$end$0
+LABEL main$err$0
 EXIT int@4
-LABEL $end$0
+LABEL main$end$0
+
 POPS LF@x
 PUSHS int@1
 PUSHS int@1
+POPS LF@main_rn_1
+POPS LF@main_ln_1
+PUSHS LF@main_ln_1
+PUSHS LF@main_rn_1
 TYPES
-POPS LF@type_right
+POPS LF@main_ty_1
 TYPES
-PUSHS LF@type_right
-JUMPIFEQS $ok$0
-JUMP $err$0
-LABEL $ok$0
+PUSHS LF@main_ty_1
+JUMPIFEQS main$ok$1
+JUMP main$err$1
+LABEL main$ok$1
 PUSHS string@string
-JUMPIFEQS $concat$0
-PUSHS LF@type_right
+JUMPIFEQS main$concat$1
+PUSHS LF@main_ty_1
 PUSHS string@int
-JUMPIFEQS $add$0
-PUSHS LF@type_right
+JUMPIFEQS main$add$1
+PUSHS LF@main_ty_1
 PUSHS string@float
-JUMPIFEQS $add$0
-JUMP $err$0
-LABEL $add$0
-PUSHS LF@lhs
-PUSHS LF@rhs
+JUMPIFEQS main$add$1
+JUMP main$err$1
+LABEL main$add$1
+PUSHS LF@main_ln_1
+PUSHS LF@main_rn_1
 ADDS
-JUMP $end$0
-LABEL $concat$0
-PUSHS LF@lhs
-PUSHS LF@rhs
-CONCATS
-JUMP $end$0
-LABEL $err$0
+JUMP main$end$1
+LABEL main$concat$1
+CONCATS LF@main_ln_1 LF@main_rn_1
+JUMP main$end$1
+LABEL main$err$1
 EXIT int@4
-LABEL $end$0
+LABEL main$end$1
+
 POPS LF@x
 POPFRAME
 RETURN
