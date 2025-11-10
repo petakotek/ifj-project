@@ -22,21 +22,23 @@ typedef enum {
 
 } precedentRules;
 
-int PSA_TABLE[13][13] = {
-//   0  1  2  3  4  5  6  7  8  9  10 11 12
-    {R, L, R, R, R, L, R, R, L, R, L, R, N}, // + -
-    {R, R, R, R, R, L, R, R, L, R, L, R, N}, // * /
-    {L, L, R, R, R, L, R, R, L, R, L, R, N}, // < > >= <=
-    {L, L, L, R, R, L, R, R, L, R, L, R, N}, // is
-    {L, L, L, L, R, L, R, R, L, R, L, R, N}, // == !=
-    {R, R, R, R, R, R, R, R, L, R, L, R, N}, // negace !
-    {L, L, L, L, L, L, R, R, L, R, L, R, N}, // &&
-    {L, L, L, L, L, L, L, R, L, R, L, R, N}, // ||
-    {R, R, R, R, R, N, R, R, N, R, N, R, R}, // id
-    {L, L, L, L, L, L, L, L, L, N, L, N, L}, // dolar
-    {L, L, L, L, L, L, L, L, L, N, L, E, N}, // (
-    {R, R, R, R, R, N, R, R, N, R, N, R, R}, // )
-    {N, N, N, N, N, L, N, N, L, N, L, R, R}, // ../...
+int PSA_TABLE[15][15] = {
+//   0  1  2  3  4  5  6  7  8  9  10 11 12 13 14
+    {R, L, R, R, R, L, R, R, L, R, L, R, N, R, R}, // + -
+    {R, R, R, R, R, L, R, R, L, R, L, R, N, N, R}, // * /
+    {L, L, R, R, R, L, R, R, L, R, L, R, N, R, R}, // < > >= <=
+    {L, L, L, R, R, L, R, R, L, R, L, R, N, N, N}, // is
+    {L, L, L, L, R, L, R, R, L, R, L, R, N, R, N}, // == !=
+    {R, R, R, R, R, R, R, R, L, R, L, R, N, N, N}, // negace !
+    {L, L, L, L, L, L, R, R, L, R, L, R, N, N, N}, // &&
+    {L, L, L, L, L, L, L, R, L, R, L, R, N, N, N}, // ||
+    {R, R, R, R, R, N, R, R, N, R, N, R, R, R, R}, // id
+    {L, L, L, L, L, L, L, L, L, N, L, N, L, L, L}, // dolar
+    {L, L, L, L, L, L, L, L, L, N, L, E, N, N, N}, // (
+    {R, R, R, R, R, N, R, R, N, R, N, R, R, R, N}, // )
+    {N, N, N, N, N, L, N, N, L, N, L, R, R, N, N}, // ../...
+    {L, L, L, N, N, N, N, N, L, N, L, N, N, N, E}, // ?
+    {L, L, L, N, N, N, N, N, L, N, L, N, N, N, L}, // :
 };
 
  // vsechny operatory, ktere se mohou vyskytnout ve vyrazu
@@ -54,6 +56,8 @@ typedef enum{
     INDEX_LP,           // 10   (
     INDEX_RP,           // 11   )
     INDEX_DOTS,         // 12   ../...
+    INDEX_QUESTION_MARK,
+    INDEX_COLON,
 } operators_t;
 
 
@@ -86,7 +90,6 @@ int operatorToPush(Token token)
         case TOKEN_AND:     return INDEX_AND;
         // ||
         case TOKEN_OR:      return INDEX_OR;
-
         
         // id
         case TOKEN_IDENTIFIER:
@@ -116,6 +119,9 @@ int operatorToPush(Token token)
 
         case TOKEN_DOUBLE_DOT: return INDEX_DOTS;
         case TOKEN_TRIPLE_DOT: return INDEX_DOTS;
+
+        case TOKEN_QUESTION_MARK:   return INDEX_QUESTION_MARK; // ?
+        case TOKEN_COLON:           return INDEX_COLON; // :
 
        
         // jinak je to $
@@ -166,6 +172,7 @@ AstNodeType getAstNodeTypeFromTokenType(TokenType type)
     case TOKEN_FLOAT:           return AST_FLOAT_LIT; // float literal
     case TOKEN_GLOBAL_ID:       return AST_GLOBAL_ID; // global identifier
     case TOKEN_EQ:              return AST_EQ;      // ==
+    case TOKEN_NOT:             return AST_NEQ;     // !=
     case TOKEN_LT:              return AST_LT;      // <
     case TOKEN_GT:              return AST_GT;      // >
     case TOKEN_AND:             return AST_AND;     // &&
@@ -177,7 +184,6 @@ AstNodeType getAstNodeTypeFromTokenType(TokenType type)
     case TOKEN_RPAREN:          return AST_RPAREN;     // )
     case TOKEN_NEGACE:          return AST_NOT;     // !
     case TOKEN_STRING:          return AST_STRING_LIT; // string
-    case TOKEN_NOT:             return AST_NEQ; // !=
     case TOKEN_DOUBLE_DOT:      return AST_DOUBLE_DOT;
     case TOKEN_TRIPLE_DOT:      return AST_TRIPLE_DOT;
     case TOKEN_TRUE:            return AST_BOOL_LIT;
@@ -357,6 +363,50 @@ void findPrecedenceRule(DynamicPrecedenceStackPtr stack, DynamicAstNodeStackPtr 
                 stackPrecedencePush(stack, p2);
             }
         break;
+            
+        // E -> E ? E : E
+        case 5:
+            Token p4;
+            Token p5;
+            p1 = stackPrecedenceRead(stack); // E
+            stackPrecedencePop(stack); // levy vyraz
+            p2 = stackPrecedenceRead(stack); // :
+            stackPrecedencePop(stack); // nejaky operator
+            p3 = stackPrecedenceRead(stack); // E
+            stackPrecedencePop(stack); // pravy vyraz
+            p4 = stackPrecedenceRead(stack); // ?
+            stackPrecedencePop(stack); // pravy vyraz
+            p5 = stackPrecedenceRead(stack); // E
+            stackPrecedencePop(stack);
+            stackPrecedencePop(stack); // vyhodim <
+            
+            // projde pravidlo E ? E : E
+            if (p1.type == TOKEN_EXPRESSION && p2.type == TOKEN_COLON && p3.type == TOKEN_EXPRESSION
+                && p4.type == TOKEN_QUESTION_MARK && p5.type == TOKEN_EXPRESSION)
+            {
+
+                AstNode **kids = NULL;
+                kids = malloc(sizeof(AstNode*) * 3);
+                // vyberu si ze zasobniku 2 identifikatory
+                AstNode *elseNode = stackAstNodeRead(stackA);
+                stackAstNodePop(stackA);
+                AstNode *ifNode = stackAstNodeRead(stackA);
+                stackAstNodePop(stackA);
+                AstNode *contidionNode = stackAstNodeRead(stackA);
+                stackAstNodePop(stackA);
+                kids[2] = elseNode; // jinak
+                kids[1] = ifNode; // pokud je to pravda
+                kids[0] = contidionNode; // podmínka
+
+                AstNode *newRoot = ast_new(AST_TERNARY, 3, kids);
+                free(kids); // uvolneni deti, nebudou uz potreba
+                stackAstNodePush(stackA, newRoot);
+                
+                p2.type = TOKEN_EXPRESSION; // vratim na klasicky zasobnik jenom expression
+                stackPrecedencePush(stack, p2);
+            }
+            
+        break;
 
         default:
             printError(SYNTAX_ERROR, "(PSA) pravidlo gramatiky nebylo nalezeno\n");
@@ -473,6 +523,7 @@ AstNode* parseExpression(Token *token, int flag)
     bool checkEmptyIf = false;
     bool expectingNewLineAfterOperator = true;
     bool expectingRPAREN = false;
+    bool ternaryOperator = false;
     // dokud neni na zasobniku jenom $E && nemam na vstupu token, ktery mi vsechno ukoncuje
     while (actualToken.type != TOKEN_PSA_END) // 
     {
@@ -536,6 +587,15 @@ AstNode* parseExpression(Token *token, int flag)
             firstOK = checkFirstTokenType(actualToken);
         }
         
+        // if (actualToken.type == TOKEN_QUESTION_MARK)
+        // {
+        //     ternaryOperator = true;
+        //     while (!checkDollarExpression(stackP))
+        //     {
+        //         findPrecedenceRule(stackP, stackA); // dokud nebude cely vyraz podminky zpracovana
+        //     }
+            
+        // }
         
         
         // podminky, ktere mohou nastat pri ukoncovani vyrazu, kazda je unikatni
@@ -552,8 +612,9 @@ AstNode* parseExpression(Token *token, int flag)
         }
         
         printf("%d Aktualni token %s a stacktop: %s [%d, %d]\n",poradiCount++, token_type_to_string(actualToken.type), token_type_to_string(stackPrecedenceRead(stackP).type), operatorToPush(StackTop), operatorToPush(actualToken));
+        printStack(stackP);
 
-        if (endFlag == TOKEN_PSA_END) // TODO ošestrit konec výrazu když dostanu flag 0, tzn. že tam může být NEW LINE a výraz pokračovat
+        if (endFlag == TOKEN_PSA_END)
         {
             while (!checkDollarExpression(stackP)) // cyklus probíhá dokud není na zásobníku pouze dolar a výraz
             {

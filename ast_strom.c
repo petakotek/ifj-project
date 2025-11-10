@@ -358,6 +358,7 @@ const char *ast_node_type_to_string(AstNodeType kind) {
         case AST_GETTER: return "GETTER";
         case AST_SETTER: return "SETTER";
         case AST_CONDITION: return"CONDITION";
+        case AST_TERNARY:   return "TERNARY_OPERATOR";
         default:                   return "UNKNOWN_AST_NODE";
     }
 }

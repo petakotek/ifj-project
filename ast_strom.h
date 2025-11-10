@@ -50,6 +50,7 @@ typedef enum AstNodeType {
     AST_BREAK,
     AST_CONTINUE,
     AST_RETURN,
+    AST_TERNARY,
 
     // listy
     AST_IDENTIFIER,
