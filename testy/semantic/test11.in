@@ -2,6 +2,11 @@ import "ifj25" for Ifj
 class Program {
     // if, elsif, while, for, atd...
 static main() {
+    ifs()
+    whiles()
+    for_s()
+}
+static ifs(){
     if(1 == 1) {
         var a
     } else {
@@ -16,11 +21,47 @@ static main() {
         var a
     } else if(1<2) {
         var a
-    } else if(1 || 2) {
+    } else if("b" || 2) {
         var b
     } else {
         var c
     }
+
     return
+}
+
+static whiles() {
+    while (1==2) {
+        var a = 5
+    }
+
+    while (1==2) {
+        continue
+    }
+
+    while (1==2) {
+        break
+    }
+}
+
+static for_s() {
+    var x
+    for(x in 1..2) {
+        var y
+    }
+
+    for(x in 1...2){
+        var z
+    }
+
+        for(x in 1...2){
+        var z
+        continue
+    }
+
+        for(x in 1...2){
+        var z
+        break
+    }
 }
 }

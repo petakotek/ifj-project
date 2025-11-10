@@ -12,10 +12,10 @@ static main() {
     var ads = 1 == "a"
     var bas = !ads
 
-    var ab = 1 < "a"
-    var abc = 1 > "a"
-    var abd = 1 <= "a"
-    var abe = 1 >= "a"
+    var ab = 1 < 2
+    var abc = 1 > 34
+    var abd = 1 <= 4.5
+    var abe = 1 >= -8
     var abf = abe && abc
     var abg = abf || ab
     var sad = 1 != 2
@@ -23,6 +23,8 @@ static main() {
     var ysads = 1
     var da = -1
     var daa = -ysads
+
+    var aredsx = 1 is Num
 
   var v = w + z
   var a = 1 - 5
