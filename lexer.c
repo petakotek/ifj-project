@@ -220,7 +220,7 @@ char *substring(size_t start, size_t end) {
         case TOKEN_GTE:
             return "GTE";
         case TOKEN_NOT:
-            return "NOT";
+            return "NOT_EQ";
         case TOKEN_COLON:
             return "COLON";
         case TOKEN_AND:
