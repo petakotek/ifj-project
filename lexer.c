@@ -251,8 +251,8 @@ char *substring(size_t start, size_t end) {
             return "BREAK";
         case TOKEN_COMMA:
             return "COMMA";
-        case TOKEN_NEGACE:
-        	return "NEGACE";
+        case TOKEN_NOT_EQUAL:
+        	return "NOT_EQUAL";
         case TOKEN_DOLLAR:
             return "DOLLAR";
         case TOKEN_EXPRESSION:
@@ -527,8 +527,8 @@ Token lexer_token_next() {
                     token.type = TOKEN_OR;
                     goto token_found;
 
-                case NEGACE:
-	                token.type = TOKEN_NEGACE;
+                case NOT_EQUAL:
+	                token.type = TOKEN_NOT_EQUAL;
 	                goto token_found;
 
                 case NOT:
@@ -642,7 +642,7 @@ Token lexer_token_next() {
                     lexer->pos++;
                     zacatek = lexer->pos;
                 } else if (c == '!') {
-                    stav = NEGACE;
+                    stav = NOT_EQUAL;
                     lexer->pos++;
                     zacatek = lexer->pos;
                 } else if (c == ',') {
@@ -1174,12 +1174,12 @@ Token lexer_token_next() {
                 goto token_found;
             }
 
-            case NEGACE: {
+            case NOT_EQUAL: {
                 if (c == '=') {
                     stav = NOT;
                     lexer->pos++;
                 } else {
-	                token.type = TOKEN_NEGACE;
+	                token.type = TOKEN_NOT_EQUAL;
 	                token.line = radek;
 	                goto token_found;
                 }
