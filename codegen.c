@@ -230,9 +230,6 @@ void collectLocalVars(AstNode *node, VarList *vars,tmpValue *tmpStruct) {
               break;
 
           case AST_PLUS:
-	          node->tmp_id = tmpStruct->value_counter++;
-	          add_binop_tmps(vars, tmpStruct->func_name, node->tmp_id,true);
-	          break;
           case AST_MINUS:
           case AST_MUL:
           case AST_DIV:
@@ -244,7 +241,7 @@ void collectLocalVars(AstNode *node, VarList *vars,tmpValue *tmpStruct) {
           case AST_AND:
           case AST_OR: {
               node->tmp_id = tmpStruct->value_counter++;
-              add_binop_tmps(vars, tmpStruct->func_name, node->tmp_id,false);
+              add_binop_tmps(vars, tmpStruct->func_name, node->tmp_id,node);
               break;
           }
 
@@ -322,7 +319,7 @@ void emit_push_value(AstNode *node, DynamiclabelStackStackPtr label_stack, int c
     } else if (node->kind == AST_FLOAT_LIT) {
         printN("PUSHS float@%f", node->value.float_val);
     } else if (node->kind == AST_IDENTIFIER) {
-        printN("PUSHS LF@%s", node->value.str);
+    	printN("PUSHS LF@%s", node->value.str);
     } else if (node->kind == AST_VAR) {
         printN("PUSHS LF@%s", node->value.str);
     }else if (node->kind == AST_BOOL_LIT) {
@@ -1209,6 +1206,23 @@ void emit_or(AstNode *node, DynamiclabelStackStackPtr label_stack, int counter,
     printN("LABEL %s", label_end);
     // Stack: [result] (buď left pokud false/nil, nebo right)
 }
+void emit_negace(AstNode *node, DynamiclabelStackStackPtr label_stack, int counter,
+              char *func_name) {
+    int id = node->tmp_id;
+    char value[128];
+    snprintf(value, sizeof value, "%s_ln_%d", func_name, id);
+
+    char label_false[128], label_end[128];
+    snprintf(label_false, sizeof label_false, "%s$and_not_false$%d", func_name, id);
+    snprintf(label_end,    sizeof label_end,    "%s$and_end$%d",    func_name, id);
+
+    emit_command(node->child[0], label_stack, counter,func_name);
+    // Stack: [left_value]
+    printN("POPS %s",value);
+
+    printN("NOT");
+    // Stack: [result] (buď left pokud false/nil, nebo right)
+}
 void emit_assigned(AstNode *node, DynamiclabelStackStackPtr label_stack, int counter, char *func_name) {
     emit_command(node->child[1], label_stack, counter, func_name);
     printN("POPS LF@%s",node->child[0]->value.str);
@@ -1311,7 +1325,7 @@ void emit_command(AstNode *node, DynamiclabelStackStackPtr label_stack, int coun
 
         // Listy
         case AST_IDENTIFIER:
-            printN("PUSHS LF@%s", node->value.str);
+           // printN("PUSHS LF@%s", node->value.str);
             break;
         case AST_GLOBAL_ID:
             // Nová implementace: nacteni globalni promenne
