@@ -55,5 +55,4 @@ int main(){
 	ast_free_whole(AST);
 
 	free(source_file);
-
 }
