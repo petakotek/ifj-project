@@ -43,7 +43,6 @@ void lexer_free(void) {
         free(lexer);
         lexer = NULL;
     } else {
-        printLog("lexer je null hrozba double free \n");
     }
 }
 /*
@@ -219,8 +218,8 @@ char *substring(size_t start, size_t end) {
             return "LTE";
         case TOKEN_GTE:
             return "GTE";
-        case TOKEN_NOT:
-            return "NOT_EQ";
+        case TOKEN_NOT_EQUAL:
+            return "NOT";
         case TOKEN_COLON:
             return "COLON";
         case TOKEN_AND:
@@ -251,8 +250,8 @@ char *substring(size_t start, size_t end) {
             return "BREAK";
         case TOKEN_COMMA:
             return "COMMA";
-        case TOKEN_NOT_EQUAL:
-        	return "NOT_EQUAL";
+        case TOKEN_NOT:
+        	return "NEGACE";
         case TOKEN_DOLLAR:
             return "DOLLAR";
         case TOKEN_EXPRESSION:
@@ -527,12 +526,12 @@ Token lexer_token_next() {
                     token.type = TOKEN_OR;
                     goto token_found;
 
-                case NOT_EQUAL:
-	                token.type = TOKEN_NOT_EQUAL;
+                case NEGACE:
+	                token.type = TOKEN_NOT;
 	                goto token_found;
 
                 case NOT:
-                    token.type = TOKEN_NOT;
+                    token.type = TOKEN_NOT_EQUAL;
                     goto token_found;
 
                 default:
@@ -642,7 +641,7 @@ Token lexer_token_next() {
                     lexer->pos++;
                     zacatek = lexer->pos;
                 } else if (c == '!') {
-                    stav = NOT_EQUAL;
+                    stav = NEGACE;
                     lexer->pos++;
                     zacatek = lexer->pos;
                 } else if (c == ',') {
@@ -765,7 +764,7 @@ Token lexer_token_next() {
                     memorySafeExit(LEX_ERROR);
                 } else {
                     token.type             = TOKEN_INTEGER;
-                    token.value.identifier = substring(zacatek, lexer->pos);
+                    token.value.identifier = "0";
                     token.line             = radek;
                     goto token_found;
                 }
@@ -977,7 +976,7 @@ Token lexer_token_next() {
                     lexer->pos++;
                     token.type         = TOKEN_STRING_BLOCK;
                     token.line         = radek;
-                    token.value.identifier = substring(zacatek, lexer->pos - 3);
+                    token.value.identifier = substring(zacatek+3, lexer->pos - 3);
                     goto token_found_string;
                 } else {
                     stav = STRING_BLOCK;  // nebyl to konec, zpět do
@@ -1174,19 +1173,19 @@ Token lexer_token_next() {
                 goto token_found;
             }
 
-            case NOT_EQUAL: {
+            case NEGACE: {
                 if (c == '=') {
                     stav = NOT;
                     lexer->pos++;
                 } else {
-	                token.type = TOKEN_NOT_EQUAL;
+	                token.type = TOKEN_NOT;
 	                token.line = radek;
 	                goto token_found;
                 }
                 break;
             }
             case NOT: {
-                token.type = TOKEN_NOT;
+                token.type = TOKEN_NOT_EQUAL;
                 token.line = radek;
                 goto token_found;
             }
