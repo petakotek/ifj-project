@@ -9,8 +9,6 @@
 #include "support_functions.h"
 #include "symtable.h"
 
-// TODO ověřit, že nedochází k úniku paměti při ukončení neplánovaně
-
 /**
  * @brief Ukazatel na zásobník pro ukládání jednotlivých rámců
  *
@@ -987,6 +985,34 @@ RecursiveSemanticAnalysisReturnValues recursiveNodeWalker(AstNode*    currentNod
 
             break;
         }
+        case (AST_TERNARY): {
+            printLog("AST_TERNARY\n");
+
+            RecursiveSemanticAnalysisReturnValues conditionChild =
+                    recursiveNodeWalker(currentNode->child[0], AST_TERNARY);
+                if (conditionChild == OK) {  // TODO asi ještě něco? Jak chápat zadání u if?
+                    printError(SEMANTICS_ERROR_UNCOMPATIBLE, "(?:) Neplatna podminka!\n");
+                    memorySafeExit(SEMANTICS_ERROR_UNCOMPATIBLE);
+                }
+
+            RecursiveSemanticAnalysisReturnValues trueChild =
+                    recursiveNodeWalker(currentNode->child[1], AST_TERNARY);
+                if (trueChild == OK) {  // TODO asi ještě něco? Jak chápat zadání u if?
+                    printError(SEMANTICS_ERROR_UNCOMPATIBLE, "(?:) Neplatny vyraz pri platne podmince!\n");
+                    memorySafeExit(SEMANTICS_ERROR_UNCOMPATIBLE);
+                }
+
+                RecursiveSemanticAnalysisReturnValues falseChild =
+                    recursiveNodeWalker(currentNode->child[2], AST_TERNARY);
+                if (falseChild == OK) {  // TODO asi ještě něco? Jak chápat zadání u if?
+                    printError(SEMANTICS_ERROR_UNCOMPATIBLE, "(?:) Neplatny vyraz pri neplatne podmince!\n");
+                    memorySafeExit(SEMANTICS_ERROR_UNCOMPATIBLE);
+                }
+
+                return UNKNOWN_DATA; // TODO asi? 
+
+            break;
+        }
         case (AST_EQ): {
             printLog("AST_EQ\n");
 
@@ -1410,7 +1436,6 @@ void deleteScope() {
 }
 
 SemanticSymbol* findSymbol(char* key) {
-    // TODO NESMÍ ukončit program
     unsigned toSearchScopeIndex = scopesStack->nextTopElement;
     int      index              = -1;
     while (toSearchScopeIndex != 0) {
