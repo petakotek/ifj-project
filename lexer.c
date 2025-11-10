@@ -220,7 +220,7 @@ char *substring(size_t start, size_t end) {
         case TOKEN_GTE:
             return "GTE";
         case TOKEN_NOT:
-            return "NOT";
+            return "NOT_EQ";
         case TOKEN_COLON:
             return "COLON";
         case TOKEN_AND:
@@ -765,7 +765,7 @@ Token lexer_token_next() {
                     memorySafeExit(LEX_ERROR);
                 } else {
                     token.type             = TOKEN_INTEGER;
-                    token.value.identifier = "0";
+                    token.value.identifier = substring(zacatek, lexer->pos);
                     token.line             = radek;
                     goto token_found;
                 }

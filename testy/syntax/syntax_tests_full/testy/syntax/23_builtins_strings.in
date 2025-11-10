@@ -1,0 +1,10 @@
+import "ifj25" for Ifj
+class Program {
+    static main() {
+        var s = "hello"
+        var len = Ifj.length(s)
+        var sub = Ifj.substring(s, 1, 3)
+        var code = Ifj.ord(s, 0)
+        var ch = Ifj.chr(code)
+    }
+}

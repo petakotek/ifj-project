@@ -1,0 +1,17 @@
+import "ifj25" for Ifj
+class Program {
+    static sumRange(a, b) {
+        var sum = 0
+        for (i in a .. b) {
+            sum = sum + i
+        }
+        return sum
+    }
+
+    static main() {
+        var start = 1
+        var end = 5
+        var total = Program.sumRange(start, end)
+        Ifj.write(total)
+    }
+}

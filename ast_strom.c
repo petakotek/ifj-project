@@ -27,9 +27,12 @@ AstNode *build_ifchain_flat(size_t n, AstNode **kids) {
         return node;
     }
 
-    // (head, EMPTY) -> len [head]
     if (n == 2 && kids[1] && kids[1]->kind == AST_EMPTY) {
         AstNode *flat1[1] = { kids[0] };
+
+        // EMPTY uzol už nebudeme nikde používať -> uvoľniť
+        ast_free_whole(kids[1]);   // alebo free(kids[1]), ak máš istotu, že nemá deti
+
         return ast_new(AST_IF_CHAIN, 1, flat1);
     }
 
@@ -355,6 +358,7 @@ const char *ast_node_type_to_string(AstNodeType kind) {
         case AST_GETTER: return "GETTER";
         case AST_SETTER: return "SETTER";
         case AST_CONDITION: return"CONDITION";
+        case AST_TERNARY:   return "TERNARY_OPERATOR";
         default:                   return "UNKNOWN_AST_NODE";
     }
 }
