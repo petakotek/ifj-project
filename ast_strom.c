@@ -27,9 +27,12 @@ AstNode *build_ifchain_flat(size_t n, AstNode **kids) {
         return node;
     }
 
-    // (head, EMPTY) -> len [head]
     if (n == 2 && kids[1] && kids[1]->kind == AST_EMPTY) {
         AstNode *flat1[1] = { kids[0] };
+
+        // EMPTY uzol už nebudeme nikde používať -> uvoľniť
+        ast_free_whole(kids[1]);   // alebo free(kids[1]), ak máš istotu, že nemá deti
+
         return ast_new(AST_IF_CHAIN, 1, flat1);
     }
 

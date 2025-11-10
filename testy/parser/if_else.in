@@ -1,15 +1,9 @@
 import "ifj25" for Ifj
 class Program {
-    static main() {
+    static main(x,
+    y) {
         
 
-    
-    if(osem) {
-    } else if (5+5){
-        
-    } else if (isdone) {
-    } else {
-        return x
-    }
+
     }
 }
