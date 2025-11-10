@@ -713,6 +713,7 @@ void Func_call_func(DynamicSymbolStackPtr Stack, Token token)
         pushCheck(stackSymbolPush(Stack, makeTerm(TOKEN_RPAREN)));
         pushCheck(stackSymbolPush(Stack, makeNonterm(N_Var_arg)));
         pushCheck(stackSymbolPush(Stack, makeTermWithValue(TOKEN_IDENTIFIER)));
+        pushCheck(stackSymbolPush(Stack, makeNonterm(N_Opt_newlines)));
         pushCheck(stackSymbolPush(Stack, makeTerm(TOKEN_DOT)));
         pushCheck(stackSymbolPush(Stack, makeTerm(TOKEN_KEYWORD_IFJ)));
         return;
@@ -794,6 +795,7 @@ void var_arg_list_func(DynamicSymbolStackPtr Stack, Token token)
         pushCheck(stackSymbolPush(Stack, makeReduce(AST_PARAM, 2)));
          pushCheck(stackSymbolPush(Stack, makeNonterm(N_Var_arg_list)));
          pushCheck(stackSymbolPush(Stack, makeNonterm(N_cExpr)));
+         pushCheck(stackSymbolPush(Stack, makeNonterm(N_Opt_newlines)));
          pushCheck(stackSymbolPush(Stack, makeTerm(TOKEN_COMMA)));
     } else if (token.type == TOKEN_RPAREN) {
          // eps
@@ -1054,6 +1056,7 @@ void callIfjfunc(DynamicSymbolStackPtr Stack, Token token)
         pushCheck(stackSymbolPush(Stack, makeNonterm(N_Var_arg)));
         pushCheck(stackSymbolPush(Stack, makeTerm(TOKEN_LPAREN)));
         pushCheck(stackSymbolPush(Stack, makeNonterm(N_callIfjCheck)));
+        pushCheck(stackSymbolPush(Stack, makeNonterm(N_Opt_newlines)));
         pushCheck(stackSymbolPush(Stack, makeTerm(TOKEN_DOT)));
     }
     else
