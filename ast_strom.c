@@ -360,6 +360,7 @@ const char *ast_node_type_to_string(AstNodeType kind) {
         case AST_CONDITION: return"CONDITION";
         case AST_TERNARY:   return "TERNARY_OPERATOR";
         case AST_AND: return "STRING_AND";
+        case AST_SMALL_NULL: return "SMALL_NULL";
         default:                   return "UNKNOWN_AST_NODE";
     }
 }

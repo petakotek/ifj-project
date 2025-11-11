@@ -106,6 +106,8 @@ int operatorToPush(Token token)
         case TOKEN_FALSE:    return INDEX_ID;
         case TOKEN_KEYWORD_STRING: return INDEX_ID;
         case TOKEN_KEYWORD_NUM:    return INDEX_ID;
+        case TOKEN_KEYWORD_NULL_SMALL: return INDEX_ID;
+        case TOKEN_KEYWORD_NULL: return INDEX_ID;
 
 
         case TOKEN_EXPRESSION:  // nemuzu pocitat ze tam je identifikator kdyz tam je jenom expression abych a pridal <
@@ -190,6 +192,8 @@ AstNodeType getAstNodeTypeFromTokenType(TokenType type)
     case TOKEN_FALSE:           return AST_BOOL_LIT;
     case TOKEN_KEYWORD_NUM:     return AST_KEYWORD_NUM;
     case TOKEN_KEYWORD_STRING:  return AST_KEYWORD_STRING;
+    case TOKEN_KEYWORD_NULL_SMALL: return AST_SMALL_NULL;
+    case TOKEN_KEYWORD_NULL: return AST_NULL;
 
     default:
         printError(SYNTAX_ERROR, "(PSA) Nelze prevést TokenType na AstNodeType, neznámý token\n");

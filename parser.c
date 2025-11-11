@@ -1111,6 +1111,11 @@ void AssignIfjIdCheckFunc(DynamicSymbolStackPtr Stack, Token token)
         return;
     }
     
+    else if (token.type == TOKEN_KEYWORD_NULL_SMALL)
+    {
+        pushCheck(stackSymbolPush(Stack, makeReduce(AST_SMALL_NULL, 0)));
+        pushCheck(stackSymbolPush(Stack, makeTerm(TOKEN_KEYWORD_NULL_SMALL)));
+    }
     else
     {
         pushCheck(stackSymbolPush(Stack, makeNonterm(N_Expr)));

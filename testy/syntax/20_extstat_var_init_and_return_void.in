@@ -7,6 +7,6 @@ class Program {
     }
 
     static main() {
-        Program.helper()
+        helper()
     }
 }
