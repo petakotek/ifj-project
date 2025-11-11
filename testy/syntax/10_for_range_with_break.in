@@ -1,0 +1,12 @@
+import "ifj25" for Ifj
+class Program {
+    static main() {
+        var sum = 0
+        for (i in 1 .. (3 + 3)) {
+            if (i == 4) {
+                break
+            }
+            sum = sum + i
+        }
+    }
+}

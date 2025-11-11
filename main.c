@@ -33,8 +33,8 @@ int main(){
     }
 	// inicializovani struktury staraji se o cteni ze souboru
 	lexer_init(source_file);
-	 //print_and_free_tokens();
-	//exit(0);
+//	print_and_free_tokens();
+//	exit(0);
 	//print_and_free_tokens();
 	//exit(0);
 	// tvorba stromu pres parser
@@ -55,5 +55,4 @@ int main(){
 	ast_free_whole(AST);
 
 	free(source_file);
-
 }

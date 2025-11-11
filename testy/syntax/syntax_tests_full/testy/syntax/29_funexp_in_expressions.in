@@ -1,0 +1,12 @@
+import "ifj25" for Ifj
+class Program {
+    static id(x) {
+        return x
+    }
+
+    static main() {
+        var a = 10
+        var b = Program.id(a + 5) * 2
+        var c = (Program.id(b) > 0) ? Program.id(1) : Program.id(0)
+    }
+}

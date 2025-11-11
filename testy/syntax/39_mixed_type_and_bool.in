@@ -1,0 +1,8 @@
+import "ifj25" for Ifj
+class Program {
+    static main() {
+        var x = Ifj.read_num()
+        var y = Ifj.str(x)
+        var ok = (x is Num) && !(y is Num)
+    }
+}
