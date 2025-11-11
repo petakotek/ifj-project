@@ -9,9 +9,12 @@
 #include "support_functions.h"
 #include "symtable.h"
 
-// TODO zpřísnit po důkladném promyšlení, co je návratem operace
-// TODO zkusit testy od Kuby, až mu budou procházet
-// TODO vlastní AI testy (pozor na injections)
+// TODO 
+// - zpřísnit po důkladném promyšlení, co je návratem operace
+// - zkusit testy od Kuby, až mu budou procházet
+// - vlastní AI testy (pozor na injections)
+// - po return, break, continue bych asi neměl vyhodnocovat příkazy na stejné úrovni (povede na to, že se mi např valid return přepíše na blbost)
+//      odstranit kód na stene úrovni ale za return/break/continue?
 
 /**
  * @brief Ukazatel na zásobník pro ukládání jednotlivých rámců
@@ -405,9 +408,7 @@ RecursiveSemanticAnalysisReturnValues recursiveNodeWalker(AstNode*    currentNod
                 parentNodeType == AST_GETTER) {
                 fakeParentType = AST_FUNC_DEC;
             }
-
-            // TODO nelze otestovat onelineblock dokud to bude dávat dva bloky pod sebe (musí
-            // opravit kuba)
+            
             RecursiveSemanticAnalysisReturnValues childValue =
                 recursiveNodeWalker(currentNode->child[0], fakeParentType, 0);
 
@@ -628,7 +629,7 @@ RecursiveSemanticAnalysisReturnValues recursiveNodeWalker(AstNode*    currentNod
             RecursiveSemanticAnalysisReturnValues blockValue =
                 recursiveNodeWalker(currentNode->child[1], AST_IF, 1);
 
-            if (blockValue != OK) {  // TODO asi se změní nž budu řešit návratové typy funkcí
+            if (blockValue != OK) {
                 printError(SEMANTICS_ERROR_OTHERS, "(if) Neplatny blok!\n");
                 memorySafeExit(SEMANTICS_ERROR_OTHERS);
             }
@@ -661,7 +662,7 @@ RecursiveSemanticAnalysisReturnValues recursiveNodeWalker(AstNode*    currentNod
             } else {
                 RecursiveSemanticAnalysisReturnValues childValue =
                     recursiveNodeWalker(currentNode->child[0], AST_CONDITION, 0);
-                if (childValue == OK) {  // TODO asi ještě něco? Jak chápat zadání u if?
+                if (childValue == OK) {
                     printError(SEMANTICS_ERROR_UNCOMPATIBLE, "(condition) Neplatna podminka!\n");
                     memorySafeExit(SEMANTICS_ERROR_UNCOMPATIBLE);
                 }
@@ -675,7 +676,7 @@ RecursiveSemanticAnalysisReturnValues recursiveNodeWalker(AstNode*    currentNod
             RecursiveSemanticAnalysisReturnValues blockValue =
                 recursiveNodeWalker(currentNode->child[0], AST_ELSE, 0);
 
-            if (blockValue != OK) {  // TODO asi se změní nž budu řešit návratové typy funkcí
+            if (blockValue != OK) {
                 printError(SEMANTICS_ERROR_OTHERS, "(else) Neplatny blok!\n");
                 memorySafeExit(SEMANTICS_ERROR_OTHERS);
             }
@@ -1094,14 +1095,14 @@ RecursiveSemanticAnalysisReturnValues recursiveNodeWalker(AstNode*    currentNod
 
             RecursiveSemanticAnalysisReturnValues conditionChild =
                 recursiveNodeWalker(currentNode->child[0], AST_TERNARY, 0);
-            if (conditionChild == OK) {  // TODO asi ještě něco? Jak chápat zadání u if?
+            if (conditionChild == OK) {
                 printError(SEMANTICS_ERROR_UNCOMPATIBLE, "(?:) Neplatna podminka!\n");
                 memorySafeExit(SEMANTICS_ERROR_UNCOMPATIBLE);
             }
 
             RecursiveSemanticAnalysisReturnValues trueChild =
                 recursiveNodeWalker(currentNode->child[1], AST_TERNARY, 1);
-            if (trueChild == OK) {  // TODO asi ještě něco? Jak chápat zadání u if?
+            if (trueChild == OK) {
                 printError(SEMANTICS_ERROR_UNCOMPATIBLE,
                            "(?:) Neplatny vyraz pri platne podmince!\n");
                 memorySafeExit(SEMANTICS_ERROR_UNCOMPATIBLE);
@@ -1109,7 +1110,7 @@ RecursiveSemanticAnalysisReturnValues recursiveNodeWalker(AstNode*    currentNod
 
             RecursiveSemanticAnalysisReturnValues falseChild =
                 recursiveNodeWalker(currentNode->child[2], AST_TERNARY, 2);
-            if (falseChild == OK) {  // TODO asi ještě něco? Jak chápat zadání u if?
+            if (falseChild == OK) {
                 printError(SEMANTICS_ERROR_UNCOMPATIBLE,
                            "(?:) Neplatny vyraz pri neplatne podmince!\n");
                 memorySafeExit(SEMANTICS_ERROR_UNCOMPATIBLE);
