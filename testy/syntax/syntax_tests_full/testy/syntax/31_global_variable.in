@@ -1,7 +1,0 @@
-import "ifj25" for Ifj
-class Program {
-    static main() {
-        __counter = 0
-        __counter = __counter + 1
-    }
-}

@@ -1,9 +1,0 @@
-import "ifj25" for Ifj
-class Program {
-    static main() {
-        var a = true
-        var b = false
-        var c = true
-        var r = a || b && c
-    }
-}
