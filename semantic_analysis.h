@@ -209,7 +209,7 @@ bool startSematicValidation(AstNode* root);
  * @brief Uklidí paměť používanou sémantickou analýzou
  *
  */
-void freeSematicsMemory();
+void freeSemanticsMemory();
 
 #endif
 // TODO patička
