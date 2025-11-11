@@ -1,9 +1,0 @@
-import "ifj25" for Ifj
-class Program {
-    static main() {
-        var x = 5
-        var y = 10
-        var max = (x > y) ? x : y
-        var sign = (x < 0) ? -1 : 1
-    }
-}

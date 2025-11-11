@@ -1,9 +1,0 @@
-import "ifj25" for Ifj
-class Program {
-    static main() {
-        var sum = 0
-        for (i in 0 ... 5) {
-            sum = sum + i
-        }
-    }
-}

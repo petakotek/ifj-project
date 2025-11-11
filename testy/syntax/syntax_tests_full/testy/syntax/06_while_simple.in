@@ -1,9 +1,0 @@
-import "ifj25" for Ifj
-class Program {
-    static main() {
-        var i = 0
-        while (i < 10) {
-            i = i + 1
-        }
-    }
-}
