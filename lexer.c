@@ -764,7 +764,7 @@ Token lexer_token_next() {
                     memorySafeExit(LEX_ERROR);
                 } else {
                     token.type             = TOKEN_INTEGER;
-                    token.value.identifier = "0";
+                    token.value.identifier = substring(zacatek, lexer->pos);
                     token.line             = radek;
                     goto token_found;
                 }
