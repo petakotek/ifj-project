@@ -454,7 +454,6 @@ void Block_content_func_check(DynamicSymbolStackPtr Stack, Token token)
         case TOKEN_FLOAT:
         case TOKEN_STRING:
         case TOKEN_LPAREN:
-            pushCheck(stackSymbolPush(Stack, makeReduce(AST_BLOCK, 1)));
             pushCheck(stackSymbolPush(Stack, makeReduce(AST_STATEMENT_LIST, 1)));
             pushCheck(stackSymbolPush(Stack, makeNonterm(N_oExpr)));
             return;
