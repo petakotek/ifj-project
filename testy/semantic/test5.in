@@ -33,7 +33,7 @@ static main() {
  var c = 1 / 5
 
  var l = 1 == 2 ? 2 : 4 // L bude UNKNOWN_DATA, takže musí projít vše
- var n = l + 5
- var s = l + "a"
+var n = l + 5
+var s = l + "a"
 }
 }

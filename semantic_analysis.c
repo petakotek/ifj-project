@@ -10,6 +10,8 @@
 #include "symtable.h"
 
 // TODO zpřísnit po důkladném promyšlení, co je návratem operace
+// TODO zkusit testy od Kuby, až mu budou procházet
+// TODO vlastní AI testy (pozor na injections)
 
 /**
  * @brief Ukazatel na zásobník pro ukládání jednotlivých rámců
@@ -174,7 +176,7 @@ bool startSematicValidation(AstNode* root) {
 
     for (size_t i = 0; i < root->arity; i++) {
         if (recursiveNodeWalker(root->child[i], AST_PROGRAM, i) != OK) {
-            freeSematicsMemory();
+            freeSemanticsMemory();
             return false;
         }
     }
@@ -194,7 +196,7 @@ bool startSematicValidation(AstNode* root) {
         }
     }
 
-    freeSematicsMemory();
+    freeSemanticsMemory();
 
     return true;
 
@@ -269,7 +271,7 @@ bool startSematicValidation(AstNode* root) {
     */
 }
 
-void freeSematicsMemory() {
+void freeSemanticsMemory() {
     if (scopesStack != NULL) {
         while (stackHashTablePtrIsEmpty(scopesStack) != true) {
             hashTableDealloc(stackHashTablePtrRead(scopesStack));
@@ -346,17 +348,13 @@ RecursiveSemanticAnalysisReturnValues recursiveNodeWalker(AstNode*    currentNod
 
             SemanticSymbolDataType functionReturnValue = NULL_VAL;
 
-            if (currentNode->child[2]->child[0]->arity != 0) {  // TODO asi zbytečná podmínka!
+            recursiveNodeWalker(currentNode->child[1], AST_FUNC_DEC, 1);
 
-                recursiveNodeWalker(currentNode->child[1], AST_FUNC_DEC, 1);
+            RecursiveSemanticAnalysisReturnValues childValueBlock =
+                recursiveNodeWalker(currentNode->child[2], AST_FUNC_DEC, 2);
 
-                RecursiveSemanticAnalysisReturnValues childValueBlock =
-                    recursiveNodeWalker(currentNode->child[2], AST_FUNC_DEC, 2);
-
-                if (childValueBlock != OK) {
-                    functionReturnValue =
-                        convertSemanticReturnValueToSemanticDataType(childValueBlock);
-                }
+            if (childValueBlock != OK) {
+                functionReturnValue = convertSemanticReturnValueToSemanticDataType(childValueBlock);
             }
 
             initNewSymbol(currentNode, &newSymbol, FUNCTION, NULL_VAL, functionReturnValue);
@@ -401,8 +399,17 @@ RecursiveSemanticAnalysisReturnValues recursiveNodeWalker(AstNode*    currentNod
                 createNewScope();
             }
 
+            AstNodeType fakeParentType = AST_BLOCK;
+
+            if (parentNodeType == AST_FUNC_DEC || parentNodeType == AST_SETTER ||
+                parentNodeType == AST_GETTER) {
+                fakeParentType = AST_FUNC_DEC;
+            }
+
+            // TODO nelze otestovat onelineblock dokud to bude dávat dva bloky pod sebe (musí
+            // opravit kuba)
             RecursiveSemanticAnalysisReturnValues childValue =
-                recursiveNodeWalker(currentNode->child[0], AST_BLOCK, 0);
+                recursiveNodeWalker(currentNode->child[0], fakeParentType, 0);
 
             deleteScope();
 
@@ -417,13 +424,21 @@ RecursiveSemanticAnalysisReturnValues recursiveNodeWalker(AstNode*    currentNod
             printLog("AST_STATEMENT_LIST\n");
 
             RecursiveSemanticAnalysisReturnValues returnValue = OK;
+            bool                                  foundReturn = false;
 
+            RecursiveSemanticAnalysisReturnValues childValue;
             for (size_t i = 0; i < currentNode->arity; i++) {
-                RecursiveSemanticAnalysisReturnValues childValue =
-                    recursiveNodeWalker(currentNode->child[i], AST_STATEMENT_LIST, i);
+                childValue = recursiveNodeWalker(currentNode->child[i], AST_STATEMENT_LIST, i);
                 if (currentNode->child[i]->kind == AST_RETURN) {
+                    foundReturn = true;
                     returnValue = childValue;
                 }
+                if (currentNode->child[i]->kind == AST_BLOCK && foundReturn == false) {
+                    returnValue = childValue;
+                }
+            }
+            if (parentNodeType == AST_FUNC_DEC && currentNode->arity == 1 && foundReturn == false) {
+                returnValue = childValue;
             }
 
             return returnValue;
@@ -445,8 +460,6 @@ RecursiveSemanticAnalysisReturnValues recursiveNodeWalker(AstNode*    currentNod
                 functionReturnValue = foundSymbol->returnValue;
             }
 
-            // TODO oneline blocky (asi spíš v AST_BLOCK)
-            printLog("Val type: %i\n", functionReturnValue);
             if (parentNodeType == AST_ASSIGN) {
                 return convertSemanticDataTypeToSemanticReturnValue(functionReturnValue);
             }
