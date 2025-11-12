@@ -43,21 +43,21 @@ int PSA_TABLE[15][15] = {
 
  // vsechny operatory, ktere se mohou vyskytnout ve vyrazu
 typedef enum{
-    INDEX_PLUS_MINUS,   // 0    + -
-    INDEX_MUL_DIV,      // 1    * /
-    INDEX_COMPARE,      // 2    > < >= <=
-    INDEX_IS,           // 3    is
-    INDEX_EQ,           // 4    == !=
-    INDEX_NEG,          // 5    !
-    INDEX_AND,          // 6    &&
-    INDEX_OR,           // 7    ||
-    INDEX_ID,           // 8    identifikator
-    INDEX_DOLLAR,       // 9    dollar
-    INDEX_LP,           // 10   (
-    INDEX_RP,           // 11   )
-    INDEX_DOTS,         // 12   ../...
-    INDEX_QUESTION_MARK,
-    INDEX_COLON,
+    INDEX_PLUS_MINUS,       // 0    + -
+    INDEX_MUL_DIV,          // 1    * /
+    INDEX_COMPARE,          // 2    > < >= <=
+    INDEX_IS,               // 3    is
+    INDEX_EQ,               // 4    == !=
+    INDEX_NEG,              // 5    !
+    INDEX_AND,              // 6    &&
+    INDEX_OR,               // 7    ||
+    INDEX_ID,               // 8    identifikator
+    INDEX_DOLLAR,           // 9    dollar
+    INDEX_LP,               // 10   (
+    INDEX_RP,               // 11   )
+    INDEX_DOTS,             // 12   ../...
+    INDEX_QUESTION_MARK,    // ?
+    INDEX_COLON,            // :
 } operators_t;
 
 
@@ -67,60 +67,60 @@ int operatorToPush(Token token)
     switch (token.type)
         {
         // + -
-        case TOKEN_PLUS:    return INDEX_PLUS_MINUS;
-        case TOKEN_MINUS:   return INDEX_PLUS_MINUS;
+        case TOKEN_PLUS:            return INDEX_PLUS_MINUS;
+        case TOKEN_MINUS:           return INDEX_PLUS_MINUS;
         // * /
-        case TOKEN_STAR:    return INDEX_MUL_DIV;
-        case TOKEN_SLASH:   return INDEX_MUL_DIV;
+        case TOKEN_STAR:            return INDEX_MUL_DIV;
+        case TOKEN_SLASH:           return INDEX_MUL_DIV;
         // > < >= <=
-        case TOKEN_LT:      return INDEX_COMPARE;
-        case TOKEN_GT:      return INDEX_COMPARE;
-        case TOKEN_GTE:     return INDEX_COMPARE;
-        case TOKEN_LTE:     return INDEX_COMPARE;
+        case TOKEN_LT:              return INDEX_COMPARE;
+        case TOKEN_GT:              return INDEX_COMPARE;
+        case TOKEN_GTE:             return INDEX_COMPARE;
+        case TOKEN_LTE:             return INDEX_COMPARE;
         // is
         case TOKEN_KEYWORD_IS:
-                            return INDEX_IS;
+                                    return INDEX_IS;
         // == !=
-        case TOKEN_EQ:      return INDEX_EQ;
-        case TOKEN_NOT_EQUAL:     return INDEX_EQ;
+        case TOKEN_EQ:              return INDEX_EQ;
+        case TOKEN_NOT_EQUAL:       return INDEX_EQ;
 
         // !
-        case TOKEN_NOT:     return INDEX_NEG; // Pepa prida token negaci
+        case TOKEN_NOT:             return INDEX_NEG; // Pepa prida token negaci
         // &&
-        case TOKEN_AND:     return INDEX_AND;
+        case TOKEN_AND:             return INDEX_AND;
         // ||
-        case TOKEN_OR:      return INDEX_OR;
+        case TOKEN_OR:              return INDEX_OR;
 
         // id
         case TOKEN_IDENTIFIER:
-                            return INDEX_ID;
+                                    return INDEX_ID;
         case TOKEN_INTEGER:
-                            return INDEX_ID;
+                                    return INDEX_ID;
         case TOKEN_GLOBAL_ID:
-                            return INDEX_ID;
+                                    return INDEX_ID;
         case TOKEN_FLOAT:
-                            return INDEX_ID;
+                                    return INDEX_ID;
         case TOKEN_STRING:
-                            return INDEX_ID;
-        case TOKEN_TRUE:    return INDEX_ID;
-        case TOKEN_FALSE:    return INDEX_ID;
-        case TOKEN_KEYWORD_STRING: return INDEX_ID;
-        case TOKEN_KEYWORD_NUM:    return INDEX_ID;
-        case TOKEN_KEYWORD_NULL_SMALL: return INDEX_ID;
-        case TOKEN_KEYWORD_NULL: return INDEX_ID;
+                                    return INDEX_ID;
+        case TOKEN_TRUE:            return INDEX_ID;
+        case TOKEN_FALSE:               return INDEX_ID;
+        case TOKEN_KEYWORD_STRING:      return INDEX_ID;
+        case TOKEN_KEYWORD_NUM:         return INDEX_ID;
+        case TOKEN_KEYWORD_NULL_SMALL:  return INDEX_ID;
+        case TOKEN_KEYWORD_NULL:        return INDEX_ID;
 
 
         case TOKEN_EXPRESSION:  // nemuzu pocitat ze tam je identifikator kdyz tam je jenom expression abych a pridal <
-                            return INDEX_DOLLAR;
+                                    return INDEX_DOLLAR;
 
 
         // (
-        case TOKEN_LPAREN:  return INDEX_LP;
+        case TOKEN_LPAREN:          return INDEX_LP;
         // )
-        case TOKEN_RPAREN:  return INDEX_RP;
+        case TOKEN_RPAREN:          return INDEX_RP;
 
-        case TOKEN_DOUBLE_DOT: return INDEX_DOTS;
-        case TOKEN_TRIPLE_DOT: return INDEX_DOTS;
+        case TOKEN_DOUBLE_DOT:      return INDEX_DOTS;
+        case TOKEN_TRIPLE_DOT:      return INDEX_DOTS;
 
         case TOKEN_QUESTION_MARK:   return INDEX_QUESTION_MARK; // ?
         case TOKEN_COLON:           return INDEX_COLON; // :
@@ -310,6 +310,7 @@ void findPrecedenceRule(DynamicPrecedenceStackPtr stack, DynamicAstNodeStackPtr 
 
                 p2.type = TOKEN_EXPRESSION; // vratim na klasicky zasobnik jenom expression
                 stackPrecedencePush(stack, p2);
+                break;
             }
             // E -> -E
             if (p1.type == TOKEN_EXPRESSION && p2.type == TOKEN_MINUS)
@@ -325,10 +326,11 @@ void findPrecedenceRule(DynamicPrecedenceStackPtr stack, DynamicAstNodeStackPtr 
 
                 p2.type = TOKEN_EXPRESSION; // vratim na klasicky zasobnik jenom expression
                 stackPrecedencePush(stack, p2);
+                break;
             }
-
-
-        break;
+            printError(SYNTAX_ERROR, "(PSA) pravidlo gramatiky nebylo nalezeno\n");
+            memorySafeExit(SYNTAX_ERROR);
+            break;
 
         case 3: // E -> E op E
             p1 = stackPrecedenceRead(stack);
