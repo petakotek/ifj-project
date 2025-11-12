@@ -6,10 +6,9 @@ class Program {
     }
 
     static a() {
-        return
     }
 
     static func() {
-        return
+        return x
     }
 }

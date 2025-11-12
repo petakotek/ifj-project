@@ -25,6 +25,18 @@ typedef struct {
 //Pomocna struktura pro ukladani si scopu a counter pro delani docasnych promenych abychom se vyhli konfiktum
 typedef struct {
     char* func_name;
-    int value_counter;
 } tmpValue;
+typedef struct {
+    char *func_name;
+    DynamiclabelStackStackPtr label_stack;
+    int counter;
+    char *label_end;
+    int value_counter;
+} FuncContext;
+typedef enum {
+    OP_ADD,
+    OP_SUB,
+    OP_MUL,
+    OP_DIV
+} BinaryOp;
 #endif

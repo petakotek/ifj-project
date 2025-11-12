@@ -47,8 +47,7 @@ char *resize_label_name(char *prefix, size_t *size) {
  * @param func_name jmeno funcke ktere chceme pripojit
  * @return ukazatel na vysledny label
  */
-char *generatorLable(char *func_name, DynamiclabelStackStackPtr label_stack, int counter,
-                     bool pridaniDoStacku) {
+char *generatorLable(FuncContext *funcStruckt,bool pridaniDoStacku) {
     size_t size_of_buffer = 128;
     char  *result_label   = (char *)malloc(size_of_buffer);
     if (result_label == NULL) {
@@ -59,8 +58,8 @@ char *generatorLable(char *func_name, DynamiclabelStackStackPtr label_stack, int
     int current_len = 0;
 
     // Získání existujícího prefixu ze zásobníku (pokud existuje)
-    if (!stacklabelStackIsEmpty(label_stack)) {
-        char  *prefix     = stacklabelStackRead(label_stack);
+    if (!stacklabelStackIsEmpty(funcStruckt->label_stack)) {
+        char  *prefix     = stacklabelStackRead(funcStruckt->label_stack);
         size_t prefix_len = strlen(prefix);
 
         // ve chvili kdyby nas buffer byl uz na zacatku maly
@@ -86,7 +85,7 @@ char *generatorLable(char *func_name, DynamiclabelStackStackPtr label_stack, int
     size_t remaining_space = size_of_buffer - current_len;
 
     int written =
-        snprintf(result_label + current_len, remaining_space, "$%s$%d", func_name, counter);
+        snprintf(result_label + current_len, remaining_space, "$%s$%d", funcStruckt.func_name, funcStruckt.counter);
 
     if (written <= 0 || (size_t)written >= remaining_space) {
         // potřebna resize
@@ -99,7 +98,7 @@ char *generatorLable(char *func_name, DynamiclabelStackStackPtr label_stack, int
             remaining_space = size_of_buffer - current_len;
             // znovu zapsani
             written =
-                snprintf(result_label + current_len, remaining_space, "$%s$%d", func_name, counter);
+                snprintf(result_label + current_len, remaining_space, "$%s$%d", funcStruckt->func_name, funcStruckt->counter);
         }
 
         if (written <= 0) {
@@ -113,7 +112,7 @@ char *generatorLable(char *func_name, DynamiclabelStackStackPtr label_stack, int
     if (pridaniDoStacku) {
         // Uložení plného label na zásobník
         // pro funkce a if-else while-for pro dalsi zanoreni
-        stacklabelStackPush(label_stack, result_label);
+        stacklabelStackPush(funcStruckt->label_stack, result_label);
     }
     // a jeho vraceni
     return result_label;
@@ -127,9 +126,9 @@ char *generatorLable(char *func_name, DynamiclabelStackStackPtr label_stack, int
  *@params ukazatel na uzel
  *@params ukazatel na hash_table
  */
-void emitChildren(AstNode *root, DynamiclabelStackStackPtr label_stack, int counter,char *func_name) {
+void emitChildren(AstNode *root,FuncContext *funcStruct) {
     for (int i = 0; i < root->arity; i++) {
-        emit_command(root->child[i], label_stack, counter, func_name);
+        emit_command(root->child[i],funcStruct);
     }
 }
 /*
@@ -182,7 +181,7 @@ void add_binop_tmps(VarList* vars, const char* func, int id,AstNode *node) {
 	    snprintf(buf, sizeof buf, "%s_rs_%d", func, id);
 	    varlist_add(vars, buf);
     }else if(node->kind == AST_LT){
-   	snprintf(buf, sizeof buf, "%s_ln_%d", func, id);
+   		snprintf(buf, sizeof buf, "%s_ln_%d", func, id);
        	varlist_add(vars, buf);
         snprintf(buf, sizeof buf, "%s_rn_%d", func, id);
         varlist_add(vars, buf);
@@ -199,20 +198,23 @@ void add_binop_tmps(VarList* vars, const char* func, int id,AstNode *node) {
         varlist_add(vars, buf);
     }
 }
-tmpValue *ConstuctorTmpValue(){
-	tmpValue *tmpStruct = malloc(sizeof(tmpValue));
-	if (!tmpStruct) {
-		printError(INTERNAL_ERROR, "Failed to allocate tmpValue");
+FuncContext *ConstuctorFuncContext(){
+	FuncContext *funcStruct = malloc(sizeof(FuncContext));
+	if(!funcStruct){
+		printError(INTERNAL_ERROR, "chyba v alokaci");
 		memorySafeExit(INTERNAL_ERROR);
 	}
-	tmpStruct->value_counter = 0;
-	tmpStruct->func_name = NULL;
-	return tmpStruct;
+	funcStruct->func_name = NULL;
+	funcStruct->label_stack = NULL;
+	funcStruct->label_end = NULL;
+	funcStruct->counter = 0;
+	funcStruct->value_counter = 0;
+	return funcStruct;
 }
-void DestructorTmpValue(tmpValue *tmpStruct){
-	free(tmpStruct);
+void DestructorFuncContext(FuncContext *funcStruct){
+	free(funcStruct);
 }
-void collectLocalVars(AstNode *node, VarList *vars,tmpValue *tmpStruct) {
+void collectLocalVars(AstNode *node, VarList *vars,FuncContext *funcStruct) {
     if (node == NULL) return;
     switch (node->kind) {
           case AST_VAR:
@@ -240,18 +242,18 @@ void collectLocalVars(AstNode *node, VarList *vars,tmpValue *tmpStruct) {
           case AST_GTE:
           case AST_AND:
           case AST_OR: {
-              node->tmp_id = tmpStruct->value_counter++;
-              add_binop_tmps(vars, tmpStruct->func_name, node->tmp_id,node);
+              node->tmp_id = funcStruct->value_counter++;
+              add_binop_tmps(vars, funcStruct->func_name, node->tmp_id,node);
               break;
           }
 
           case AST_NOT: {
-              node->tmp_id = tmpStruct->value_counter++;
+              node->tmp_id = funcStruct->value_counter++;
               // např. jen typ a jedna hodnota:
               char buf[128];
-              snprintf(buf, sizeof buf, "%s_val_%d", tmpStruct->func_name, node->tmp_id);
+              snprintf(buf, sizeof buf, "%s_val_%d", funcStruct->func_name, node->tmp_id);
               varlist_add(vars, buf);
-              snprintf(buf, sizeof buf, "%s_ty_%d", tmpStruct->func_name, node->tmp_id);
+              snprintf(buf, sizeof buf, "%s_ty_%d", funcStruct->func_name, node->tmp_id);
               varlist_add(vars, buf);
               break;
           }
@@ -261,10 +263,14 @@ void collectLocalVars(AstNode *node, VarList *vars,tmpValue *tmpStruct) {
       }
 
       for (int i = 0; i < node->arity; i++) {
-          collectLocalVars(node->child[i], vars, tmpStruct);
+          collectLocalVars(node->child[i], vars, funcStruct);
       }
   }
-void emitFuncDec(AstNode *root, int counter){
+void emitReturn(AstNode *root,FuncContext *funcStrukt){
+	emitChildren(root,funcStrukt);
+	printN("JUMP %s",funcStrukt->label_end);
+}
+void emitFuncDec(AstNode *root){
 	DynamiclabelStackStackPtr label_stack = stacklabelStackConstruct(DEFAULT_INIT_ELEMENT_COUNT);
 	bool main = false;
 	char *label = NULL;
@@ -272,19 +278,21 @@ void emitFuncDec(AstNode *root, int counter){
 		main = true;
 		printN("LABEL $$main");
 	}else{
-	label = generatorLable(root->child[0]->value.str, label_stack, counter, true);
+	label = generatorLable(root->child[0]->value.str, label_stack,0, true);
 	printN("%s",label);
 	}
-	tmpValue *tmpStruct = NULL;
-	tmpStruct = ConstuctorTmpValue();
-	tmpStruct->func_name = root->child[0]->value.str;
+	char *label_end = generatorLable("end", label_stack,0,false);
+	FuncContext *context = ConstuctorFuncContext();
+	context->func_name = root->child[0]->value.str;
+	context->label_end = label_end;
+	context->label_stack = label_stack;
 	printN("CREATEFRAME");
 	printN("PUSHFRAME");
 	//sbirani lokalnich promenych na deklaraci
 	VarList *local_vars = varListCreate();
 
-	collectLocalVars(root->child[1],local_vars,tmpStruct);//argumenty funkce
-	collectLocalVars(root->child[2], local_vars,tmpStruct);//funkce uvnitr
+	collectLocalVars(root->child[1],local_vars,context);//argumenty funkce
+	collectLocalVars(root->child[2], local_vars,context);//funkce uvnitr
 	for (int i = 0; i < local_vars->count; i++) {
 	    printN("DEFVAR LF@%s", local_vars->var_names[i]);
 	}
@@ -296,22 +304,20 @@ void emitFuncDec(AstNode *root, int counter){
             }
         }
     }
-	emitChildren(root->child[2], label_stack,counter,tmpStruct->func_name);
-	printN("POPFRAME");
-	varListDescrution(local_vars);
-	//ve funkci nemuze byt definovana funkce tak muzeme label stack znicit
+	emitChildren(root->child[2], context);
 	if(!main){
-	free(label);
-	}
-	stacklabelStackDestruct(label_stack);
-	DestructorTmpValue(tmpStruct);
-	if(main == true){
-		printN("EXIT int@0");
-	}else{
+		printN("LABEL %s",label_end);
+		printN("POPFRAME");
 		printN("RETURN");
+		free(label);
+	}else{
+		printN("EXIT int@0");
 	}
+	varListDescrution(local_vars);
+	stacklabelStackDestruct(label_stack);
+	DestructorFuncContext(context);
 	}
-void emit_push_value(AstNode *node, DynamiclabelStackStackPtr label_stack, int counter) {
+void emit_push_value(AstNode *node) {
     if (node->kind == AST_INT_LIT) {
         printN("PUSHS int@%lld", node->value.int_val);
     } else if (node->kind == AST_STRING_LIT) {
@@ -326,8 +332,7 @@ void emit_push_value(AstNode *node, DynamiclabelStackStackPtr label_stack, int c
             printN("PUSHS LF@%s", node->value.str);
     }
 }
-void emitIfjFunc(AstNode *node, DynamiclabelStackStackPtr label_stack, int counter,
-                  char *func_name) {
+void emitIfjFunc(AstNode *node,FuncContext funcStruct) {
                  AstNode *callee = node->child[0];
                  AstNode *params = node->child[1];
 
@@ -346,11 +351,13 @@ void emitIfjFunc(AstNode *node, DynamiclabelStackStackPtr label_stack, int count
             } else if (arg->kind == AST_FLOAT_LIT) {
                 printN("WRITE float@%a", arg->value.float_val);
             } else {
+            /*
                 emit_command(arg, label_stack, counter,  func_name);
                 char tmp[64];
                 snprintf(tmp, sizeof tmp, "%s$wtmp_%d_%d", func_name, node->tmp_id, i);
                 printN("POPS LF@%s", tmp);
                 printN("WRITE LF@%s", tmp);
+                */
             }
         }
         return;
@@ -364,21 +371,20 @@ void emitIfjFunc(AstNode *node, DynamiclabelStackStackPtr label_stack, int count
  * promena ze zasobnika
  * JUMPIFEQS/JUMPIFNEQS ⟨label⟩
  */
- void emitPlus(AstNode *node, DynamiclabelStackStackPtr label_stack, int counter,
-              char *func_name) {
+ void emitPlus(AstNode *node,FuncContext *funcStruct) {
 
      if (node->child[0]->kind == AST_FUNC_CALL) {
-         emit_command(node->child[0], label_stack, counter, NULL);
+         emit_command(node->child[0], funcStruct);
      }
      if (node->child[1]->kind == AST_FUNC_CALL) {
-         emit_command(node->child[1], label_stack, counter, NULL);
+         emit_command(node->child[1], funcStruct);
      }
 
      if (node->child[0]->kind != AST_FUNC_CALL) {
-         emit_push_value(node->child[0], label_stack, counter);
+         emit_push_value(node->child[0]);
      }
      if (node->child[1]->kind != AST_FUNC_CALL) {
-         emit_push_value(node->child[1], label_stack, counter);
+         emit_push_value(node->child[1]);
      }
     int id = node->tmp_id;
     char ln[128], rn[128], ty[128],rs[128];
@@ -387,7 +393,7 @@ void emitIfjFunc(AstNode *node, DynamiclabelStackStackPtr label_stack, int count
     snprintf(ty, sizeof ty, "%s_ty_%d", func_name, id);
     snprintf(rs, sizeof rs, "%s_rs_%d", func_name, id);
 
-    int size_for_label = strlen(func_name)+20;
+    int size_for_label = strlen(funcStruct->func_name)+20;
     char label_ok[size_for_label], label_add[size_for_label], label_concat[size_for_label], label_end[size_for_label], label_err[size_for_label];
     snprintf(label_ok,  sizeof label_ok,  "%s$ok$%d",     func_name, id);
     snprintf(label_add, sizeof label_add, "%s$add$%d",    func_name, id);
@@ -1250,7 +1256,7 @@ void emit_while(AstNode *node, DynamiclabelStackStackPtr label_stack, int while_
  *@params ukazatel na uzel
  *@params ukazatel na hash_table
  */
-void emit_command(AstNode *node, DynamiclabelStackStackPtr label_stack, int counter,char *func_name) {
+void emit_command(AstNode *node,FuncContext *funcStruct) {
     ast_node_type_to_string(node->kind);
 
     switch (node->kind) {
