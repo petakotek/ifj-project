@@ -24,21 +24,21 @@ typedef enum {
 
 int PSA_TABLE[15][15] = {
 //   0  1  2  3  4  5  6  7  8  9  10 11 12 13 14
-    {R, R, R, R, R, L, R, R, L, R, L, R, N, R, R}, // + -
-    {R, R, R, R, R, L, R, R, L, R, L, R, N, N, R}, // * /
-    {L, L, R, R, R, L, R, R, L, R, L, R, N, R, R}, // < > >= <=
-    {L, L, L, R, R, L, R, R, L, R, L, R, N, N, N}, // is
-    {L, L, L, L, R, L, R, R, L, R, L, R, N, R, N}, // == !=
-    {R, R, R, R, R, R, R, R, L, R, L, R, N, N, N}, // negace !
-    {L, L, L, L, L, L, R, R, L, R, L, R, N, N, N}, // &&
-    {L, L, L, L, L, L, L, R, L, R, L, R, N, N, N}, // ||
-    {R, R, R, R, R, N, R, R, N, R, N, R, R, R, R}, // id
-    {L, L, L, L, L, L, L, L, L, N, L, N, L, L, L}, // dolar
-    {L, L, L, L, L, L, L, L, L, N, L, E, N, N, N}, // (
-    {R, R, R, R, R, N, R, R, N, R, N, R, R, R, N}, // )
-    {N, N, N, N, N, L, N, N, L, N, L, R, R, N, N}, // ../...
-    {L, L, L, N, N, N, N, N, L, N, L, N, N, N, E}, // ?
-    {L, L, L, N, N, N, N, N, L, N, L, N, N, N, L}, // :
+    {R, R, R, R, R, L, R, R, L, R, L, R, N, R, R}, // + -       0
+    {L, R, R, R, R, L, R, R, L, R, L, R, N, N, R}, // * /       1
+    {L, L, R, R, R, L, R, R, L, R, L, R, N, R, R}, // < > >= <= 2
+    {L, L, L, R, R, L, R, R, L, R, L, R, N, N, N}, // is        3
+    {L, L, L, L, R, L, R, R, L, R, L, R, N, R, N}, // == !=     4
+    {R, R, R, R, R, R, R, R, L, R, L, R, N, N, N}, // negace !  5
+    {L, L, L, L, L, L, R, R, L, R, L, R, N, N, N}, // &&        6
+    {L, L, L, L, L, L, L, R, L, R, L, R, N, N, N}, // ||        7
+    {R, R, R, R, R, N, R, R, N, R, N, R, R, R, R}, // id        8
+    {L, L, L, L, L, L, L, L, L, N, L, N, L, L, L}, // dolar     9
+    {L, L, L, L, L, L, L, L, L, N, L, E, N, N, N}, // (         10
+    {R, R, R, R, R, N, R, R, N, R, N, R, R, R, R}, // )         11
+    {N, N, N, N, N, L, N, N, L, N, L, R, R, N, N}, // ../...    12
+    {L, L, L, N, N, N, N, N, L, N, L, N, N, N, E}, // ?         13
+    {L, L, L, N, N, N, N, N, L, R, L, N, N, N, L}, // :         14
 };
 
  // vsechny operatory, ktere se mohou vyskytnout ve vyrazu
@@ -108,6 +108,7 @@ int operatorToPush(Token token)
         case TOKEN_KEYWORD_NUM:         return INDEX_ID;
         case TOKEN_KEYWORD_NULL_SMALL:  return INDEX_ID;
         case TOKEN_KEYWORD_NULL:        return INDEX_ID;
+        case TOKEN_STRING_BLOCK:        return INDEX_ID;
 
 
         case TOKEN_EXPRESSION:  // nemuzu pocitat ze tam je identifikator kdyz tam je jenom expression abych a pridal <
@@ -194,6 +195,7 @@ AstNodeType getAstNodeTypeFromTokenType(TokenType type)
     case TOKEN_KEYWORD_STRING:  return AST_KEYWORD_STRING;
     case TOKEN_KEYWORD_NULL_SMALL: return AST_SMALL_NULL;
     case TOKEN_KEYWORD_NULL: return AST_NULL;
+    case TOKEN_STRING_BLOCK:    return AST_STRING_BLOCK;
 
     default:
         printError(SYNTAX_ERROR, "(PSA) Nelze prevést TokenType na AstNodeType, neznámý token\n");
@@ -224,6 +226,9 @@ void tokenPrecedenceFree(Token *token)
         case TOKEN_FLOAT:
         case TOKEN_TRUE:
         case TOKEN_FALSE:
+        case TOKEN_KEYWORD_IS:
+        case TOKEN_KEYWORD_NUM:
+        case TOKEN_KEYWORD_STRING:
             if (token->value.identifier)
             {
                 free(token->value.identifier);
@@ -441,6 +446,7 @@ bool checkFirstTokenType(Token actualToken)
     case TOKEN_FALSE:
     case TOKEN_MINUS:
     case TOKEN_KEYWORD_NULL_SMALL:
+    case TOKEN_STRING_BLOCK:
         return true;
 
     default:
@@ -628,7 +634,7 @@ AstNode* parseExpression(Token *token, int flag)
     Token StackTop;
 
     bool firstOK = false; // Pomocná proměnná pro kontrolu povoleného prvního tokenu
-    bool checkEmptyIf = false; // Pomocn8 proměnná pro kontrolu prázdnosti podmínky
+    bool checkEmptyIf = false; // Pomocna proměnná pro kontrolu prázdnosti podmínky
     bool expectingNewLineAfterOperator = true; // Kontrolní proměnná pro implementaci možnosti nového řádku za operátorem
     bool expectingRPAREN = false; // Pomocná proměnná pro implementaci zajištění kontroly ukočení výrazu pravou závorkou
     bool functionCall = false; // Pomocná proměnná pro zpracování funkce ve výrazu
