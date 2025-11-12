@@ -25,7 +25,6 @@ typedef enum AstNodeType {
 
     // bloky a zoznamy
     AST_BLOCK,
-    AST_STATEMENT,
     AST_STATEMENT_LIST,
 
     // deklarácie a volania
