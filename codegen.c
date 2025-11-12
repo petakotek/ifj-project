@@ -1230,7 +1230,9 @@ void emit_var(AstNode *node, FuncContext *funcStruct){
 	emit_command(node->child[1]->child[0], funcStruct);
 	printN("POPS LF@%s",node->child[0]->value.str);
 }
+void call_func(AstNode *node,FuncContext *funcStruct){
 
+}
 /*
 void emit_while(AstNode *node, DynamiclabelStackStackPtr label_stack, int while_counter) {
     while_counter++;
@@ -1397,11 +1399,6 @@ void emit_command(AstNode *node,FuncContext *funcStruct) {
         case AST_RPAREN:
             // Nová implementace: Pravá závorka (Obvykle zpracováváno jako součást expression)
             // emitChildren(node, label_stack, counter, op_emit);
-            break;
-        case AST_STATEMENT:
-            // Nová implementace: Samostatný příkaz (Obvykle by měl mít dceřinný uzel, který se
-            // zpracuje)
-            emitChildren(node, funcStruct);
             break;
         case AST_NULL:
             // Nová implementace: Reprezentace literálu NULL
