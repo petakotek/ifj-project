@@ -1,0 +1,13 @@
+import "ifj25" for Ifj
+class Program {
+    static main() {
+        var i = 0
+        var limit = 5
+        while (i < limit && (limit < 10 || i == 0)) {
+            if (i == 2) {
+                limit = limit + 1
+            }
+            i = i + 1
+        }
+    }
+}

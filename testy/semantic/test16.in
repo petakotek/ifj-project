@@ -1,0 +1,19 @@
+import "ifj25" for Ifj
+class Program {
+    // Oneline block
+
+
+    //static f() { 1 }
+    static f { 
+        { 
+            return "a"
+        }
+       return 1
+    }
+
+    static main() { 
+        //f()
+        var x = f + 2
+    }
+
+}

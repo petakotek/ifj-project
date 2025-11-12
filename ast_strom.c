@@ -27,9 +27,12 @@ AstNode *build_ifchain_flat(size_t n, AstNode **kids) {
         return node;
     }
 
-    // (head, EMPTY) -> len [head]
     if (n == 2 && kids[1] && kids[1]->kind == AST_EMPTY) {
         AstNode *flat1[1] = { kids[0] };
+
+        // EMPTY uzol už nebudeme nikde používať -> uvoľniť
+        ast_free_whole(kids[1]);   // alebo free(kids[1]), ak máš istotu, že nemá deti
+
         return ast_new(AST_IF_CHAIN, 1, flat1);
     }
 
@@ -99,7 +102,6 @@ AstNode *build_classblock_flat(size_t n, AstNode **kids) {
     return ast_new(AST_MAIN_CLASS_BLOCK, n, kids);
 }
 
-// same shape as your build_param_flat, but for statement lists:
 AstNode *build_stmtlist_flat(size_t n, AstNode **kids) {
     if (n == 0) {                       // ε
         AstNode *node = calloc(1, sizeof *node);
@@ -254,7 +256,7 @@ void ast_value_from_token(AstValue *out, AstNodeType kind, Token *token) {
     {
         case AST_INT_LIT:
             out->is_int = true;
-            out->int_val = strtoll(token->value.identifier,NULL,0);   // prispôsob ak máš odlišné polia
+            out->int_val = strtoll(token->value.identifier,NULL,0);
             break;
         case AST_FLOAT_LIT:
             out->is_float = true;
@@ -273,7 +275,6 @@ void ast_value_from_token(AstValue *out, AstNodeType kind, Token *token) {
             out->is_bool = true;
             out->str = dup_cstr(token->value.identifier);
         default:
-            // pre nelistové alebo iné typy nič nekopíruj
             break;
     }
 }
@@ -307,8 +308,6 @@ const char *ast_node_type_to_string(AstNodeType kind) {
             return "MAIN_CLASS_BLOCK";
         case AST_BLOCK:
             return "BLOCK";
-        case AST_STATEMENT:
-            return "STATEMENT";
         case AST_STATEMENT_LIST:
             return "STATEMENT_LIST";
         case AST_FUNC_DEC:         return "FUNC_DEC";
@@ -355,6 +354,9 @@ const char *ast_node_type_to_string(AstNodeType kind) {
         case AST_GETTER: return "GETTER";
         case AST_SETTER: return "SETTER";
         case AST_CONDITION: return"CONDITION";
+        case AST_TERNARY:   return "TERNARY_OPERATOR";
+        case AST_AND: return "STRING_AND";
+        case AST_SMALL_NULL: return "SMALL_NULL";
         default:                   return "UNKNOWN_AST_NODE";
     }
 }

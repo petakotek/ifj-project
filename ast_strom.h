@@ -25,7 +25,6 @@ typedef enum AstNodeType {
 
     // bloky a zoznamy
     AST_BLOCK,
-    AST_STATEMENT,
     AST_STATEMENT_LIST,
 
     // deklarácie a volania
@@ -50,6 +49,7 @@ typedef enum AstNodeType {
     AST_BREAK,
     AST_CONTINUE,
     AST_RETURN,
+    AST_TERNARY,
 
     // listy
     AST_IDENTIFIER,
@@ -84,6 +84,7 @@ typedef enum AstNodeType {
 
     AST_KEYWORD_NUM,     // Num
     AST_KEYWORD_STRING,  // String
+    AST_SMALL_NULL,
 } AstNodeType;
 
 /**

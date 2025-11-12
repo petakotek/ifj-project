@@ -41,6 +41,8 @@ int main(){
 	 //print_and_free_tokens();
 	//exit(0);
 	//print_and_free_tokens();
+//	exit(0);
+	//print_and_free_tokens();
 	//exit(0);
 	// tvorba stromu pres parser
 	AstNode *AST;
@@ -61,9 +63,15 @@ int main(){
 	printf("Vysledek sem_anal: %i\n", output);
 	*/
 
+
 	//ast_dump(AST);
 	//free ast stromu
 	ast_free_whole(AST);
+<<<<<<< HEAD
 free(source_file);
 
+=======
+
+	free(source_file);
+>>>>>>> 502d9872e15f1310739ba1efa88e57efddea4909
 }
