@@ -1,0 +1,13 @@
+import "ifj25" for Ifj
+class Program {
+    static main() {
+        for (i in 0 .. 10) {
+            if (i == 3) {
+                continue
+            }
+            if (i == 8) {
+                break
+            }
+        }
+    }
+}

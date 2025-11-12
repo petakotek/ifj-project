@@ -454,7 +454,6 @@ void Block_content_func_check(DynamicSymbolStackPtr Stack, Token token)
         case TOKEN_FLOAT:
         case TOKEN_STRING:
         case TOKEN_LPAREN:
-            pushCheck(stackSymbolPush(Stack, makeReduce(AST_BLOCK, 1)));
             pushCheck(stackSymbolPush(Stack, makeReduce(AST_STATEMENT_LIST, 1)));
             pushCheck(stackSymbolPush(Stack, makeNonterm(N_oExpr)));
             return;
@@ -612,7 +611,6 @@ void Func_dec_tail_func(DynamicSymbolStackPtr Stack, Token token)
     {
         // Vetva: ( Param ) Block
         pushCheck(stackSymbolPush(Stack, makeReduce(AST_FUNC_DEC, 3)));
-        pushCheck(stackSymbolPush(Stack, makeReduce(AST_BLOCK,1)));
         pushCheck(stackSymbolPush(Stack, makeTerm(TOKEN_NEW_LINE)));
         pushCheck(stackSymbolPush(Stack, makeNonterm(N_Block)));
         pushCheck(stackSymbolPush(Stack, makeTerm(TOKEN_RPAREN)));
@@ -713,6 +711,7 @@ void Func_call_func(DynamicSymbolStackPtr Stack, Token token)
         pushCheck(stackSymbolPush(Stack, makeTerm(TOKEN_RPAREN)));
         pushCheck(stackSymbolPush(Stack, makeNonterm(N_Var_arg)));
         pushCheck(stackSymbolPush(Stack, makeTermWithValue(TOKEN_IDENTIFIER)));
+        pushCheck(stackSymbolPush(Stack, makeNonterm(N_Opt_newlines)));
         pushCheck(stackSymbolPush(Stack, makeTerm(TOKEN_DOT)));
         pushCheck(stackSymbolPush(Stack, makeTerm(TOKEN_KEYWORD_IFJ)));
         return;
@@ -794,6 +793,7 @@ void var_arg_list_func(DynamicSymbolStackPtr Stack, Token token)
         pushCheck(stackSymbolPush(Stack, makeReduce(AST_PARAM, 2)));
          pushCheck(stackSymbolPush(Stack, makeNonterm(N_Var_arg_list)));
          pushCheck(stackSymbolPush(Stack, makeNonterm(N_cExpr)));
+         pushCheck(stackSymbolPush(Stack, makeNonterm(N_Opt_newlines)));
          pushCheck(stackSymbolPush(Stack, makeTerm(TOKEN_COMMA)));
     } else if (token.type == TOKEN_RPAREN) {
          // eps
@@ -1054,6 +1054,7 @@ void callIfjfunc(DynamicSymbolStackPtr Stack, Token token)
         pushCheck(stackSymbolPush(Stack, makeNonterm(N_Var_arg)));
         pushCheck(stackSymbolPush(Stack, makeTerm(TOKEN_LPAREN)));
         pushCheck(stackSymbolPush(Stack, makeNonterm(N_callIfjCheck)));
+        pushCheck(stackSymbolPush(Stack, makeNonterm(N_Opt_newlines)));
         pushCheck(stackSymbolPush(Stack, makeTerm(TOKEN_DOT)));
     }
     else
@@ -1110,6 +1111,11 @@ void AssignIfjIdCheckFunc(DynamicSymbolStackPtr Stack, Token token)
         return;
     }
     
+    else if (token.type == TOKEN_KEYWORD_NULL_SMALL)
+    {
+        pushCheck(stackSymbolPush(Stack, makeReduce(AST_SMALL_NULL, 0)));
+        pushCheck(stackSymbolPush(Stack, makeTerm(TOKEN_KEYWORD_NULL_SMALL)));
+    }
     else
     {
         pushCheck(stackSymbolPush(Stack, makeNonterm(N_Expr)));

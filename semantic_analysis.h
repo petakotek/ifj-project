@@ -100,11 +100,6 @@ typedef enum {
      */
     OK,
     /**
-     * @brief Při zpracování uzlu nastala sémantická chyba
-     *
-     */
-    ERROR,
-    /**
      * @brief Výstupem zpracování uzlu je číslo
      *
      * Používáno v místech, kde nelze určit zda je číslo celé nebo desetinné
@@ -214,7 +209,7 @@ bool startSematicValidation(AstNode* root);
  * @brief Uklidí paměť používanou sémantickou analýzou
  *
  */
-void freeSematicsMemory();
+void freeSemanticsMemory();
 
 #endif
 // TODO patička

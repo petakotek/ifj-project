@@ -1,0 +1,10 @@
+import "ifj25" for Ifj
+class Program {
+    // Multiline stringy
+
+    static main() {
+        var x = """adsasd
+        dsadada \t \r """
+    }
+
+}
