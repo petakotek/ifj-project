@@ -47,7 +47,7 @@ char *resize_label_name(char *prefix, size_t *size) {
  * @param func_name jmeno funcke ktere chceme pripojit
  * @return ukazatel na vysledny label
  */
-char *generatorLable(FuncContext *funcStruckt,bool pridaniDoStacku) {
+char *generatorLable(char *func_name,FuncContext *funcStruckt,bool pridaniDoStacku) {
     size_t size_of_buffer = 128;
     char  *result_label   = (char *)malloc(size_of_buffer);
     if (result_label == NULL) {
@@ -85,7 +85,7 @@ char *generatorLable(FuncContext *funcStruckt,bool pridaniDoStacku) {
     size_t remaining_space = size_of_buffer - current_len;
 
     int written =
-        snprintf(result_label + current_len, remaining_space, "$%s$%d", funcStruckt.func_name, funcStruckt.counter);
+        snprintf(result_label + current_len, remaining_space, "$%s$%d", funcStruckt->func_name, funcStruckt->counter);
 
     if (written <= 0 || (size_t)written >= remaining_space) {
         // potřebna resize
@@ -168,6 +168,7 @@ void varListDescrution(VarList *list){
 	free(list->var_names);
 	free(list);
 }
+
 void add_binop_tmps(VarList* vars, const char* func, int id,AstNode *node) {
     char buf[128];
 
@@ -274,18 +275,19 @@ void emitFuncDec(AstNode *root){
 	DynamiclabelStackStackPtr label_stack = stacklabelStackConstruct(DEFAULT_INIT_ELEMENT_COUNT);
 	bool main = false;
 	char *label = NULL;
+	FuncContext *context = ConstuctorFuncContext();
+	context->func_name = root->child[0]->value.str;
+	context->label_end = NULL;
+	context->label_stack = label_stack;
 	if(strcmp(root->child[0]->value.str,"main") == 0 && root->child[1]->child[0]->kind == AST_EMPTY){
 		main = true;
 		printN("LABEL $$main");
 	}else{
-	label = generatorLable(root->child[0]->value.str, label_stack,0, true);
+	label = generatorLable(root->child[0]->value.str,context,true);
 	printN("%s",label);
 	}
-	char *label_end = generatorLable("end", label_stack,0,false);
-	FuncContext *context = ConstuctorFuncContext();
-	context->func_name = root->child[0]->value.str;
+	char *label_end = generatorLable("end", context,false);
 	context->label_end = label_end;
-	context->label_stack = label_stack;
 	printN("CREATEFRAME");
 	printN("PUSHFRAME");
 	//sbirani lokalnich promenych na deklaraci
@@ -332,7 +334,7 @@ void emit_push_value(AstNode *node) {
             printN("PUSHS LF@%s", node->value.str);
     }
 }
-void emitIfjFunc(AstNode *node,FuncContext funcStruct) {
+void emitIfjFunc(AstNode *node,FuncContext *funcStruct) {
                  AstNode *callee = node->child[0];
                  AstNode *params = node->child[1];
 
@@ -388,18 +390,18 @@ void emitIfjFunc(AstNode *node,FuncContext funcStruct) {
      }
     int id = node->tmp_id;
     char ln[128], rn[128], ty[128],rs[128];
-    snprintf(ln, sizeof ln, "%s_ln_%d", func_name, id);
-    snprintf(rn, sizeof rn, "%s_rn_%d", func_name, id);
-    snprintf(ty, sizeof ty, "%s_ty_%d", func_name, id);
-    snprintf(rs, sizeof rs, "%s_rs_%d", func_name, id);
+    snprintf(ln, sizeof ln, "%s_ln_%d", funcStruct->func_name, id);
+    snprintf(rn, sizeof rn, "%s_rn_%d", funcStruct->func_name, id);
+    snprintf(ty, sizeof ty, "%s_ty_%d", funcStruct->func_name, id);
+    snprintf(rs, sizeof rs, "%s_rs_%d", funcStruct->func_name, id);
 
     int size_for_label = strlen(funcStruct->func_name)+20;
     char label_ok[size_for_label], label_add[size_for_label], label_concat[size_for_label], label_end[size_for_label], label_err[size_for_label];
-    snprintf(label_ok,  sizeof label_ok,  "%s$ok$%d",     func_name, id);
-    snprintf(label_add, sizeof label_add, "%s$add$%d",    func_name, id);
-    snprintf(label_concat, sizeof label_concat, "%s$concat$%d", func_name, id);
-    snprintf(label_end, sizeof label_end, "%s$end$%d",    func_name, id);
-    snprintf(label_err, sizeof label_err, "%s$err$%d",    func_name, id);
+    snprintf(label_ok,  sizeof label_ok,  "%s$ok$%d",     funcStruct->func_name, id);
+    snprintf(label_add, sizeof label_add, "%s$add$%d",    funcStruct->func_name, id);
+    snprintf(label_concat, sizeof label_concat, "%s$concat$%d", funcStruct->func_name, id);
+    snprintf(label_end, sizeof label_end, "%s$end$%d",    funcStruct->func_name, id);
+    snprintf(label_err, sizeof label_err, "%s$err$%d",    funcStruct->func_name, id);
     //  Ulozeni do docasnych promenychg
     printN("POPS LF@%s",rn);  // Uložíme pravou hodnotu (right)
     printN("POPS LF@%s",ln);  // Uložíme levou hodnotu (left)
@@ -462,32 +464,32 @@ void emitIfjFunc(AstNode *node,FuncContext funcStruct) {
     printN("LABEL %s", label_end);
 	printN("");
 }
-void emitMinus(AstNode *node, DynamiclabelStackStackPtr label_stack, int counter,char *func_name) {
+void emitMinus(AstNode *node, FuncContext *funcStrukt) {
         if (node->child[0]->kind == AST_FUNC_CALL) {
-            emit_command(node->child[0], label_stack, counter, NULL);
+            emit_command(node->child[0], funcStrukt);
         }
         if (node->child[1]->kind == AST_FUNC_CALL) {
-            emit_command(node->child[1], label_stack, counter,  NULL);
+            emit_command(node->child[1], funcStrukt);
         }
 
         if (node->child[0]->kind != AST_FUNC_CALL) {
-            emit_push_value(node->child[0], label_stack, counter);
+            emit_push_value(node->child[0]);
         }
         if (node->child[1]->kind != AST_FUNC_CALL) {
-            emit_push_value(node->child[1], label_stack, counter);
+            emit_push_value(node->child[1]);
         }
         // Po emitBinaryOp máme na zásobníku: [hodnota_left, hodnota_right]
         int id = node->tmp_id;
         char ln[128], rn[128], ty[128];
-        snprintf(ln, sizeof ln, "%s_ln_%d", func_name, id);
-        snprintf(rn, sizeof rn, "%s_rn_%d", func_name, id);
-        snprintf(ty, sizeof ty, "%s_ty_%d", func_name, id);
+        snprintf(ln, sizeof ln, "%s_ln_%d", funcStrukt->func_name, id);
+        snprintf(rn, sizeof rn, "%s_rn_%d", funcStrukt->func_name, id);
+        snprintf(ty, sizeof ty, "%s_ty_%d", funcStrukt->func_name, id);
 
-        int size_for_label = strlen(func_name)+20;
+        int size_for_label = strlen(funcStrukt->func_name)+20;
         char label_ok[size_for_label], label_add[size_for_label], label_concat[size_for_label], label_end[size_for_label], label_err[size_for_label];
-        snprintf(label_ok,  sizeof label_ok,  "%s$ok$%d",     func_name, id);
-        snprintf(label_end, sizeof label_end, "%s$end$%d",    func_name, id);
-        snprintf(label_err, sizeof label_err, "%s$err$%d",    func_name, id);
+        snprintf(label_ok,  sizeof label_ok,  "%s$ok$%d",     funcStrukt->func_name, id);
+        snprintf(label_end, sizeof label_end, "%s$end$%d",    funcStrukt->func_name, id);
+        snprintf(label_err, sizeof label_err, "%s$err$%d",    funcStrukt->func_name, id);
         //  Ulozeni do docasnych promenychg
         printN("POPS LF@%s",rn);  // Uložíme pravou hodnotu (right)
         printN("POPS LF@%s",ln);  // Uložíme levou hodnotu (left)
@@ -529,33 +531,32 @@ void emitMinus(AstNode *node, DynamiclabelStackStackPtr label_stack, int counter
         printN("LABEL %s", label_end);
 	printN("");
 }
-void emitMul(AstNode *node, DynamiclabelStackStackPtr label_stack, int counter,
-              char *func_name) {
+void emitMul(AstNode *node,FuncContext *funcStrukt) {
         if (node->child[0]->kind == AST_FUNC_CALL) {
-            emit_command(node->child[0], label_stack, counter, NULL);
+            emit_command(node->child[0], funcStrukt);
         }
         if (node->child[1]->kind == AST_FUNC_CALL) {
-            emit_command(node->child[1], label_stack, counter, NULL);
+            emit_command(node->child[1], funcStrukt);
         }
 
         if (node->child[0]->kind != AST_FUNC_CALL) {
-            emit_push_value(node->child[0], label_stack, counter);
+            emit_push_value(node->child[0]);
         }
         if (node->child[1]->kind != AST_FUNC_CALL) {
-            emit_push_value(node->child[1], label_stack, counter);
+            emit_push_value(node->child[1]);
         }
     // Po emitBinaryOp máme na zásobníku: [hodnota_left, hodnota_right]
         int id = node->tmp_id;
         char ln[128], rn[128], ty[128];
-        snprintf(ln, sizeof ln, "%s_ln_%d", func_name, id);
-        snprintf(rn, sizeof rn, "%s_rn_%d", func_name, id);
-        snprintf(ty, sizeof ty, "%s_ty_%d", func_name, id);
+        snprintf(ln, sizeof ln, "%s_ln_%d", funcStrukt->func_name, id);
+        snprintf(rn, sizeof rn, "%s_rn_%d", funcStrukt->func_name, id);
+        snprintf(ty, sizeof ty, "%s_ty_%d", funcStrukt->func_name, id);
 
-        int size_for_label = strlen(func_name)+20;
+        int size_for_label = strlen(funcStrukt->func_name)+20;
         char label_ok[size_for_label], label_add[size_for_label], label_concat[size_for_label], label_end[size_for_label], label_err[size_for_label];
-        snprintf(label_ok,  sizeof label_ok,  "%s$ok$%d",     func_name, id);
-        snprintf(label_end, sizeof label_end, "%s$end$%d",    func_name, id);
-        snprintf(label_err, sizeof label_err, "%s$err$%d",    func_name, id);
+        snprintf(label_ok,  sizeof label_ok,  "%s$ok$%d",     funcStrukt->func_name, id);
+        snprintf(label_end, sizeof label_end, "%s$end$%d",    funcStrukt->func_name, id);
+        snprintf(label_err, sizeof label_err, "%s$err$%d",    funcStrukt->func_name, id);
         //  Ulozeni do docasnych promenychg
         printN("POPS LF@%s",rn);  // Uložíme pravou hodnotu (right)
         printN("POPS LF@%s",ln);  // Uložíme levou hodnotu (left)
@@ -597,34 +598,33 @@ void emitMul(AstNode *node, DynamiclabelStackStackPtr label_stack, int counter,
         printN("LABEL %s", label_end);
 	printN("");
 }
-void emitDiv(AstNode *node, DynamiclabelStackStackPtr label_stack, int counter,
-              char *func_name) {
+void emitDiv(AstNode *node,FuncContext *funcStrukt) {
     if (node->child[0]->kind == AST_FUNC_CALL) {
-            emit_command(node->child[0], label_stack, counter, NULL);
+            emit_command(node->child[0], funcStrukt);
         }
         if (node->child[1]->kind == AST_FUNC_CALL) {
-            emit_command(node->child[1], label_stack, counter,  NULL);
+            emit_command(node->child[1], funcStrukt);
         }
 
         if (node->child[0]->kind != AST_FUNC_CALL) {
-            emit_push_value(node->child[0], label_stack, counter);
+            emit_push_value(node->child[0]);
         }
         if (node->child[1]->kind != AST_FUNC_CALL) {
-            emit_push_value(node->child[1], label_stack, counter);
+            emit_push_value(node->child[1]);
         }
     // Příprava dočasných proměnných a labelů
     int id = node->tmp_id;
     char ln[128], rn[128], ty[128];
-    snprintf(ln, sizeof ln, "%s_ln_%d", func_name, id);
-    snprintf(rn, sizeof rn, "%s_rn_%d", func_name, id);
-    snprintf(ty, sizeof ty, "%s_ty_%d", func_name, id);
+    snprintf(ln, sizeof ln, "%s_ln_%d", funcStrukt->func_name, id);
+    snprintf(rn, sizeof rn, "%s_rn_%d", funcStrukt->func_name, id);
+    snprintf(ty, sizeof ty, "%s_ty_%d", funcStrukt->func_name, id);
 
     char label_ok[128], label_int_div[128], label_div_zero[128], label_end[128], label_err[128];
-    snprintf(label_ok,       sizeof label_ok,       "%s$ok$%d",      func_name, id);
-    snprintf(label_int_div,  sizeof label_int_div,  "%s$intdiv$%d",  func_name, id);
-    snprintf(label_div_zero, sizeof label_div_zero, "%s$divzero$%d", func_name, id);
-    snprintf(label_end,      sizeof label_end,      "%s$end$%d",     func_name, id);
-    snprintf(label_err,      sizeof label_err,      "%s$err$%d",     func_name, id);
+    snprintf(label_ok,       sizeof label_ok,       "%s$ok$%d",      funcStrukt->func_name, id);
+    snprintf(label_int_div,  sizeof label_int_div,  "%s$intdiv$%d",  funcStrukt->func_name, id);
+    snprintf(label_div_zero, sizeof label_div_zero, "%s$divzero$%d", funcStrukt->func_name, id);
+    snprintf(label_end,      sizeof label_end,      "%s$end$%d",     funcStrukt->func_name, id);
+    snprintf(label_err,      sizeof label_err,      "%s$err$%d",     funcStrukt->func_name, id);
 
     // Uložení operandů do dočasných proměnných
     printN("POPS LF@%s", rn);  // Uložíme pravou hodnotu (right)
@@ -704,31 +704,31 @@ void emitDiv(AstNode *node, DynamiclabelStackStackPtr label_stack, int counter,
     // Konec dělení
     printN("LABEL %s", label_end);
 }
-void emit_equal(AstNode *node, DynamiclabelStackStackPtr label_stack, int counter, char *end,char *func_name) {
+void emit_equal(AstNode *node, FuncContext *funcStrukt) {
 	if (node->child[0]->kind == AST_FUNC_CALL) {
-            emit_command(node->child[0], label_stack, counter,func_name);
+            emit_command(node->child[0],funcStrukt);
         }
         if (node->child[1]->kind == AST_FUNC_CALL) {
-            emit_command(node->child[1], label_stack, counter, func_name);
+        	emit_command(node->child[1],funcStrukt);
         }
 
         if (node->child[0]->kind != AST_FUNC_CALL) {
-            emit_push_value(node->child[0], label_stack, counter);
+            emit_push_value(node->child[0]);
         }
         if (node->child[1]->kind != AST_FUNC_CALL) {
-            emit_push_value(node->child[1], label_stack, counter);
+            emit_push_value(node->child[1]);
         }
     // Příprava dočasných proměnných a labelů
     int id = node->tmp_id;
     char ln[128], rn[128], ty[128];
-    snprintf(ln, sizeof ln, "%s_ln_%d", func_name, id);
-    snprintf(rn, sizeof rn, "%s_rn_%d", func_name, id);
-    snprintf(ty, sizeof ty, "%s_ty_%d", func_name, id);
+    snprintf(ln, sizeof ln, "%s_ln_%d", funcStrukt->func_name, id);
+    snprintf(rn, sizeof rn, "%s_rn_%d", funcStrukt->func_name, id);
+    snprintf(ty, sizeof ty, "%s_ty_%d", funcStrukt->func_name, id);
 
     char label_ok[128],label_end[128], label_err[128];
-    snprintf(label_ok,       sizeof label_ok,       "%s$ok$%d",      func_name, id);
-    snprintf(label_end,      sizeof label_end,      "%s$end$%d",     func_name, id);
-    snprintf(label_err,      sizeof label_err,      "%s$err$%d",     func_name, id);
+    snprintf(label_ok,       sizeof label_ok,       "%s$ok$%d",      funcStrukt->func_name, id);
+    snprintf(label_end,      sizeof label_end,      "%s$end$%d",     funcStrukt->func_name, id);
+    snprintf(label_err,      sizeof label_err,      "%s$err$%d",     funcStrukt->func_name, id);
 
     // Uložení operandů do dočasných proměnných
     printN("POPS LF@%s", rn);  // Uložíme pravou hodnotu (right)
@@ -767,37 +767,36 @@ void emit_equal(AstNode *node, DynamiclabelStackStackPtr label_stack, int counte
     printN("LABEL %s", label_end);
 }
 
-void emit_less(AstNode *node, DynamiclabelStackStackPtr label_stack, int counter,
-               char *func_name) {
+void emit_less(AstNode *node,FuncContext *funcStruct) {
 
     // 1. Zpracuj funkce (pokud jsou)
     if (node->child[0]->kind == AST_FUNC_CALL) {
-        emit_command(node->child[0], label_stack, counter, func_name);
+        emit_command(node->child[0], funcStruct);
     }
     if (node->child[1]->kind == AST_FUNC_CALL) {
-        emit_command(node->child[1], label_stack, counter,func_name);
+        emit_command(node->child[1], funcStruct);
     }
 
     // 2. Push operandy (pokud nejsou funkce)
     if (node->child[0]->kind != AST_FUNC_CALL) {
-        emit_push_value(node->child[0], label_stack, counter);
+        emit_push_value(node->child[0]);
     }
     if (node->child[1]->kind != AST_FUNC_CALL) {
-        emit_push_value(node->child[1], label_stack, counter);
+        emit_push_value(node->child[1]);
     }
 
     // Příprava dočasných proměnných a labelů
     int id = node->tmp_id;
     char ln[128], rn[128], rty[128], lty[128];
-    snprintf(ln,  sizeof ln,  "%s_ln_%d",  func_name, id);
-    snprintf(rn,  sizeof rn,  "%s_rn_%d",  func_name, id);
-    snprintf(lty, sizeof lty, "%s_lty_%d", func_name, id);
-    snprintf(rty, sizeof rty, "%s_rty_%d", func_name, id);
+    snprintf(ln,  sizeof ln,  "%s_ln_%d",  funcStruct->func_name, id);
+    snprintf(rn,  sizeof rn,  "%s_rn_%d",  funcStruct->func_name, id);
+    snprintf(lty, sizeof lty, "%s_lty_%d", funcStruct->func_name, id);
+    snprintf(rty, sizeof rty, "%s_rty_%d", funcStruct->func_name, id);
 
     char label_ok[128], label_end[128], label_err[128];
-    snprintf(label_ok,  sizeof label_ok,  "%s$ltok$%d",  func_name, id);
-    snprintf(label_end, sizeof label_end, "%s$ltend$%d", func_name, id);
-    snprintf(label_err, sizeof label_err, "%s$lterr$%d", func_name, id);
+    snprintf(label_ok,  sizeof label_ok,  "%s$ltok$%d",  funcStruct->func_name, id);
+    snprintf(label_end, sizeof label_end, "%s$ltend$%d", funcStruct->func_name, id);
+    snprintf(label_err, sizeof label_err, "%s$lterr$%d", funcStruct->func_name, id);
 
     // Uložení operandů do dočasných proměnných
     printN("POPS LF@%s", rn);
@@ -844,37 +843,36 @@ void emit_less(AstNode *node, DynamiclabelStackStackPtr label_stack, int counter
     printN("LABEL %s", label_end);
 }
 
-void emit_greater(AstNode *node, DynamiclabelStackStackPtr label_stack, int counter,
-               char *func_name) {
+void emit_greater(AstNode *node,FuncContext *funcStruct) {
 
     // 1. Zpracuj funkce (pokud jsou)
     if (node->child[0]->kind == AST_FUNC_CALL) {
-        emit_command(node->child[0], label_stack, counter, func_name);
+        emit_command(node->child[0], funcStruct);
     }
     if (node->child[1]->kind == AST_FUNC_CALL) {
-        emit_command(node->child[1], label_stack, counter,func_name);
+        emit_command(node->child[1], funcStruct);
     }
 
     // 2. Push operandy (pokud nejsou funkce)
     if (node->child[0]->kind != AST_FUNC_CALL) {
-        emit_push_value(node->child[0], label_stack, counter);
+        emit_push_value(node->child[0]);
     }
     if (node->child[1]->kind != AST_FUNC_CALL) {
-        emit_push_value(node->child[1], label_stack, counter);
+        emit_push_value(node->child[1]);
     }
 
     // Příprava dočasných proměnných a labelů
     int id = node->tmp_id;
     char ln[128], rn[128], rty[128], lty[128];
-    snprintf(ln,  sizeof ln,  "%s_ln_%d",  func_name, id);
-    snprintf(rn,  sizeof rn,  "%s_rn_%d",  func_name, id);
-    snprintf(lty, sizeof lty, "%s_lty_%d", func_name, id);
-    snprintf(rty, sizeof rty, "%s_rty_%d", func_name, id);
+    snprintf(ln,  sizeof ln,  "%s_ln_%d",  funcStruct->func_name, id);
+    snprintf(rn,  sizeof rn,  "%s_rn_%d",  funcStruct->func_name, id);
+    snprintf(lty, sizeof lty, "%s_lty_%d", funcStruct->func_name, id);
+    snprintf(rty, sizeof rty, "%s_rty_%d", funcStruct->func_name, id);
 
     char label_ok[128], label_end[128], label_err[128];
-    snprintf(label_ok,  sizeof label_ok,  "%s$ltok$%d",  func_name, id);
-    snprintf(label_end, sizeof label_end, "%s$ltend$%d", func_name, id);
-    snprintf(label_err, sizeof label_err, "%s$lterr$%d", func_name, id);
+    snprintf(label_ok,  sizeof label_ok,  "%s$ltok$%d",  funcStruct->func_name, id);
+    snprintf(label_end, sizeof label_end, "%s$ltend$%d", funcStruct->func_name, id);
+    snprintf(label_err, sizeof label_err, "%s$lterr$%d", funcStruct->func_name, id);
 
     // Uložení operandů do dočasných proměnných
     printN("POPS LF@%s", rn);
@@ -921,37 +919,36 @@ void emit_greater(AstNode *node, DynamiclabelStackStackPtr label_stack, int coun
     printN("LABEL %s", label_end);
 }
 
-void emit_less_equal(AstNode *node, DynamiclabelStackStackPtr label_stack, int counter,
-               char *func_name) {
+void emit_less_equal(AstNode *node, FuncContext *funcStruct) {
 
     // 1. Zpracuj funkce (pokud jsou)
     if (node->child[0]->kind == AST_FUNC_CALL) {
-        emit_command(node->child[0], label_stack, counter, func_name);
+        emit_command(node->child[0],funcStruct );
     }
     if (node->child[1]->kind == AST_FUNC_CALL) {
-        emit_command(node->child[1], label_stack, counter,func_name);
+        emit_command(node->child[1],funcStruct);
     }
 
     // 2. Push operandy (pokud nejsou funkce)
     if (node->child[0]->kind != AST_FUNC_CALL) {
-        emit_push_value(node->child[0], label_stack, counter);
+        emit_push_value(node->child[0]);
     }
     if (node->child[1]->kind != AST_FUNC_CALL) {
-        emit_push_value(node->child[1], label_stack, counter);
+        emit_push_value(node->child[1]);
     }
 
     // Příprava dočasných proměnných a labelů
     int id = node->tmp_id;
     char ln[128], rn[128], rty[128], lty[128];
-    snprintf(ln,  sizeof ln,  "%s_ln_%d",  func_name, id);
-    snprintf(rn,  sizeof rn,  "%s_rn_%d",  func_name, id);
-    snprintf(lty, sizeof lty, "%s_lty_%d", func_name, id);
-    snprintf(rty, sizeof rty, "%s_rty_%d", func_name, id);
+    snprintf(ln,  sizeof ln,  "%s_ln_%d",  funcStruct->func_name, id);
+    snprintf(rn,  sizeof rn,  "%s_rn_%d",  funcStruct->func_name, id);
+    snprintf(lty, sizeof lty, "%s_lty_%d", funcStruct->func_name, id);
+    snprintf(rty, sizeof rty, "%s_rty_%d", funcStruct->func_name, id);
 
     char label_ok[128], label_end[128], label_err[128];
-    snprintf(label_ok,  sizeof label_ok,  "%s$ltok$%d",  func_name, id);
-    snprintf(label_end, sizeof label_end, "%s$ltend$%d", func_name, id);
-    snprintf(label_err, sizeof label_err, "%s$lterr$%d", func_name, id);
+    snprintf(label_ok,  sizeof label_ok,  "%s$ltok$%d",  funcStruct->func_name, id);
+    snprintf(label_end, sizeof label_end, "%s$ltend$%d", funcStruct->func_name, id);
+    snprintf(label_err, sizeof label_err, "%s$lterr$%d", funcStruct->func_name, id);
 
     // Uložení operandů do dočasných proměnných
     printN("POPS LF@%s", rn);
@@ -1002,37 +999,36 @@ void emit_less_equal(AstNode *node, DynamiclabelStackStackPtr label_stack, int c
 
     printN("LABEL %s", label_end);
 }
-void emit_greater_equal(AstNode *node, DynamiclabelStackStackPtr label_stack, int counter,
-               char *func_name) {
+void emit_greater_equal(AstNode *node, FuncContext *funcStruct) {
 
     // 1. Zpracuj funkce (pokud jsou)
     if (node->child[0]->kind == AST_FUNC_CALL) {
-        emit_command(node->child[0], label_stack, counter, func_name);
+        emit_command(node->child[0], funcStruct);
     }
     if (node->child[1]->kind == AST_FUNC_CALL) {
-        emit_command(node->child[1], label_stack, counter,func_name);
+        emit_command(node->child[1], funcStruct);
     }
 
     // 2. Push operandy (pokud nejsou funkce)
     if (node->child[0]->kind != AST_FUNC_CALL) {
-        emit_push_value(node->child[0], label_stack, counter);
+        emit_push_value(node->child[0]);
     }
     if (node->child[1]->kind != AST_FUNC_CALL) {
-        emit_push_value(node->child[1], label_stack, counter);
+        emit_push_value(node->child[1]);
     }
 
     // Příprava dočasných proměnných a labelů
     int id = node->tmp_id;
     char ln[128], rn[128], rty[128], lty[128];
-    snprintf(ln,  sizeof ln,  "%s_ln_%d",  func_name, id);
-    snprintf(rn,  sizeof rn,  "%s_rn_%d",  func_name, id);
-    snprintf(lty, sizeof lty, "%s_lty_%d", func_name, id);
-    snprintf(rty, sizeof rty, "%s_rty_%d", func_name, id);
+    snprintf(ln,  sizeof ln,  "%s_ln_%d",  funcStruct->func_name, id);
+    snprintf(rn,  sizeof rn,  "%s_rn_%d",  funcStruct->func_name, id);
+    snprintf(lty, sizeof lty, "%s_lty_%d", funcStruct->func_name, id);
+    snprintf(rty, sizeof rty, "%s_rty_%d", funcStruct->func_name, id);
 
     char label_ok[128], label_end[128], label_err[128];
-    snprintf(label_ok,  sizeof label_ok,  "%s$ltok$%d",  func_name, id);
-    snprintf(label_end, sizeof label_end, "%s$ltend$%d", func_name, id);
-    snprintf(label_err, sizeof label_err, "%s$lterr$%d", func_name, id);
+    snprintf(label_ok,  sizeof label_ok,  "%s$ltok$%d",  funcStruct->func_name, id);
+    snprintf(label_end, sizeof label_end, "%s$ltend$%d", funcStruct->func_name, id);
+    snprintf(label_err, sizeof label_err, "%s$lterr$%d", funcStruct->func_name, id);
 
     // Uložení operandů do dočasných proměnných
     printN("POPS LF@%s", rn);
@@ -1084,31 +1080,31 @@ void emit_greater_equal(AstNode *node, DynamiclabelStackStackPtr label_stack, in
 
     printN("LABEL %s", label_end);
 }
-void emit_equal_not(AstNode *node, DynamiclabelStackStackPtr label_stack, int counter, char *end,char *func_name) {
+void emit_equal_not(AstNode *node, FuncContext *funcStruct) {
 	if (node->child[0]->kind == AST_FUNC_CALL) {
-            emit_command(node->child[0], label_stack, counter,func_name);
+            emit_command(node->child[0], funcStruct);
         }
         if (node->child[1]->kind == AST_FUNC_CALL) {
-            emit_command(node->child[1], label_stack, counter, func_name);
+            emit_command(node->child[1], funcStruct);
         }
 
         if (node->child[0]->kind != AST_FUNC_CALL) {
-            emit_push_value(node->child[0], label_stack, counter);
+            emit_push_value(node->child[0]);
         }
         if (node->child[1]->kind != AST_FUNC_CALL) {
-            emit_push_value(node->child[1], label_stack, counter);
+            emit_push_value(node->child[1]);
         }
     // Příprava dočasných proměnných a labelů
     int id = node->tmp_id;
     char ln[128], rn[128], ty[128];
-    snprintf(ln, sizeof ln, "%s_ln_%d", func_name, id);
-    snprintf(rn, sizeof rn, "%s_rn_%d", func_name, id);
-    snprintf(ty, sizeof ty, "%s_ty_%d", func_name, id);
+    snprintf(ln, sizeof ln, "%s_ln_%d", funcStruct->func_name, id);
+    snprintf(rn, sizeof rn, "%s_rn_%d", funcStruct->func_name, id);
+    snprintf(ty, sizeof ty, "%s_ty_%d", funcStruct->func_name, id);
 
     char label_ok[128],label_end[128], label_err[128];
-    snprintf(label_ok,       sizeof label_ok,       "%s$ok$%d",      func_name, id);
-    snprintf(label_end,      sizeof label_end,      "%s$end$%d",     func_name, id);
-    snprintf(label_err,      sizeof label_err,      "%s$err$%d",     func_name, id);
+    snprintf(label_ok,       sizeof label_ok,       "%s$ok$%d",      funcStruct->func_name, id);
+    snprintf(label_end,      sizeof label_end,      "%s$end$%d",     funcStruct->func_name, id);
+    snprintf(label_err,      sizeof label_err,      "%s$err$%d",     funcStruct->func_name, id);
 
     // Uložení operandů do dočasných proměnných
     printN("POPS LF@%s", rn);  // Uložíme pravou hodnotu (right)
@@ -1148,19 +1144,18 @@ void emit_equal_not(AstNode *node, DynamiclabelStackStackPtr label_stack, int co
     printN("LABEL %s", label_end);
 }
 //&& neni to obycejny operator
-void emit_and(AstNode *node, DynamiclabelStackStackPtr label_stack, int counter,
-              char *func_name) {
+void emit_and(AstNode *node, FuncContext *funcContext) {
     int id = node->tmp_id;
     char label_not_false[128], label_end[128];
-    snprintf(label_not_false, sizeof label_not_false, "%s$and_not_false$%d", func_name, id);
-    snprintf(label_end,    sizeof label_end,    "%s$and_end$%d",    func_name, id);
+    snprintf(label_not_false, sizeof label_not_false, "%s$and_not_false$%d", funcContext->func_name, id);
+    snprintf(label_end,    sizeof label_end,    "%s$and_end$%d",    funcContext->func_name, id);
 
-    emit_command(node->child[0], label_stack, counter,func_name);
+    emit_command(node->child[0],funcContext);
     // Stack: [left_value]
 
     // 2. Zkontrolovat, zda je false nebo nil
     char left_tmp[128];
-    snprintf(left_tmp, sizeof left_tmp, "%s_and_left_%d", func_name, id);
+    snprintf(left_tmp, sizeof left_tmp, "%s_and_left_%d", funcContext->func_name, id);
 
     printN("POPS LF@%s", left_tmp);        // Uložit levou hodnotu
     printN("PUSHS LF@%s", left_tmp);       // Vrátit zpět pro test
@@ -1173,25 +1168,24 @@ void emit_and(AstNode *node, DynamiclabelStackStackPtr label_stack, int counter,
 
     // 3. Levý neni false/nil tak se vrati pravy
     printN("LABEL %s", label_not_false);
-    emit_command(node->child[0], label_stack, counter,func_name);
+    emit_command(node->child[0], funcContext);
     // Stack: [right_value] → to je výsledek
 
     printN("LABEL %s", label_end);
     // Stack: [result] (buď left pokud false/nil, nebo right)
 }
-void emit_or(AstNode *node, DynamiclabelStackStackPtr label_stack, int counter,
-              char *func_name) {
+void emit_or(AstNode *node, FuncContext *funcStruct) {
     int id = node->tmp_id;
     char label_not_false[128], label_end[128];
-    snprintf(label_not_false, sizeof label_not_false, "%s$and_not_false$%d", func_name, id);
-    snprintf(label_end,    sizeof label_end,    "%s$and_end$%d",    func_name, id);
+    snprintf(label_not_false, sizeof label_not_false, "%s$and_not_false$%d", funcStruct->func_name, id);
+    snprintf(label_end,    sizeof label_end,    "%s$and_end$%d",    funcStruct->func_name, id);
 
-    emit_command(node->child[0], label_stack, counter,func_name);
+    emit_command(node->child[0], funcStruct);
     // Stack: [left_value]
 
     // 2. Zkontrolovat, zda je false nebo nil
     char left_tmp[128];
-    snprintf(left_tmp, sizeof left_tmp, "%s_and_left_%d", func_name, id);
+    snprintf(left_tmp, sizeof left_tmp, "%s_and_left_%d", funcStruct->func_name, id);
 
     printN("POPS LF@%s", left_tmp);        // Uložit levou hodnotu
     printN("PUSHS LF@%s", left_tmp);       // Vrátit zpět pro test
@@ -1206,35 +1200,34 @@ void emit_or(AstNode *node, DynamiclabelStackStackPtr label_stack, int counter,
 
     // 3. Levý je false/nil tak se vrati pravy
     printN("LABEL %s", label_not_false);
-    emit_command(node->child[0], label_stack, counter,func_name);
+    emit_command(node->child[0], funcStruct);
     // Stack: [right_value] → to je výsledek
 
     printN("LABEL %s", label_end);
     // Stack: [result] (buď left pokud false/nil, nebo right)
 }
-void emit_negace(AstNode *node, DynamiclabelStackStackPtr label_stack, int counter,
-              char *func_name) {
+void emit_negace(AstNode *node,FuncContext *funcStruct) {
     int id = node->tmp_id;
     char value[128];
-    snprintf(value, sizeof value, "%s_ln_%d", func_name, id);
+    snprintf(value, sizeof value, "%s_ln_%d", funcStruct->func_name, id);
 
     char label_false[128], label_end[128];
-    snprintf(label_false, sizeof label_false, "%s$and_not_false$%d", func_name, id);
-    snprintf(label_end,    sizeof label_end,    "%s$and_end$%d",    func_name, id);
+    snprintf(label_false, sizeof label_false, "%s$and_not_false$%d", funcStruct->func_name, id);
+    snprintf(label_end,    sizeof label_end,    "%s$and_end$%d",    funcStruct->func_name, id);
 
-    emit_command(node->child[0], label_stack, counter,func_name);
+    emit_command(node->child[0], funcStruct);
     // Stack: [left_value]
     printN("POPS %s",value);
 
     printN("NOT");
     // Stack: [result] (buď left pokud false/nil, nebo right)
 }
-void emit_assigned(AstNode *node, DynamiclabelStackStackPtr label_stack, int counter, char *func_name) {
-    emit_command(node->child[1], label_stack, counter, func_name);
+void emit_assigned(AstNode *node, FuncContext *funcStruct) {
+    emit_command(node->child[1], funcStruct);
     printN("POPS LF@%s",node->child[0]->value.str);
 }
-void emit_var(AstNode *node, DynamiclabelStackStackPtr label_stack, int counter,char *func_name){
-	emit_command(node->child[1]->child[0], label_stack, counter, func_name);
+void emit_var(AstNode *node, FuncContext *funcStruct){
+	emit_command(node->child[1]->child[0], funcStruct);
 	printN("POPS LF@%s",node->child[0]->value.str);
 }
 
@@ -1268,11 +1261,11 @@ void emit_command(AstNode *node,FuncContext *funcStruct) {
         case AST_BLOCK:
         case AST_MAIN_CLASS:
         case AST_STATEMENT_LIST:
-            emitChildren(node, label_stack, counter, func_name);
+            emitChildren(node, funcStruct);
             break;
         case AST_MAIN_CLASS_BLOCK:
         	printN("JUMP $$main");
-         	emitChildren(node,label_stack,counter,func_name);
+         	emitChildren(node,funcStruct);
          	break;
         // Literály (byly implementovány, ale jen komentáře)
         case AST_FLOAT_LIT:
@@ -1314,7 +1307,7 @@ void emit_command(AstNode *node,FuncContext *funcStruct) {
         // Deklarace a volání
         case AST_FUNC_DEC:
             // definice funkce
-            emitFuncDec(node,counter);
+            emitFuncDec(node);
             break;
         case AST_FUNC_CALL:
             // emit_funcall(node);
@@ -1323,10 +1316,10 @@ void emit_command(AstNode *node,FuncContext *funcStruct) {
         // Proměnné / Přiřazení
         case AST_VAR:
             // Nová implementace: deklarace/inicializace proměnné
-            emit_var(node, label_stack, counter, func_name);
+            emit_var(node, funcStruct);
             break;
         case AST_ASSIGN:
-            emit_assigned(node,label_stack,counter,func_name);
+            emit_assigned(node,funcStruct);
             break;
 
         // Listy
@@ -1344,20 +1337,20 @@ void emit_command(AstNode *node,FuncContext *funcStruct) {
 
         // Operace (Expression)
         case AST_PLUS:
-            emitPlus(node, label_stack, counter, func_name);  // Byla implementována, jen pro úplnost.
+            emitPlus(node, funcStruct);  // Byla implementována, jen pro úplnost.
             break;
         case AST_MINUS:
             // Nová implementace: Odčítání
-            emitMinus(node, label_stack, counter, func_name);  // Byla implementována, jen pro úplnost.
+            emitMinus(node,funcStruct);  // Byla implementována, jen pro úplnost.
             // emitMinus(node, op_emit);
             break;
         case AST_MUL:
-        	emitMul(node, label_stack, counter, func_name);
+        	emitMul(node, funcStruct);
             // Nová implementace: Násobení
             // emitMul(node, op_emit);
             break;
         case AST_DIV:
-       		emitDiv(node, label_stack, counter, func_name);
+       		emitDiv(node, funcStruct);
             // Nová implementace: Dělení
             // emitDiv(node, op_emit);
             break;
@@ -1408,14 +1401,14 @@ void emit_command(AstNode *node,FuncContext *funcStruct) {
         case AST_STATEMENT:
             // Nová implementace: Samostatný příkaz (Obvykle by měl mít dceřinný uzel, který se
             // zpracuje)
-            emitChildren(node, label_stack, counter, func_name);
+            emitChildren(node, funcStruct);
             break;
         case AST_NULL:
             // Nová implementace: Reprezentace literálu NULL
             // emit_null(node);
             break;
         case AST_IFJ_CALL:
-       		emitIfjFunc(node, label_stack, counter, func_name);
+       		emitIfjFunc(node, funcStruct);
          	break;
         default:
         	printf("%s \n",ast_node_type_to_string(node->kind));
@@ -1424,8 +1417,9 @@ void emit_command(AstNode *node,FuncContext *funcStruct) {
     }
 }
 void codegen_generate(AstNode *root) {
-    int                       counter = 0;
-    emitChildren(root, NULL, counter, NULL);
+    int counter = 0;
+    FuncContext *funcStruct = NULL;
+    emitChildren(root,funcStruct);
     /*
     printN("EXIT %s", NO_ERROR);
     printN("LABEL error %s", RUNTIME_SEMANTICS_ERROR_BAD_TYPE);

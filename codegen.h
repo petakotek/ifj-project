@@ -7,13 +7,30 @@
 #include "symtable.h"
 #include "dynamic_stack.h"
 #include "support_functions.h"
+typedef struct {
+    char *func_name;
+    DynamiclabelStackStackPtr label_stack;
+    int counter;
+    char *label_end;
+    int value_counter;
+} FuncContext;
 void emit_prolog();
-void emit_command(AstNode *node,DynamiclabelStackStackPtr label_stack,int counter,char *func_name);
-char *generatorLable(char *func_name, DynamiclabelStackStackPtr label_stack, int counter, bool pridaniDoStacku);
+void emit_command(AstNode *node,FuncContext *funcContext);
+char *generatorLable(char *func_name,FuncContext *funcContext, bool pridaniDoStacku);
 void codegen_generate(AstNode *root);
 char *resize_label_name(char *prefix,size_t *size);
-void emitPlus(AstNode *node, DynamiclabelStackStackPtr label_stack, int counter, char *func_name);
-void emit_assigned(AstNode *node, DynamiclabelStackStackPtr label_stack,int counter,char *func_name);
+void emitPlus(AstNode *node, FuncContext *funcContext);
+void emitMinus(AstNode *node, FuncContext *funcContext);
+void emitMul(AstNode *node, FuncContext *funcContext);
+void emitDiv(AstNode *node, FuncContext *funcContext);
+void emit_assigned(AstNode *node, FuncContext *funcContext);
+void emit_var(AstNode *node, FuncContext *funcContext);
+void emit_assigned(AstNode *node, FuncContext *funcContext);
+void emit_negace(AstNode *node, FuncContext *funcContex);
+void emit_or(AstNode *node, FuncContext *funcContext);
+void emit_and(AstNode *node, FuncContext *funcContext);
+void emit_equal_not(AstNode *node, FuncContext *funcContext);
+void emit_greater_equal(AstNode *node, FuncContext *funcContext);
 
 // Pomocná struktura pro ukládání proměnných behem projizdeni uzlem funkce
 // abych si na zacatku funkce nadefinovali vsechny promenen ktere budou pouzity
@@ -26,17 +43,4 @@ typedef struct {
 typedef struct {
     char* func_name;
 } tmpValue;
-typedef struct {
-    char *func_name;
-    DynamiclabelStackStackPtr label_stack;
-    int counter;
-    char *label_end;
-    int value_counter;
-} FuncContext;
-typedef enum {
-    OP_ADD,
-    OP_SUB,
-    OP_MUL,
-    OP_DIV
-} BinaryOp;
 #endif
