@@ -237,6 +237,28 @@ void tokenPrecedenceFree(Token *token)
     *token = (Token){0};
 }
 
+void freeAstStack(DynamicAstNodeStackPtr stack)
+{
+    while (!stackAstNodeIsEmpty(stack))
+    {
+        AstNode *tmp = stackAstNodeRead(stack);
+        stackAstNodePop(stack);
+        ast_free_whole(tmp);
+    }
+    
+}
+void freePrecedenceStack(DynamicPrecedenceStackPtr stack)
+{
+    while (!stackPrecedenceIsEmpty(stack))
+    {
+        Token tmp = stackPrecedenceRead(stack);
+        stackPrecedencePop(stack);
+        tokenPrecedenceFree(&tmp);
+    }
+    
+}
+
+
 /**
  * @brief Funkce nalezne pravidlo z gramatiky precedenční analýzy a sestaví mini podstrom,
  * ke kterému ukazatel na minikořen hodí na stack
@@ -252,6 +274,10 @@ void findPrecedenceRule(DynamicPrecedenceStackPtr stack, DynamicAstNodeStackPtr 
     if (stack == NULL)
     {
         printError(SYNTAX_ERROR, "(PSA) stack je ve findPrecedenceRule NULL\n");
+        freeAstStack(stackA);
+        stackAstNodeDestruct(stackA);
+        freePrecedenceStack(stack);
+        stackPrecedenceDestruct(stack);
         memorySafeExit(SYNTAX_ERROR);
     }
     DynamicPrecedenceStackPtr stackTmp;
@@ -329,6 +355,10 @@ void findPrecedenceRule(DynamicPrecedenceStackPtr stack, DynamicAstNodeStackPtr 
                 break;
             }
             printError(SYNTAX_ERROR, "(PSA) pravidlo gramatiky nebylo nalezeno\n");
+            freeAstStack(stackA);
+            stackAstNodeDestruct(stackA);
+            freePrecedenceStack(stack);
+            stackPrecedenceDestruct(stack);
             memorySafeExit(SYNTAX_ERROR);
             break;
 
@@ -415,6 +445,10 @@ void findPrecedenceRule(DynamicPrecedenceStackPtr stack, DynamicAstNodeStackPtr 
 
         default:
             printError(SYNTAX_ERROR, "(PSA) pravidlo gramatiky nebylo nalezeno\n");
+            freeAstStack(stackA);
+            stackAstNodeDestruct(stackA);
+            freePrecedenceStack(stack);
+            stackPrecedenceDestruct(stack);
             memorySafeExit(SYNTAX_ERROR);
             break;
 
@@ -688,14 +722,13 @@ AstNode* parseExpression(Token *token, int flag)
             if (flag == -1 && actualToken.type == TOKEN_RPAREN)
             {
                 printError(SYNTAX_ERROR, "(PSA) Volano nad prazdnym cyklem, podminkou...\n");
-                return NULL;
+                freeAstStack(stackA);
+                stackAstNodeDestruct(stackA);
+                freePrecedenceStack(stackP);
+                stackPrecedenceDestruct(stackP);
+                memorySafeExit(SYNTAX_ERROR);
+                break;
             }
-        }
-        if (functionCall)
-        {
-            printf("FUNC true\n");
-        }else{
-            printf("FUNC false\n");
         }
         
         if (expectingNewLineAfterOperator && endFlag != TOKEN_PSA_END) // očekávám znak nového řádku za operátorem
@@ -708,7 +741,12 @@ AstNode* parseExpression(Token *token, int flag)
                     if (operatorToPush(actualToken) != INDEX_ID) // dalsi token neni identifikator, cislo, ...
                     {
                         printError(SYNTAX_ERROR, "(PSA) PSA ocekavalo identifikator za operatorem, ale nedostalo jej\n");
+                        freeAstStack(stackA);
+                        stackAstNodeDestruct(stackA);
+                        freePrecedenceStack(stackP);
+                        stackPrecedenceDestruct(stackP);
                         memorySafeExit(SYNTAX_ERROR);
+                        break;
                     }
                     
                     expectingNewLineAfterOperator = false; // už jej znovu neočekávám
@@ -833,10 +871,12 @@ AstNode* parseExpression(Token *token, int flag)
 
             default: // stav ktery nesmi nastat
                 printError(SYNTAX_ERROR, "(PSA) Zadany vyraz neni syntakticky spravny (neocekavany znak nebo samostatne stojici operator)\n");
+                freeAstStack(stackA);
+                stackAstNodeDestruct(stackA);
+                freePrecedenceStack(stackP);
+                stackPrecedenceDestruct(stackP);
                 memorySafeExit(SYNTAX_ERROR);
                 
-                stackAstNodeDestruct(stackA); // uvolneni zásobníku uzlů
-                stackPrecedenceDestruct(stackP); // uvolnění zásobníku výrazů
                 return NULL;
         }
     }
