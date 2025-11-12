@@ -416,10 +416,6 @@ RecursiveSemanticAnalysisReturnValues recursiveNodeWalker(AstNode*    currentNod
             return childValue;
             break;
         }
-        case (AST_STATEMENT): {
-            printLog("AST_STATEMENT\n");
-            break;
-        }
         case (AST_STATEMENT_LIST): {
             printLog("AST_STATEMENT_LIST\n");
 
