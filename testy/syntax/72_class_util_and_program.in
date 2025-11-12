@@ -1,0 +1,9 @@
+import "ifj25" for Ifj
+class Util {
+    static twice(a) { return a + a }
+}
+class Program {
+    static main() {
+        var k = Util.twice(4)
+    }
+}
