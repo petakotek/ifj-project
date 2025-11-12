@@ -834,7 +834,7 @@ AstNode* parseExpression(Token *token, int flag)
             default: // stav ktery nesmi nastat
                 printError(SYNTAX_ERROR, "(PSA) Zadany vyraz neni syntakticky spravny (neocekavany znak nebo samostatne stojici operator)\n");
                 memorySafeExit(SYNTAX_ERROR);
-                
+                // TODO funkce na uvolneni celeho zasobniku pomoci ast_free_whole
                 stackAstNodeDestruct(stackA); // uvolneni zásobníku uzlů
                 stackPrecedenceDestruct(stackP); // uvolnění zásobníku výrazů
                 return NULL;
