@@ -1,0 +1,7 @@
+import "ifj25" for Ifj
+class Program {
+    static sum(a, b) { a + b }
+    static main() {
+        var r = sum(1 + 2, 3 * 4)
+    }
+}
