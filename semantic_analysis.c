@@ -13,8 +13,9 @@
 // - zpřísnit po důkladném promyšlení, co je návratem operace
 // - zkusit testy od Kuby, až mu budou procházet
 // - vlastní AI testy (pozor na injections)
-// - po return, break, continue bych asi neměl vyhodnocovat příkazy na stejné úrovni (povede na to, že se mi např valid return přepíše na blbost)
-//      odstranit kód na stene úrovni ale za return/break/continue?
+// 
+
+// TODO aktualizace dokumentačních komentářů
 
 /**
  * @brief Ukazatel na zásobník pro ukládání jednotlivých rámců
@@ -430,12 +431,17 @@ RecursiveSemanticAnalysisReturnValues recursiveNodeWalker(AstNode*    currentNod
             RecursiveSemanticAnalysisReturnValues childValue;
             for (size_t i = 0; i < currentNode->arity; i++) {
                 childValue = recursiveNodeWalker(currentNode->child[i], AST_STATEMENT_LIST, i);
+                // TODO tady je nějak moc podmínek
                 if (currentNode->child[i]->kind == AST_RETURN) {
                     foundReturn = true;
                     returnValue = childValue;
                 }
                 if (currentNode->child[i]->kind == AST_BLOCK && foundReturn == false) {
                     returnValue = childValue;
+                }
+                if(currentNode->child[i]->kind == AST_RETURN || currentNode->child[i]->kind == AST_BREAK || currentNode->child[i]->kind == AST_CONTINUE) {
+                    break;
+                    // TODO zahodit děti po child[i]?
                 }
             }
             if (parentNodeType == AST_FUNC_DEC && currentNode->arity == 1 && foundReturn == false) {
