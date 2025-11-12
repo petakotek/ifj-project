@@ -521,8 +521,12 @@ void functionCalled(DynamicPrecedenceStackPtr stackP, DynamicAstNodeStackPtr sta
         AstNode *functionCallRoot = ast_new(AST_FUNC_CALL, 2, kids);
         free(kids);
         stackAstNodePush(stackA, functionCallRoot);
-
-        *actualToken = lexer_token_next();
+        
+        
+        if (actualToken->type != TOKEN_NEW_LINE)
+        {
+            *actualToken = lexer_token_next();
+        }
         if (actualToken->type == TOKEN_NEW_LINE)
         {
             *endFlag = TOKEN_PSA_END;
@@ -539,6 +543,12 @@ void functionCalled(DynamicPrecedenceStackPtr stackP, DynamicAstNodeStackPtr sta
             if (actualToken->type == TOKEN_COMMA)
             {
                 *actualToken = lexer_token_next();
+                if (actualToken->type == TOKEN_RPAREN) // za čárkou je hned zavorka -> syntaktická chyba
+                {
+                    printError(SYNTAX_ERROR, "(PSA): Za oddělovačem parametru funckce následuje pravá závorka [(,)]\n");
+                    memorySafeExit(SYNTAX_ERROR);
+                }
+                
             }
         }
 
@@ -575,7 +585,10 @@ void functionCalled(DynamicPrecedenceStackPtr stackP, DynamicAstNodeStackPtr sta
         stackAstNodePush(stackA, functionRoot);
 
         
-        *actualToken = lexer_token_next();
+        if (actualToken->type != TOKEN_NEW_LINE)
+        {
+            *actualToken = lexer_token_next();
+        }
         if (actualToken->type == TOKEN_NEW_LINE)
         {
             *endFlag = TOKEN_PSA_END;
@@ -641,7 +654,7 @@ AstNode* parseExpression(Token *token, int flag)
             printf("actualToken %s\n", token_type_to_string(actualToken.type));
             if (operatorToPush(StackTop) == INDEX_IS)
             {
-                if (actualToken.type != TOKEN_KEYWORD_STRING  && actualToken.type != TOKEN_KEYWORD_NUM) // Doplnit popripade
+                if (actualToken.type != TOKEN_KEYWORD_STRING  && actualToken.type != TOKEN_KEYWORD_NUM && actualToken.type != TOKEN_KEYWORD_NULL) // Doplnit popripade
                 {
                     printError(SYNTAX_ERROR, "(PSA) Za klicovym slovem Is nasleduje nezname klicove slovo: %s\n ", token_type_to_string(actualToken.type));
                     memorySafeExit(SYNTAX_ERROR);
@@ -656,6 +669,15 @@ AstNode* parseExpression(Token *token, int flag)
             checkIs = true;
         }
         
+        if (actualToken.type == TOKEN_EOF)
+        {
+            printError(SYNTAX_ERROR, "(PSA) Narazilo na konec souboru, nemelo se tak stat\n");
+            stackAstNodeDestruct(stackA); // uvolneni zásobníku uzlů
+            stackPrecedenceDestruct(stackP); // uvolnění zásobníku výrazů
+            memorySafeExit(SYNTAX_ERROR);
+            break;
+        }
+        
 
         if (!checkEmptyIf) // voláno pouze jednou při prvním volání sestavení výrazu v if bloku
         {
@@ -667,14 +689,26 @@ AstNode* parseExpression(Token *token, int flag)
                 return NULL;
             }
         }
-
-        if (expectingNewLineAfterOperator) // očekávám znak nového řádku za operátorem
+        if (functionCall)
+        {
+            printf("FUNC true\n");
+        }else{
+            printf("FUNC false\n");
+        }
+        
+        if (expectingNewLineAfterOperator && endFlag != TOKEN_PSA_END) // očekávám znak nového řádku za operátorem
         {
             if (operatorToPush(StackTop) != INDEX_ID && operatorToPush(StackTop) != INDEX_DOLLAR && operatorToPush(StackTop) != INDEX_RP)
             {
                 if (actualToken.type == TOKEN_NEW_LINE)
                 {
                     actualToken = lexer_token_next(); // posouvám se na další token
+                    if (operatorToPush(actualToken) != INDEX_ID) // dalsi token neni identifikator, cislo, ...
+                    {
+                        printError(SYNTAX_ERROR, "(PSA) PSA ocekavalo identifikator za operatorem, ale nedostalo jej\n");
+                        memorySafeExit(SYNTAX_ERROR);
+                    }
+                    
                     expectingNewLineAfterOperator = false; // už jej znovu neočekávám
                 }
             }
@@ -706,6 +740,7 @@ AstNode* parseExpression(Token *token, int flag)
                 firstOK = true;
                 functionCall = true;
                 functionCalled(stackP, stackA, &actualToken, &endFlag); // zpracování celé funkce
+                functionCall = false;
                 continue; // pokud 
             }
         }
@@ -796,12 +831,10 @@ AstNode* parseExpression(Token *token, int flag)
 
             default: // stav ktery nesmi nastat
                 printError(SYNTAX_ERROR, "(PSA) Zadany vyraz neni syntakticky spravny (neocekavany znak nebo samostatne stojici operator)\n");
+                memorySafeExit(SYNTAX_ERROR);
                 
                 stackAstNodeDestruct(stackA); // uvolneni zásobníku uzlů
                 stackPrecedenceDestruct(stackP); // uvolnění zásobníku výrazů
-                tokenPrecedenceFree(token); // uvolnění aktuálního tokenu
-
-                memorySafeExit(SYNTAX_ERROR);
                 return NULL;
         }
     }
