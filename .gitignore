@@ -4,3 +4,7 @@ ifj25
 *.o
 my_env
 hashTests
+run_test.sh
+vgcore*
+prog.out
+test.in
