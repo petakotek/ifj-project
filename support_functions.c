@@ -74,12 +74,6 @@ bool memoryClean() {
     // TODO jednotlivé funkce pro vyčištění struktur a podobně
     // TODO už můžu přidat lexer_free() a zavření souboru/free na načtený soubor
     lexer_free();
-    if(source_file !=NULL){
-    free(source_file);
-    }
-    if(buf !=NULL){
-    free(buf);
-    }
     parserFree();
     freeSemanticsMemory();
     printWarning("Funkce memoryClean není implementovaná!\n");

@@ -85,7 +85,7 @@ char *generatorLable(char *func_name,FuncContext *funcStruckt,bool pridaniDoStac
     size_t remaining_space = size_of_buffer - current_len;
 
     int written =
-        snprintf(result_label + current_len, remaining_space, "$%s$%d", funcStruckt->func_name, funcStruckt->counter);
+        snprintf(result_label + current_len, remaining_space, "$%s$%d", func_name, funcStruckt->counter);
 
     if (written <= 0 || (size_t)written >= remaining_space) {
         // potřebna resize
@@ -281,7 +281,8 @@ void emitFuncDec(AstNode *root){
 	context->label_stack = label_stack;
 	if(strcmp(root->child[0]->value.str,"main") == 0 && root->child[1]->child[0]->kind == AST_EMPTY){
 		main = true;
-		printN("LABEL $$main");
+		label = generatorLable(root->child[0]->value.str,context,true);
+		printN("LABEL $%s",label);
 	}else{
 	label = generatorLable(root->child[0]->value.str,context,true);
 	printN("LABEL %s",label);
@@ -319,6 +320,8 @@ void emitFuncDec(AstNode *root){
 	varListDescrution(local_vars);
 	stacklabelStackDestruct(label_stack);
 	DestructorFuncContext(context);
+	free(label);
+	free(label_end);
 	}
 void emit_call_func(AstNode *node,FuncContext *funcStruct){
 	printN("CREATEFRAME");
@@ -454,6 +457,11 @@ void emitIfjFunc(AstNode *node,FuncContext *funcStruct) {
 	printN("");
 }
 void emitMinus(AstNode *node, FuncContext *funcStrukt) {
+	if(node->arity == 1){
+		emitUnaryMinus(node,funcStrukt);
+		return;
+	}
+
 	if (node->child[0]->kind == AST_IDENTIFIER) {
          printN("PUSHS LF@%s",node->child[0]->value.str);
      }else{
@@ -1167,6 +1175,49 @@ void emit_negace(AstNode *node,FuncContext *funcStruct) {
     printN("NOT");
     // Stack: [result] (buď left pokud false/nil, nebo right)
 }
+
+void emitUnaryMinus(AstNode *node, FuncContext *funcStrukt) {
+	if (node->child[0]->kind == AST_IDENTIFIER) {
+         printN("PUSHS LF@%s",node->child[0]->value.str);
+     }else{
+     emit_command(node->child[0], funcStrukt);
+     }
+    int id = node->tmp_id;
+
+    char ln[128], ty[128];
+    snprintf(ln, sizeof ln, "%s_ln_%d", funcStrukt->func_name, id);
+    snprintf(ty, sizeof ty, "%s_ty_%d", funcStrukt->func_name, id);
+
+    char label_ok[128];
+    snprintf(label_ok, sizeof label_ok, "%s$ok$%d", funcStrukt->func_name, id);
+
+    // Vyndej hodnotu a ulož ji
+    printN("POPS LF@%s", ln);
+
+    // Zkontroluj typ
+    printN("PUSHS LF@%s", ln);
+    printN("TYPES");
+    printN("POPS LF@%s", ty);
+
+    // Kontrola na int
+    printN("PUSHS LF@%s", ty);
+    printN("PUSHS string@int");
+    printN("JUMPIFEQS %s", label_ok);
+
+    // Kontrola na float
+    printN("PUSHS LF@%s", ty);
+    printN("PUSHS string@float");
+    printN("JUMPIFEQS %s", label_ok);
+
+    // Error - nejde o int ani float
+    printN("EXIT int@6");
+
+    // OK label - proveď operaci
+    printN("LABEL %s", label_ok);
+    printN("PUSHS int@0");
+    printN("PUSHS LF@%s", ln);
+    printN("SUBS");
+}
 void emit_assigned(AstNode *node, FuncContext *funcStruct) {
     emit_command(node->child[1], funcStruct);
     printN("POPS LF@%s",node->child[0]->value.str);
@@ -1175,20 +1226,6 @@ void emit_var(AstNode *node, FuncContext *funcStruct){
 	emit_command(node->child[1]->child[0], funcStruct);
 	printN("POPS LF@%s",node->child[0]->value.str);
 }
-/*
-void emit_while(AstNode *node, DynamiclabelStackStackPtr label_stack, int while_counter) {
-    while_counter++;
-    emit_command(node->child[0], label_stack, while_counter, NULL);
-    char *label = generatorLable("while", label_stack, while_counter, true);
-    printf("LABEL %s \node", label);
-    emit_command(node->child[1], label_stack, while_counter, NULL);
-     * nejak se dostat k podmince ve strome
-    char *label_end = generatorLable("end", label_stack, while_counter, false);
-    printf("LABEL %s \node", label_end);
-    printf("JUMPIFEQ  %s GF@cond bool@false", label_end);
-}
-*/
-
 void emitIfChain(AstNode *node, FuncContext *funcContext)
 {
 
@@ -1219,7 +1256,7 @@ void emitIfChain(AstNode *node, FuncContext *funcContext)
         }
     }
     printN("LABEL %s", endLabel);
-
+    free(endLabel);
 }
 void emitIf(AstNode *node, FuncContext *funcContext, char *endLabel)
 {
@@ -1243,6 +1280,7 @@ void emitIf(AstNode *node, FuncContext *funcContext, char *endLabel)
 
     // vytvorenie lablu v ifjcode na ktory budeme skakat pri vyhodnoteni podmienky ako false
     printN("LABEL %s", label);
+    free(label);
 
 }
 
@@ -1269,7 +1307,7 @@ void emitWhile(AstNode* node, FuncContext *funcContext)
         // while -> condition -> AST samotneho operatoru
         emit_command(node->child[0]->child[0], funcContext);
         printN("PUSHS bool@false");
-        printN("JUMPIFEQS %send", endLabel);
+        printN("JUMPIFEQS %s", endLabel);
     }else{
 
         printError(INTERNAL_ERROR, "(GENERATOR) Chyba pri sestaveni AST stromu\n");
@@ -1278,13 +1316,15 @@ void emitWhile(AstNode* node, FuncContext *funcContext)
 
     emit_command(node->child[1], funcContext); // zpracovani obsahu uvnitr while
     printN("JUMP %s", labelStart); // * JUMP zpět na začáteční návěští
-    
-    printN("LABEL %send", endLabel); // ! LABEL KONEC
+
+    printN("LABEL %s", endLabel); // ! LABEL KONEC
+    free(endLabel);
+    free(labelStart);
 }
 
 void emitBreak(AstNode* node, FuncContext *funcContext)
 {
-    printN("JUMP %s$end", generatorLable("forEnd", funcContext, false));
+    printN("JUMP %s", generatorLable("forEnd", funcContext, false));
 }
 
 void emitContinue(AstNode* node, FuncContext *funcContext) {
@@ -1292,7 +1332,7 @@ void emitContinue(AstNode* node, FuncContext *funcContext) {
 }
 
 /**
- * 
+ *
  */
 void emitFor(AstNode* node, FuncContext *funcContext)
 {
@@ -1325,7 +1365,7 @@ void emitFor(AstNode* node, FuncContext *funcContext)
         errorLabel = generatorLable("forTypesError", funcContext, false);
         printN("JUMPIFNEQS %sexitSix", errorLabel); // ! pokud nejsou stejne, tak skáču na chybové návěští
     }
-    
+
     // kontrola levého intervalu, pokud tam je proměnná
     if (leftRange->value.has_str)
     {
@@ -1345,18 +1385,18 @@ void emitFor(AstNode* node, FuncContext *funcContext)
     }else{ // jinak víme, že SA zajistí, že tam je celé číslo
         printN("PUSHS int@%d", leftRange->value.int_val - 1); // nastaveni hodnoty, nastavim o 1 mensi, abych mohl rovnou inkrementovat
     }
-    
+
     printN("POPS LF@%s", variable); // ulozeni hodnoty do promenne
     printN("PUSHS LF@%s", variable); // promennou s hodnotu hodim na zasobnik
 
-    printN("LABEL %s", labelStart); // ! LABEL ZACATEK 
+    printN("LABEL %s", labelStart); // ! LABEL ZACATEK
 
 
     printN("PUSHS int@1");
     printN("ADDS"); // pricteni jednicky k promenne
     printN("POPS LF@%s", variable); // potrebuji vysledek hodit opet do promenne
-    
-    
+
+
     printN("PUSHS LF@%s", variable); // potrebuji hodit hodnotu promenne zpet na zasobnik aby mohlo dojit k porovnani
 
     if (node->child[0]->child[1]->kind == AST_DOUBLE_DOT) // ? [start, end]
@@ -1368,8 +1408,8 @@ void emitFor(AstNode* node, FuncContext *funcContext)
         }else{
             printN("PUSHS int@%d", rightRange->value.int_val);
         }
-        
-        
+
+
         printN("GTS"); // ? porovnání aktuální hodnoty proměnné s konečnou hodnotou
         printN("PUSHS bool@true");
 
@@ -1415,6 +1455,9 @@ void emitFor(AstNode* node, FuncContext *funcContext)
     printN("LABEL %sexitSix", errorLabel);
     printN("EXIT int@6"); // ukončuji s chybou 6, špatný datový typ
     printN("LABEL %send", endLabel); // ! LABEL KONEC
+    free(errorLabel);
+    free(endLabel);
+    free(labelStart);
 }
 
 /*
@@ -1431,7 +1474,7 @@ void emit_command(AstNode *node,FuncContext *funcStruct) {
             emit_prolog();
             break;
         case AST_MAIN_CLASS:
-          		printN("JUMP $$main");
+          		printN("JUMP $$main$0");
             	emitChildren(node, funcStruct);
            	break;
         case AST_PROGRAM:

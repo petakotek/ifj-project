@@ -31,20 +31,22 @@ void emit_or(AstNode *node, FuncContext *funcContext);
 void emit_and(AstNode *node, FuncContext *funcContext);
 void emit_equal_not(AstNode *node, FuncContext *funcContext);
 void emit_greater_equal(AstNode *node, FuncContext *funcContext);
-/** 
+void emitUnaryMinus(AstNode *node,FuncContext *funcStrukt);
+FuncContext *ConstuctorFuncContext();
+/**
  * Funkcia pre generovanie kodu pustupnosti if a else funkcii
  * @param node aktualny uzol s ktorym pracujeme
  * @param funcContext struktura pre vytvorenie labla obsahujuca counter,...
 */
 void emitIfChain(AstNode *node, FuncContext *funcContext);
-/** 
+/**
  * Funkcia pre generovanie kodu if funkcii
  * @param node aktualny uzol s ktorym pracujeme
  * @param endlabel label konca if retazca
  * @param funcContext struktura pre vytvorenie labla obsahujuca counter,...
 */
 void emitIf(AstNode *node, FuncContext *funcContext, char *endLabel);
-/** 
+/**
  * Funkcia pre generovanie kodu else funkcii
  * @param node aktualny uzol s ktorym pracujeme
  * @param funcContext struktura pre vytvorenie labla obsahujuca counter,...
