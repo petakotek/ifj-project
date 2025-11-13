@@ -1,0 +1,12 @@
+import "ifj25" for Ifj
+class Program {
+    static main() {
+        var i = 0
+        while (i < 3) {
+            for (j in 0 .. 1) {
+                var t = i + j
+            }
+            i = i + 1
+        }
+    }
+}

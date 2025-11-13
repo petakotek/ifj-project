@@ -8,6 +8,8 @@ class Program {
 
     static y = (l) {
         return l + 1
+        c = b 
+        return "a"
     }
 
     static main() { 

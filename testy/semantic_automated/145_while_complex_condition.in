@@ -1,0 +1,9 @@
+import "ifj25" for Ifj
+class Program { 
+    static main(){
+    var a = 0
+    while ( (a < 5) && ((a + 0) == (a - a)) || !(a > 10) ) {
+        a = a + 1
+    }
+} 
+}

@@ -38,6 +38,8 @@ void printError(enum errorCodes errCode, const char *fmt, ...) {
     va_end(args);
 }
 
+#define ENABLE_DEVELOPMENT_LOGGING // TODO tohle by se mělo dít při překladu
+#ifdef ENABLE_DEVELOPMENT_LOGGING
 void printWarning(const char *fmt, ...) {
     va_list args;
     va_start(args, fmt);
@@ -53,6 +55,19 @@ void printLog(const char *fmt, ...) {
     vfprintf(stderr, fmt, args);
     va_end(args);
 }
+#else
+void printWarning(const char *fmt, ...) {
+    va_list args;
+    va_start(args, fmt);
+    va_end(args);
+}
+
+void printLog(const char *fmt, ...) {
+    va_list args;
+    va_start(args, fmt);
+    va_end(args);
+}
+#endif
 
 bool memoryClean() {
     // TODO jednotlivé funkce pro vyčištění struktur a podobně

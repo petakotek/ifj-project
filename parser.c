@@ -308,6 +308,12 @@ AstNode *parser()
                 case N_AssignIfjIdCheck:
                     AssignIfjIdCheckFunc(Stack,token);
                     break;
+                case N_SMALL_NULL_CHECK:
+                    smallNullCheckFunc(Stack,token);
+                    break;
+                case N_SMALL_NULL_CHECK_TYPE:
+                    smallNullCheckTypeFunc(Stack,token);
+                    break;
                 default:
                         printError(INTERNAL_ERROR, "Nespravny Neterminal\n");
                         memorySafeExit(INTERNAL_ERROR);
@@ -454,6 +460,8 @@ void Block_content_func_check(DynamicSymbolStackPtr Stack, Token token)
         case TOKEN_FLOAT:
         case TOKEN_STRING:
         case TOKEN_LPAREN:
+        case TOKEN_TRUE:
+        case TOKEN_FALSE:
             pushCheck(stackSymbolPush(Stack, makeReduce(AST_STATEMENT_LIST, 1)));
             pushCheck(stackSymbolPush(Stack, makeNonterm(N_oExpr)));
             return;
@@ -835,7 +843,7 @@ void Call_assign_list_func(DynamicSymbolStackPtr Stack, Token token)
     // AST_ASSIGN(Expr) => arity = 1
     pushCheck(stackSymbolPush(Stack, makeReduce(AST_GLOBAL_ID, 2)));
     pushCheck(stackSymbolPush(Stack, makeReduce(AST_ASSIGN,1)));
-    pushCheck(stackSymbolPush(Stack, makeNonterm(N_Expr)));
+    pushCheck(stackSymbolPush(Stack, makeNonterm(N_AssignIfjIdCheck)));
     pushCheck(stackSymbolPush(Stack, makeTerm(TOKEN_ASSIGN)));
     pushCheck(stackSymbolPush(Stack, makeTermWithValue(TOKEN_GLOBAL_ID)));
 }
@@ -1111,12 +1119,48 @@ void AssignIfjIdCheckFunc(DynamicSymbolStackPtr Stack, Token token)
     
     else if (token.type == TOKEN_KEYWORD_NULL_SMALL)
     {
-        pushCheck(stackSymbolPush(Stack, makeReduce(AST_SMALL_NULL, 0)));
+        pushCheck(stackSymbolPush(Stack, makeNonterm(N_SMALL_NULL_CHECK)));
         pushCheck(stackSymbolPush(Stack, makeTerm(TOKEN_KEYWORD_NULL_SMALL)));
     }
     else
     {
         pushCheck(stackSymbolPush(Stack, makeNonterm(N_Expr)));
+    }
+}
+
+void smallNullCheckFunc(DynamicSymbolStackPtr Stack, Token token)
+{
+    stackSymbolPop(Stack);
+    if (token.type == TOKEN_KEYWORD_IS)
+    {
+        pushCheck(stackSymbolPush(Stack, makeReduce(AST_IS, 2)));
+        pushCheck(stackSymbolPush(Stack, makeNonterm(N_SMALL_NULL_CHECK_TYPE)));
+        pushCheck(stackSymbolPush(Stack, makeTerm(TOKEN_KEYWORD_IS)));
+    }
+    pushCheck(stackSymbolPush(Stack, makeReduce(AST_SMALL_NULL,0)));
+}
+void smallNullCheckTypeFunc(DynamicSymbolStackPtr Stack, Token token)
+{
+    stackSymbolPop(Stack);
+    switch (token.type)
+    {
+    case TOKEN_KEYWORD_NULL:
+        pushCheck(stackSymbolPush(Stack, makeReduce(AST_NULL, 0)));
+        pushCheck(stackSymbolPush(Stack, makeTerm(TOKEN_KEYWORD_NULL)));
+        break;
+    case TOKEN_KEYWORD_STRING:
+        pushCheck(stackSymbolPush(Stack, makeReduce(AST_KEYWORD_STRING, 0)));
+        pushCheck(stackSymbolPush(Stack, makeTerm(TOKEN_KEYWORD_STRING)));
+        break;
+    case TOKEN_KEYWORD_NUM:
+        pushCheck(stackSymbolPush(Stack, makeReduce(AST_KEYWORD_NUM, 0)));
+        pushCheck(stackSymbolPush(Stack, makeTerm(TOKEN_KEYWORD_NUM)));
+        break;
+    
+    default:
+        printError(SYNTAX_ERROR,"po is musi nasledovat datovy typ");
+        memorySafeExit(SYNTAX_ERROR);
+        break;
     }
 }
 

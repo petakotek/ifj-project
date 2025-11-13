@@ -1,0 +1,9 @@
+import "ifj25" for Ifj
+class Program {
+    static ping(){}
+    static one(){ 1 }
+    static main(){ 
+        ping() 
+        var a = one() 
+        }
+}
