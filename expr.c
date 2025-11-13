@@ -13,7 +13,7 @@
 #include "dynamic_stack.h"
 #include "support_functions.h"
 
-#define DEBUG true // přepínač pro povolení debugovacích výpisů
+#define DEBUG false // přepínač pro povolení debugovacích výpisů
 
 typedef enum {
     R, // >
