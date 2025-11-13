@@ -26,12 +26,6 @@ static DynamicHashTablePtrStackPtr scopesStack = NULL;
 static HashTable* undeclaredReferenceTable = NULL;
 
 /**
- * @brief Pomocná funkce pro ověření existence funkce main
- *
- */
-static bool foundMainFunction = false;
-
-/**
  * @brief Vytvoří zásobník
  *
  */
@@ -204,12 +198,6 @@ bool startSematicValidation(AstNode* root) {
         }
     }
 
-    if (foundMainFunction == false) {
-        printError(SEMANTICS_ERROR_UNDEF, "Chybi funkce 'main()'!\n");
-        memorySafeExit(SEMANTICS_ERROR_UNDEF);
-        return false;
-    }
-
     if (undeclaredReferenceTable != NULL) {
         if (hashTableIsEmpty(undeclaredReferenceTable) == false) {
             printError(SEMANTICS_ERROR_UNDEF,
@@ -297,6 +285,14 @@ RecursiveSemanticAnalysisReturnValues recursiveNodeWalker(AstNode*    currentNod
                     memorySafeExit(SEMANTICS_ERROR_OTHERS);
                 }
             }
+
+            SemanticSymbol* mainFunctionSymbol = findGlobalSymbol("main$0");
+
+            if (mainFunctionSymbol == NULL) {
+                printError(SEMANTICS_ERROR_UNDEF, "Chybi funkce 'main()'!\n");
+                memorySafeExit(SEMANTICS_ERROR_UNDEF);
+            }
+
             deleteScope();
 
             return OK;
@@ -323,18 +319,8 @@ RecursiveSemanticAnalysisReturnValues recursiveNodeWalker(AstNode*    currentNod
 
             SemanticSymbol* foundSymbol = findGlobalSymbol(newSymbol.name);
             if (foundSymbol != NULL) {
-                printError(SEMANTICS_ERROR_REDEF, "Funkce '%s' jiz existuje!", newSymbol.name);
+                printError(SEMANTICS_ERROR_REDEF, "Funkce '%s' jiz existuje!\n", newSymbol.name);
                 memorySafeExit(SEMANTICS_ERROR_REDEF);
-            }
-
-            if (strncmp(newSymbol.name, "main$0", 7) == 0) {
-                if (foundMainFunction == true) {
-                    printError(SEMANTICS_ERROR_REDEF,
-                               "V kodu muze byt pouze jedna funkce pojmenovana 'main()`!\n");
-                    memorySafeExit(SEMANTICS_ERROR_REDEF);
-                }
-
-                foundMainFunction = true;
             }
 
             insertSymbolGlobalScope(newSymbol);
