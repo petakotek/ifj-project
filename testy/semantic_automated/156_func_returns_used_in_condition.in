@@ -1,0 +1,7 @@
+import "ifj25" for Ifj
+class Program {
+    static pos(x){ x > 0 }
+    static main(){ 
+        if (pos(1)) { } 
+    }
+}

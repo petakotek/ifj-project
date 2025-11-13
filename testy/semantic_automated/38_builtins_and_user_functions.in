@@ -1,0 +1,12 @@
+import "ifj25" for Ifj
+class Program {
+    static twice(x) {
+        return x * 2
+    }
+
+    static main() {
+        var n = Ifj.read_num()
+        var m = twice(x)
+        Ifj.write(m)
+    }
+}

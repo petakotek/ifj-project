@@ -1,0 +1,7 @@
+import "ifj25" for Ifj
+class Program {
+    static main() {
+        var s = "Hello" + " " + "IFJ"
+        var n = 3 * 2 + 1
+    }
+}

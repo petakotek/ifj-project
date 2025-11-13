@@ -1,0 +1,20 @@
+import "ifj25" for Ifj
+
+
+
+
+class Program {
+    static error(
+        
+        s,
+    op){ 
+        { 
+            var x
+            var ok
+          
+        }
+        return
+    } 
+
+}
+

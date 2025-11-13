@@ -1,0 +1,5 @@
+import "ifj25" for Ifj
+class Program {
+    static f(a,b){ return a }
+    static main() { var x = Program.f(1,2,) }
+}
