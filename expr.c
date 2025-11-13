@@ -830,7 +830,7 @@ AstNode* parseExpression(Token *token, int flag)
                 findPrecedenceRule(stackP, stackA); // upravuji výraz dokud nedostanu na zásobníku pouze dolar a výraz
                 if (DEBUG)
                 {
-                    printlog("Final etapa: ");
+                    printLog("Final etapa: ");
                     printStack(stackP);
                 }
             }

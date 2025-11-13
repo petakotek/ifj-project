@@ -1252,13 +1252,35 @@ void emitElse(AstNode *node, FuncContext *funcContext)
 }
 
 
-// /**
-//  * @brief Funkce pro zpracovani while cyklu
-//  * @param node Ukazatel na aktualne
-//  */
-// void emitWhile(AstNode* node) {
+/**
+ * @brief Funkce pro zpracovani while cyklu
+ * @param node Ukazatel na aktualne
+ */
+void emitWhile(AstNode* node, FuncContext *funcContext)
+{
+    funcContext->counter++;
+    char* labelStart = generatorLable("whileStart", funcContext, true);
+    printN("LABEL %s", labelStart);
 
-// }
+    char* endLabel = NULL;
+    endLabel = generatorLable("whileEnd", funcContext, false);
+    if (node->child[0]->kind == AST_CONDITION)
+    {
+        // while -> condition -> AST samotneho operatoru
+        emit_command(node->child[0]->child[0], funcContext);
+        printN("PUSHS bool@false");
+        printN("JUMPIFEQS %send", endLabel);
+    }else{
+
+        printError(INTERNAL_ERROR, "(GENERATOR) Chyba pri sestaveni AST stromu\n");
+        memorySafeExit(INTERNAL_ERROR);
+    }
+
+    emit_command(node->child[1], funcContext); // zpracovani obsahu uvnitr while
+    printN("JUMP %s", labelStart);
+    
+    printN("LABEL %send", endLabel);
+}
 /*
  *@brief switch zajisti zavolani sablon
  *@params ukazatel na uzel
@@ -1289,7 +1311,9 @@ void emit_command(AstNode *node,FuncContext *funcStruct) {
           case AST_FLOAT_LIT:
               printN("PUSHS float@%a", node->value.float_val);
               break;
-
+        case AST_CONDITION:
+            emit_command(node->child[0], funcStruct);
+            break;
         case AST_INT_LIT:
             printN("PUSHS int@%lld", node->value.int_val);
             break;
@@ -1306,7 +1330,7 @@ void emit_command(AstNode *node,FuncContext *funcStruct) {
             }
             break;
         case AST_WHILE:
-            // emit_while(node);
+            emitWhile(node, funcStruct);
             break;
         case AST_FOR:
             // emit_for();
