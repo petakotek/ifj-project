@@ -1188,6 +1188,77 @@ void emit_while(AstNode *node, DynamiclabelStackStackPtr label_stack, int while_
     printf("JUMPIFEQ  %s GF@cond bool@false", label_end);
 }
 */
+
+void emitIfChain(AstNode *node, FuncContext *funcContext)
+{
+
+    funcContext->counter++;
+    char *endLabel = NULL;
+    /**
+     * vytvorenie lablu na spode if chainu na ktory v pripade splnenia podmienky
+     * budeme z jednotlivych podmienok skakat
+    */
+    endLabel = generatorLable("ifChainEnd", funcContext, false);
+
+    for (int i = 0; i < node->arity; i++)
+    {
+        if (node->child[i]->kind == AST_IF)
+        {
+            emitIf(node->child[i], funcContext,endLabel);
+        }
+        else if (node->child[i]->kind == AST_ELSE)
+        {
+            emitElse(node->child[i], funcContext);
+            printN("JUMP %s", endLabel);
+            break;
+        }
+        else
+        {
+            printError(INTERNAL_ERROR,"Chyba vo vystaveni AST stromu");
+            memorySafeExit(INTERNAL_ERROR);
+        }
+    }
+    printN("LABEL %s", endLabel);
+
+}
+void emitIf(AstNode *node, FuncContext *funcContext, char *endLabel)
+{
+    funcContext->counter++;
+    char *label = NULL;
+    label = generatorLable("ifEnd",funcContext,false);
+    //ifchain -> if -> condition
+    emit_command(node->child[0], funcContext);
+    // po emit command mame vysledok podmienky true/false na zasobniku
+    // pridame si tam umelo false
+    printN("PUSHS bool@false");
+    // porovname prve 2 hodnoty na zasobniku, nas umelo pridany false a aj vysledok cond
+    // ak sa budu rovnat jumpne na novovytvoreny label
+    printN("JUMPIFEQS %s", label);
+
+    emitChildren(node->child[1], funcContext);
+
+    // po vykonani if blocku skocime na koniec if chainu kedze bola splnena if podmienka
+    printN("JUMP %s", endLabel);
+
+
+    // vytvorenie lablu v ifjcode na ktory budeme skakat pri vyhodnoteni podmienky ako false
+    printN("LABEL %s", label);
+
+}
+
+void emitElse(AstNode *node, FuncContext *funcContext)
+{
+    emitChildren(node->child[0], funcContext);
+}
+
+
+// /**
+//  * @brief Funkce pro zpracovani while cyklu
+//  * @param node Ukazatel na aktualne
+//  */
+// void emitWhile(AstNode* node) {
+
+// }
 /*
  *@brief switch zajisti zavolani sablon
  *@params ukazatel na uzel
@@ -1235,13 +1306,13 @@ void emit_command(AstNode *node,FuncContext *funcStruct) {
             }
             break;
         case AST_WHILE:
+            // emit_while(node);
             break;
         case AST_FOR:
             // emit_for();
             break;
-        case AST_IF:
-            // Nová implementace: podmineny skok
-            // emit_if(node, label_stack, counter);
+        case AST_IF_CHAIN:
+            emitIfChain(node, funcStruct);
             break;
         case AST_BREAK:
             // Nová implementace: preruseni cyklu
