@@ -22,10 +22,16 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+Token *gLookahead = NULL;
+DynamicAstNodeStackPtr AstStack =  NULL;
+Token token;
+AstNode *ast_root = NULL;
+DynamicSymbolStackPtr Stack = NULL;
+
 AstNode *parser()
 {
-    DynamicAstNodeStackPtr AstStack = stackAstNodeConstruct(DEFAULT_INIT_ELEMENT_COUNT);
-    DynamicSymbolStackPtr  Stack    = stackSymbolConstruct(DEFAULT_INIT_ELEMENT_COUNT);
+    AstStack = stackAstNodeConstruct(DEFAULT_INIT_ELEMENT_COUNT);
+    Stack = stackSymbolConstruct(DEFAULT_INIT_ELEMENT_COUNT);
     if (Stack == NULL || AstStack == NULL)
     {
         printError(INTERNAL_ERROR,"Chyba alokácie");
@@ -34,7 +40,7 @@ AstNode *parser()
 
     pushCheck(stackSymbolPush(Stack,makeTerm(TOKEN_EOF)));
     pushCheck(stackSymbolPush(Stack,makeNonterm(N_Program)));
-    Token token = lexer_token_next();
+    token = lexer_token_next();
     Symbol Stack_top;
 
     Token *gLookahead = NULL;
@@ -217,9 +223,6 @@ AstNode *parser()
                 case N_Param_list:
                     Param_list_func(Stack, token);
                     break;
-                case N_Func_call:
-                    Func_call_func(Stack, token);
-                    break;
                 case N_Var:
                     Var_func(Stack);
                     break;
@@ -257,7 +260,7 @@ AstNode *parser()
                     Continue_func(Stack);
                     break;
                 case N_Return:
-                    Return_func(Stack, token);
+                    Return_func(Stack);
                     break;
                 case N_Return_expr:
                     Return_expr_func(Stack, token);
@@ -330,9 +333,11 @@ AstNode *parser()
     }
     
     
-    AstNode *ast_root = stackAstNodeRead(AstStack);
+    ast_root = stackAstNodeRead(AstStack);
     stackSymbolDestruct(Stack);
+    Stack =  NULL;
     stackAstNodeDestruct(AstStack);
+    AstStack =  NULL;
     fprintf(stderr,"PARSER IS DONE\n");
     return ast_root;
 
@@ -698,35 +703,6 @@ void Param_list_func(DynamicSymbolStackPtr Stack, Token token)
         memorySafeExit(SYNTAX_ERROR);
     }
 }
-void Func_call_func(DynamicSymbolStackPtr Stack, Token token)
-{
-    stackSymbolPop(Stack);
-
-    if (token.type == TOKEN_IDENTIFIER) {
-        // IDENT ( Var_arg )
-        // redukujeme na AST_FUNC_CALL s 1 dieťaťom (Var_arg)
-        pushCheck(stackSymbolPush(Stack, makeReduce(AST_FUNC_CALL, 2)));
-        pushCheck(stackSymbolPush(Stack, makeTerm(TOKEN_RPAREN)));
-        pushCheck(stackSymbolPush(Stack, makeNonterm(N_Var_arg)));
-        pushCheck(stackSymbolPush(Stack, makeTerm(TOKEN_LPAREN)));
-        pushCheck(stackSymbolPush(Stack, makeTermWithValue(TOKEN_IDENTIFIER)));
-        return;
-    }
-    else if (token.type == TOKEN_KEYWORD_IFJ) {
-        // KEYWORD_IFJ . IDENT ( Var_arg )
-        pushCheck(stackSymbolPush(Stack, makeReduce(AST_FUNC_CALL, 2)));
-        pushCheck(stackSymbolPush(Stack, makeTerm(TOKEN_RPAREN)));
-        pushCheck(stackSymbolPush(Stack, makeNonterm(N_Var_arg)));
-        pushCheck(stackSymbolPush(Stack, makeTermWithValue(TOKEN_IDENTIFIER)));
-        pushCheck(stackSymbolPush(Stack, makeNonterm(N_Opt_newlines)));
-        pushCheck(stackSymbolPush(Stack, makeTerm(TOKEN_DOT)));
-        pushCheck(stackSymbolPush(Stack, makeTerm(TOKEN_KEYWORD_IFJ)));
-        return;
-    }
-
-    printError(SYNTAX_ERROR, "Očakávaný identifikátor alebo 'ifj' na začiatku Func_call");
-    memorySafeExit(SYNTAX_ERROR);
-}
 
 void Var_func(DynamicSymbolStackPtr Stack)
 {
@@ -957,7 +933,7 @@ void Continue_func(DynamicSymbolStackPtr Stack)
     pushCheck(stackSymbolPush(Stack, makeTerm(TOKEN_KEYWORD_CONTINUE)));
 }
 
-void Return_func(DynamicSymbolStackPtr Stack, Token token)
+void Return_func(DynamicSymbolStackPtr Stack)
 {
     stackSymbolPop(Stack);
     pushCheck(stackSymbolPush(Stack, makeReduce(AST_RETURN, 1)));
@@ -1267,4 +1243,32 @@ void tokenFree(Token *token)
             break;
     }
     *token = (Token){0};
+}
+
+void parserFree(void)
+{
+    tokenFree(&token);
+    tokenFree(gLookahead);
+    if(AstStack)
+    {
+        while(!stackAstNodeIsEmpty(AstStack))
+        {
+            AstNode *node = stackAstNodeRead(AstStack);
+            stackAstNodePop(AstStack);
+            ast_free_whole(node);
+            node = NULL;
+        }
+        stackAstNodeDestruct(AstStack);
+        AstStack = NULL;
+    }
+    if (ast_root)
+    {
+        ast_free_whole(ast_root);
+        ast_root = NULL;
+    }
+    if (Stack)
+    {
+        stackSymbolDestruct(Stack);
+        Stack = NULL;
+    }
 }

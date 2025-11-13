@@ -3,7 +3,7 @@ class Program {
     static main() {
         var a = 1
         while (a > 5) {
-            var a = a + 1
+            var x = 1
         }
     }
 }

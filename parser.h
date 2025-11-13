@@ -32,7 +32,6 @@ typedef enum
     N_Func_dec_tail,
     N_Param,
     N_Param_list,
-    N_Func_call,
     N_Var,
     N_Var_EXT,
     N_Var_arg,
@@ -204,12 +203,6 @@ void Param_func(DynamicSymbolStackPtr Stack, Token token);
  */
 void Param_list_func(DynamicSymbolStackPtr Stack, Token token);
 
-/**
- * @brief Funkcia na zaobchádzanie s netermínalom Func_call
- * @param Stack Inicializovaný Stack na ktorom sú strukturý Symbol neterminálov a terminálov
- * @param token Aktuálne použivaný token z lexer.c
- */
-void Func_call_func(DynamicSymbolStackPtr Stack, Token token);
 
 
 /**
@@ -300,7 +293,7 @@ void Continue_func(DynamicSymbolStackPtr Stack);
  * @param Stack Inicializovaný Stack na ktorom sú strukturý Symbol neterminálov a terminálov
  * @param token Aktuálne použivaný token z lexer.c
  */
-void Return_func(DynamicSymbolStackPtr Stack, Token token);
+void Return_func(DynamicSymbolStackPtr Stack);
 
 /**
  * @brief Funkcia na zaobchádzanie s netermínalom Return_expr
@@ -322,14 +315,6 @@ void Return_expr_func(DynamicSymbolStackPtr Stack, Token token);
 void Expr_func(DynamicSymbolStackPtr Stack,Token *gLookahead, DynamicAstNodeStackPtr AstStack,int flag);
 
 /**
- * @brief Funkcia na zaobchádzanie s netermínalom ElseBody
- * @param Stack Inicializovaný Stack na ktorom sú strukturý Symbol neterminálov a terminálov
- * @param token Aktuálne použivaný token z lexer.c
- */
-void ElseBody_func(DynamicSymbolStackPtr Stack, Token token);
-
-
-/**
  * @brief Funkcia na zaobchádzanie s netermínalom New_line
  * @param Stack Inicializovaný Stack na ktorom sú strukturý Symbol neterminálov a terminálov
  * @param token Aktuálne použivaný token z lexer.c
@@ -348,4 +333,5 @@ void callIfjCheckfunc(DynamicSymbolStackPtr Stack, Token token);
 void AssignIfjIdCheckFunc(DynamicSymbolStackPtr Stack, Token token);
 void smallNullCheckFunc(DynamicSymbolStackPtr Stack, Token token);
 void smallNullCheckTypeFunc(DynamicSymbolStackPtr Stack, Token token);
+void parserFree(void);
 #endif // PARSER_H
