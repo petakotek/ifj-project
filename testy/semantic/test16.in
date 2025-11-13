@@ -3,17 +3,16 @@ class Program {
     // Oneline block
 
 
-    //static f() { 1 }
-    static f { 
-        { 
-            return "a"
-        }
-       return 1
+    static f() { 1 }
+    static f { 2 }
+
+    static x = (a) {
+        
     }
 
     static main() { 
-        //f()
-        var x = f + 2
+        var x = f + 6
+
     }
 
 }

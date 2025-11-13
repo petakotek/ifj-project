@@ -8,4 +8,7 @@ static main() {
     var x
     return
 }
+static main(a) {
+    return
+}
 }
