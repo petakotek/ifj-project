@@ -1,13 +1,11 @@
 import "ifj25" for Ifj
 class Program {
     // Volání funkce
-    // TODO tady je double free chyba!
     static main() {
         return
     }
 
     static error(){
-        var x
         return
     }
 
