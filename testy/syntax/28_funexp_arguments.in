@@ -9,7 +9,7 @@ class Program {
     }
 
     static main() {
-        var x = Program.sum(1 + 2, 3 * 4)
-        var y = Program.mul(Program.sum(1, 2), 5 + 6)
+        var x = sum(1 + 2, 3 * 4)
+        var y = mul(sum(1, 2), 5 + 6)
     }
 }

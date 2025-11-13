@@ -5,11 +5,11 @@ class Program {
     }
 
     static foo(only_par) {
-        return Program.foo(only_par, only_par)
+        return foo(only_par, only_par)
     }
 
     static main() {
-        var a = Program.foo(1, 2)
-        var b = Program.foo(3)
+        var a = foo(1, 2)
+        var b = foo(3)
     }
 }

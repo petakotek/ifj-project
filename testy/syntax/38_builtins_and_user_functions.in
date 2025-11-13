@@ -6,7 +6,7 @@ class Program {
 
     static main() {
         var n = Ifj.read_num()
-        var m = Program.twice(n)
+        var m = twice(x)
         Ifj.write(m)
     }
 }

@@ -25,7 +25,6 @@ typedef enum AstNodeType {
 
     // bloky a zoznamy
     AST_BLOCK,
-    AST_STATEMENT,
     AST_STATEMENT_LIST,
 
     // deklarácie a volania
@@ -82,9 +81,11 @@ typedef enum AstNodeType {
     AST_NULL,            // Prázdný blok
     AST_TRIPLE_DOT,      // ...
     AST_DOUBLE_DOT,      // ..
-    
+
     AST_KEYWORD_NUM,     // Num
     AST_KEYWORD_STRING,  // String
+    AST_STRING_BLOCK,
+    AST_SMALL_NULL,
 } AstNodeType;
 
 /**
@@ -122,8 +123,10 @@ typedef struct AstNode {
     AstNodeType      kind;
     size_t           arity;
     struct AstNode **child;
-    bool             is_leaf;
-    AstValue         value;  // platný len ak is_leaf == true
+    bool is_leaf;
+    AstValue value;          // platný len ak is_leaf == true
+    //pro generovani docasnych promenych pouziva pouze codegen
+    int tmp_id;
 } AstNode;
 
 /**

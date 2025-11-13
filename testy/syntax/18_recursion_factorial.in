@@ -7,13 +7,13 @@ class Program {
         } else {
             var decremented_n
             decremented_n = n - 1
-            result = Program.factorial(decremented_n)
+            result = factorial(decremented_n)
             result = n * result
         }
         return result
     }
 
     static main() {
-        var x = Program.factorial(5)
+        var x = factorial(5)
     }
 }

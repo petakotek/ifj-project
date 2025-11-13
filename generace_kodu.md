@@ -1,17 +1,5 @@
 # Generování kódu
 
-## Struktura souboru
-- **sablony.c**
-  Obsahuje jednotlivé šablony pro emisi kódu – specializované funkce na konkrétní jazykové konstrukce jako funkce, if, while, přiřazení, výrazy apod.
-
-- **codegen.c**
-  Implementuje hlavní workflow generování kódu – volání jednotlivých šablon a orchestraci průchodu AST.
-
-- **codegen.h**
-  Hlavicový soubor s prototypy funkcí, datovými strukturami a základními definicemi. Nepředpokládá tvorbu nových struktur.
-
-***
-
 ## Workflow codegenu
 
 Máme funkci:
@@ -24,19 +12,11 @@ void codegen_generate(ASTNode *root, SymbolTable *symtab);
 - Nejprve zavolá:
 
 ```c
-emit_prolog();
-emit_globals(symtab);
+emit_seznam(ASTNode *root, SymbolTable *symtab);
 ```
 
-Tyto základní funkce vygenerují prolog kódu a definují globální proměnné.
 
-- Dále zavolá:
-
-```c
-emit_class_program(root, symtab);
-```
-
-Kde pro každé dítě (příkaz/funkce) zleva v AST postupně voláme funkci:
+ve funkci emit_seznam pro každé dítě  zleva v AST postupně voláme funkci tahle funkce bude volana v kazde funkci jelikoz jedeme postORder:
 
 ```c
 void emit_command(ASTNode *cmd, SymbolTable *symtab);
@@ -74,6 +54,8 @@ void emit_command(ASTNode *cmd, SymbolTable *symtab) {
 
 ## Dynamická kontrola typu
 
+Nemame implicitni konverze zakazany vestavene funkce na zvladnuti konverze
+
 Pro každou operaci, která vyžaduje specifický typ, vložíme instrukce pro běhové kontroly.
 Ve chvíli, kdy potkáme něco jako `x = a + b`, vkládáme typovou kontrolu, kterou interpret provede za běhu.
 Je to podobné jako v assembleru, využívají se skoky:
@@ -89,7 +71,7 @@ void emit_arithmetic(ASTNode *expr, SymbolTable *symtab) {
     printf("JUMPIFEQ $check_right_type GF@type_left string@int\n");
     printf("JUMPIFEQ $check_right_type GF@type_left string@float\n");
     printf("EXIT int@25\n");  // Chyba: levý operand není číslo
-
+    macro_jumpifeq()
     printf("LABEL $check_right_type\n");
 
     // Běhová kontrola typu pravého operandu
@@ -109,13 +91,14 @@ void emit_arithmetic(ASTNode *expr, SymbolTable *symtab) {
 
 ## Globální proměnné
 
-Důležité je, aby globální proměnné byly inicializovány na `nil` pomocí funkce `emit_globals(symtab);`, abychom předešli běhovým chybám.
+Důležité je, aby globální proměnné byly inicializovány na `nil` pomocí funkce `emit_globals(symtab);` abychom předešli běhovým chybám.
 
 ***
 
 ## Konvence volání funkcí
 
-Funkování konvence volání používané u while, if, for, funkcí atd.
+Funkování konvence volání.
+Pouze ve volani funkci vytvarim novy ramec lokalni ramec LF
 
 **Volající (caller):**
 
@@ -149,6 +132,10 @@ RETURN               # návrat volajícímu
 ## Labely
 
 Je dobré, aby každý LABEL měl jedinečný název. Často se to řeší přidáváním čítače na konec názvu.
+to zajisuje funkce
+```
+char *generatorLable(char * prefix);
+```
 
 **Příklad if/else:**
 
@@ -189,3 +176,11 @@ Vestavěné funkce dostupné v jazyce odpovídají instrukcím IFJcode25 nebo je
 | Ifj.ord(s,i)             | STRI2INT s kontrolou indexu                     |
 | Ifj.chr(i)               | INT2CHAR s kontrolou validní hodnoty           |
 | Převody typů             | INT2FLOAT, FLOAT2INT, INT2STR, FLOAT2STR       |
+
+## Rozdeleni:
+Jeden clovek ma nastarost celkove aritmetické operace/porovnani a kontrola typu
+
+Druhy clovek vytvoreni for,while,if-else,funkce (delani hops hops na labels)
+je tam funkce na generovani labelu kterou jsem tak nejak testoval
+
+Treti clovek vytvoreni getteru a setteru(vubec netusim jak je udelat) a scopy (bloky  vytvareni novych ramcu pro kazdy scopy atd)

@@ -1,0 +1,12 @@
+import "ifj25" for Ifj
+class Program {
+    static inc(x) { 
+        return x + 1 
+        }
+    static dbl(x) { 
+        return x + x 
+        }
+    static main() { 
+        var r = dbl(inc(3) ) 
+        }
+}

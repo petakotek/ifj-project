@@ -343,7 +343,7 @@ void pushCheck(bool boolean)
 
 void Program_func(DynamicSymbolStackPtr Stack)
 {
-    stackSymbolPop(Stack);;
+    stackSymbolPop(Stack);
     pushCheck(stackSymbolPush(Stack, makeReduce(AST_PROGRAM, 2)));
     pushCheck(stackSymbolPush(Stack,makeNonterm(N_Main_class)));
     pushCheck(stackSymbolPush(Stack, makeNonterm(N_Opt_newlines)));
@@ -355,7 +355,7 @@ void Program_func(DynamicSymbolStackPtr Stack)
 void Prolog_func(DynamicSymbolStackPtr Stack)
 {
 
-    stackSymbolPop(Stack);;
+    stackSymbolPop(Stack);
     pushCheck(stackSymbolPush(Stack, makeReduce(AST_PROLOG,0)));
     
     pushCheck(stackSymbolPush(Stack,makeTerm(TOKEN_KEYWORD_IFJ)));
@@ -371,7 +371,7 @@ void Prolog_func(DynamicSymbolStackPtr Stack)
 
 void Main_class_func(DynamicSymbolStackPtr Stack)
 {
-    stackSymbolPop(Stack);;
+    stackSymbolPop(Stack);
     pushCheck(stackSymbolPush(Stack, makeReduce(AST_MAIN_CLASS, 2)));
     pushCheck(stackSymbolPush(Stack,makeNonterm(N_New_line_check)));
     pushCheck(stackSymbolPush(Stack,makeTerm(TOKEN_BLOCK_END)));
@@ -385,7 +385,7 @@ void Main_class_func(DynamicSymbolStackPtr Stack)
 void Main_class_block_func(DynamicSymbolStackPtr Stack, Token token)
 {
     //popneme  neterminál
-    stackSymbolPop(Stack);;
+    stackSymbolPop(Stack);
 
     // FIRST(Func_dec) = TOKEN_KEYWORD_STATIC
     // Epsilon vyberáme, keď vidíme '}' (koniec bloku) => TOKEN_BLOCK_END
@@ -420,7 +420,7 @@ void Main_class_block_func(DynamicSymbolStackPtr Stack, Token token)
 
 void Block_func(DynamicSymbolStackPtr Stack)
 {
-    stackSymbolPop(Stack);;
+    stackSymbolPop(Stack);
     // Block -> { Block_content }
     // AST_BLOCK má 1 dieťa = STATEMENT_LIST
     pushCheck(stackSymbolPush(Stack, makeReduce(AST_BLOCK, 1)));
@@ -489,14 +489,14 @@ void Block_content_func(DynamicSymbolStackPtr Stack, Token token)
 */
 void smth_func(DynamicSymbolStackPtr Stack) {
     // smth -> smth_list smth_tail
-    stackSymbolPop(Stack);;
+    stackSymbolPop(Stack);
     pushCheck(stackSymbolPush(Stack, makeNonterm(N_smth_tail)));
     pushCheck(stackSymbolPush(Stack, makeNonterm(N_smth_list)));
 }
 
 void smth_tail_func(DynamicSymbolStackPtr Stack, Token token)
 {
-    stackSymbolPop(Stack);;
+    stackSymbolPop(Stack);
     // Po jednej položke môžu nasledovať NEW_LINE a ďalší obsah,
     // alebo epsilon (keď hneď príde '}' alebo niečo, čo už nespadá do FIRST smth_list).
     if (token.type == TOKEN_NEW_LINE) {
@@ -514,8 +514,7 @@ void smth_tail_func(DynamicSymbolStackPtr Stack, Token token)
 
 void smth_list_func(DynamicSymbolStackPtr Stack, Token token)
 {
-    stackSymbolPop(Stack);;
-    // ŽIADNE AST_STATEMENT redukcie – vkladáme priamo "skutočný" uzol
+    stackSymbolPop(Stack);
     switch (token.type) {
         case TOKEN_KEYWORD_RETURN:
             pushCheck(stackSymbolPush(Stack, makeNonterm(N_Return)));        
@@ -569,7 +568,7 @@ void smth_list_func(DynamicSymbolStackPtr Stack, Token token)
 
 void Oneline_expr_opt_func(DynamicSymbolStackPtr Stack, Token token)
 {
-    stackSymbolPop(Stack);;
+    stackSymbolPop(Stack);
     switch (token.type)
     {
         // FIRST(Expr): všetky tokeny, ktorými môže začínať výraz
@@ -597,7 +596,7 @@ void Oneline_expr_opt_func(DynamicSymbolStackPtr Stack, Token token)
 
 void Func_dec_func(DynamicSymbolStackPtr Stack)
 {
-    stackSymbolPop(Stack);;
+    stackSymbolPop(Stack);
     pushCheck(stackSymbolPush(Stack, makeNonterm(N_Func_dec_tail)));
     pushCheck(stackSymbolPush(Stack, makeTermWithValue(TOKEN_IDENTIFIER)));
     pushCheck(stackSymbolPush(Stack, makeTerm(TOKEN_KEYWORD_STATIC)));
@@ -605,7 +604,7 @@ void Func_dec_func(DynamicSymbolStackPtr Stack)
 
 void Func_dec_tail_func(DynamicSymbolStackPtr Stack, Token token)
 {
-    stackSymbolPop(Stack);;
+    stackSymbolPop(Stack);
 
     if (token.type == TOKEN_LPAREN)
     {
@@ -648,7 +647,7 @@ void Func_dec_tail_func(DynamicSymbolStackPtr Stack, Token token)
 }
 void Param_func(DynamicSymbolStackPtr Stack, Token token)
 {
-    stackSymbolPop(Stack);;
+    stackSymbolPop(Stack);
 
     if (token.type == TOKEN_IDENTIFIER)
     {
@@ -671,7 +670,7 @@ void Param_func(DynamicSymbolStackPtr Stack, Token token)
 
 void Param_list_func(DynamicSymbolStackPtr Stack, Token token)
 {
-    stackSymbolPop(Stack);;
+    stackSymbolPop(Stack);
     if (token.type == TOKEN_COMMA)
     {
         pushCheck(stackSymbolPush(Stack, makeReduce(AST_PARAM, 2))); 
@@ -693,7 +692,7 @@ void Param_list_func(DynamicSymbolStackPtr Stack, Token token)
 }
 void Func_call_func(DynamicSymbolStackPtr Stack, Token token)
 {
-    stackSymbolPop(Stack);;
+    stackSymbolPop(Stack);
 
     if (token.type == TOKEN_IDENTIFIER) {
         // IDENT ( Var_arg )
@@ -723,7 +722,7 @@ void Func_call_func(DynamicSymbolStackPtr Stack, Token token)
 
 void Var_func(DynamicSymbolStackPtr Stack)
 {
-    stackSymbolPop(Stack);;
+    stackSymbolPop(Stack);
     pushCheck(stackSymbolPush(Stack, makeReduce(AST_VAR, 2)));
     pushCheck(stackSymbolPush(Stack, makeNonterm(N_Var_EXT)));
     pushCheck(stackSymbolPush(Stack, makeTermWithValue(TOKEN_IDENTIFIER)));
@@ -732,7 +731,7 @@ void Var_func(DynamicSymbolStackPtr Stack)
 
 void Var_EXT_func(DynamicSymbolStackPtr Stack, Token token)
 {
-    stackSymbolPop(Stack);;
+    stackSymbolPop(Stack);
     if (token.type == TOKEN_ASSIGN)
     {
         pushCheck(stackSymbolPush(Stack, makeReduce(AST_ASSIGN, 1)));
@@ -754,7 +753,7 @@ void Var_EXT_func(DynamicSymbolStackPtr Stack, Token token)
 
 void Var_arg_func(DynamicSymbolStackPtr Stack, Token token)
 {
-    stackSymbolPop(Stack);;
+    stackSymbolPop(Stack);
     switch (token.type) {
         // FIRST(Expr)
         case TOKEN_IDENTIFIER:
@@ -787,7 +786,7 @@ void Var_arg_func(DynamicSymbolStackPtr Stack, Token token)
 
 void var_arg_list_func(DynamicSymbolStackPtr Stack, Token token)
 {
-     stackSymbolPop(Stack);;
+     stackSymbolPop(Stack);
      if (token.type == TOKEN_COMMA) {
         // , Expr var_arg_list  => Expr (1) + tail (1) => arity = 2
         pushCheck(stackSymbolPush(Stack, makeReduce(AST_PARAM, 2)));
@@ -832,7 +831,7 @@ void Call_assign_list_func(DynamicSymbolStackPtr Stack, Token token)
 }void Global_assign_func(DynamicSymbolStackPtr Stack)
 {
     // Global_assign -> GLOBAL_ID = Expr
-    stackSymbolPop(Stack);;
+    stackSymbolPop(Stack);
     // AST_ASSIGN(Expr) => arity = 1
     pushCheck(stackSymbolPush(Stack, makeReduce(AST_GLOBAL_ID, 2)));
     pushCheck(stackSymbolPush(Stack, makeReduce(AST_ASSIGN,1)));
@@ -908,7 +907,7 @@ void Else_item_func(DynamicSymbolStackPtr Stack, Token token)
 void While_func(DynamicSymbolStackPtr Stack)
 {
     // While -> while ( Expr ) Block
-    stackSymbolPop(Stack);;
+    stackSymbolPop(Stack);
     // deti: Expr, Block => arity = 2
     pushCheck(stackSymbolPush(Stack, makeReduce(AST_WHILE, 2)));
     pushCheck(stackSymbolPush(Stack, makeNonterm(N_Block)));
@@ -922,7 +921,7 @@ void While_func(DynamicSymbolStackPtr Stack)
 void For_func(DynamicSymbolStackPtr Stack)
 {
     // For -> for ( IDENT in Expr ) Block
-    stackSymbolPop(Stack);;
+    stackSymbolPop(Stack);
     // deti: Expr, Block => arity = 2  (IDENT v AST neukladáme)
     pushCheck(stackSymbolPush(Stack, makeReduce(AST_FOR, 2)));
     pushCheck(stackSymbolPush(Stack, makeNonterm(N_Block)));
@@ -937,15 +936,14 @@ void For_func(DynamicSymbolStackPtr Stack)
 
 void Break_func(DynamicSymbolStackPtr Stack)
 {
-    stackSymbolPop(Stack);;
-    // jednoduchý statement (bez detí); zabalíme ho ako AST_STATEMENT (0)
+    stackSymbolPop(Stack);
     pushCheck(stackSymbolPush(Stack, makeReduce(AST_BREAK, 0)));
     pushCheck(stackSymbolPush(Stack, makeTerm(TOKEN_KEYWORD_BREAK)));
 }
 
 void Continue_func(DynamicSymbolStackPtr Stack)
 {
-    stackSymbolPop(Stack);;
+    stackSymbolPop(Stack);
     // jednoduchý statement (bez detí)
     pushCheck(stackSymbolPush(Stack, makeReduce(AST_CONTINUE, 0)));
     pushCheck(stackSymbolPush(Stack, makeTerm(TOKEN_KEYWORD_CONTINUE)));
@@ -953,7 +951,7 @@ void Continue_func(DynamicSymbolStackPtr Stack)
 
 void Return_func(DynamicSymbolStackPtr Stack, Token token)
 {
-    stackSymbolPop(Stack);;
+    stackSymbolPop(Stack);
     pushCheck(stackSymbolPush(Stack, makeReduce(AST_RETURN, 1)));
     pushCheck(stackSymbolPush(Stack, makeNonterm(N_Return_expr)));
     pushCheck(stackSymbolPush(Stack, makeTerm(TOKEN_KEYWORD_RETURN)));
@@ -961,7 +959,7 @@ void Return_func(DynamicSymbolStackPtr Stack, Token token)
 
 void Return_expr_func(DynamicSymbolStackPtr Stack, Token token)
 {
-    stackSymbolPop(Stack);;
+    stackSymbolPop(Stack);
     switch (token.type)
     {
         case TOKEN_IDENTIFIER:
@@ -990,7 +988,7 @@ void Return_expr_func(DynamicSymbolStackPtr Stack, Token token)
 void Expr_func(DynamicSymbolStackPtr Stack, Token *gLookahead, DynamicAstNodeStackPtr AstStack,int flag)
 {
     // odstráň neterminál
-    stackSymbolPop(Stack);;
+    stackSymbolPop(Stack);
 
     if (!gLookahead || ! AstStack) {
         printError(INTERNAL_ERROR, "Expr_func: chýbajú hooky\n");
@@ -1014,7 +1012,7 @@ void Expr_func(DynamicSymbolStackPtr Stack, Token *gLookahead, DynamicAstNodeSta
 void  New_line_func(DynamicSymbolStackPtr Stack, Token token)
 {
 
-    stackSymbolPop(Stack);;
+    stackSymbolPop(Stack);
     if (token.type == TOKEN_NEW_LINE)
     {
         pushCheck(stackSymbolPush(Stack,makeNonterm(N_New_line_check)));
@@ -1034,7 +1032,7 @@ void  New_line_func(DynamicSymbolStackPtr Stack, Token token)
 
 void Opt_newlines_func(DynamicSymbolStackPtr Stack, Token token)
 {
-    stackSymbolPop(Stack);;
+    stackSymbolPop(Stack);
     if (token.type == TOKEN_NEW_LINE)
     {
         // Reprezentuje "NEW_LINE Opt_newlines"
@@ -1111,6 +1109,11 @@ void AssignIfjIdCheckFunc(DynamicSymbolStackPtr Stack, Token token)
         return;
     }
     
+    else if (token.type == TOKEN_KEYWORD_NULL_SMALL)
+    {
+        pushCheck(stackSymbolPush(Stack, makeReduce(AST_SMALL_NULL, 0)));
+        pushCheck(stackSymbolPush(Stack, makeTerm(TOKEN_KEYWORD_NULL_SMALL)));
+    }
     else
     {
         pushCheck(stackSymbolPush(Stack, makeNonterm(N_Expr)));

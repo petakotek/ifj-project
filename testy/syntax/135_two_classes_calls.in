@@ -1,0 +1,4 @@
+import "ifj25" for Ifj
+class U { static t(x){ return x + 10 } }
+class Program { static main(){ 
+    var k = U.t(5) } }

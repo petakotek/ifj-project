@@ -178,4 +178,5 @@ Token lexer_token_next();
 TokenType match_identifikator(const char *identifikator);
 char *token_type_to_string(TokenType type);
 extern char *source;
+extern char *buf;
 #endif

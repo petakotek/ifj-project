@@ -1,0 +1,6 @@
+import "ifj25" for Ifj
+class Program {
+    static main() {
+        if (true) { var a = 1 } else { var b = 2 } else { var c = 3 }
+    }
+}

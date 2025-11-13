@@ -11,7 +11,7 @@ class Program {
     static main() {
         var start = 1
         var end = 5
-        var total = Program.sumRange(start, end)
+        var total = sumRange(start, end)
         Ifj.write(total)
     }
 }

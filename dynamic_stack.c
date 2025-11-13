@@ -8,6 +8,7 @@
  */
 
 #include "dynamic_stack.h"
+#include "ast_strom.h"
 
 #include "support_functions.h"
 
@@ -179,10 +180,11 @@
     }
 
 // DEFINE_STACK(char*, String) // Slouží pro testování
-
+DEFINE_STACK(char *, labelStack)
 DEFINE_STACK(Symbol, Symbol)
 DEFINE_STACK(AstNode*, AstNode)
 DEFINE_STACK(HashTable*, HashTablePtr)
 DEFINE_STACK(Token, Precedence)
+DEFINE_STACK(AstNode*, EmitOp)
 
 /*** konec dynamic_stack.c ***/
