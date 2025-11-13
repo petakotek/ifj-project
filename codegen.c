@@ -181,7 +181,7 @@ void add_binop_tmps(VarList* vars, const char* func, int id,AstNode *node) {
        varlist_add(vars, buf);
 	    snprintf(buf, sizeof buf, "%s_rs_%d", func, id);
 	    varlist_add(vars, buf);
-    }else if(node->kind == AST_LT){
+    }else if(node->kind == AST_GT || node->kind == AST_LT || node->kind == AST_LTE || node->kind == AST_GTE){
    		snprintf(buf, sizeof buf, "%s_ln_%d", func, id);
        	varlist_add(vars, buf);
         snprintf(buf, sizeof buf, "%s_rn_%d", func, id);
@@ -734,7 +734,7 @@ void emit_equal(AstNode *node, FuncContext *funcStrukt) {
 
     // Typy jsou stejné - nyní zkontrolujeme konkrétní typ
     printN("LABEL %s", label_ok);
-    printN("PUSHD LF@%s",ln);
+    printN("PUSHS LF@%s",ln);
     printN("PUSHS LF@%s",rn);
     printN("EQS");
     printN("JUMP %s",label_end);
@@ -1078,7 +1078,7 @@ void emit_equal_not(AstNode *node, FuncContext *funcStruct) {
 
     // Typy jsou stejné - nyní zkontrolujeme konkrétní typ
     printN("LABEL %s", label_ok);
-    printN("PUSHD LF@%s",ln);
+    printN("PUSHS LF@%s",ln);
     printN("PUSHS LF@%s",rn);
     printN("EQS");
     printN("NOTS");
@@ -1291,6 +1291,7 @@ void emit_command(AstNode *node,FuncContext *funcStruct) {
               break;
 
         case AST_INT_LIT:
+        	printf("kontorni vystyp : %lld \n \n",node->value.int_val);
             printN("PUSHS int@%lld", node->value.int_val);
             break;
 
@@ -1378,40 +1379,31 @@ void emit_command(AstNode *node,FuncContext *funcStruct) {
             // emitDiv(node, op_emit);
             break;
         case AST_EQ:
-            // Nová implementace: Porovnání ==
-            // emitEq(node, op_emit);
+            emit_equal(node, funcStruct);
             break;
         case AST_LT:
-            // Nová implementace: Porovnání <
-            // emitLt(node, op_emit);
+            emit_less(node, funcStruct);
             break;
         case AST_GT:
-            // Nová implementace: Porovnání >
-            // emitGt(node, op_emit);
+            emit_greater(node,funcStruct);
             break;
         case AST_NOT:
-            // Nová implementace: Logická negace !
-            // emitNot(node, op_emit);
+            emit_negace(node, funcStruct);
             break;
         case AST_AND:
-            // Nová implementace: Logické AND &&
-            // emitAnd(node, op_emit);
+            emit_and(node, funcStruct);
             break;
         case AST_OR:
-            // Nová implementace: Logické OR ||
-            // emitOr(node, op_emit);
+            emit_or(node, funcStruct);
             break;
         case AST_IS:
-            // Nová implementace: Porovnání 'is'
-            // emitIs(node, op_emit);
+           // emitIs(node, op_emit);
             break;
         case AST_GTE:
-            // Nová implementace: Porovnání >=
-            // emitGte(node, op_emit);
+            emit_greater_equal(node, funcStruct);
             break;
         case AST_LTE:
-            // Nová implementace: Porovnání <=
-            // emitLte(node, op_emit);
+            emit_less_equal(node, funcStruct);
             break;
         case AST_LPAREN:
             // Nová implementace: Levá závorka (Obvykle zpracováváno jako součást expression)
@@ -1425,6 +1417,9 @@ void emit_command(AstNode *node,FuncContext *funcStruct) {
             // Nová implementace: Reprezentace literálu NULL
             // emit_null(node);
             break;
+        case AST_CONDITION:
+        	emitChildren(node,funcStruct);
+         	break;
         case AST_IFJ_CALL:
        		emitIfjFunc(node, funcStruct);
          	break;
