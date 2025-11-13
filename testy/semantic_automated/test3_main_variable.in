@@ -1,0 +1,13 @@
+import "ifj25" for Ifj
+class Program {
+static main() {
+        if (a == b) {
+        var x = (a * b) == (a - b) ? (4 - 2) / 5 : (45 * 5) / !x
+
+        }
+
+    }
+static ok(){
+    
+}
+}

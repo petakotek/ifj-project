@@ -2,11 +2,15 @@
     "cSpell.words": [
         "hashtable",
         "Nastavovac",
+        "nastavovač",
+        "nastavovače",
         "NOTEQ",
         "RPAREN",
         "strcmp",
         "Upsize",
-        "Ziskavac"
+        "Ziskavac",
+        "získávač",
+        "získávače"
     ],
     "files.associations": {
         "support_functions.h": "c",

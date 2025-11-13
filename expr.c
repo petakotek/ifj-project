@@ -13,7 +13,7 @@
 #include "dynamic_stack.h"
 #include "support_functions.h"
 
-#define DEBUG true // přepínač pro povolení debugovacích výpisů
+#define DEBUG false // přepínač pro povolení debugovacích výpisů
 
 typedef enum {
     R, // >
@@ -253,7 +253,8 @@ void findPrecedenceRule(DynamicPrecedenceStackPtr stack, DynamicAstNodeStackPtr 
     Token p1; // parametr 1
     Token p2; // parametr 2
     Token p3; // parametr 3
-
+    Token p4; // parametr 4 (pouze u ternárního operátoru)
+    Token p5; // parametr 5 (pouze u ternárního operátoru)
     int count = 0;
     if (stack == NULL)
     {
@@ -279,7 +280,7 @@ void findPrecedenceRule(DynamicPrecedenceStackPtr stack, DynamicAstNodeStackPtr 
     stackPrecedenceDestruct(stackTmp); // uvolnim nakonec nepouzivany zasobnik
 
     if (DEBUG)
-        printf("\t\t\tparam count %d\n", count); 
+        printLog("\t\t\tparam count %d\n", count); 
     
     switch (count)
     {
@@ -378,8 +379,7 @@ void findPrecedenceRule(DynamicPrecedenceStackPtr stack, DynamicAstNodeStackPtr 
 
         // E -> E ? E : E
         case 5:
-            Token p4;
-            Token p5;
+            
             p1 = stackPrecedenceRead(stack); // E
             stackPrecedencePop(stack); // levy vyraz
             p2 = stackPrecedenceRead(stack); // :
@@ -498,9 +498,9 @@ void printStack(DynamicPrecedenceStackPtr stack)
         Token tokenRead = stackPrecedenceRead(stack);
         stackPrecedencePop(stack);
         if (DEBUG)
-        printf("%s ", token_type_to_string(tokenRead.type));
+        printLog("%s ", token_type_to_string(tokenRead.type));
 
-        stackPrecedencePush(stackTmp, tokenRead);
+    stackPrecedencePush(stackTmp, tokenRead);
     }
     while (!stackPrecedenceIsEmpty(stackTmp))
     {
@@ -511,7 +511,7 @@ void printStack(DynamicPrecedenceStackPtr stack)
     stackPrecedenceDestruct(stackTmp); // uvolnim docasny zasobnik
 
     if (DEBUG)
-        printf("\n");
+        printLog("\n");
 }
 
 
@@ -522,14 +522,34 @@ void functionCalled(DynamicPrecedenceStackPtr stackP, DynamicAstNodeStackPtr sta
     *actualToken = lexer_token_next();
     if (actualToken->type == TOKEN_RPAREN) // Funkce nemá žádný parametr
     {
-        AstNode **kids = NULL;
-        kids = malloc(sizeof(AstNode*) * 2);
+
+        AstNode **paramKids = NULL;
+        paramKids = malloc(sizeof(AstNode*));
+
+        Token tokenEmpty = {.type = 0}; // Přidání prázdného parametru jako poslední dítě uzlu parametrů
+        AstNode* empty = NULL;
+        empty = new_leaf(AST_EMPTY, tokenEmpty);
+
+
+        paramKids[0] = empty;
+
+        AstNode* paramNode = ast_new(AST_PARAM, 1, paramKids);
+        free(paramKids);
+        stackAstNodePush(stackA, paramNode);
+
+
+
+        AstNode* params = stackAstNodeRead(stackA);
+        stackAstNodePop(stackA);
         AstNode *identif = stackAstNodeRead(stackA);
         stackAstNodePop(stackA);
-        AstNode *param = NULL;
+
+        AstNode **kids = NULL;
+        kids = malloc(sizeof(AstNode*) * 2);
+        
 
         kids[0] = identif;
-        kids[1] = param;
+        kids[1] = params;
 
         AstNode *functionCallRoot = ast_new(AST_FUNC_CALL, 2, kids);
         free(kids);
@@ -551,7 +571,7 @@ void functionCalled(DynamicPrecedenceStackPtr stackP, DynamicAstNodeStackPtr sta
         {
             AstNode *param = parseExpression(actualToken, 0);
             if (DEBUG)
-                printf("\t\t\t\treturned\n");
+                printLog("\t\t\t\treturned\n");
 
             paramCount++;
             stackAstNodePush(stackA, param);
@@ -568,7 +588,15 @@ void functionCalled(DynamicPrecedenceStackPtr stackP, DynamicAstNodeStackPtr sta
         }
 
         AstNode **paramKids = NULL;
-        paramKids = malloc(sizeof(AstNode*) * paramCount);
+        paramCount++; // zvyšuji o 1 protože potřebuji místo i pro uzel EMTPY
+        paramKids = malloc(sizeof(AstNode*) * (paramCount));
+
+        Token tokenEmpty = {.type = 0}; // Přidání prázdného parametru jako poslední dítě uzlu parametrů
+        AstNode* empty = NULL;
+        empty = new_leaf(AST_EMPTY, tokenEmpty);
+        stackAstNodePush(stackA, empty);
+
+
         for (int i = 0; i < paramCount; ++i) // Cyklem ze zásobníku seberu napočítaná počet parametrů
         {
             if (stackAstNodeIsEmpty(stackA)) // kontrola, zda zásobník, ze kterého beru parametry funce není prázdný
@@ -610,7 +638,7 @@ void functionCalled(DynamicPrecedenceStackPtr stackP, DynamicAstNodeStackPtr sta
         }
         if (DEBUG)
         {
-            printf("ZASOBNIK PO ZPRACOVANI FUNKCE: ");
+            printLog("ZASOBNIK PO ZPRACOVANI FUNKCE: ");
             printStack(stackP);
         }
         
@@ -629,7 +657,7 @@ void functionCalled(DynamicPrecedenceStackPtr stackP, DynamicAstNodeStackPtr sta
 AstNode* parseExpression(Token *token, int flag)
 {
     if (DEBUG)
-        printf("%d FLAG\n", flag);
+        printLog("%d FLAG\n", flag);
 
     DynamicPrecedenceStackPtr stackP = stackPrecedenceConstruct(DEFAULT_INIT_ELEMENT_COUNT); // zásobník pro precedeční analýzu
     DynamicAstNodeStackPtr stackA = stackAstNodeConstruct(DEFAULT_INIT_ELEMENT_COUNT); // Zásobník uzlů, na které budou odkládány zpracované výrazy
@@ -673,7 +701,7 @@ AstNode* parseExpression(Token *token, int flag)
         if (checkIs)
         {
             if (DEBUG)
-                printf("actualToken %s\n", token_type_to_string(actualToken.type));
+                printLog("actualToken %s\n", token_type_to_string(actualToken.type));
 
             if (operatorToPush(StackTop) == INDEX_IS)
             {
@@ -715,10 +743,10 @@ AstNode* parseExpression(Token *token, int flag)
         if (functionCall)
         {
             if (DEBUG)
-            printf("FUNC true\n");
+            printLog("FUNC true\n");
         }else{
             if (DEBUG)
-            printf("FUNC false\n");
+            printLog("FUNC false\n");
         }
         
         if (expectingNewLineAfterOperator && endFlag != TOKEN_PSA_END) // očekávám znak nového řádku za operátorem
@@ -780,7 +808,7 @@ AstNode* parseExpression(Token *token, int flag)
         {   // abych mohl koncit potrebuji mit na vstupu token new line a u zasobniku ukazovat jen na $
             if (DEBUG)
             {
-                printf("splnila se podminka\n");
+                printLog("splnila se podminka\n");
                 printStack(stackP);
             }
             
@@ -790,7 +818,7 @@ AstNode* parseExpression(Token *token, int flag)
 
         if (DEBUG)
         {
-            printf("%d Aktualni token %s a stacktop: %s [%d, %d]\n",poradiCount++, token_type_to_string(actualToken.type), token_type_to_string(stackPrecedenceRead(stackP).type), operatorToPush(StackTop), operatorToPush(actualToken));
+            printLog("%d Aktualni token %s a stacktop: %s [%d, %d]\n",poradiCount++, token_type_to_string(actualToken.type), token_type_to_string(stackPrecedenceRead(stackP).type), operatorToPush(StackTop), operatorToPush(actualToken));
             printStack(stackP);
         }
         
@@ -802,7 +830,7 @@ AstNode* parseExpression(Token *token, int flag)
                 findPrecedenceRule(stackP, stackA); // upravuji výraz dokud nedostanu na zásobníku pouze dolar a výraz
                 if (DEBUG)
                 {
-                    printf("Final etapa: ");
+                    printLog("Final etapa: ");
                     printStack(stackP);
                 }
             }
@@ -810,8 +838,8 @@ AstNode* parseExpression(Token *token, int flag)
             AstNode* root = stackAstNodeRead(stackA);
             if (DEBUG)
             {
-                printf("string %s\n", ast_node_type_to_string(root->kind));
-                printf("Final stack: ");
+                printLog("string %s\n", ast_node_type_to_string(root->kind));
+                printLog("Final stack: ");
                 printStack(stackP);
             }
 
@@ -829,12 +857,12 @@ AstNode* parseExpression(Token *token, int flag)
 
             case R: // >
                 if (DEBUG)
-                    printf("\tOperace >\n");
+                    printLog("\tOperace >\n");
 
                 findPrecedenceRule(stackP, stackA); // najde pravidlo z gramatiky a na precedence zasobnik vrati E
                 if (DEBUG)
                 {   
-                    printf("\t\t\t%d > (%d, %d) ",poradiCount++, operatorToPush(StackTop), operatorToPush(actualToken));
+                    printLog("\t\t\t%d > (%d, %d) ",poradiCount++, operatorToPush(StackTop), operatorToPush(actualToken));
                     printStack(stackP);
                 }
                 
@@ -844,13 +872,13 @@ AstNode* parseExpression(Token *token, int flag)
             case L: // <
                 // printf(" < (%d, %d) ", operatorToPush(StackTop), operatorToPush(actualToken));
                 if (DEBUG)
-                    printf("\tOperace <\n");
+                    printLog("\tOperace <\n");
 
                 if (stackPrecedenceRead(stackP).type == TOKEN_DOLLAR || stackPrecedenceRead(stackP).type != TOKEN_EXPRESSION) // pokud je na za zasobniku pouze dollar, tak tam vlozim  < i
                 // struktura bude tedy  $ < i
                 {
                     if (DEBUG)
-                        printf("\t\t%d budu hazet na stack klasicky\n",poradiCount++);
+                        printLog("\t\t%d budu hazet na stack klasicky\n",poradiCount++);
 
                     stackPrecedencePush(stackP, stop); // <
                     stackPrecedencePush(stackP, actualToken);
@@ -858,7 +886,7 @@ AstNode* parseExpression(Token *token, int flag)
                 }
                 else{ // vlozim na zasobnik pred prvni terminal stop znak, abych vedel, kde potom koncit
                     if (DEBUG)
-                        printf("\t\t%d budu hazet na stack slozite\n",poradiCount++);
+                        printLog("\t\t%d budu hazet na stack slozite\n",poradiCount++);
 
                     Token topTmp = stackPrecedenceRead(stackP);
                     stackPrecedencePop(stackP);
@@ -869,7 +897,7 @@ AstNode* parseExpression(Token *token, int flag)
                 }
                 if (DEBUG)
                 {
-                    printf("\t\t\t%d < (%d, %d) ",poradiCount++, operatorToPush(StackTop), operatorToPush(actualToken));
+                    printLog("\t\t\t%d < (%d, %d) ",poradiCount++, operatorToPush(StackTop), operatorToPush(actualToken));
                     printStack(stackP);
                 }
                 actualToken = lexer_token_next();
@@ -879,7 +907,7 @@ AstNode* parseExpression(Token *token, int flag)
                 stackPrecedencePush(stackP, actualToken);
                 if (DEBUG)
                 {
-                    printf("\t\t\t%d = (%d, %d) ",poradiCount++, operatorToPush(StackTop), operatorToPush(actualToken));
+                    printLog("\t\t\t%d = (%d, %d) ",poradiCount++, operatorToPush(StackTop), operatorToPush(actualToken));
                     printStack(stackP);
                 }
                 

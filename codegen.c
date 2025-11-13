@@ -225,11 +225,6 @@ void collectLocalVars(AstNode *node, VarList *vars,FuncContext *funcStruct) {
               break;
 
           case AST_PARAM:
-              for (int i = 0; i < node->arity; i++) {
-                  if (node->child[i]->kind == AST_IDENTIFIER) {
-                      varlist_add(vars, node->child[i]->value.str);
-                  }
-              }
               break;
 
           case AST_PLUS:
@@ -268,7 +263,12 @@ void collectLocalVars(AstNode *node, VarList *vars,FuncContext *funcStruct) {
       }
   }
 void emitReturn(AstNode *root,FuncContext *funcStrukt){
+	if(root->child[0]->kind == AST_IDENTIFIER){
+		printN("PUSHS LF@%s",root->child[0]->value.str);
+	}else{
 	emitChildren(root,funcStrukt);
+	}
+	printN("POPS LF@retval");
 	printN("JUMP %s",funcStrukt->label_end);
 }
 void emitFuncDec(AstNode *root){
@@ -284,7 +284,7 @@ void emitFuncDec(AstNode *root){
 		printN("LABEL $$main");
 	}else{
 	label = generatorLable(root->child[0]->value.str,context,true);
-	printN("%s",label);
+	printN("LABEL %s",label);
 	}
 	char *label_end = generatorLable("end", context,false);
 	context->label_end = label_end;
@@ -292,23 +292,24 @@ void emitFuncDec(AstNode *root){
 	printN("PUSHFRAME");
 	//sbirani lokalnich promenych na deklaraci
 	VarList *local_vars = varListCreate();
-
-	collectLocalVars(root->child[1],local_vars,context);//argumenty funkce
+    varlist_add(local_vars, "retval");
 	collectLocalVars(root->child[2], local_vars,context);//funkce uvnitr
 	for (int i = 0; i < local_vars->count; i++) {
 	    printN("DEFVAR LF@%s", local_vars->var_names[i]);
 	}
 	AstNode *params = root->child[1];
-    if (params->kind == AST_PARAM && params->arity > 0) {
-        for (int i = 0; i < params->arity; i++) {
-            if (params->child[i]->kind == AST_IDENTIFIER) {
-                printN("MOVE LF@%s TF@%s", params->child[i]->value.str,params->child[i]->value.str);
-            }
-        }
-    }
+	if(params->child[0]->kind != AST_EMPTY){
+	for (int i = 0; i < params->arity-1; i++) {
+    	const char *pname = params->child[i]->value.str;
+     	printN("DEFVAR LF@%s", pname);
+      	printN("POPS LF@%s", pname);
+	}
+	}
+	printN("MOVE LF@retval nil@nil");
 	emitChildren(root->child[2], context);
 	if(!main){
 		printN("LABEL %s",label_end);
+		printN("PUSHS LF@retval");
 		printN("POPFRAME");
 		printN("RETURN");
 		free(label);
@@ -319,20 +320,12 @@ void emitFuncDec(AstNode *root){
 	stacklabelStackDestruct(label_stack);
 	DestructorFuncContext(context);
 	}
-void emit_push_value(AstNode *node) {
-    if (node->kind == AST_INT_LIT) {
-        printN("PUSHS int@%lld", node->value.int_val);
-    } else if (node->kind == AST_STRING_LIT) {
-        printN("PUSHS string@%s", node->value.str);
-    } else if (node->kind == AST_FLOAT_LIT) {
-        printN("PUSHS float@%f", node->value.float_val);
-    } else if (node->kind == AST_IDENTIFIER) {
-    	printN("PUSHS LF@%s", node->value.str);
-    } else if (node->kind == AST_VAR) {
-        printN("PUSHS LF@%s", node->value.str);
-    }else if (node->kind == AST_BOOL_LIT) {
-            printN("PUSHS LF@%s", node->value.str);
-    }
+void emit_call_func(AstNode *node,FuncContext *funcStruct){
+	printN("CREATEFRAME");
+	for(int i = 0; i < node->child[1]->arity;i++){
+	emit_command(node->child[1]->child[i],funcStruct);
+	}
+	printN("CALL $%s$0",node->child[0]->value.str);
 }
 void emitIfjFunc(AstNode *node,FuncContext *funcStruct) {
                  AstNode *callee = node->child[0];
@@ -374,19 +367,15 @@ void emitIfjFunc(AstNode *node,FuncContext *funcStruct) {
  * JUMPIFEQS/JUMPIFNEQS ⟨label⟩
  */
  void emitPlus(AstNode *node,FuncContext *funcStruct) {
-
-     if (node->child[0]->kind == AST_FUNC_CALL) {
-         emit_command(node->child[0], funcStruct);
+     if (node->child[0]->kind == AST_IDENTIFIER) {
+         printN("PUSHS LF@%s",node->child[0]->value.str);
+     }else{
+     emit_command(node->child[0], funcStruct);
      }
-     if (node->child[1]->kind == AST_FUNC_CALL) {
-         emit_command(node->child[1], funcStruct);
-     }
-
-     if (node->child[0]->kind != AST_FUNC_CALL) {
-         emit_push_value(node->child[0]);
-     }
-     if (node->child[1]->kind != AST_FUNC_CALL) {
-         emit_push_value(node->child[1]);
+     if (node->child[1]->kind == AST_IDENTIFIER) {
+         printN("PUSHS LF@%s",node->child[1]->value.str);
+     }else{
+     emit_command(node->child[1], funcStruct);
      }
     int id = node->tmp_id;
     char ln[128], rn[128], ty[128],rs[128];
@@ -465,19 +454,16 @@ void emitIfjFunc(AstNode *node,FuncContext *funcStruct) {
 	printN("");
 }
 void emitMinus(AstNode *node, FuncContext *funcStrukt) {
-        if (node->child[0]->kind == AST_FUNC_CALL) {
-            emit_command(node->child[0], funcStrukt);
-        }
-        if (node->child[1]->kind == AST_FUNC_CALL) {
-            emit_command(node->child[1], funcStrukt);
-        }
-
-        if (node->child[0]->kind != AST_FUNC_CALL) {
-            emit_push_value(node->child[0]);
-        }
-        if (node->child[1]->kind != AST_FUNC_CALL) {
-            emit_push_value(node->child[1]);
-        }
+	if (node->child[0]->kind == AST_IDENTIFIER) {
+         printN("PUSHS LF@%s",node->child[0]->value.str);
+     }else{
+     emit_command(node->child[0], funcStrukt);
+     }
+     if (node->child[1]->kind == AST_IDENTIFIER) {
+         printN("PUSHS LF@%s",node->child[1]->value.str);
+     }else{
+     emit_command(node->child[1], funcStrukt);
+     }
         // Po emitBinaryOp máme na zásobníku: [hodnota_left, hodnota_right]
         int id = node->tmp_id;
         char ln[128], rn[128], ty[128];
@@ -532,19 +518,16 @@ void emitMinus(AstNode *node, FuncContext *funcStrukt) {
 	printN("");
 }
 void emitMul(AstNode *node,FuncContext *funcStrukt) {
-        if (node->child[0]->kind == AST_FUNC_CALL) {
-            emit_command(node->child[0], funcStrukt);
-        }
-        if (node->child[1]->kind == AST_FUNC_CALL) {
-            emit_command(node->child[1], funcStrukt);
-        }
-
-        if (node->child[0]->kind != AST_FUNC_CALL) {
-            emit_push_value(node->child[0]);
-        }
-        if (node->child[1]->kind != AST_FUNC_CALL) {
-            emit_push_value(node->child[1]);
-        }
+	if (node->child[0]->kind == AST_IDENTIFIER) {
+         printN("PUSHS LF@%s",node->child[0]->value.str);
+     }else{
+     emit_command(node->child[0], funcStrukt);
+     }
+     if (node->child[1]->kind == AST_IDENTIFIER) {
+         printN("PUSHS LF@%s",node->child[1]->value.str);
+     }else{
+     emit_command(node->child[1], funcStrukt);
+     }
     // Po emitBinaryOp máme na zásobníku: [hodnota_left, hodnota_right]
         int id = node->tmp_id;
         char ln[128], rn[128], ty[128];
@@ -599,19 +582,16 @@ void emitMul(AstNode *node,FuncContext *funcStrukt) {
 	printN("");
 }
 void emitDiv(AstNode *node,FuncContext *funcStrukt) {
-    if (node->child[0]->kind == AST_FUNC_CALL) {
-            emit_command(node->child[0], funcStrukt);
-        }
-        if (node->child[1]->kind == AST_FUNC_CALL) {
-            emit_command(node->child[1], funcStrukt);
-        }
-
-        if (node->child[0]->kind != AST_FUNC_CALL) {
-            emit_push_value(node->child[0]);
-        }
-        if (node->child[1]->kind != AST_FUNC_CALL) {
-            emit_push_value(node->child[1]);
-        }
+	if (node->child[0]->kind == AST_IDENTIFIER) {
+         printN("PUSHS LF@%s",node->child[0]->value.str);
+     }else{
+     emit_command(node->child[0], funcStrukt);
+     }
+     if (node->child[1]->kind == AST_IDENTIFIER) {
+         printN("PUSHS LF@%s",node->child[1]->value.str);
+     }else{
+     emit_command(node->child[1], funcStrukt);
+     }
     // Příprava dočasných proměnných a labelů
     int id = node->tmp_id;
     char ln[128], rn[128], ty[128];
@@ -705,19 +685,16 @@ void emitDiv(AstNode *node,FuncContext *funcStrukt) {
     printN("LABEL %s", label_end);
 }
 void emit_equal(AstNode *node, FuncContext *funcStrukt) {
-	if (node->child[0]->kind == AST_FUNC_CALL) {
-            emit_command(node->child[0],funcStrukt);
-        }
-        if (node->child[1]->kind == AST_FUNC_CALL) {
-        	emit_command(node->child[1],funcStrukt);
-        }
-
-        if (node->child[0]->kind != AST_FUNC_CALL) {
-            emit_push_value(node->child[0]);
-        }
-        if (node->child[1]->kind != AST_FUNC_CALL) {
-            emit_push_value(node->child[1]);
-        }
+	if (node->child[0]->kind == AST_IDENTIFIER) {
+         printN("PUSHS LF@%s",node->child[0]->value.str);
+     }else{
+     emit_command(node->child[0], funcStrukt);
+     }
+     if (node->child[1]->kind == AST_IDENTIFIER) {
+         printN("PUSHS LF@%s",node->child[1]->value.str);
+     }else{
+     emit_command(node->child[1], funcStrukt);
+     }
     // Příprava dočasných proměnných a labelů
     int id = node->tmp_id;
     char ln[128], rn[128], ty[128];
@@ -768,24 +745,17 @@ void emit_equal(AstNode *node, FuncContext *funcStrukt) {
 }
 
 void emit_less(AstNode *node,FuncContext *funcStruct) {
+	if (node->child[0]->kind == AST_IDENTIFIER) {
+         printN("PUSHS LF@%s",node->child[0]->value.str);
+     }else{
+     emit_command(node->child[0], funcStruct);
+     }
+     if (node->child[1]->kind == AST_IDENTIFIER) {
+         printN("PUSHS LF@%s",node->child[1]->value.str);
+     }else{
+     emit_command(node->child[1], funcStruct);
+     }
 
-    // 1. Zpracuj funkce (pokud jsou)
-    if (node->child[0]->kind == AST_FUNC_CALL) {
-        emit_command(node->child[0], funcStruct);
-    }
-    if (node->child[1]->kind == AST_FUNC_CALL) {
-        emit_command(node->child[1], funcStruct);
-    }
-
-    // 2. Push operandy (pokud nejsou funkce)
-    if (node->child[0]->kind != AST_FUNC_CALL) {
-        emit_push_value(node->child[0]);
-    }
-    if (node->child[1]->kind != AST_FUNC_CALL) {
-        emit_push_value(node->child[1]);
-    }
-
-    // Příprava dočasných proměnných a labelů
     int id = node->tmp_id;
     char ln[128], rn[128], rty[128], lty[128];
     snprintf(ln,  sizeof ln,  "%s_ln_%d",  funcStruct->func_name, id);
@@ -845,23 +815,16 @@ void emit_less(AstNode *node,FuncContext *funcStruct) {
 
 void emit_greater(AstNode *node,FuncContext *funcStruct) {
 
-    // 1. Zpracuj funkce (pokud jsou)
-    if (node->child[0]->kind == AST_FUNC_CALL) {
-        emit_command(node->child[0], funcStruct);
-    }
-    if (node->child[1]->kind == AST_FUNC_CALL) {
-        emit_command(node->child[1], funcStruct);
-    }
-
-    // 2. Push operandy (pokud nejsou funkce)
-    if (node->child[0]->kind != AST_FUNC_CALL) {
-        emit_push_value(node->child[0]);
-    }
-    if (node->child[1]->kind != AST_FUNC_CALL) {
-        emit_push_value(node->child[1]);
-    }
-
-    // Příprava dočasných proměnných a labelů
+	if (node->child[0]->kind == AST_IDENTIFIER) {
+         printN("PUSHS LF@%s",node->child[0]->value.str);
+     }else{
+     emit_command(node->child[0], funcStruct);
+     }
+     if (node->child[1]->kind == AST_IDENTIFIER) {
+         printN("PUSHS LF@%s",node->child[1]->value.str);
+     }else{
+     emit_command(node->child[1], funcStruct);
+     }
     int id = node->tmp_id;
     char ln[128], rn[128], rty[128], lty[128];
     snprintf(ln,  sizeof ln,  "%s_ln_%d",  funcStruct->func_name, id);
@@ -921,23 +884,16 @@ void emit_greater(AstNode *node,FuncContext *funcStruct) {
 
 void emit_less_equal(AstNode *node, FuncContext *funcStruct) {
 
-    // 1. Zpracuj funkce (pokud jsou)
-    if (node->child[0]->kind == AST_FUNC_CALL) {
-        emit_command(node->child[0],funcStruct );
-    }
-    if (node->child[1]->kind == AST_FUNC_CALL) {
-        emit_command(node->child[1],funcStruct);
-    }
-
-    // 2. Push operandy (pokud nejsou funkce)
-    if (node->child[0]->kind != AST_FUNC_CALL) {
-        emit_push_value(node->child[0]);
-    }
-    if (node->child[1]->kind != AST_FUNC_CALL) {
-        emit_push_value(node->child[1]);
-    }
-
-    // Příprava dočasných proměnných a labelů
+	if (node->child[0]->kind == AST_IDENTIFIER) {
+         printN("PUSHS LF@%s",node->child[0]->value.str);
+     }else{
+     emit_command(node->child[0], funcStruct);
+     }
+     if (node->child[1]->kind == AST_IDENTIFIER) {
+         printN("PUSHS LF@%s",node->child[1]->value.str);
+     }else{
+     emit_command(node->child[1], funcStruct);
+     }
     int id = node->tmp_id;
     char ln[128], rn[128], rty[128], lty[128];
     snprintf(ln,  sizeof ln,  "%s_ln_%d",  funcStruct->func_name, id);
@@ -1001,23 +957,16 @@ void emit_less_equal(AstNode *node, FuncContext *funcStruct) {
 }
 void emit_greater_equal(AstNode *node, FuncContext *funcStruct) {
 
-    // 1. Zpracuj funkce (pokud jsou)
-    if (node->child[0]->kind == AST_FUNC_CALL) {
-        emit_command(node->child[0], funcStruct);
-    }
-    if (node->child[1]->kind == AST_FUNC_CALL) {
-        emit_command(node->child[1], funcStruct);
-    }
-
-    // 2. Push operandy (pokud nejsou funkce)
-    if (node->child[0]->kind != AST_FUNC_CALL) {
-        emit_push_value(node->child[0]);
-    }
-    if (node->child[1]->kind != AST_FUNC_CALL) {
-        emit_push_value(node->child[1]);
-    }
-
-    // Příprava dočasných proměnných a labelů
+	if (node->child[0]->kind == AST_IDENTIFIER) {
+         printN("PUSHS LF@%s",node->child[0]->value.str);
+     }else{
+     emit_command(node->child[0], funcStruct);
+     }
+     if (node->child[1]->kind == AST_IDENTIFIER) {
+         printN("PUSHS LF@%s",node->child[1]->value.str);
+     }else{
+     emit_command(node->child[1], funcStruct);
+     }
     int id = node->tmp_id;
     char ln[128], rn[128], rty[128], lty[128];
     snprintf(ln,  sizeof ln,  "%s_ln_%d",  funcStruct->func_name, id);
@@ -1081,20 +1030,16 @@ void emit_greater_equal(AstNode *node, FuncContext *funcStruct) {
     printN("LABEL %s", label_end);
 }
 void emit_equal_not(AstNode *node, FuncContext *funcStruct) {
-	if (node->child[0]->kind == AST_FUNC_CALL) {
-            emit_command(node->child[0], funcStruct);
-        }
-        if (node->child[1]->kind == AST_FUNC_CALL) {
-            emit_command(node->child[1], funcStruct);
-        }
-
-        if (node->child[0]->kind != AST_FUNC_CALL) {
-            emit_push_value(node->child[0]);
-        }
-        if (node->child[1]->kind != AST_FUNC_CALL) {
-            emit_push_value(node->child[1]);
-        }
-    // Příprava dočasných proměnných a labelů
+	if (node->child[0]->kind == AST_IDENTIFIER) {
+         printN("PUSHS LF@%s",node->child[0]->value.str);
+     }else{
+     emit_command(node->child[0], funcStruct);
+     }
+     if (node->child[1]->kind == AST_IDENTIFIER) {
+         printN("PUSHS LF@%s",node->child[1]->value.str);
+     }else{
+     emit_command(node->child[1], funcStruct);
+     }
     int id = node->tmp_id;
     char ln[128], rn[128], ty[128];
     snprintf(ln, sizeof ln, "%s_ln_%d", funcStruct->func_name, id);
@@ -1230,9 +1175,6 @@ void emit_var(AstNode *node, FuncContext *funcStruct){
 	emit_command(node->child[1]->child[0], funcStruct);
 	printN("POPS LF@%s",node->child[0]->value.str);
 }
-void call_func(AstNode *node,FuncContext *funcStruct){
-
-}
 /*
 void emit_while(AstNode *node, DynamiclabelStackStackPtr label_stack, int while_counter) {
     while_counter++;
@@ -1244,7 +1186,7 @@ void emit_while(AstNode *node, DynamiclabelStackStackPtr label_stack, int while_
     char *label_end = generatorLable("end", label_stack, while_counter, false);
     printf("LABEL %s \node", label_end);
     printf("JUMPIFEQ  %s GF@cond bool@false", label_end);
-}   
+}
 */
 
 void emitIfChain(AstNode *node, FuncContext *funcContext)
@@ -1264,13 +1206,13 @@ void emitIfChain(AstNode *node, FuncContext *funcContext)
         {
             emitIf(node->child[i], funcContext,endLabel);
         }
-        else if (node->child[i]->kind == AST_ELSE) 
+        else if (node->child[i]->kind == AST_ELSE)
         {
             emitElse(node->child[i], funcContext);
             printN("JUMP %s", endLabel);
             break;
         }
-        else 
+        else
         {
             printError(INTERNAL_ERROR,"Chyba vo vystaveni AST stromu");
             memorySafeExit(INTERNAL_ERROR);
@@ -1284,17 +1226,17 @@ void emitIf(AstNode *node, FuncContext *funcContext, char *endLabel)
     funcContext->counter++;
     char *label = NULL;
     label = generatorLable("ifEnd",funcContext,false);
-    //ifchain -> if -> condition 
+    //ifchain -> if -> condition
     emit_command(node->child[0], funcContext);
     // po emit command mame vysledok podmienky true/false na zasobniku
     // pridame si tam umelo false
     printN("PUSHS bool@false");
     // porovname prve 2 hodnoty na zasobniku, nas umelo pridany false a aj vysledok cond
-    // ak sa budu rovnat jumpne na novovytvoreny label 
+    // ak sa budu rovnat jumpne na novovytvoreny label
     printN("JUMPIFEQS %s", label);
 
     emitChildren(node->child[1], funcContext);
-    
+
     // po vykonani if blocku skocime na koniec if chainu kedze bola splnena if podmienka
     printN("JUMP %s", endLabel);
 
@@ -1305,11 +1247,18 @@ void emitIf(AstNode *node, FuncContext *funcContext, char *endLabel)
 }
 
 void emitElse(AstNode *node, FuncContext *funcContext)
-{  
+{
     emitChildren(node->child[0], funcContext);
 }
 
 
+// /**
+//  * @brief Funkce pro zpracovani while cyklu
+//  * @param node Ukazatel na aktualne
+//  */
+// void emitWhile(AstNode* node) {
+
+// }
 /*
  *@brief switch zajisti zavolani sablon
  *@params ukazatel na uzel
@@ -1323,32 +1272,41 @@ void emit_command(AstNode *node,FuncContext *funcStruct) {
         case AST_PROLOG:
             emit_prolog();
             break;
+        case AST_MAIN_CLASS:
+          		printN("JUMP $$main");
+            	emitChildren(node, funcStruct);
+           	break;
         case AST_PROGRAM:
         case AST_BLOCK:
-        case AST_MAIN_CLASS:
         case AST_STATEMENT_LIST:
             emitChildren(node, funcStruct);
             break;
         case AST_MAIN_CLASS_BLOCK:
-        	printN("JUMP $$main");
-         	emitChildren(node,funcStruct);
+        	for(int i = node->arity-1;i >= 0;i--){
+         	emit_command(node->child[i],funcStruct);
+         }
          	break;
-        // Literály (byly implementovány, ale jen komentáře)
-        case AST_FLOAT_LIT:
-        printN("PUSHS float@%f", node->value.float_val);
-            break;
+          case AST_FLOAT_LIT:
+              printN("PUSHS float@%a", node->value.float_val);
+              break;
+
         case AST_INT_LIT:
-        	printN("PUSHS int@%lld", node->value.int_val);
+            printN("PUSHS int@%lld", node->value.int_val);
             break;
+
         case AST_STRING_LIT:
-        	printN("PUSHS LF@%s", node->value.str);
+            printN("PUSHS string@%s", node->value.str);
             break;
+
         case AST_BOOL_LIT:
-        	printN("PUSHS LF@%s", node->value.str);
+            if (strcmp(node->value.str, "true") == 0) {
+                printN("PUSHS bool@true");
+            } else {
+                printN("PUSHS bool@false");
+            }
             break;
-        // Kontrolní struktury (WHILE a FOR už byly)
         case AST_WHILE:
-            // emit_while(node,label_stack,counter);
+            // emit_while(node);
             break;
         case AST_FOR:
             // emit_for();
@@ -1366,7 +1324,7 @@ void emit_command(AstNode *node,FuncContext *funcStruct) {
             break;
         case AST_RETURN:
             // Nová implementace: navrat z funkce
-            // emit_return(node);
+            emitReturn(node,funcStruct);
             break;
 
         // Deklarace a volání
@@ -1375,7 +1333,7 @@ void emit_command(AstNode *node,FuncContext *funcStruct) {
             emitFuncDec(node);
             break;
         case AST_FUNC_CALL:
-            // emit_funcall(node);
+       		emit_call_func(node,funcStruct);
             break;
 
         // Proměnné / Přiřazení

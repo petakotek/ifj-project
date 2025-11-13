@@ -19,6 +19,7 @@
 
 #define SYMBOL_SIZE 201
 #define LITERAL_SIZE 101
+// TODO bordel v main()
 int main(){
 	/*
 	* Nacitani v vstupu
@@ -45,11 +46,10 @@ int main(){
 	ast_dump(AST);
 	//codegen_generate(AST);
 	lexer_free();
-/*
+
 	bool output;
 	output = startSematicValidation(AST);
 	printf("Vysledek sem_anal: %i\n", output);
-*/
 
 	/*
 	bool output;
@@ -58,7 +58,7 @@ int main(){
 	*/
 
 
-	//ast_dump(AST);
+	ast_dump(AST);
 	//free ast stromu
 	ast_free_whole(AST);
 free(source_file);
