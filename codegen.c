@@ -1291,7 +1291,6 @@ void emit_command(AstNode *node,FuncContext *funcStruct) {
               break;
 
         case AST_INT_LIT:
-        	printf("kontorni vystyp : %lld \n \n",node->value.int_val);
             printN("PUSHS int@%lld", node->value.int_val);
             break;
 
