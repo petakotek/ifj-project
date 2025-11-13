@@ -63,6 +63,8 @@ typedef enum
     N_Else_item,
     N_callIfjCheck,
     N_AssignIfjIdCheck,
+    N_SMALL_NULL_CHECK,
+    N_SMALL_NULL_CHECK_TYPE,
 } Nonterm;
 
 AstNode* parser();
@@ -344,4 +346,6 @@ void Else_item_func(DynamicSymbolStackPtr Stack, Token token);
 void Else_chain_func(DynamicSymbolStackPtr Stack, Token token);
 void callIfjCheckfunc(DynamicSymbolStackPtr Stack, Token token);
 void AssignIfjIdCheckFunc(DynamicSymbolStackPtr Stack, Token token);
+void smallNullCheckFunc(DynamicSymbolStackPtr Stack, Token token);
+void smallNullCheckTypeFunc(DynamicSymbolStackPtr Stack, Token token);
 #endif // PARSER_H

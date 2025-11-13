@@ -34,6 +34,8 @@ typedef enum AstNodeType {
     AST_IFJ_CALL,
     AST_GETTER,
     AST_SETTER,
+    AST_GETTER_CALL,
+    AST_SETTER_CALL,
 
     // premenné / priradenie
     AST_VAR,

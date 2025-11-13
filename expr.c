@@ -500,7 +500,7 @@ void printStack(DynamicPrecedenceStackPtr stack)
         if (DEBUG)
         printLog("%s ", token_type_to_string(tokenRead.type));
 
-        stackPrecedencePush(stackTmp, tokenRead);
+    stackPrecedencePush(stackTmp, tokenRead);
     }
     while (!stackPrecedenceIsEmpty(stackTmp))
     {

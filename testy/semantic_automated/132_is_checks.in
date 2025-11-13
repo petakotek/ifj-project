@@ -1,0 +1,11 @@
+import "ifj25" for Ifj
+class Program { 
+    static main() {
+    var a = 1
+    var b = "s"
+    var c = null
+    var t1 = a is Num
+    var t2 = b is String
+    var t3 = c is Null
+} 
+}
