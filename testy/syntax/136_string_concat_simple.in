@@ -3,4 +3,5 @@ class Program {
     static main(){
     var s = "A" + "B"
     var k = 3 * 2
-} }
+} 
+}
