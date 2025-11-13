@@ -4,15 +4,15 @@ class Program {
 
 
     static f() { 1 }
-    static f {}
+    static f { 2 }
 
     static x = (a) {
         
     }
 
     static main() { 
-        f()
-        x = f == 5 + 5 == 8
+        var x = f + 6
+
     }
 
 }

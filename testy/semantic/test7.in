@@ -9,6 +9,6 @@ class Program {
     }
 
     static func() {
-        return x
+        return
     }
 }
