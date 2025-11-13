@@ -888,7 +888,11 @@ RecursiveSemanticAnalysisReturnValues recursiveNodeWalker(AstNode*    currentNod
             }
 
             if ((leftChild == INT_DATA && rightChild == FLOAT_DATA) ||
-                (leftChild == FLOAT_DATA && rightChild == INT_DATA)) {
+                (leftChild == FLOAT_DATA && rightChild == INT_DATA) ||
+                (leftChild == NUMBER_DATA && rightChild == FLOAT_DATA) ||
+                (leftChild == NUMBER_DATA && rightChild == INT_DATA) ||
+                (leftChild == INT_DATA && rightChild == NUMBER_DATA) ||
+                (leftChild == FLOAT_DATA && rightChild == NUMBER_DATA)) {
                 return NUMBER_DATA;
             }
 
@@ -931,7 +935,7 @@ RecursiveSemanticAnalysisReturnValues recursiveNodeWalker(AstNode*    currentNod
             if (currentNode->arity == 1) {
                 RecursiveSemanticAnalysisReturnValues onlyChild =
                     recursiveNodeWalker(currentNode->child[0], AST_MINUS, 0);
-
+                printf("%i\n", onlyChild);
                 if (onlyChild == NUMBER_DATA) {
                     return NUMBER_DATA;
                 }
@@ -966,7 +970,11 @@ RecursiveSemanticAnalysisReturnValues recursiveNodeWalker(AstNode*    currentNod
                 }
 
                 if ((leftChild == INT_DATA && rightChild == FLOAT_DATA) ||
-                    (leftChild == FLOAT_DATA && rightChild == INT_DATA)) {
+                    (leftChild == FLOAT_DATA && rightChild == INT_DATA) ||
+                    (leftChild == NUMBER_DATA && rightChild == FLOAT_DATA) ||
+                    (leftChild == NUMBER_DATA && rightChild == INT_DATA) ||
+                    (leftChild == INT_DATA && rightChild == NUMBER_DATA) ||
+                    (leftChild == FLOAT_DATA && rightChild == NUMBER_DATA)) {
                     return NUMBER_DATA;
                 }
 
@@ -985,6 +993,7 @@ RecursiveSemanticAnalysisReturnValues recursiveNodeWalker(AstNode*    currentNod
                         return NUMBER_DATA;  // výsledek odčítání je vždy číslo
                     }
                 }
+                printf("%i - %i\n", leftChild, rightChild);
             }
 
             printError(SEMANTICS_ERROR_UNCOMPATIBLE,
@@ -1014,7 +1023,11 @@ RecursiveSemanticAnalysisReturnValues recursiveNodeWalker(AstNode*    currentNod
             }
 
             if ((leftChild == INT_DATA && rightChild == FLOAT_DATA) ||
-                (leftChild == FLOAT_DATA && rightChild == INT_DATA)) {
+                (leftChild == FLOAT_DATA && rightChild == INT_DATA) ||
+                (leftChild == NUMBER_DATA && rightChild == FLOAT_DATA) ||
+                (leftChild == NUMBER_DATA && rightChild == INT_DATA) ||
+                (leftChild == INT_DATA && rightChild == NUMBER_DATA) ||
+                (leftChild == FLOAT_DATA && rightChild == NUMBER_DATA)) {
                 return NUMBER_DATA;
             }
 
@@ -1075,9 +1088,12 @@ RecursiveSemanticAnalysisReturnValues recursiveNodeWalker(AstNode*    currentNod
             }
 
             if ((leftChild == INT_DATA && rightChild == FLOAT_DATA) ||
-                (leftChild == FLOAT_DATA && rightChild == INT_DATA)) {
-                return NUMBER_DATA;  // Nelze určit zda výsledek dělení dvou celých čísel bude
-                                     // desetinný nebo celý
+                (leftChild == FLOAT_DATA && rightChild == INT_DATA) ||
+                (leftChild == NUMBER_DATA && rightChild == FLOAT_DATA) ||
+                (leftChild == NUMBER_DATA && rightChild == INT_DATA) ||
+                (leftChild == INT_DATA && rightChild == NUMBER_DATA) ||
+                (leftChild == FLOAT_DATA && rightChild == NUMBER_DATA)) {
+                return NUMBER_DATA;
             }
 
             if (leftChild == UNKNOWN_DATA || rightChild == UNKNOWN_DATA) {
