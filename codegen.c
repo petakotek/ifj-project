@@ -1310,6 +1310,13 @@ void emitElse(AstNode *node, FuncContext *funcContext)
 }
 
 
+// /**
+//  * @brief Funkce pro zpracovani while cyklu
+//  * @param node Ukazatel na aktualne 
+//  */
+// void emitWhile(AstNode* node) {
+
+// }
 /*
  *@brief switch zajisti zavolani sablon
  *@params ukazatel na uzel
@@ -1348,7 +1355,7 @@ void emit_command(AstNode *node,FuncContext *funcStruct) {
             break;
         // Kontrolní struktury (WHILE a FOR už byly)
         case AST_WHILE:
-            // emit_while(node,label_stack,counter);
+            // emit_while(node);
             break;
         case AST_FOR:
             // emit_for();
