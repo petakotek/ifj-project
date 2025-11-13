@@ -500,7 +500,7 @@ void printStack(DynamicPrecedenceStackPtr stack)
         if (DEBUG)
         printLog("%s ", token_type_to_string(tokenRead.type));
 
-        stackPrecedencePush(stackTmp, tokenRead);
+    stackPrecedencePush(stackTmp, tokenRead);
     }
     while (!stackPrecedenceIsEmpty(stackTmp))
     {
@@ -830,7 +830,7 @@ AstNode* parseExpression(Token *token, int flag)
                 findPrecedenceRule(stackP, stackA); // upravuji výraz dokud nedostanu na zásobníku pouze dolar a výraz
                 if (DEBUG)
                 {
-                    printlog("Final etapa: ");
+                    printLog("Final etapa: ");
                     printStack(stackP);
                 }
             }

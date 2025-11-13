@@ -1,0 +1,9 @@
+import "ifj25" for Ifj
+class Program { 
+    static main(){ 
+        var a = null 
+        if (a is Null) { 
+            a = 1 
+            } 
+            } 
+            }

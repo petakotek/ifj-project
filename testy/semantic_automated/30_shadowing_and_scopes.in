@@ -1,0 +1,9 @@
+import "ifj25" for Ifj
+class Program {
+    static main() {
+        var x = 10
+        {
+            var x = x * 2
+        }
+    }
+}

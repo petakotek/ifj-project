@@ -1,0 +1,9 @@
+import "ifj25" for Ifj
+class Program { 
+    static main(){
+    __c = 0
+    { 
+        __c = 1 
+    }
+} 
+}

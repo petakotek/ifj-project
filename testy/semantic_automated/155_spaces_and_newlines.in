@@ -1,0 +1,14 @@
+import "ifj25" for Ifj
+
+class Program {
+
+    static main() {
+
+        var x = 1
+
+        if (x > 0){
+            x = x + 1
+        }
+        
+    }
+}
