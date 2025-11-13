@@ -1226,18 +1226,18 @@ void emitIf(AstNode *node, FuncContext *funcContext, char *endLabel)
     funcContext->counter++;
     char *label = NULL;
     label = generatorLable("ifEnd",funcContext,false);
-    //ifchain -> if -> condition
+    //dame skontrolovat podmienku
     emit_command(node->child[0], funcContext);
-    // po emit command mame vysledok podmienky true/false na zasobniku
+    // mame vysledok podmienky true/false na zasobniku
     // pridame si tam umelo false
     printN("PUSHS bool@false");
-    // porovname prve 2 hodnoty na zasobniku, nas umelo pridany false a aj vysledok cond
-    // ak sa budu rovnat jumpne na novovytvoreny label
+    // porovname prve 2 hodnoty na zasobniku, nami umelo pridany false a aj vysledok cond
+    // ak sa budu rovnat preskoci na novovytvoreny label
     printN("JUMPIFEQS %s", label);
 
     emitChildren(node->child[1], funcContext);
 
-    // po vykonani if blocku skocime na koniec if chainu kedze bola splnena if podmienka
+    // po vykonani if blocku skocime na koniec if retazca kedze bola splnena if podmienka
     printN("JUMP %s", endLabel);
 
 
