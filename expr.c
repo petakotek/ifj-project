@@ -13,7 +13,7 @@
 #include "dynamic_stack.h"
 #include "support_functions.h"
 
-#define DEBUG true // přepínač pro povolení debugovacích výpisů
+#define DEBUG false // přepínač pro povolení debugovacích výpisů
 
 typedef enum {
     R, // >
@@ -253,7 +253,8 @@ void findPrecedenceRule(DynamicPrecedenceStackPtr stack, DynamicAstNodeStackPtr 
     Token p1; // parametr 1
     Token p2; // parametr 2
     Token p3; // parametr 3
-
+    Token p4; // parametr 4 (pouze u ternárního operátoru)
+    Token p5; // parametr 5 (pouze u ternárního operátoru)
     int count = 0;
     if (stack == NULL)
     {
@@ -378,8 +379,7 @@ void findPrecedenceRule(DynamicPrecedenceStackPtr stack, DynamicAstNodeStackPtr 
 
         // E -> E ? E : E
         case 5:
-            Token p4;
-            Token p5;
+            
             p1 = stackPrecedenceRead(stack); // E
             stackPrecedencePop(stack); // levy vyraz
             p2 = stackPrecedenceRead(stack); // :
@@ -522,14 +522,34 @@ void functionCalled(DynamicPrecedenceStackPtr stackP, DynamicAstNodeStackPtr sta
     *actualToken = lexer_token_next();
     if (actualToken->type == TOKEN_RPAREN) // Funkce nemá žádný parametr
     {
-        AstNode **kids = NULL;
-        kids = malloc(sizeof(AstNode*) * 2);
+
+        AstNode **paramKids = NULL;
+        paramKids = malloc(sizeof(AstNode*));
+
+        Token tokenEmpty = {.type = 0}; // Přidání prázdného parametru jako poslední dítě uzlu parametrů
+        AstNode* empty = NULL;
+        empty = new_leaf(AST_EMPTY, tokenEmpty);
+
+
+        paramKids[0] = empty;
+
+        AstNode* paramNode = ast_new(AST_PARAM, 1, paramKids);
+        free(paramKids);
+        stackAstNodePush(stackA, paramNode);
+
+
+
+        AstNode* params = stackAstNodeRead(stackA);
+        stackAstNodePop(stackA);
         AstNode *identif = stackAstNodeRead(stackA);
         stackAstNodePop(stackA);
-        AstNode *param = NULL;
+
+        AstNode **kids = NULL;
+        kids = malloc(sizeof(AstNode*) * 2);
+        
 
         kids[0] = identif;
-        kids[1] = param;
+        kids[1] = params;
 
         AstNode *functionCallRoot = ast_new(AST_FUNC_CALL, 2, kids);
         free(kids);
@@ -568,7 +588,15 @@ void functionCalled(DynamicPrecedenceStackPtr stackP, DynamicAstNodeStackPtr sta
         }
 
         AstNode **paramKids = NULL;
-        paramKids = malloc(sizeof(AstNode*) * paramCount);
+        paramCount++; // zvyšuji o 1 protože potřebuji místo i pro uzel EMTPY
+        paramKids = malloc(sizeof(AstNode*) * (paramCount));
+
+        Token tokenEmpty = {.type = 0}; // Přidání prázdného parametru jako poslední dítě uzlu parametrů
+        AstNode* empty = NULL;
+        empty = new_leaf(AST_EMPTY, tokenEmpty);
+        stackAstNodePush(stackA, empty);
+
+
         for (int i = 0; i < paramCount; ++i) // Cyklem ze zásobníku seberu napočítaná počet parametrů
         {
             if (stackAstNodeIsEmpty(stackA)) // kontrola, zda zásobník, ze kterého beru parametry funce není prázdný
