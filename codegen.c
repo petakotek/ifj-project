@@ -1473,7 +1473,7 @@ void emitFor(AstNode* node, FuncContext *funcContext)
     if (generateErrorLabel)
     {
         printN("LABEL %sexitSix", errorLabel);
-        printN("EXIT int@6"); // ukončuji s chybou 6, špatný datový typ
+        printN("EXIT int@%d", RUNTIME_SEMANTICS_ERROR_UNCOMPATIBLE); // ukončuji s chybou 6, špatný datový typ
         generateErrorLabel = false;
     }
 
