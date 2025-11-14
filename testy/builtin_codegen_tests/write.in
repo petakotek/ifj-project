@@ -1,0 +1,11 @@
+import "ifj25" for Ifj
+class Program {
+// Vestavěné funkce
+    static main() {
+        Ifj.write("a")
+        Ifj.write(true)
+        Ifj.write(1)
+        Ifj.write(1.2)
+        Ifj.write(null)
+    }
+}
