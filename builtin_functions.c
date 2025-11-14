@@ -43,6 +43,7 @@ void handleBuiltin(AstNode *ifjFunctionCall, FuncContext* context) {
 }
 
 void emitReadStr() {
+
     
 }
 
@@ -58,20 +59,16 @@ void emitReadBool() {
 void emitWrite(AstNode* functionCallNode, FuncContext* context) {
     printN("\n#ZACATEK:");
     static unsigned writeCounter = 0;
-    /*
-    static Ifj.write(term) → Null
-Vypíše hodnotu termu term (libovolného typu) na standardní výstup ihned a bez žádných
-oddělovačů dle typu v patřičném formátu: Termy typu String vypíše tak, jak jsou. Termy
-typu Num s celočíselnou hodnotou (tj. s nulovou desetinnou částí) vypíše jako celé číslo
-11
-obvyklým způsobem (odpovídá specifikátoru '%d'10), desetinné hodnoty termu typu Num
-vypíše ve formátu, který odpovídá specifikátoru '%a'11. Hodnota null je tištěna jako
-literál "null". Tyto požadavky odpovídají chování instrukce WRITE v IFJcode25 pro
-symboly typu string, int (!), float a nil.
-    */
-    AstNode* param = functionCallNode->child[1]->child[0];
+    //AstNode* param = functionCallNode->child[1]->child[0];
 
-    if(param->kind == AST_EMPTY) return;
+    emit_command(functionCallNode->child[1]->child[0], context);
+    printN("DEFVAR LF@temp$var$write$%u",writeCounter);
+    printN("POPS LF@temp$var$write$%u", writeCounter);
+    printN("WRITE LF@temp$var$write$%u", writeCounter);
+
+    // TODO upravit aby to vždy šlo přes emit_command()
+
+   /*  if(param->kind == AST_EMPTY) return;
 
             // TODO bool
             if (param->kind == AST_IDENTIFIER) {
@@ -80,17 +77,19 @@ symboly typu string, int (!), float a nil.
                 printN("WRITE string@%s", param->value.str);
             } else if (param->kind == AST_INT_LIT) {
                 printN("WRITE int@%lld", param->value.int_val);
+            } else if (param->kind == AST_BOOL_LIT) {
+                printN("WRITE bool@%s", param->value.str);
             } else if (param->kind == AST_FLOAT_LIT) {
                 printN("WRITE float@%a", param->value.float_val);
             } else if (param->kind == AST_SMALL_NULL) {
-                printN("WRITE null@null");
+                printN("WRITE nil@nil");
             } else {
                 emit_command(param, context);
                 printN("DEFVAR LF@temp$var$write$%u",writeCounter);
                 printN("POPS LF@temp$var$write$%u", writeCounter);
                 printN("WRITE LF@temp$var$write$%u", writeCounter);
-            }
-   // char* label = generatorLable("write", context, false);
+                //printN("PUSHS LF@temp$var$write$%u", writeCounter);
+            } */
     
    writeCounter++;
     printN("#:KONEC\n");

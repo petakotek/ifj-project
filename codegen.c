@@ -1485,6 +1485,10 @@ void emitFor(AstNode* node, FuncContext *funcContext)
     free(labelStart);
 }
 
+void emitSmallNull(AstNode* node, FuncContext *funcContext) {
+    printN("PUSHS nil@nil");
+}
+
 /*
  * @brief switch zajisti zavolani sablon
  * @params ukazatel na uzel
@@ -1636,8 +1640,10 @@ void emit_command(AstNode *node,FuncContext *funcStruct) {
         case AST_RPAREN:
             break;
         case AST_NULL:
-            // Nová implementace: Reprezentace literálu NULL
-            // emit_null(node);
+            // Nová implementace: Reprezentace literálu Null
+            break;
+        case AST_SMALL_NULL: 
+            emitSmallNull(node, funcStruct);
             break;
         case AST_CONDITION:
         	emitChildren(node,funcStruct);

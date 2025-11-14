@@ -1,55 +1,178 @@
 .IFJcode25
-JUMP $$main$0
-LABEL $$main$0
+JUMP $main$0
+LABEL $main$0
 CREATEFRAME
 PUSHFRAME
 DEFVAR LF@retval
-DEFVAR LF@main_ln_0
-DEFVAR LF@main_rn_0
-DEFVAR LF@main_ty_0
-DEFVAR LF@main_rs_0
+DEFVAR LF@x$$1
+DEFVAR LF@main$0_ln_0
+DEFVAR LF@main$0_rn_0
+DEFVAR LF@main$0_ty_0
+DEFVAR LF@main$0_rs_0
+DEFVAR LF@main$0_ln_1
+DEFVAR LF@main$0_rn_1
+DEFVAR LF@main$0_ty_1
+DEFVAR LF@main$0_rs_1
 MOVE LF@retval nil@nil
+PUSHS int@5
+POPS LF@x$$1
 
 #ZACATEK:
-PUSHS int@1
-PUSHS int@1
-POPS LF@main_rn_0
-POPS LF@main_ln_0
-PUSHS LF@main_ln_0
-PUSHS LF@main_rn_0
-TYPES
-POPS LF@main_ty_0
-TYPES
-PUSHS LF@main_ty_0
-JUMPIFEQS main$ok$0
-JUMP main$err$0
-LABEL main$ok$0
-PUSHS LF@main_ty_0
-PUSHS string@string
-JUMPIFEQS main$concat$0
-PUSHS LF@main_ty_0
-PUSHS string@int
-JUMPIFEQS main$add$0
-PUSHS LF@main_ty_0
-PUSHS string@float
-JUMPIFEQS main$add$0
-JUMP main$err$0
-LABEL main$add$0
-PUSHS LF@main_ln_0
-PUSHS LF@main_rn_0
-ADDS
-JUMP main$end$0
-LABEL main$concat$0
-CONCAT LF@main_ln_0 LF@main_rn_0 LF@main_rs_0
-PUSHS LF@main_rs_0
-JUMP main$end$0
-LABEL main$err$0
-EXIT int@4
-LABEL main$end$0
-
 DEFVAR LF@temp$var$write$0
 POPS LF@temp$var$write$0
 WRITE LF@temp$var$write$0
 #:KONEC
 
-EXIT int@0
+PUSHS LF@x$$1
+PUSHS int@5
+POPS LF@main$0_rn_0
+POPS LF@main$0_ln_0
+PUSHS LF@main$0_ln_0
+PUSHS LF@main$0_rn_0
+TYPES
+POPS LF@main$0_ty_0
+TYPES
+PUSHS LF@main$0_ty_0
+JUMPIFEQS main$0$ok$0
+JUMP main$0$err$0
+LABEL main$0$ok$0
+PUSHS LF@main$0_ty_0
+PUSHS string@string
+JUMPIFEQS main$0$concat$0
+PUSHS LF@main$0_ty_0
+PUSHS string@int
+JUMPIFEQS main$0$add$0
+PUSHS LF@main$0_ty_0
+PUSHS string@float
+JUMPIFEQS main$0$add$0
+JUMP main$0$err$0
+LABEL main$0$add$0
+PUSHS LF@main$0_ln_0
+PUSHS LF@main$0_rn_0
+ADDS
+JUMP main$0$end$0
+LABEL main$0$concat$0
+CONCAT LF@main$0_ln_0 LF@main$0_rn_0 LF@main$0_rs_0
+PUSHS LF@main$0_rs_0
+JUMP main$0$end$0
+LABEL main$0$err$0
+EXIT int@4
+LABEL main$0$end$0
+
+POPS LF@x$$1
+
+#ZACATEK:
+DEFVAR LF@temp$var$write$1
+POPS LF@temp$var$write$1
+WRITE LF@temp$var$write$1
+#:KONEC
+
+
+#ZACATEK:
+DEFVAR LF@temp$var$write$2
+POPS LF@temp$var$write$2
+WRITE LF@temp$var$write$2
+#:KONEC
+
+
+#ZACATEK:
+DEFVAR LF@temp$var$write$3
+POPS LF@temp$var$write$3
+WRITE LF@temp$var$write$3
+#:KONEC
+
+
+#ZACATEK:
+PUSHS string@a
+DEFVAR LF@temp$var$write$4
+POPS LF@temp$var$write$4
+WRITE LF@temp$var$write$4
+#:KONEC
+
+
+#ZACATEK:
+PUSHS int@1
+PUSHS int@1
+POPS LF@main$0_rn_1
+POPS LF@main$0_ln_1
+PUSHS LF@main$0_ln_1
+PUSHS LF@main$0_rn_1
+TYPES
+POPS LF@main$0_ty_1
+TYPES
+PUSHS LF@main$0_ty_1
+JUMPIFEQS main$0$ok$1
+JUMP main$0$err$1
+LABEL main$0$ok$1
+PUSHS LF@main$0_ty_1
+PUSHS string@string
+JUMPIFEQS main$0$concat$1
+PUSHS LF@main$0_ty_1
+PUSHS string@int
+JUMPIFEQS main$0$add$1
+PUSHS LF@main$0_ty_1
+PUSHS string@float
+JUMPIFEQS main$0$add$1
+JUMP main$0$err$1
+LABEL main$0$add$1
+PUSHS LF@main$0_ln_1
+PUSHS LF@main$0_rn_1
+ADDS
+JUMP main$0$end$1
+LABEL main$0$concat$1
+CONCAT LF@main$0_ln_1 LF@main$0_rn_1 LF@main$0_rs_1
+PUSHS LF@main$0_rs_1
+JUMP main$0$end$1
+LABEL main$0$err$1
+EXIT int@4
+LABEL main$0$end$1
+
+DEFVAR LF@temp$var$write$5
+POPS LF@temp$var$write$5
+WRITE LF@temp$var$write$5
+#:KONEC
+
+
+#ZACATEK:
+PUSHS bool@true
+DEFVAR LF@temp$var$write$6
+POPS LF@temp$var$write$6
+WRITE LF@temp$var$write$6
+#:KONEC
+
+
+#ZACATEK:
+PUSHS int@1
+DEFVAR LF@temp$var$write$7
+POPS LF@temp$var$write$7
+WRITE LF@temp$var$write$7
+#:KONEC
+
+
+#ZACATEK:
+PUSHS string@ 
+DEFVAR LF@temp$var$write$8
+POPS LF@temp$var$write$8
+WRITE LF@temp$var$write$8
+#:KONEC
+
+
+#ZACATEK:
+PUSHS float@0x1.3333333333333p+0
+DEFVAR LF@temp$var$write$9
+POPS LF@temp$var$write$9
+WRITE LF@temp$var$write$9
+#:KONEC
+
+
+#ZACATEK:
+PUSHS nil@nil
+DEFVAR LF@temp$var$write$10
+POPS LF@temp$var$write$10
+WRITE LF@temp$var$write$10
+#:KONEC
+
+LABEL $main$0$0$end$0
+PUSHS LF@retval
+POPFRAME
+
