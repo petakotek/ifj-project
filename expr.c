@@ -244,6 +244,7 @@ void freeAstStack(DynamicAstNodeStackPtr stack)
         AstNode *tmp = stackAstNodeRead(stack);
         stackAstNodePop(stack);
         ast_free_whole(tmp);
+        tmp = NULL;
     }
     
 }
