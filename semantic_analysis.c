@@ -595,13 +595,6 @@ RecursiveSemanticAnalysisReturnValues recursiveNodeWalker(AstNode*    currentNod
 
             // Sémantická kontrola bloku
             recursiveNodeWalker(currentNode->child[1], AST_IF, 1);
-            /*RecursiveSemanticAnalysisReturnValues blockValue =
-                recursiveNodeWalker(currentNode->child[1], AST_IF, 1);
-
-             if (blockValue != OK) {
-                printError(SEMANTICS_ERROR_OTHERS, "(if) Neplatny blok!\n");
-                memorySafeExit(SEMANTICS_ERROR_OTHERS);
-            } */
 
             return OK;
             break;
