@@ -451,7 +451,7 @@ void emitIfjFunc(AstNode *node,FuncContext *funcStruct) {
 
     // --- CHYBA ---
     printN("LABEL %s", label_err);
-    printN("EXIT int@4");
+    printN("EXIT int@i",RUNTIME_SEMANTICS_ERROR_BAD_TYPE);
     // --- KONEC ---
     printN("LABEL %s", label_end);
 	printN("");
@@ -520,11 +520,14 @@ void emitMinus(AstNode *node, FuncContext *funcStrukt) {
         printN("JUMP %s", label_end);
         // --- CHYBA ---
         printN("LABEL %s", label_err);
-        printN("EXIT int@4");
+        printN("EXIT int@i",RUNTIME_SEMANTICS_ERROR_BAD_TYPE);
         // --- KONEC ---
         printN("LABEL %s", label_end);
 	printN("");
 }
+/*
+dodelat * operator na string a cislo
+*/
 void emitMul(AstNode *node,FuncContext *funcStrukt) {
 	if (node->child[0]->kind == AST_IDENTIFIER) {
          printN("PUSHS LF@%s",node->child[0]->value.str);
@@ -584,7 +587,7 @@ void emitMul(AstNode *node,FuncContext *funcStrukt) {
         printN("JUMP %s", label_end);
         // --- CHYBA ---
         printN("LABEL %s", label_err);
-        printN("EXIT int@4");
+        printN("EXIT int@%i",RUNTIME_SEMANTICS_ERROR_BAD_TYPE);
         // --- KONEC ---
         printN("LABEL %s", label_end);
 	printN("");
@@ -683,11 +686,11 @@ void emitDiv(AstNode *node,FuncContext *funcStrukt) {
 
     // Chyba: dělení nulou
     printN("LABEL %s", label_div_zero);
-    printN("EXIT int@57");
+    printN("EXIT int@%i",RUNTIME_SEMANTICS_ERROR_BAD_TYPE);
 
     // Chyba: nekompatibilní typy
     printN("LABEL %s", label_err);
-    printN("EXIT int@4");
+    printN("EXIT int@i",RUNTIME_SEMANTICS_ERROR_BAD_TYPE);
 
     // Konec dělení
     printN("LABEL %s", label_end);
@@ -816,7 +819,7 @@ void emit_less(AstNode *node,FuncContext *funcStruct) {
 
     // Chyba: nil nebo různé typy
     printN("LABEL %s", label_err);
-    printN("EXIT int@6");
+    printN("EXIT int@%i",RUNTIME_SEMANTICS_ERROR_BAD_TYPE);
 
     printN("LABEL %s", label_end);
 }
@@ -885,7 +888,7 @@ void emit_greater(AstNode *node,FuncContext *funcStruct) {
 
     // Chyba: nil nebo různé typy
     printN("LABEL %s", label_err);
-    printN("EXIT int@6");
+    printN("EXIT int@%i",RUNTIME_SEMANTICS_ERROR_BAD_TYPE);
 
     printN("LABEL %s", label_end);
 }
@@ -959,7 +962,7 @@ void emit_less_equal(AstNode *node, FuncContext *funcStruct) {
 
     // Chyba: nil nebo různé typy
     printN("LABEL %s", label_err);
-    printN("EXIT int@6");
+    printN("EXIT int@%i",RUNTIME_SEMANTICS_ERROR_BAD_TYPE);
 
     printN("LABEL %s", label_end);
 }
@@ -1033,7 +1036,7 @@ void emit_greater_equal(AstNode *node, FuncContext *funcStruct) {
 
     // Chyba: nil nebo různé typy
     printN("LABEL %s", label_err);
-    printN("EXIT int@6");
+    printN("EXIT int@%i",RUNTIME_SEMANTICS_ERROR_BAD_TYPE);
 
     printN("LABEL %s", label_end);
 }
@@ -1177,11 +1180,7 @@ void emit_negace(AstNode *node,FuncContext *funcStruct) {
 }
 
 void emitUnaryMinus(AstNode *node, FuncContext *funcStrukt) {
-	if (node->child[0]->kind == AST_IDENTIFIER) {
-         printN("PUSHS LF@%s",node->child[0]->value.str);
-     }else{
      emit_command(node->child[0], funcStrukt);
-     }
     int id = node->tmp_id;
 
     char ln[128], ty[128];
@@ -1210,7 +1209,7 @@ void emitUnaryMinus(AstNode *node, FuncContext *funcStrukt) {
     printN("JUMPIFEQS %s", label_ok);
 
     // Error - nejde o int ani float
-    printN("EXIT int@6");
+    printN("EXIT int@%i",RUNTIME_SEMANTICS_ERROR_BAD_TYPE);
 
     // OK label - proveď operaci
     printN("LABEL %s", label_ok);
@@ -1357,7 +1356,7 @@ void emitFor(AstNode* node, FuncContext *funcContext)
 
     char* labelStart = generatorLable("start", funcContext, false);
 
-    char* endLabel = generatorLable("end", funcContext, false);    
+    char* endLabel = generatorLable("end", funcContext, false);
 
     char* variable = node->child[0]->child[0]->value.str; // ? hodnota proměnné sektoru podmínky for cyklu
 
@@ -1473,12 +1472,12 @@ void emitFor(AstNode* node, FuncContext *funcContext)
     if (generateErrorLabel)
     {
         printN("LABEL %sexitSix", errorLabel);
-        printN("EXIT int@6"); // ukončuji s chybou 6, špatný datový typ
+        printN("EXIT int@%i",RUNTIME_SEMANTICS_ERROR_BAD_TYPE);
         generateErrorLabel = false;
     }
 
     printN("LABEL %s", endLabel); // ! LABEL KONEC
-    
+
     free(errorLabel);
     free(endLabel);
     free(labelStart);
@@ -1497,7 +1496,6 @@ void emit_command(AstNode *node,FuncContext *funcStruct) {
     ast_node_type_to_string(node->kind);
 
     switch (node->kind) {
-        // High-level a seznamy (už byly implementovány s emitChildren)
         case AST_PROLOG:
             emit_prolog();
             break;
@@ -1573,8 +1571,10 @@ void emit_command(AstNode *node,FuncContext *funcStruct) {
 
         // Listy
         case AST_IDENTIFIER:
-           // printN("PUSHS LF@%s", node->value.str);
+        if(strcmp(node->value.str,"Program") != 0){
+           printN("PUSHS LF@%s", node->value.str);
             break;
+        }
         case AST_GLOBAL_ID:
             // Nová implementace: nacteni globalni promenne
             // emit_global_id(node);
