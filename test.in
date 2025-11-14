@@ -1,0 +1,250 @@
+precedencna odovzdala token jeho type je = 33
+precedencna odovzdala token jeho type je = 33
+precedencna odovzdala token jeho type je = 33
+precedencna odovzdala token jeho type je = 33
+0
+2
+a
+a$$1
+found
+2
+0
+2
+a
+a$$1
+found
+0
+2
+b
+b$$1
+found
+1
+0
+2
+a
+a$$1
+found
+0
+2
+b
+b$$1
+found
+0
+2
+c
+c$$1
+found
+.IFJcode25
+JUMP main$0
+LABEL main$0
+CREATEFRAME
+PUSHFRAME
+DEFVAR LF@retval
+DEFVAR LF@a$$1
+DEFVAR LF@main$0_ln_0
+DEFVAR LF@main$0_rn_0
+DEFVAR LF@main$0_ty_0
+DEFVAR LF@main$0_rs_0
+DEFVAR LF@b$$1
+DEFVAR LF@main$0_ln_1
+DEFVAR LF@main$0_rn_1
+DEFVAR LF@main$0_ty_1
+DEFVAR LF@main$0_rs_1
+DEFVAR LF@main$0_ln_2
+DEFVAR LF@main$0_rn_2
+DEFVAR LF@main$0_ty_2
+DEFVAR LF@c$$1
+DEFVAR LF@main$0_ln_3
+DEFVAR LF@main$0_rn_3
+DEFVAR LF@main$0_ty_3
+DEFVAR LF@main$0_ln_4
+DEFVAR LF@main$0_rn_4
+DEFVAR LF@main$0_ty_4
+DEFVAR LF@main$0_ln_5
+DEFVAR LF@main$0_rn_5
+DEFVAR LF@main$0_ty_5
+MOVE LF@retval nil@nil
+PUSHS int@1
+PUSHS int@2
+POPS LF@main$0_rn_0
+POPS LF@main$0_ln_0
+PUSHS LF@main$0_ln_0
+PUSHS LF@main$0_rn_0
+TYPES
+POPS LF@main$0_ty_0
+TYPES
+PUSHS LF@main$0_ty_0
+JUMPIFEQS main$0$ok$0
+JUMP main$0$err$0
+LABEL main$0$ok$0
+PUSHS LF@main$0_ty_0
+PUSHS string@string
+JUMPIFEQS main$0$concat$0
+PUSHS LF@main$0_ty_0
+PUSHS string@int
+JUMPIFEQS main$0$add$0
+PUSHS LF@main$0_ty_0
+PUSHS string@float
+JUMPIFEQS main$0$add$0
+JUMP main$0$err$0
+LABEL main$0$add$0
+PUSHS LF@main$0_ln_0
+PUSHS LF@main$0_rn_0
+ADDS
+JUMP main$0$end$0
+LABEL main$0$concat$0
+CONCAT LF@main$0_ln_0 LF@main$0_rn_0 LF@main$0_rs_0
+PUSHS LF@main$0_rs_0
+JUMP main$0$end$0
+LABEL main$0$err$0
+EXIT int@25
+LABEL main$0$end$0
+
+POPS LF@a$$1
+PUSHS LF@a$$1
+POPS LF@main$0_ln_2
+PUSHS LF@main$0_ln_2
+TYPES
+POPS LF@main$0_ty_2
+PUSHS LF@main$0_ty_2
+PUSHS string@int
+JUMPIFEQS main$0$ok$2
+PUSHS LF@main$0_ty_2
+PUSHS string@float
+JUMPIFEQS main$0$ok_float$2
+EXIT int@25
+LABEL main$0$ok$2
+PUSHS int@0
+PUSHS LF@main$0_ln_2
+SUBS
+JUMP main$0$end$2
+LABEL main$0$ok_float$2
+PUSHS float@0
+PUSHS LF@main$0_ln_2
+SUBS
+LABEL main$0$end$2
+PUSHS int@4
+POPS LF@main$0_rn_1
+POPS LF@main$0_ln_1
+PUSHS LF@main$0_ln_1
+PUSHS LF@main$0_rn_1
+TYPES
+POPS LF@main$0_ty_1
+TYPES
+PUSHS LF@main$0_ty_1
+JUMPIFEQS main$0$ok$1
+JUMP main$0$err$1
+LABEL main$0$ok$1
+PUSHS LF@main$0_ty_1
+PUSHS string@string
+JUMPIFEQS main$0$concat$1
+PUSHS LF@main$0_ty_1
+PUSHS string@int
+JUMPIFEQS main$0$add$1
+PUSHS LF@main$0_ty_1
+PUSHS string@float
+JUMPIFEQS main$0$add$1
+JUMP main$0$err$1
+LABEL main$0$add$1
+PUSHS LF@main$0_ln_1
+PUSHS LF@main$0_rn_1
+ADDS
+JUMP main$0$end$1
+LABEL main$0$concat$1
+CONCAT LF@main$0_ln_1 LF@main$0_rn_1 LF@main$0_rs_1
+PUSHS LF@main$0_rs_1
+JUMP main$0$end$1
+LABEL main$0$err$1
+EXIT int@25
+LABEL main$0$end$1
+
+POPS LF@b$$1
+PUSHS LF@a$$1
+PUSHS LF@b$$1
+POPS LF@main$0_rn_4
+POPS LF@main$0_ln_4
+PUSHS LF@main$0_ln_4
+PUSHS LF@main$0_rn_4
+TYPES
+POPS LF@main$0_ty_4
+TYPES
+PUSHS LF@main$0_ty_4
+JUMPIFEQS main$0$ok$4
+JUMP main$0$err$4
+LABEL main$0$ok$4
+PUSHS LF@main$0_ty_4
+PUSHS string@string
+JUMPIFEQS main$0$err$4
+PUSHS LF@main$0_ty_4
+PUSHS string@int
+JUMPIFEQS main$0$intdiv$4
+PUSHS LF@main$0_rn_4
+PUSHS float@0x0p+0
+JUMPIFEQS main$0$divzero$4
+PUSHS LF@main$0_ln_4
+PUSHS LF@main$0_rn_4
+DIVS
+JUMP main$0$end$4
+LABEL main$0$intdiv$4
+PUSHS LF@main$0_rn_4
+PUSHS int@0
+JUMPIFEQS main$0$divzero$4
+INT2FLOAT LF@main$0_ln_4 LF@main$0_ln_4
+INT2FLOAT LF@main$0_rn_4 LF@main$0_rn_4
+PUSHS LF@main$0_ln_4
+PUSHS LF@main$0_rn_4
+DIVS
+JUMP main$0$end$4
+LABEL main$0$divzero$4
+EXIT int@25
+LABEL main$0$err$4
+EXIT int@25
+LABEL main$0$end$4
+POPS LF@main$0_ln_3
+PUSHS LF@main$0_ln_3
+TYPES
+POPS LF@main$0_ty_3
+PUSHS LF@main$0_ty_3
+PUSHS string@int
+JUMPIFEQS main$0$ok$3
+PUSHS LF@main$0_ty_3
+PUSHS string@float
+JUMPIFEQS main$0$ok_float$3
+EXIT int@25
+LABEL main$0$ok$3
+PUSHS int@0
+PUSHS LF@main$0_ln_3
+SUBS
+JUMP main$0$end$3
+LABEL main$0$ok_float$3
+PUSHS float@0
+PUSHS LF@main$0_ln_3
+SUBS
+LABEL main$0$end$3
+POPS LF@c$$1
+PUSHS LF@b$$1
+PUSHS LF@c$$1
+POPS LF@main$0_rn_5
+POPS LF@main$0_ln_5
+PUSHS LF@main$0_ln_5
+PUSHS LF@main$0_rn_5
+TYPES
+POPS LF@main$0_ty_5
+TYPES
+PUSHS LF@main$0_ty_5
+JUMPIFEQS main$0$ok$5
+JUMP main$0$err$5
+LABEL main$0$ok$5
+PUSHS LF@main$0_ty_5
+PUSHS string@string
+JUMPIFEQS main$0$err$5
+PUSHS LF@main$0_ln_5
+PUSHS LF@main$0_rn_5
+MULS
+JUMP main$0$end$5
+LABEL main$0$err$5
+EXIT int@25
+LABEL main$0$end$5
+
+POPS LF@a$$1
+EXIT int@0

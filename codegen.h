@@ -13,6 +13,7 @@ typedef struct {
     int counter;
     char *label_end;
     int value_counter;
+    bool main;
 } FuncContext;
 void emit_prolog();
 void emit_command(AstNode *node,FuncContext *funcContext);
