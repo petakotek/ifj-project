@@ -12,6 +12,7 @@
 #include <stdbool.h>
 #include <stdlib.h>
 #include <stdio.h>
+#include <math.h>
 
 // Plochý builder pre if-chain (rovnaký pattern ako build_stmtlist_flat):
 // Očakávaný tvar z parsera: IF_CHAIN(2) = [head, tail], kde
@@ -209,7 +210,18 @@ AstNode *new_leaf(AstNodeType kind, Token token) {
         printError(INTERNAL_ERROR, "Chyba alokácie AST listu\n");
         memorySafeExit(INTERNAL_ERROR);
     }
-    newLeaf->kind = kind;
+    if (kind == AST_INT_LIT_EXP)
+    {
+        newLeaf->kind = AST_INT_LIT;
+    }
+    else if (kind == AST_FLOAT_LIT_EXP)
+    {
+        newLeaf->kind = AST_FLOAT_LIT;
+    }
+    else 
+    {
+        newLeaf->kind = kind;
+    }
     newLeaf->is_leaf = true;
 
     ast_value_from_token(&newLeaf->value, kind, &token);
@@ -221,6 +233,10 @@ AstNode *new_leaf(AstNodeType kind, Token token) {
     //else if (newLeaf->value.is_float)
     //   fprintf(stderr, "  -> Float hodnota: %f\n", newLeaf->value.float_val);
 
+    if (newLeaf->value.float_val && newLeaf->kind == AST_INT_LIT)
+    {
+        newLeaf->kind = AST_FLOAT_LIT;
+    }
     return newLeaf;
 }
 
@@ -275,6 +291,29 @@ void ast_value_from_token(AstValue *out, AstNodeType kind, Token *token) {
             out->is_bool = true;
             out->str = dup_cstr(token->value.identifier);
             break;
+
+        case AST_INT_LIT_EXP:
+            {
+            double val = floatExp(token->value.identifier);
+            long long ival = (long long)val;
+            if (val == (double)ival) {
+                // Je to presne celé číslo → ulož ako int
+                out->is_int = true;
+                out->int_val = ival;
+            }
+
+            else {
+                // Nie je to celé → ulož ako float
+                out->is_float = true;
+                out->float_val = val;
+            }
+            break;
+            }
+
+        case AST_FLOAT_LIT_EXP:
+            out-> is_float = true;
+            out-> float_val = floatExp(token->value.identifier);
+            break;
         default:
             break;
     }
@@ -293,6 +332,23 @@ char *dup_cstr(const char *string) {
     }
     memcpy(newString, string, len);
     return newString;
+}
+
+double floatExp(const char *s) {
+    char *pos = strpbrk(s, "eE");
+    if (!pos) 
+    {
+        return strtod(s, NULL);
+    }
+
+    // rozdelenie na základ a exponent
+    char base_str[32];
+    strncpy(base_str, s, pos - s);
+    base_str[pos - s] = '\0';
+
+    double base = strtod(base_str, NULL);
+    double exp = strtod(pos + 1,NULL);
+    return pow(base, exp);
 }
 
 

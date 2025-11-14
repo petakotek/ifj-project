@@ -1613,9 +1613,10 @@ SemanticSymbol* findSymbolAndModifyAST(AstNode* sourceNode, SemanticSymbol* dest
         // Může to být i získávač nebo nastavovač
         SemanticSymbol* foundSymbol = findGlobalSymbol(key);
         if (foundSymbol != NULL) {
+            // TODO tohle přejmenování se musí stát i když nevím, co to je... určitě to nebude proměnná, protože to by buť byl global nebo by už byla deklarovaná, takže jen potřeba rozlišit!!!
             if (foundSymbol->symbolType == GETTER) {
                 sourceNode->kind = AST_GETTER_CALL;
-            } else if (foundSymbol->symbolType == GETTER) {
+            } else if (foundSymbol->symbolType == SETTER) {
                 sourceNode->kind = AST_SETTER_CALL;
             }
         }
