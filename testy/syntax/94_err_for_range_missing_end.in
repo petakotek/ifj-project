@@ -3,6 +3,5 @@ class Program {
     static main() {
         for (i in 0 .. ) { 
             var x = 0 
-            }
-    }
+            }}
 }

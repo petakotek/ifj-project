@@ -37,14 +37,14 @@ int main(){
     }
 	// inicializovani struktury staraji se o cteni ze souboru
 	lexer_init(source_file);
-	//print_and_free_tokens();
-	//exit(0);
+//	print_and_free_tokens();
+//	exit(0);
 	// tvorba stromu pres parser
 	AstNode *AST;
 	AST = parser();
 	//funkcia ast_dump -> funkcia na kontrolny vypis ast stromu
 	ast_dump(AST);
-	codegen_generate(AST);
+	//codegen_generate(AST);
 	/*
 	bool output;
 	output = startSematicValidation(AST);

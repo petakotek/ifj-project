@@ -274,6 +274,7 @@ void ast_value_from_token(AstValue *out, AstNodeType kind, Token *token) {
         case AST_BOOL_LIT:
             out->is_bool = true;
             out->str = dup_cstr(token->value.identifier);
+            break;
         default:
             break;
     }
@@ -358,8 +359,7 @@ const char *ast_node_type_to_string(AstNodeType kind) {
         case AST_AND: return "STRING_AND";
         case AST_SMALL_NULL: return "SMALL_NULL";
         case AST_STRING_BLOCK: return "STRING_BLOCK";
-        case AST_GETTER_CALL: return "GETTER_CALL";
-        case AST_SETTER_CALL: return "SETTER_CALL";
+        case AST_HEXA:			return "HEXA";
         default:                   return "UNKNOWN_AST_NODE";
     }
 }
