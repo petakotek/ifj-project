@@ -260,6 +260,7 @@ void freeAstStack(DynamicAstNodeStackPtr stack)
         ast_free_whole(tmp);
         tmp = NULL;
     }
+    stackAstNodeDestruct(stack);
     
 }
 void freePrecedenceStack(DynamicPrecedenceStackPtr stack)
@@ -270,7 +271,7 @@ void freePrecedenceStack(DynamicPrecedenceStackPtr stack)
         stackPrecedencePop(stack);
         tokenPrecedenceFree(&tmp);
     }
-    
+    stackPrecedenceDestruct(stack);
 }
 
 
@@ -465,9 +466,7 @@ void findPrecedenceRule(DynamicPrecedenceStackPtr stack, DynamicAstNodeStackPtr 
         default:
             printError(SYNTAX_ERROR, "(PSA) pravidlo gramatiky nebylo nalezeno\n");
             freeAstStack(stackA);
-            stackAstNodeDestruct(stackA);
             freePrecedenceStack(stack);
-            stackPrecedenceDestruct(stack);
             memorySafeExit(SYNTAX_ERROR);
             break;
 
@@ -807,9 +806,7 @@ AstNode* parseExpression(Token *token, int flag)
             {
                 printError(SYNTAX_ERROR, "(PSA) Volano nad prazdnym cyklem, podminkou...\n");
                 freeAstStack(stackA);
-                stackAstNodeDestruct(stackA);
                 freePrecedenceStack(stackP);
-                stackPrecedenceDestruct(stackP);
                 memorySafeExit(SYNTAX_ERROR);
                 break;
             }
@@ -826,9 +823,7 @@ AstNode* parseExpression(Token *token, int flag)
                     {
                         printError(SYNTAX_ERROR, "(PSA) PSA ocekavalo identifikator za operatorem, ale nedostalo jej\n");
                         freeAstStack(stackA);
-                        stackAstNodeDestruct(stackA);
                         freePrecedenceStack(stackP);
-                        stackPrecedenceDestruct(stackP);
                         memorySafeExit(SYNTAX_ERROR);
                         break;
                     }
@@ -988,12 +983,9 @@ AstNode* parseExpression(Token *token, int flag)
             default: // stav ktery nesmi nastat
                 printError(SYNTAX_ERROR, "(PSA) Zadany vyraz neni syntakticky spravny (neocekavany znak nebo samostatne stojici operator)\n");
                 freeAstStack(stackA);
-                stackAstNodeDestruct(stackA);
                 freePrecedenceStack(stackP);
-                stackPrecedenceDestruct(stackP);
                 memorySafeExit(SYNTAX_ERROR);
-                
-                return NULL;
+                break;
         }
     }
     return NULL; // navraceni ukazatele na koren vyrazu
