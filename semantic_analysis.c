@@ -16,6 +16,7 @@
 //
 
 // TODO aktualizace dokumentačních komentářů
+// TODO kontrola error kódů!!!
 
 /**
  * @brief Ukazatel na zásobník pro ukládání jednotlivých rámců
@@ -1527,6 +1528,15 @@ RecursiveSemanticAnalysisReturnValues recursiveNodeWalker(AstNode*    currentNod
 
             // Tento AST uzel bych neměl dostat
             printError(INTERNAL_ERROR, "Uzel AST_GETTER_CALL neni validni uzel stromu!\n");
+            memorySafeExit(INTERNAL_ERROR);
+
+            break;
+        }
+        case (AST_HEXA): {
+            printLog("AST_HEXA\n");
+
+            // Tento AST uzel bych neměl dostat
+            printError(INTERNAL_ERROR, "Uzel AST_HEXA neni validni uzel stromu!\n");
             memorySafeExit(INTERNAL_ERROR);
 
             break;
