@@ -359,7 +359,8 @@ const char *ast_node_type_to_string(AstNodeType kind) {
         case AST_AND: return "STRING_AND";
         case AST_SMALL_NULL: return "SMALL_NULL";
         case AST_STRING_BLOCK: return "STRING_BLOCK";
-        case AST_HEXA:			return "HEXA";
+        case AST_SETTER_CALL:   return "SETTER_CALL";
+        case AST_GETTER_CALL:   return "GETTER_CALL";
         default:                   return "UNKNOWN_AST_NODE";
     }
 }

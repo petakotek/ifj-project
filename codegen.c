@@ -1540,6 +1540,18 @@ void emit_command(AstNode *node,FuncContext *funcStruct) {
         case AST_FOR:
             emitFor(node, funcStruct);
             break;
+        case AST_SETTER_CALL:
+            printN("AHOJ SETTER CALL");
+            break;
+        case AST_GETTER_CALL:
+            printN("AHOJ GETTER CALL");
+            break;
+        case AST_SETTER:
+            printN("AHOJ SETTER");
+            break;
+        case AST_GETTER:
+            printN("AHOJ GETTER");
+            break;
         case AST_IF_CHAIN:
             emitIfChain(node, funcStruct);
             break;
