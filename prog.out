@@ -1,35 +1,21 @@
 expr strom po skoncení funcke parseExpression
 ===== AST STROM =====
-[INT_LIT] (int=1)
+[INT_LIT] (int=10)
 expr strom po skoncení funcke parseExpression
 ===== AST STROM =====
-[FUNC_CALL]
-  [IDENTIFIER] (str="foo")
-  [PARAM]
-    [STRING_PLUS]
-      [IDENTIFIER] (str="a")
-      [INT_LIT] (int=1)
-    [EMPTY]
+[STRING_GT]
+  [IDENTIFIER] (str="x")
+  [INT_LIT] (int=0)
 expr strom po skoncení funcke parseExpression
 ===== AST STROM =====
-[INT_LIT] (int=2)
+[STRING_MINUS]
+  [IDENTIFIER] (str="x")
+  [INT_LIT] (int=1)
 expr strom po skoncení funcke parseExpression
 ===== AST STROM =====
-[STRING_DIV]
-  [STRING_MUL]
-    [IDENTIFIER] (str="a")
-    [IDENTIFIER] (str="b")
-  [STRING_MINUS]
-    [IDENTIFIER] (str="a")
-    [IDENTIFIER] (str="b")
-expr strom po skoncení funcke parseExpression
-===== AST STROM =====
-[STRING_MUL]
-  [INT_LIT] (int=9)
-  [INT_LIT] (int=5)
-expr strom po skoncení funcke parseExpression
-===== AST STROM =====
-[IDENTIFIER] (str="a")
+[STRING_PLUS]
+  [IDENTIFIER] (str="x")
+  [INT_LIT] (int=1)
 PARSER IS DONE
 ===== AST STROM =====
 [PROGRAM]
@@ -44,177 +30,120 @@ PARSER IS DONE
         [BLOCK]
           [STATEMENT_LIST]
             [VAR]
-              [IDENTIFIER] (str="a")
+              [IDENTIFIER] (str="x")
               [ASSIGN]
-                [INT_LIT] (int=1)
-            [ASSIGN]
-              [IDENTIFIER] (str="a")
-              [FUNC_CALL]
-                [IDENTIFIER] (str="foo")
-                [PARAM]
-                  [STRING_PLUS]
-                    [IDENTIFIER] (str="a")
-                    [INT_LIT] (int=1)
-                  [EMPTY]
-            [VAR]
-              [IDENTIFIER] (str="b")
-              [ASSIGN]
-                [INT_LIT] (int=2)
-            [VAR]
-              [IDENTIFIER] (str="c")
-              [ASSIGN]
-                [STRING_DIV]
-                  [STRING_MUL]
-                    [IDENTIFIER] (str="a")
-                    [IDENTIFIER] (str="b")
-                  [STRING_MINUS]
-                    [IDENTIFIER] (str="a")
-                    [IDENTIFIER] (str="b")
-      [FUNC_DEC]
-        [IDENTIFIER] (str="foo")
-        [PARAM]
-          [IDENTIFIER] (str="a")
-          [EMPTY]
-        [BLOCK]
-          [STATEMENT_LIST]
-            [ASSIGN]
-              [IDENTIFIER] (str="a")
-              [STRING_MUL]
-                [INT_LIT] (int=9)
-                [INT_LIT] (int=5)
-            [RETURN]
-              [IDENTIFIER] (str="a")
-LOG: AST_PROLOG
-LOG: AST_MAIN_CLASS
-LOG: AST_MAIN_CLASS_BLOCK
-LOG: AST_FUNC_DEC
-LOG: AST_PARAM
-LOG: AST_EMPTY
-LOG: AST_BLOCK
-LOG: AST_STATEMENT_LIST
-LOG: AST_VAR
-LOG: AST_INT_LIT
-LOG: AST_ASSIGN
-LOG: AST_IDENTIFIER
-LOG: AST_FUNC_CALL
-LOG: AST_VAR
-LOG: AST_INT_LIT
-LOG: AST_VAR
-LOG: AST_DIV
-LOG: AST_MUL
-LOG: AST_IDENTIFIER
-LOG: AST_IDENTIFIER
-LOG: AST_MINUS
-LOG: AST_IDENTIFIER
-LOG: AST_IDENTIFIER
-LOG: AST_FUNC_DEC
-LOG: AST_PARAM
-LOG: AST_IDENTIFIER
-LOG: AST_EMPTY
-LOG: AST_BLOCK
-LOG: AST_STATEMENT_LIST
-LOG: AST_ASSIGN
-LOG: AST_IDENTIFIER
-LOG: AST_MUL
-LOG: AST_INT_LIT
-LOG: AST_INT_LIT
-LOG: AST_RETURN
-LOG: AST_IDENTIFIER
-===== AST STROM =====
-[PROGRAM]
-  [PROLOG]
-  [MAIN_CLASS]
-    [IDENTIFIER] (str="Program")
-    [MAIN_CLASS_BLOCK]
-      [FUNC_DEC]
-        [IDENTIFIER] (str="main$0")
-        [PARAM]
-          [EMPTY]
-        [BLOCK]
-          [STATEMENT_LIST]
-            [VAR]
-              [IDENTIFIER] (str="a$$1")
-              [ASSIGN]
-                [INT_LIT] (int=1)
-            [ASSIGN]
-              [IDENTIFIER] (str="a$$1")
-              [FUNC_CALL]
-                [IDENTIFIER] (str="foo$1")
-                [PARAM]
-                  [STRING_PLUS]
-                    [IDENTIFIER] (str="a")
-                    [INT_LIT] (int=1)
-                  [EMPTY]
-            [VAR]
-              [IDENTIFIER] (str="b$$1")
-              [ASSIGN]
-                [INT_LIT] (int=2)
-            [VAR]
-              [IDENTIFIER] (str="c$$1")
-              [ASSIGN]
-                [STRING_DIV]
-                  [STRING_MUL]
-                    [IDENTIFIER] (str="a$$1")
-                    [IDENTIFIER] (str="b$$1")
-                  [STRING_MINUS]
-                    [IDENTIFIER] (str="a$$1")
-                    [IDENTIFIER] (str="b$$1")
-      [FUNC_DEC]
-        [IDENTIFIER] (str="foo$1")
-        [PARAM]
-          [IDENTIFIER] (str="a$$1")
-          [EMPTY]
-        [BLOCK]
-          [STATEMENT_LIST]
-            [ASSIGN]
-              [IDENTIFIER] (str="a$$1")
-              [STRING_MUL]
-                [INT_LIT] (int=9)
-                [INT_LIT] (int=5)
-            [RETURN]
-              [IDENTIFIER] (str="a$$1")
+                [INT_LIT] (int=10)
+            [IF CHAIN]
+              [IF]
+                [CONDITION]
+                  [STRING_GT]
+                    [IDENTIFIER] (str="x")
+                    [INT_LIT] (int=0)
+                [BLOCK]
+                  [STATEMENT_LIST]
+                    [ASSIGN]
+                      [IDENTIFIER] (str="x")
+                      [STRING_MINUS]
+                        [IDENTIFIER] (str="x")
+                        [INT_LIT] (int=1)
+              [ELSE]
+                [BLOCK]
+                  [STATEMENT_LIST]
+                    [ASSIGN]
+                      [IDENTIFIER] (str="x")
+                      [STRING_PLUS]
+                        [IDENTIFIER] (str="x")
+                        [INT_LIT] (int=1)
+precedencna odovzdala token jeho type je = 33
+1precedencna odovzdala token jeho type je = 21
 precedencna odovzdala token jeho type je = 33
 precedencna odovzdala token jeho type je = 33
-precedencna odovzdala token jeho type je = 33
-precedencna odovzdala token jeho type je = 33
-precedencna odovzdala token jeho type je = 33
-precedencna odovzdala token jeho type je = 33
-0
-2
-a
-a$$1
-found
-0
-2
-a
-a$$1
-found
-0
-2
-b
-b$$1
-found
-0
-2
-a
-a$$1
-found
-0
-2
-b
-b$$1
-found
-0
-1
-created: a$$1
-0
-2
-a
-a$$1
-found
-0
-2
-a
-a$$1
-found
-Vysledek sem_anal: 1
+.IFJcode25
+JUMP $$main
+LABEL $$main
+CREATEFRAME
+PUSHFRAME
+DEFVAR LF@retval
+DEFVAR LF@x
+DEFVAR LF@main_ln_0
+DEFVAR LF@main_rn_0
+DEFVAR LF@main_ty_0
+DEFVAR LF@main_ln_1
+DEFVAR LF@main_rn_1
+DEFVAR LF@main_ty_1
+DEFVAR LF@main_ln_2
+DEFVAR LF@main_rn_2
+DEFVAR LF@main_ty_2
+DEFVAR LF@main_rs_2
+MOVE LF@retval nil@nil
+PUSHS int@10
+POPS LF@x
+PUSHS bool@false
+JUMPIFEQS $main$2
+PUSHS LF@x
+PUSHS int@1
+POPS LF@main_rn_1
+POPS LF@main_ln_1
+PUSHS LF@main_ln_1
+PUSHS LF@main_rn_1
+TYPES
+POPS LF@main_ty_1
+TYPES
+PUSHS LF@main_ty_1
+JUMPIFEQS main$ok$1
+JUMP main$err$1
+LABEL main$ok$1
+PUSHS LF@main_ty_1
+PUSHS string@string
+JUMPIFEQS main$err$1
+PUSHS LF@main_ln_1
+PUSHS LF@main_rn_1
+SUBS
+JUMP main$end$1
+LABEL main$err$1
+EXIT int@4
+LABEL main$end$1
+
+POPS LF@x
+JUMP $main$1
+LABEL $main$2
+PUSHS LF@x
+PUSHS int@1
+POPS LF@main_rn_2
+POPS LF@main_ln_2
+PUSHS LF@main_ln_2
+PUSHS LF@main_rn_2
+TYPES
+POPS LF@main_ty_2
+TYPES
+PUSHS LF@main_ty_2
+JUMPIFEQS main$ok$2
+JUMP main$err$2
+LABEL main$ok$2
+PUSHS LF@main_ty_2
+PUSHS string@string
+JUMPIFEQS main$concat$2
+PUSHS LF@main_ty_2
+PUSHS string@int
+JUMPIFEQS main$add$2
+PUSHS LF@main_ty_2
+PUSHS string@float
+JUMPIFEQS main$add$2
+JUMP main$err$2
+LABEL main$add$2
+PUSHS LF@main_ln_2
+PUSHS LF@main_rn_2
+ADDS
+JUMP main$end$2
+LABEL main$concat$2
+CONCAT LF@main_ln_2 LF@main_rn_2 LF@main_rs_2
+PUSHS LF@main_rs_2
+JUMP main$end$2
+LABEL main$err$2
+EXIT int@4
+LABEL main$end$2
+
+POPS LF@x
+JUMP $main$1
+LABEL $main$1
+EXIT int@0

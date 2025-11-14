@@ -16,6 +16,8 @@
  * Proměna  která je potřebna byti viditelnou v celem souboru
  */
 static LexerState *lexer = NULL;
+char *buf = NULL;
+char *source_file = NULL;
 // pocatecni kapacita buffer ktere je pouzivat pro pridavani znaku do stringu
 #define INIT_CAPACITY 32
 /*
@@ -287,7 +289,7 @@ void append_char(char **buf, int *delka, int *kapacita, char c) {
 Token lexer_token_next() {
     // inicializace bufferu na string
 
-    char *buf = calloc(INIT_CAPACITY, sizeof(char)); /* Musi se dojit na konec pomoci goto jinak MUSI BYT FREE!!! jinak memory leak typicky nasobky 32byt */
+    buf = calloc(INIT_CAPACITY, sizeof(char)); /* Musi se dojit na konec pomoci goto jinak MUSI BYT FREE!!! jinak memory leak typicky nasobky 32byt */
     int   kapacity = INIT_CAPACITY;
     int   delak    = 0;
     Token token    = {0};

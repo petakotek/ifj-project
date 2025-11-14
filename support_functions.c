@@ -11,6 +11,7 @@
 
 #include "lexer.h"
 #include "semantic_analysis.h"
+#include "parser.h"
 
 #include <stdlib.h>
 #include <stdio.h>
@@ -73,6 +74,7 @@ bool memoryClean() {
     // TODO jednotlivé funkce pro vyčištění struktur a podobně
     // TODO už můžu přidat lexer_free() a zavření souboru/free na načtený soubor
     lexer_free();
+    parserFree();
     freeSemanticsMemory();
     printWarning("Funkce memoryClean není implementovaná!\n");
     return false;
@@ -139,7 +141,6 @@ char* read_all_stdin(void) {
     }
 
     size_t total_size = 0;
-    size_t check_zero_read = 0;
     size_t capacity = INITIAL_CAPACITY;
 
     while (1) {
