@@ -2,6 +2,7 @@ import "ifj25" for Ifj
 class Program {
     // Úprava hodnoty mimo var
 static main() {
+        // TODO tady je double free chyba!
     var x = "a"
     __y = "a"
     x = 5

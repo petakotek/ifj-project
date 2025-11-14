@@ -3,6 +3,6 @@ class Program {
 // Vestavěné funkce
     static main() {
        var a
-       var z = 1 is String
+       var z = 1 is Null
     }
 }

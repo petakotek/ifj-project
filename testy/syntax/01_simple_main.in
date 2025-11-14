@@ -1,0 +1,13 @@
+import "ifj25" for Ifj
+class Program {
+    static main() {
+        var a = 1
+        a = foo(a+1)
+        var b = 2
+        var c = (a * b) / (a - b)
+    }
+    static foo(a){
+        a = 9*5
+        return a
+    }
+}

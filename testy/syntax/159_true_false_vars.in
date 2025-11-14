@@ -1,0 +1,8 @@
+import "ifj25" for Ifj
+class Program { 
+    static main(){ 
+        var t = true 
+        var f = false
+        var x = t && !f 
+        } 
+        }

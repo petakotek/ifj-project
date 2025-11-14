@@ -1,0 +1,9 @@
+import "ifj25" for Ifj
+class Program {
+    static m(a,b,c,d,e){ 
+        return a+b+c+d+e 
+    }
+    static main(){ 
+        var r = m(1,2,3,4,5) 
+    }
+}

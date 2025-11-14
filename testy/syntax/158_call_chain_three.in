@@ -1,0 +1,4 @@
+import "ifj25" for Ifj
+class A { static f(x){ return x + 1 } }
+class B { static g(x){ return x + 2 } }
+class Program { static main(){ var r = B.g( A.f(1) ) } }

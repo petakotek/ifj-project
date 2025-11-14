@@ -1,0 +1,10 @@
+import "ifj25" for Ifj
+class Program {
+    static add(a,b){ a+b }
+    static mul(a,b){ 
+        return a*b 
+        }
+    static main() {
+        var r = mul(add(1,2), 3 )
+    }
+}

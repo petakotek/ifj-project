@@ -2,11 +2,32 @@ import "ifj25" for Ifj
 class Program {
     // if, elsif, while, for, atd...
 static main() {
-    if(1 == 1) {
-        var a
-    } else {
-        var b
-    }
-    return
+   // ifs()
+   // whiles()
+   for_s()
 }
+
+static get { 1 } 
+
+static for_s() {
+    var x
+    for(x in 1..2) {
+        var y
+    }
+/*
+    for(x in 1...2){
+        var z
+    }
+
+        for(x in 1...2){
+        var z
+        continue
+    }*/
+
+    for(get in 1...2){
+        var z = 1
+        break
+    }
+}
+
 }

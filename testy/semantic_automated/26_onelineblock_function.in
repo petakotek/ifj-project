@@ -1,0 +1,7 @@
+import "ifj25" for Ifj
+class Program {
+    static inc(x) { x + 1 }
+    static main() {
+        var y = inc(5)
+    }
+}

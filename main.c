@@ -4,6 +4,7 @@
  * Soubor: main.c
  * Popis: Vstupni bod do programu spojuje jednotlivé moduly
  */
+ #include "lexer.h"
 #include <stddef.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -27,7 +28,7 @@ int main(){
 	if(stdin == NULL){
 		return 0;
 	}
-	char *source_file = NULL;
+	source_file = NULL;
 	//volani funcke na nacteni souboru
 	source_file = read_all_stdin();
 	if (source_file == NULL) {
@@ -36,10 +37,6 @@ int main(){
     }
 	// inicializovani struktury staraji se o cteni ze souboru
 	lexer_init(source_file);
-//	print_and_free_tokens();
-//tvorba stromu pres parser
-	 //print_and_free_tokens();
-	//exit(0);
 	//print_and_free_tokens();
 	//exit(0);
 	// tvorba stromu pres parser
@@ -48,22 +45,13 @@ int main(){
 	//funkcia ast_dump -> funkcia na kontrolny vypis ast stromu
 	ast_dump(AST);
 	codegen_generate(AST);
-	lexer_free();
-/*
-	bool output;
-	output = startSematicValidation(AST);
-	printf("Vysledek sem_anal: %i\n", output);
-*/
-
 	/*
 	bool output;
 	output = startSematicValidation(AST);
 	printf("Vysledek sem_anal: %i\n", output);
 	*/
 
-	//ast_dump(AST);
-	//free ast stromu
-	ast_free_whole(AST);
-free(source_file);
+	free(source_file);
+	memorySafeExit(NO_ERROR);
 
 }

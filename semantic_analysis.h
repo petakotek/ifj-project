@@ -13,35 +13,41 @@
  */
 typedef enum {
     /**
-     * @brief Deklarace lokální proměnné
+     * @brief Definice lokální proměnné
+     *
+     */
+    VARIABLE_DEFINITION,
+    /**
+     * @brief Práce s hodnotou lokální proměnné
      *
      */
     VARIABLE,
     /**
-     * @brief Deklarace globální proměnné
+     * @brief Definice nebo práce s hodnotou globální proměnné
      *
      */
     GLOBAL,
     /**
-     * @brief Definice nebo volání nedeklarované funkce
+     * @brief Definice nebo volání nedefinované funkce
      *
      */
     FUNCTION,
     /**
-     * @brief // TODO
+     * @brief Parametr u definice funkce
+     *
+     */
+    FUNCTION_PARAMETER,
+    /**
+     * @brief // Definice nastavovače
      *
      */
     SETTER,
     /**
-     * @brief // TODO
+     * @brief // Definice získávače
      *
      */
     GETTER,
-    /**
-     * @brief Parametr u deklarace funkce
-     *
-     */
-    FUNCTION_PARAMETER
+
 } SemanticSymbolTypes;
 
 /**
@@ -100,11 +106,6 @@ typedef enum {
      */
     OK,
     /**
-     * @brief Při zpracování uzlu nastala sémantická chyba
-     *
-     */
-    ERROR,
-    /**
      * @brief Výstupem zpracování uzlu je číslo
      *
      * Používáno v místech, kde nelze určit zda je číslo celé nebo desetinné
@@ -152,7 +153,7 @@ typedef enum {
     IDENTIFIER,
     /**
      * @brief zpracovaný uzel je klíčové slovo pro datový typ
-     * 
+     *
      */
     DATATYPE_KEYWORD,
     /**
@@ -214,7 +215,7 @@ bool startSematicValidation(AstNode* root);
  * @brief Uklidí paměť používanou sémantickou analýzou
  *
  */
-void freeSematicsMemory();
+void freeSemanticsMemory();
 
 #endif
 // TODO patička

@@ -1,0 +1,8 @@
+import "ifj25" for Ifj
+class Program {
+    static main() {
+        var a = 2
+        var b = 3
+        var c = (a < b) && (b >= 3) && (a != 0) && (b == 3)
+    }
+}

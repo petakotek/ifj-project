@@ -1,0 +1,15 @@
+import "ifj25" for Ifj
+class Program {
+    static foo(par1, par2) {
+        return par1 + par2
+    }
+
+    static foo(only_par) {
+        return foo(only_par, only_par)
+    }
+
+    static main() {
+        var a = foo(1, 2)
+        var b = foo(3)
+    }
+}

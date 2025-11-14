@@ -1,10 +1,10 @@
-#include "../codegen.h"
+#include "../../codegen.h"
 #include <stdbool.h>
 #include <stdio.h>
-#include "../ast_strom.h"
-#include "../dynamic_stack.h"
-#include "../parser.h"
-#include "../support_functions.h"
+#include "../../ast_strom.h"
+#include "../../dynamic_stack.h"
+#include "../../parser.h"
+#include "../../support_functions.h"
 #include <assert.h>
 #include <string.h>
 #include <stdbool.h>
@@ -54,22 +54,25 @@ void test_resize_robust() {
 void test_generatorLable_push_control() {
     printf("🧪 Test 2: Kontrola push logiky se startovním stavem...\n");
     DynamiclabelStackStackPtr stack = stacklabelStackConstruct(2); // Malý zásobník pro test resize
-
+    FuncContext *context = ConstuctorFuncContext();
+	context->func_name = "main";
+	context->label_end = NULL;
+	context->label_stack = stack;
     // Scénář 2.1: Prázdný stack, NEpřidávat
-    char *label_no_push = generatorLable("fun", stack, 1, false);
+    char *label_no_push = generatorLable("fun", context, false);
     assert(strcmp(label_no_push, "$fun$1") == 0 && "Chyba: Špatný label bez prefixu (no push).");
     assert(stacklabelStackIsEmpty(stack) && "Chyba: Stack má obsah, i když pridaniDoStacku=false.");
     free(label_no_push);
     printf("   ✅ Scénář 2.1: Startovní label bez push je OK.\n");
 
     // Scénář 2.2: Prázdný stack, PŘIDAT
-    char *label_with_push = generatorLable("while", stack, 1, true);
+    char *label_with_push = generatorLable("while",context,true);
     assert(strcmp(label_with_push, "$while$1") == 0 && "Chyba: Špatný label bez prefixu (with push).");
     assert(stack->nextTopElement == 1 && "Chyba: Prvek nebyl pushnut.");
     assert(strcmp(stacklabelStackRead(stack), label_with_push) == 0 && "Chyba: Pushnutý obsah je nesprávný.");
 
     // Scénář 2.3: S prefixem (z 2.2), NEpřidávat
-    char *label_with_prefix = generatorLable("if", stack, 2, false);
+    char *label_with_prefix = generatorLable("if", context,false);
     assert(strcmp(label_with_prefix, "$while$1$if$2") == 0 && "Chyba: Špatný label s prefixem.");
     assert(stack->nextTopElement == 1 && "Chyba: Stack se neměl měnit (nextTopElement=1).");
     free(label_with_prefix);
@@ -85,6 +88,10 @@ void test_generatorLable_resize_boundary() {
     printf("🧪 Test 3: Vynucení resize na hranici bufferu...\n");
     DynamiclabelStackStackPtr stack = stacklabelStackConstruct(2);
 
+    FuncContext *context = ConstuctorFuncContext();
+	context->func_name = "main";
+	context->label_end = NULL;
+	context->label_stack = stack;
     // Vytvoříme prefix, který je těsně pod 128 (max size je 128)
     char long_prefix[120];
     memset(long_prefix, 'P', 119);
@@ -97,7 +104,7 @@ void test_generatorLable_resize_boundary() {
     // Prefix (119) + $ (1) + long_block (10) + $ (1) + 99 (2) = 133 znaků. PŘESÁHNE 128!
     // Toto musí spustit resize_label_name.
 
-    char *result = generatorLable("long_block", stack, 99, true);
+    char *result = generatorLable("long_block", context,true);
 
     const char *expected_suffix = "$long_block$99";
     char expected_label[200];
@@ -119,15 +126,18 @@ void test_generatorLable_resize_boundary() {
 void test_generatorLable_deep_nesting() {
     printf("🧪 Test 4: Testování hlubokého zanoření...\n");
     DynamiclabelStackStackPtr stack = stacklabelStackConstruct(10);
-
+    FuncContext *context = ConstuctorFuncContext();
+	context->func_name = "main";
+	context->label_end = NULL;
+	context->label_stack = stack;
     // 1. fun$1 (push)
-    char *l1 = generatorLable("fun", stack, 1, true);
+    char *l1 = generatorLable("fun",context,true);
     // 2. fun$1$while$1 (push)
-    char *l2 = generatorLable("while", stack, 1, true);
+    char *l2 = generatorLable("while",context, true);
     // 3. fun$1$while$1$if$1 (no push)
-    char *l3 = generatorLable("if", stack, 1, false);
+    char *l3 = generatorLable("if", context, false);
     // 4. fun$1$while$1$for$2 (push)
-    char *l4 = generatorLable("for", stack, 2, true);
+    char *l4 = generatorLable("for", context, true);
 
     // Ověření výsledků
     assert(strcmp(l1, "$fun$1") == 0);

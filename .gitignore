@@ -4,4 +4,3 @@ ifj25
 *.o
 my_env
 hashTests
-vgcore.*

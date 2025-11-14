@@ -1,0 +1,149 @@
+expr strom po skoncení funcke parseExpression
+===== AST STROM =====
+[INT_LIT] (int=10)
+expr strom po skoncení funcke parseExpression
+===== AST STROM =====
+[STRING_GT]
+  [IDENTIFIER] (str="x")
+  [INT_LIT] (int=0)
+expr strom po skoncení funcke parseExpression
+===== AST STROM =====
+[STRING_MINUS]
+  [IDENTIFIER] (str="x")
+  [INT_LIT] (int=1)
+expr strom po skoncení funcke parseExpression
+===== AST STROM =====
+[STRING_PLUS]
+  [IDENTIFIER] (str="x")
+  [INT_LIT] (int=1)
+PARSER IS DONE
+===== AST STROM =====
+[PROGRAM]
+  [PROLOG]
+  [MAIN_CLASS]
+    [IDENTIFIER] (str="Program")
+    [MAIN_CLASS_BLOCK]
+      [FUNC_DEC]
+        [IDENTIFIER] (str="main")
+        [PARAM]
+          [EMPTY]
+        [BLOCK]
+          [STATEMENT_LIST]
+            [VAR]
+              [IDENTIFIER] (str="x")
+              [ASSIGN]
+                [INT_LIT] (int=10)
+            [IF CHAIN]
+              [IF]
+                [CONDITION]
+                  [STRING_GT]
+                    [IDENTIFIER] (str="x")
+                    [INT_LIT] (int=0)
+                [BLOCK]
+                  [STATEMENT_LIST]
+                    [ASSIGN]
+                      [IDENTIFIER] (str="x")
+                      [STRING_MINUS]
+                        [IDENTIFIER] (str="x")
+                        [INT_LIT] (int=1)
+              [ELSE]
+                [BLOCK]
+                  [STATEMENT_LIST]
+                    [ASSIGN]
+                      [IDENTIFIER] (str="x")
+                      [STRING_PLUS]
+                        [IDENTIFIER] (str="x")
+                        [INT_LIT] (int=1)
+precedencna odovzdala token jeho type je = 33
+1precedencna odovzdala token jeho type je = 21
+precedencna odovzdala token jeho type je = 33
+precedencna odovzdala token jeho type je = 33
+.IFJcode25
+JUMP $$main
+LABEL $$main
+CREATEFRAME
+PUSHFRAME
+DEFVAR LF@retval
+DEFVAR LF@x
+DEFVAR LF@main_ln_0
+DEFVAR LF@main_rn_0
+DEFVAR LF@main_ty_0
+DEFVAR LF@main_ln_1
+DEFVAR LF@main_rn_1
+DEFVAR LF@main_ty_1
+DEFVAR LF@main_ln_2
+DEFVAR LF@main_rn_2
+DEFVAR LF@main_ty_2
+DEFVAR LF@main_rs_2
+MOVE LF@retval nil@nil
+PUSHS int@10
+POPS LF@x
+PUSHS bool@false
+JUMPIFEQS $main$2
+PUSHS LF@x
+PUSHS int@1
+POPS LF@main_rn_1
+POPS LF@main_ln_1
+PUSHS LF@main_ln_1
+PUSHS LF@main_rn_1
+TYPES
+POPS LF@main_ty_1
+TYPES
+PUSHS LF@main_ty_1
+JUMPIFEQS main$ok$1
+JUMP main$err$1
+LABEL main$ok$1
+PUSHS LF@main_ty_1
+PUSHS string@string
+JUMPIFEQS main$err$1
+PUSHS LF@main_ln_1
+PUSHS LF@main_rn_1
+SUBS
+JUMP main$end$1
+LABEL main$err$1
+EXIT int@4
+LABEL main$end$1
+
+POPS LF@x
+JUMP $main$1
+LABEL $main$2
+PUSHS LF@x
+PUSHS int@1
+POPS LF@main_rn_2
+POPS LF@main_ln_2
+PUSHS LF@main_ln_2
+PUSHS LF@main_rn_2
+TYPES
+POPS LF@main_ty_2
+TYPES
+PUSHS LF@main_ty_2
+JUMPIFEQS main$ok$2
+JUMP main$err$2
+LABEL main$ok$2
+PUSHS LF@main_ty_2
+PUSHS string@string
+JUMPIFEQS main$concat$2
+PUSHS LF@main_ty_2
+PUSHS string@int
+JUMPIFEQS main$add$2
+PUSHS LF@main_ty_2
+PUSHS string@float
+JUMPIFEQS main$add$2
+JUMP main$err$2
+LABEL main$add$2
+PUSHS LF@main_ln_2
+PUSHS LF@main_rn_2
+ADDS
+JUMP main$end$2
+LABEL main$concat$2
+CONCAT LF@main_ln_2 LF@main_rn_2 LF@main_rs_2
+PUSHS LF@main_rs_2
+JUMP main$end$2
+LABEL main$err$2
+EXIT int@4
+LABEL main$end$2
+
+POPS LF@x
+JUMP $main$1
+LABEL $main$1
+EXIT int@0

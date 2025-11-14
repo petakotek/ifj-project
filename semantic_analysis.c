@@ -9,16 +9,13 @@
 #include "support_functions.h"
 #include "symtable.h"
 
-// TODO promyslet zda má význam aby většina funkcí něco vracela (bool), spousta z nich může rovnou
-// ukončit vykonávání programu, pokud funkce co je používají nevytváří paměť
-// přidat to jako @attention (viz funkce pro práci s tabulkou volání)
-// Pokud tam bool dává smysl, tak povinně kontrolovat!
+// TODO
+// - zpřísnit po důkladném promyšlení, co je návratem operace
+// - zkusit testy od Kuby, až mu budou procházet
+// - vlastní AI testy (pozor na injections)
+//
 
-// TODO ověřit, že nedochází k úniku paměti při ukončení neplánovaně
-// TODO všude kde vrací error popravit program (pokud nehrozí ztráta paměti!) (Ohlídat aby to nikdy
-// nemohlo nastat) Práce s dynamickou pamětí probíhá jen při initSymbol a je nebezpečná až po
-// insertToScope Minimalizovat počet řádků mezitím
-// Poté odstranit zbytečné kontrolování ERROR když se tam stejně program nedostane
+// TODO aktualizace dokumentačních komentářů
 
 /**
  * @brief Ukazatel na zásobník pro ukládání jednotlivých rámců
@@ -26,42 +23,49 @@
  */
 static DynamicHashTablePtrStackPtr scopesStack = NULL;
 
-static HashTable* undeclaredFunctionCalls = NULL;
-
-/**
- * @brief Pomocná funkce pro ověření existence funkce main
- *
- */
-static bool foundMainFunction = false;
+static HashTable* undeclaredReferenceTable = NULL;
 
 /**
  * @brief Vytvoří zásobník
  *
- * @return true Úspěch
- * @return false Došlo k chybě
  */
-bool createScopeStack();
+void createScopeStack();
 
 /**
  * @brief Přidá na zásobník nový rámec
  *
- * @return true Úspěch
- * @return false Došlo k chybě
  */
-bool createNewScope();
+void createNewScope();
 
 /**
  * @brief Odebere ze zásobníku rámec
  *
- * @return true Úspěch
- * @return false Došlo k chybě
  */
-bool deleteScope();
+void deleteScope();
 
 /**
- * @brief Prohledá všechny rámce a vrací ukazatel na první nalezený symbol
+ * @brief Prohledá globální rámec
  *
- * Začíná nejbližší rámcem (vrchol zásobníku)
+ * @param key Klíč hledaného symbolu
+ * @return SemanticSymbol* Ukazatel na nalezený symbol
+ */
+SemanticSymbol* findGlobalSymbol(char* key);
+
+/**
+ * @brief Prohledá všechny rámce, vrací ukazatel na první nalezený symbol a upraví AST pokud se
+ * jedná o lokální proměnnou
+ *
+ * Začíná nejbližším rámcem (vrchol zásobníku)
+ * @attention V případě nalezení symbolu upraví AST uzel
+ * @param sourceNode Zdrojový AST uzel
+ * @param destSymbol Ukazatel na symbol pro upravení, pokud je klíč nalezený v rámcích
+ * @return SemanticSymbol* Ukazatel na nalezený symbol
+ */
+SemanticSymbol* findSymbolAndModifyAST(AstNode* sourceNode, SemanticSymbol* destSymbol);
+
+/**
+ * @brief Prohledá všechny rámce, vrací ukazatel na první nalezený odpovídající symbol
+ *
  * @param key Klíč hledaného symbolu
  * @return SemanticSymbol* Ukazatel na nalezený symbol
  */
@@ -79,10 +83,8 @@ SemanticSymbol* findSymbolCurrentScope(char* key);
  * @brief Přidá symbol do globálního rámce (první vytvořený rámec)
  *
  * @param symbol Symbol pro přidání
- * @return true Úspěch
- * @return false Došlo k chybě
  */
-bool insertSymbolGlobalScope(SemanticSymbol symbol);
+void insertSymbolGlobalScope(SemanticSymbol symbol);
 
 /**
  * @brief Přidá symbol do aktuálního rámce
@@ -91,32 +93,31 @@ bool insertSymbolGlobalScope(SemanticSymbol symbol);
  * @return true Úspěch
  * @return false Došlo k chybě
  */
-bool insertSymbolCurrentScope(SemanticSymbol symbol);
+void insertSymbolCurrentScope(SemanticSymbol symbol);
 
 /**
  * @brief Vytvoří tabulku symbolů pro uložení volání na nedeklarované funkce
  *
- * @return true
- * @return false
  */
-bool createUndeclaredFunctionCallsTable();
+void createUndeclaredFunctionCallsTable();
 
 /**
- * @brief Odstraní z tabulky volání na nedeklarované funkce všechna volání funkce odpovídající
- * functionSymbolName
+ * @brief Odstraní z tabulky nedeklarovaných referencí všechny příslušné reference
  *
- * @param functionSymbolName Název funkce jejíž volání má být odstraněno ( @note zpracovaný pomocí
+ * @param referenceSymbolName Název reference nově deklarované reference ( @note zpracovaný pomocí
  * @see initNewSymbol() )
  */
-void removeUndeclaredFunctionCall(char* functionSymbolName);
+void removeUndeclaredReference(char* referenceSymbolName);
 
 /**
- * @brief Přidá
+ * @brief Přidá nedeklarovanou referenci do tabulky
  *
- * @param functionSymbolName Název funkce jejíž volání má být odstraněno ( @note zpracovaný pomocí
+ * @param referenceSymbolName Název nedeklarované reference ( @note zpracovaný pomocí
+ * @see initNewSymbol() )
+ * @param symbol Symbol pro přidání ( @note zpracovaný pomocí
  * @see initNewSymbol() )
  */
-void insertUndeclaredFunctionCall(char* functionSymbolName, SemanticSymbol symbol);
+void insertUndeclaredReference(char* referenceSymbolName, SemanticSymbol symbol);
 
 /**
  * @brief Převede informace z AST uzlu do symbolu pro uložení do tabulky
@@ -128,12 +129,10 @@ void insertUndeclaredFunctionCall(char* functionSymbolName, SemanticSymbol symbo
  * @param symbolType Typ cílového symbolu
  * @param symbolDataType Datový typ hodnoty v symbolu
  * @param functionReturnValue Datový typ návratové hodnoty funkce
- * @return true Úspěch
- * @return false Došlo k chybě
  */
-bool initNewSymbol(AstNode* sourceNode, SemanticSymbol* destSymbol, SemanticSymbolTypes symbolType,
+void initNewSymbol(AstNode* sourceNode, SemanticSymbol* destSymbol, SemanticSymbolTypes symbolType,
                    SemanticSymbolDataType symbolDataType,
-                   SemanticSymbolDataType functionReturnValue);
+                   SemanticSymbolDataType functionReturnValue, unsigned scope);
 
 /**
  * @brief Zpracovává sémantickou kontrolu volání vestavěných funkcí
@@ -179,7 +178,8 @@ RecursiveSemanticAnalysisReturnValues convertSemanticDataTypeToSemanticReturnVal
  * @return RecursiveSemanticAnalysisReturnValues Návratový kód
  */
 RecursiveSemanticAnalysisReturnValues recursiveNodeWalker(AstNode*    currentNode,
-                                                          AstNodeType parentNodeType);
+                                                          AstNodeType parentNodeType,
+                                                          size_t      childNum);
 
 bool startSematicValidation(AstNode* root) {
     if (root == NULL) {
@@ -192,102 +192,35 @@ bool startSematicValidation(AstNode* root) {
     createUndeclaredFunctionCallsTable();
 
     for (size_t i = 0; i < root->arity; i++) {
-        if (recursiveNodeWalker(root->child[i], AST_PROGRAM) != OK) {
-            freeSematicsMemory();
+        if (recursiveNodeWalker(root->child[i], AST_PROGRAM, i) != OK) {
+            freeSemanticsMemory();
             return false;
         }
     }
 
-    if (foundMainFunction == false) {
-        printError(SEMANTICS_ERROR_OTHERS, "Chybi funkce 'main()'!\n");
-        memorySafeExit(SEMANTICS_ERROR_OTHERS);
-        return false;
-    }
-
-    if (undeclaredFunctionCalls != NULL) {
-        if (hashTableIsEmpty(undeclaredFunctionCalls) == false) {
-            printError(SEMANTICS_ERROR_UNDEF, "Volani nedeklarovane funkce!\n");
-            memorySafeExit(SEMANTICS_ERROR_OTHERS);
+    if (undeclaredReferenceTable != NULL) {
+        if (hashTableIsEmpty(undeclaredReferenceTable) == false) {
+            printError(SEMANTICS_ERROR_UNDEF,
+                       "Reference na nedeklarovany getter, setter nebo funkci!\n");
+            memorySafeExit(SEMANTICS_ERROR_UNDEF);
             return false;
         }
     }
 
-    freeSematicsMemory();
+    if (scopesStack != NULL) {
+        if (stackHashTablePtrIsEmpty(scopesStack) == false) {
+            printError(SEMANTICS_ERROR_UNDEF, "Nebyly uzavreny vsechny bloky!\n");
+            memorySafeExit(SEMANTICS_ERROR_UNDEF);
+            return false;
+        }
+    }
+
+    freeSemanticsMemory();
 
     return true;
-
-    /*
-    S využitím pomocných funkcí prochází strom shora dolů a:
-        Při každém začátku bloku vytvoří novou tabulku symbolů
-            - Při hledání proměnných nebo funkcí hledá v tabulce odspoda nahoru (nejvíc lokální
-    -> globální)
-                - Pokud nenalezne volanou funkci nebo deklaraci dané proměnné uloží ji do
-    struktury
-    X
-                - Pokud nalezne tak Ok
-                - Při deklarování proměnné/funkce prohledává jen nejbližší úroveň tabulky
-    (umožňuje překrytí globálních věcí lokálními)
-                - pozor: var x = x + 6 je potřeba vyhodnocovat tak aby nejdřív hledalo x v "x+6"
-    a pak až vzniklo var x (musí to být jiná proměnná než ta právě deklarovaná)
-                    - To lze zajistit tak, že pokud najdu var x = tak to neuložím do tabulky
-    dokud nezpracuji část za = (abych znal datový typ)
-                    - U pouze var x \n do tabulky přidám s typem Null a hodnotou null
-        - Při skončení bloku stoupám o úroveň výše (potřeba zajistit aby další klesnutí kleslo
-    do jiné tabulky => každé klesnutí = vytvořím novou)
-            - Je potřeba nějak ukládat jakou tabulku prohledávat a jaké jsou jí nadřazené...
-                - To udělám pomocí zásobníku ukazatelů na tabulky, čím vyšší tabulky tím víc
-    lokální je Při prohledávání jdu od shora dolů (což size ruší pravidla zásobníku, ale to
-    nevadí) Při opuštění bloku tabulku zahodím, hodnot z ní mě nezajímají Pokud narazím na
-    volání nedeklarované funkce tak si uložím název parametry a tak bokem a taky scope (např 3
-    na zásobníku) Pokud narazím na deklaraci funkce s tímto názvem a parametry tak ověřím, že je
-    scope vyšší než scope daného volání (0,1,2)
-                        - Pokud ano tak mohu volání prohlásit za OK\
-                        - Pokud něco nesedí (scope/název/počet argumentů) tak jedu dál
-
-
-    Kontroluji (by AI, radši ještě ověřit):
-
-
-
-    Deklarace proměnných: Kontrola, zda lokální proměnná definovaná příkazem var idl není v
-    aktuálním bloku definována vícekrát (jinak chyba 4). Po deklaraci je její hodnota nastavena
-    na null.
-
-    Přiřazení hodnoty: Levý operand přiřazovacího příkazu musí být lokální, globální proměnná
-    nebo statický setter. Kontrola kompatibility přiřazované hodnoty (výrazu) s očekávaným typem
-    proměnné alespoň pro literály, ostatní typové kontroly probíhají až za běhu. Pokud levý
-    operand je statický setter, přiřazení se interpretuje jako volání funkce.
-
-    Podmínky v příkazech if a while: Výrazy mohou být libovolného typu, pravdivost se určuje
-    pravidly z textu (null je nepravdivé, jinak hodnota evaluačně pravdivá). Sémantika kontroly
-    správnosti výrazů v podmínkách.
-
-    Volání funkcí: Kontrola, zda počet parametrů funkce odpovídá definici (chyba 5). Parametry
-    musí být správných typů minimálně u literálů. Volání statických getterů a setterů správně
-    interpretovat.
-
-    Typová kontrola ve výrazech:
-
-        Minimálně kontrola typů u literálů (např. řetězec + číslo je chyba 6).
-
-        Operátory +, -, *, /, relační operátory vyžadují operandy správných typů (typ Num nebo
-    String dle operátoru).
-
-        Není povoleno implicitní převádění mezi řetězcem a číslem.
-
-        Iterační operátor * musí mít vpravo celé číslo.
-
-    Vestavěné funkce: Kontrola správných typů parametrů u volání vestavěných funkcí, minimálně u
-    literálů, jinak chyba 5, s dynamickou kontrolou i za běhu.
-
-    Return příkaz: Vyhodnocení výrazu a přiřazení návratové hodnoty funkce, správná implementace
-    toku návratu.
-
-
-    */
 }
 
-void freeSematicsMemory() {
+void freeSemanticsMemory() {
     if (scopesStack != NULL) {
         while (stackHashTablePtrIsEmpty(scopesStack) != true) {
             hashTableDealloc(stackHashTablePtrRead(scopesStack));
@@ -297,15 +230,17 @@ void freeSematicsMemory() {
         scopesStack = NULL;
     }
 
-    if (undeclaredFunctionCalls != NULL) {
-        hashTableDealloc(undeclaredFunctionCalls);
-        undeclaredFunctionCalls = NULL;
+    if (undeclaredReferenceTable != NULL) {
+        hashTableDealloc(undeclaredReferenceTable);
+        undeclaredReferenceTable = NULL;
     }
 }
 
 RecursiveSemanticAnalysisReturnValues recursiveNodeWalker(AstNode*    currentNode,
-                                                          AstNodeType parentNodeType) {
+                                                          AstNodeType parentNodeType,
+                                                          size_t      childNum) {
     if (currentNode == NULL) {
+        printWarning("Predan ukazatel na NULL\n");
         return GOT_NODE_NULL;
     }
 
@@ -315,7 +250,6 @@ RecursiveSemanticAnalysisReturnValues recursiveNodeWalker(AstNode*    currentNod
             // Toto bych neměl dostat znovu (už jej zpracovalo startSematicValidation() )
             printError(INTERNAL_ERROR, "Vice AST_PROGRAM neni validni!\n");
             memorySafeExit(INTERNAL_ERROR);
-            return ERROR;
             break;
         }
         case (AST_PROLOG): {
@@ -330,11 +264,12 @@ RecursiveSemanticAnalysisReturnValues recursiveNodeWalker(AstNode*    currentNod
                 printError(SEMANTICS_ERROR_OTHERS, "Neplatny nazev '%s', ocekavan 'Program'!\n",
                            currentNode->child[0]->value.str);
                 memorySafeExit(SEMANTICS_ERROR_OTHERS);
-                return ERROR;
             }
 
-            if (recursiveNodeWalker(currentNode->child[1], AST_MAIN_CLASS) != OK) {
-                return ERROR;
+            if (recursiveNodeWalker(currentNode->child[1], AST_MAIN_CLASS, 1) != OK) {
+                printError(SEMANTICS_ERROR_OTHERS, "Neplatny prikaz v Program()'!\n",
+                           currentNode->child[0]->value.str);
+                memorySafeExit(SEMANTICS_ERROR_OTHERS);
             }
 
             return OK;
@@ -344,10 +279,20 @@ RecursiveSemanticAnalysisReturnValues recursiveNodeWalker(AstNode*    currentNod
             printLog("AST_MAIN_CLASS_BLOCK\n");
             createNewScope();
             for (size_t i = 0; i < currentNode->arity; i++) {
-                if (recursiveNodeWalker(currentNode->child[i], AST_MAIN_CLASS_BLOCK) != OK) {
-                    return ERROR;
+                if (recursiveNodeWalker(currentNode->child[i], AST_MAIN_CLASS_BLOCK, i) != OK) {
+                    printError(SEMANTICS_ERROR_OTHERS, "Neplatne prikazy v Program()'!\n",
+                               currentNode->child[0]->value.str);
+                    memorySafeExit(SEMANTICS_ERROR_OTHERS);
                 }
             }
+
+            SemanticSymbol* mainFunctionSymbol = findGlobalSymbol("main$0");
+
+            if (mainFunctionSymbol == NULL) {
+                printError(SEMANTICS_ERROR_UNDEF, "Chybi funkce 'main()'!\n");
+                memorySafeExit(SEMANTICS_ERROR_UNDEF);
+            }
+
             deleteScope();
 
             return OK;
@@ -360,45 +305,27 @@ RecursiveSemanticAnalysisReturnValues recursiveNodeWalker(AstNode*    currentNod
 
             SemanticSymbolDataType functionReturnValue = NULL_VAL;
 
-            if (currentNode->child[2]->child[0]->arity != 0) {
-                RecursiveSemanticAnalysisReturnValues childValueParam =
-                    recursiveNodeWalker(currentNode->child[1], AST_FUNC_DEC);
-                RecursiveSemanticAnalysisReturnValues childValueBlock =
-                    recursiveNodeWalker(currentNode->child[2], AST_FUNC_DEC);
+            recursiveNodeWalker(currentNode->child[1], AST_FUNC_DEC, 1);
 
-                if (childValueParam == ERROR || childValueBlock == ERROR) {
-                    return ERROR;
-                }
+            RecursiveSemanticAnalysisReturnValues childValueBlock =
+                recursiveNodeWalker(currentNode->child[2], AST_FUNC_DEC, 2);
 
-                if (childValueBlock != OK && childValueBlock != GOT_NODE_NULL) {
-                    functionReturnValue =
-                        convertSemanticReturnValueToSemanticDataType(childValueBlock);
-                }
+            if (childValueBlock != OK) {
+                functionReturnValue = convertSemanticReturnValueToSemanticDataType(childValueBlock);
             }
 
-            initNewSymbol(currentNode, &newSymbol, FUNCTION, NULL_VAL, functionReturnValue);
+            initNewSymbol(currentNode, &newSymbol, FUNCTION, NULL_VAL, functionReturnValue,
+                          scopesStack->nextTopElement - 1);
 
-            SemanticSymbol* foundSymbol = findSymbol(newSymbol.name);
+            SemanticSymbol* foundSymbol = findGlobalSymbol(newSymbol.name);
             if (foundSymbol != NULL) {
-                free(newSymbol.name);
-                printError(SEMANTICS_ERROR_REDEF, "Funkce '%s' jiz existuje!", newSymbol.name);
+                printError(SEMANTICS_ERROR_REDEF, "Funkce '%s' jiz existuje!\n", newSymbol.name);
                 memorySafeExit(SEMANTICS_ERROR_REDEF);
-                return ERROR;
-            }
-
-            if (strncmp(newSymbol.name, "main$0", 7) == 0) {
-                if (foundMainFunction == true) {
-                    printError(SEMANTICS_ERROR_REDEF,
-                               "V kodu muze byt pouze jedna funkce pojmenovana 'main()`!\n");
-                    memorySafeExit(SEMANTICS_ERROR_REDEF);
-                }
-
-                foundMainFunction = true;
             }
 
             insertSymbolGlobalScope(newSymbol);
 
-            removeUndeclaredFunctionCall(newSymbol.name);
+            removeUndeclaredReference(newSymbol.name);
 
             return OK;
             break;
@@ -406,11 +333,15 @@ RecursiveSemanticAnalysisReturnValues recursiveNodeWalker(AstNode*    currentNod
         case (AST_PARAM): {
             printLog("AST_PARAM\n");
 
-            createNewScope();
+            AstNodeType fakeParentType = AST_PARAM;
+
+            if (parentNodeType == AST_IFJ_CALL) {
+                fakeParentType = AST_IFJ_CALL;
+            } else {
+                createNewScope();
+            }
             for (size_t i = 0; i < currentNode->arity; i++) {
-                if (recursiveNodeWalker(currentNode->child[i], AST_PARAM) == ERROR) {
-                    return ERROR;
-                }
+                recursiveNodeWalker(currentNode->child[i], fakeParentType, i);
             }
 
             return OK;
@@ -418,39 +349,62 @@ RecursiveSemanticAnalysisReturnValues recursiveNodeWalker(AstNode*    currentNod
         }
         case (AST_BLOCK): {
             printLog("AST_BLOCK\n");
-            if (parentNodeType != AST_FUNC_DEC) {
+            if (parentNodeType != AST_FUNC_DEC && parentNodeType != AST_SETTER &&
+                parentNodeType != AST_FOR) {
+                printf("vytvarim blok\n");
                 createNewScope();
             }
-            for (size_t i = 0; i < currentNode->arity; i++) {
-                RecursiveSemanticAnalysisReturnValues childValue =
-                    recursiveNodeWalker(currentNode->child[i], AST_BLOCK);
-                if (childValue == ERROR) {
-                    return ERROR;
-                } else if (childValue != OK) {
-                    return childValue;
-                }
+
+            AstNodeType fakeParentType = AST_BLOCK;
+
+            if (parentNodeType == AST_FUNC_DEC || parentNodeType == AST_SETTER ||
+                parentNodeType == AST_GETTER) {
+                fakeParentType = AST_FUNC_DEC;
             }
+
+            RecursiveSemanticAnalysisReturnValues childValue =
+                recursiveNodeWalker(currentNode->child[0], fakeParentType, 0);
 
             deleteScope();
 
-            return OK;
-            break;
-        }
-        case (AST_STATEMENT): {
-            printLog("AST_STATEMENT\n");
+            return childValue;
             break;
         }
         case (AST_STATEMENT_LIST): {
             printLog("AST_STATEMENT_LIST\n");
+
+            RecursiveSemanticAnalysisReturnValues returnValue = OK;
+            bool                                  foundReturn = false;
+
+            RecursiveSemanticAnalysisReturnValues childValue;
             for (size_t i = 0; i < currentNode->arity; i++) {
-                RecursiveSemanticAnalysisReturnValues childValue =
-                    recursiveNodeWalker(currentNode->child[i], AST_STATEMENT_LIST);
-                if (childValue == ERROR) {
-                    return ERROR;
+                childValue = recursiveNodeWalker(currentNode->child[i], AST_STATEMENT_LIST, i);
+                if (currentNode->child[i]->kind == AST_RETURN) {
+                    foundReturn = true;
+                    returnValue = childValue;
+                }
+                if (currentNode->child[i]->kind == AST_BLOCK && foundReturn == false) {
+                    returnValue = childValue;
+                }
+                if (currentNode->child[i]->kind == AST_RETURN ||
+                    currentNode->child[i]->kind == AST_BREAK ||
+                    currentNode->child[i]->kind == AST_CONTINUE) {
+                    // Kód po tomto dítěti lze smazat
+                    i++;
+                    size_t preDeletionArity = currentNode->arity;
+                    for (size_t deletionIterator = i; deletionIterator < preDeletionArity;
+                         deletionIterator++) {
+                        ast_free_whole(currentNode->child[deletionIterator]);
+                        currentNode->arity--;
+                    }
+                    break;
                 }
             }
+            if (parentNodeType == AST_FUNC_DEC && currentNode->arity == 1 && foundReturn == false) {
+                returnValue = childValue;
+            }
 
-            return OK;
+            return returnValue;
             break;
         }
         case (AST_FUNC_CALL): {
@@ -459,18 +413,82 @@ RecursiveSemanticAnalysisReturnValues recursiveNodeWalker(AstNode*    currentNod
             SemanticSymbol         newSymbol;
             SemanticSymbolDataType functionReturnValue = UNKNOWN_VAL;
 
-            initNewSymbol(currentNode, &newSymbol, FUNCTION, NULL_VAL, functionReturnValue);
+            initNewSymbol(currentNode, &newSymbol, FUNCTION, NULL_VAL, functionReturnValue,
+                          scopesStack->nextTopElement - 1);
 
-            SemanticSymbol* foundSymbol = findSymbol(newSymbol.name);
+            SemanticSymbol* foundSymbol = findGlobalSymbol(newSymbol.name);
             if (foundSymbol == NULL) {
-                insertUndeclaredFunctionCall(newSymbol.name, newSymbol);
+                insertUndeclaredReference(newSymbol.name, newSymbol);
             } else {
+                // Na stejný řetězec ukazuje AST strom
                 functionReturnValue = foundSymbol->returnValue;
             }
 
-            if (parentNodeType == AST_ASSIGN) {
-                return convertSemanticDataTypeToSemanticReturnValue(functionReturnValue);
+            return convertSemanticDataTypeToSemanticReturnValue(functionReturnValue);
+
+            break;
+        }
+        case (AST_SETTER): {
+            printLog("AST_SETTER\n");
+
+            SemanticSymbol newSymbol;
+
+            SemanticSymbolDataType setterStartValue = NULL_VAL;
+
+            recursiveNodeWalker(currentNode->child[1], AST_SETTER, 1);
+
+            RecursiveSemanticAnalysisReturnValues childValueBlock =
+                recursiveNodeWalker(currentNode->child[2], AST_SETTER, 2);
+
+            if (childValueBlock != OK) {
+                setterStartValue = convertSemanticReturnValueToSemanticDataType(childValueBlock);
             }
+
+            initNewSymbol(currentNode->child[0], &newSymbol, SETTER, setterStartValue, NULL_VAL,
+                          scopesStack->nextTopElement - 1);
+
+            SemanticSymbol* foundSymbol = findGlobalSymbol(newSymbol.name);
+            if (foundSymbol != NULL) {
+                printError(SEMANTICS_ERROR_REDEF, "Nastavovac '%s' jiz existuje!\n",
+                           newSymbol.name);
+                memorySafeExit(SEMANTICS_ERROR_REDEF);
+            }
+
+            insertSymbolGlobalScope(newSymbol);
+
+            removeUndeclaredReference(newSymbol.name);
+
+            return OK;
+
+            break;
+        }
+        case (AST_GETTER): {
+            printLog("AST_GETTER\n");
+
+            SemanticSymbol newSymbol;
+
+            SemanticSymbolDataType functionReturnValue = NULL_VAL;
+
+            RecursiveSemanticAnalysisReturnValues childValueBlock =
+                recursiveNodeWalker(currentNode->child[2], AST_GETTER, 2);
+
+            if (childValueBlock != OK) {
+                functionReturnValue = convertSemanticReturnValueToSemanticDataType(childValueBlock);
+            }
+
+            initNewSymbol(currentNode->child[0], &newSymbol, GETTER, NULL_VAL, functionReturnValue,
+                          scopesStack->nextTopElement - 1);
+
+            SemanticSymbol* foundSymbol = findGlobalSymbol(newSymbol.name);
+            if (foundSymbol != NULL) {
+                printError(SEMANTICS_ERROR_REDEF, "Ziskavac '%s' jiz existuje!\n", newSymbol.name);
+                memorySafeExit(SEMANTICS_ERROR_REDEF);
+            }
+
+            insertSymbolGlobalScope(newSymbol);
+
+            removeUndeclaredReference(newSymbol.name);
+
             return OK;
 
             break;
@@ -484,23 +502,19 @@ RecursiveSemanticAnalysisReturnValues recursiveNodeWalker(AstNode*    currentNod
 
             if (currentNode->child[1]->kind != AST_EMPTY) {
                 RecursiveSemanticAnalysisReturnValues childValue =
-                    recursiveNodeWalker(currentNode->child[1], AST_VAR);
-
-                if (childValue == ERROR) {
-                    return ERROR;
-                }
+                    recursiveNodeWalker(currentNode->child[1]->child[0], AST_VAR, 1);
 
                 varDataType = convertSemanticReturnValueToSemanticDataType(childValue);
             }
 
-            initNewSymbol(currentNode, &newSymbol, VARIABLE, varDataType, NULL_VAL);
+            initNewSymbol(currentNode, &newSymbol, VARIABLE_DEFINITION, varDataType, NULL_VAL,
+                          scopesStack->nextTopElement - 1);
 
             SemanticSymbol* foundSymbol = findSymbolCurrentScope(newSymbol.name);
             if (foundSymbol != NULL) {
                 printError(SEMANTICS_ERROR_REDEF, "Promena '%s' v danem ramci jiz existuje!\n",
                            newSymbol.name);
                 memorySafeExit(SEMANTICS_ERROR_REDEF);
-                return ERROR;
             }
 
             insertSymbolCurrentScope(newSymbol);
@@ -511,13 +525,13 @@ RecursiveSemanticAnalysisReturnValues recursiveNodeWalker(AstNode*    currentNod
             printLog("AST_ASSIGN\n");
 
             if (parentNodeType == AST_VAR || parentNodeType == AST_GLOBAL_ID) {
-                return recursiveNodeWalker(currentNode->child[0], AST_ASSIGN);
+                return recursiveNodeWalker(currentNode->child[0], AST_ASSIGN, 0);
             }
 
             RecursiveSemanticAnalysisReturnValues leftChild =
-                recursiveNodeWalker(currentNode->child[0], AST_ASSIGN);
+                recursiveNodeWalker(currentNode->child[0], AST_ASSIGN, 0);
             RecursiveSemanticAnalysisReturnValues rightChild =
-                recursiveNodeWalker(currentNode->child[1], AST_ASSIGN);
+                recursiveNodeWalker(currentNode->child[1], AST_ASSIGN, 1);
 
             if (leftChild != IDENTIFIER) {
                 printError(SEMANTICS_ERROR_OTHERS,
@@ -526,59 +540,185 @@ RecursiveSemanticAnalysisReturnValues recursiveNodeWalker(AstNode*    currentNod
             }
 
             SemanticSymbol* leftSymbol = findSymbol(currentNode->child[0]->value.str);
-            if (leftSymbol == NULL) {
-                printError(SEMANTICS_ERROR_UNDEF, "(=) Prirazeni do nedefinovane promenne!\n");
-                memorySafeExit(SEMANTICS_ERROR_UNDEF);
-            }
 
             if (rightChild == IDENTIFIER) {
                 SemanticSymbol* rightSymbol = findSymbol(currentNode->child[1]->value.str);
+
+                if (leftSymbol == NULL) {
+                    return OK;
+                }
+
                 if (rightSymbol == NULL) {
-                    printError(SEMANTICS_ERROR_UNDEF, "(=) Cteni nedefinovane promenne!\n");
-                    memorySafeExit(SEMANTICS_ERROR_UNDEF);
+                    leftSymbol->dataType = UNKNOWN_VAL;
+                    return OK;
                 }
 
                 leftSymbol->dataType = rightSymbol->dataType;
-                return OK;
             }
 
-            leftSymbol->dataType = convertSemanticReturnValueToSemanticDataType(rightChild);
+            if (leftSymbol != NULL) {
+                leftSymbol->dataType = convertSemanticReturnValueToSemanticDataType(rightChild);
+            }
             return OK;
 
             break;
         }
         case (AST_IF_CHAIN): {
             printLog("AST_IF_CHAIN\n");
-            // TODO ast if chain
+
+            for (size_t i = 0; i < currentNode->arity; i++) {
+                recursiveNodeWalker(currentNode->child[i], AST_IF_CHAIN, i);
+            }
+            return OK;
+
             break;
         }
         case (AST_IF): {
             printLog("AST_IF\n");
-            // TODO AST_IF
+
+            RecursiveSemanticAnalysisReturnValues conditionChildValue =
+                recursiveNodeWalker(currentNode->child[0], AST_IF, 0);
+
+            if (conditionChildValue != OK) {
+                printError(SEMANTICS_ERROR_UNCOMPATIBLE, "(if) Neplatna podminka!\n");
+                memorySafeExit(SEMANTICS_ERROR_UNCOMPATIBLE);
+            }
+
+            // Sémantická kontrola bloku
+            recursiveNodeWalker(currentNode->child[1], AST_IF, 1);
+            /*RecursiveSemanticAnalysisReturnValues blockValue =
+                recursiveNodeWalker(currentNode->child[1], AST_IF, 1);
+
+             if (blockValue != OK) {
+                printError(SEMANTICS_ERROR_OTHERS, "(if) Neplatny blok!\n");
+                memorySafeExit(SEMANTICS_ERROR_OTHERS);
+            } */
+
+            return OK;
+            break;
+        }
+        case (AST_CONDITION): {
+            printLog("AST_CONDITION\n");
+
+            if (parentNodeType == AST_FOR) {
+                RecursiveSemanticAnalysisReturnValues leftChild =
+                    recursiveNodeWalker(currentNode->child[0], AST_CONDITION, 0);
+
+                if (leftChild != IDENTIFIER) {
+                    printError(SEMANTICS_ERROR_UNCOMPATIBLE,
+                               "(in) Leva strana musi byt identifikator!\n");
+                    memorySafeExit(SEMANTICS_ERROR_UNCOMPATIBLE);
+                }
+
+                RecursiveSemanticAnalysisReturnValues rightChild =
+                    recursiveNodeWalker(currentNode->child[1], AST_CONDITION, 1);
+
+                if (rightChild != OK) {
+                    printError(SEMANTICS_ERROR_UNCOMPATIBLE, "(in) Prava strana neni v poradku!\n");
+                    memorySafeExit(SEMANTICS_ERROR_UNCOMPATIBLE);
+                }
+                return OK;
+
+            } else {
+                RecursiveSemanticAnalysisReturnValues childValue =
+                    recursiveNodeWalker(currentNode->child[0], AST_CONDITION, 0);
+                if (childValue == OK) {
+                    printError(SEMANTICS_ERROR_UNCOMPATIBLE, "(condition) Neplatna podminka!\n");
+                    memorySafeExit(SEMANTICS_ERROR_UNCOMPATIBLE);
+                }
+                return OK;
+            }
             break;
         }
         case (AST_ELSE): {
             printLog("AST_ELSE\n");
-            // TODO ast_else
+
+            // Sémantická kontrola bloku
+            recursiveNodeWalker(currentNode->child[0], AST_ELSE, 0);
+
+            // TODO
+            /*
+            RecursiveSemanticAnalysisReturnValues blockValue =
+                recursiveNodeWalker(currentNode->child[0], AST_ELSE, 0);
+
+            if (blockValue != OK) {
+                printError(SEMANTICS_ERROR_OTHERS, "(else) Neplatny blok!\n");
+                memorySafeExit(SEMANTICS_ERROR_OTHERS);
+            } */
+
+            return OK;
             break;
         }
         case (AST_WHILE): {
             printLog("AST_WHILE\n");
-            // TODO AST_WHILE
+            RecursiveSemanticAnalysisReturnValues conditionChildValue =
+                recursiveNodeWalker(currentNode->child[0], AST_WHILE, 0);
+
+            if (conditionChildValue != OK) {
+                printError(SEMANTICS_ERROR_UNCOMPATIBLE, "(while) Neplatna podminka!\n");
+                memorySafeExit(SEMANTICS_ERROR_UNCOMPATIBLE);
+            }
+
+            // Sémantická kontrola bloku
+            recursiveNodeWalker(currentNode->child[1], AST_WHILE, 1);
+
+            // TODO
+            /*RecursiveSemanticAnalysisReturnValues blockValue =
+                recursiveNodeWalker(currentNode->child[1], AST_WHILE, 1);
+
+            if (blockValue != OK) {
+                printError(SEMANTICS_ERROR_OTHERS, "(while) Neplatny blok!\n");
+                memorySafeExit(SEMANTICS_ERROR_OTHERS);
+            } */
+
+            return OK;
             break;
         }
         case (AST_FOR): {
             printLog("AST_FOR\n");
-            // TODO FOR
+
+            // Zpřístupnění iterátoru pro podmínku a blok
+            createNewScope();
+            recursiveNodeWalker(currentNode->child[0]->child[0], AST_FOR, 0);
+
+            RecursiveSemanticAnalysisReturnValues conditionChildValue =
+                recursiveNodeWalker(currentNode->child[0], AST_FOR, 0);
+
+            if (conditionChildValue != OK) {
+                printError(SEMANTICS_ERROR_UNCOMPATIBLE, "(for) Neplatna podminka!\n");
+                memorySafeExit(SEMANTICS_ERROR_UNCOMPATIBLE);
+            }
+
+            // Sémantická kontrola bloku
+            recursiveNodeWalker(currentNode->child[1], AST_FOR, 1);
+
+            // TODO
+            /* RecursiveSemanticAnalysisReturnValues blockValue =
+                recursiveNodeWalker(currentNode->child[1], AST_FOR, 1);
+
+            if (blockValue != OK) {
+                printError(SEMANTICS_ERROR_OTHERS, "(for) Neplatny blok!\n");
+                memorySafeExit(SEMANTICS_ERROR_OTHERS);
+            } */
+
+            return OK;
             break;
         }
         case (AST_IDENTIFIER): {
             printLog("AST_IDENTIFIER\n");
-
-            if (parentNodeType == AST_PARAM) {
+            printf("0\n");
+            if (parentNodeType == AST_PARAM || parentNodeType == AST_FOR) {
+                printf("1\n");
                 SemanticSymbol newSymbol;
 
-                initNewSymbol(currentNode, &newSymbol, FUNCTION_PARAMETER, UNKNOWN_VAL, NULL_VAL);
+                SemanticSymbolDataType symbolDataType = UNKNOWN_VAL;
+
+                if (parentNodeType == AST_FOR) {
+                    symbolDataType = INT_VAL;
+                }
+
+                initNewSymbol(currentNode, &newSymbol, FUNCTION_PARAMETER, symbolDataType, NULL_VAL,
+                              scopesStack->nextTopElement - 1);
 
                 SemanticSymbol* foundSymbol = findSymbolCurrentScope(newSymbol.name);
 
@@ -586,25 +726,64 @@ RecursiveSemanticAnalysisReturnValues recursiveNodeWalker(AstNode*    currentNod
                     printError(SEMANTICS_ERROR_REDEF, "Promena '%s' v danem ramci jiz existuje!\n",
                                newSymbol.name);
                     memorySafeExit(SEMANTICS_ERROR_REDEF);
-                    return ERROR;
                 }
-
+                printf("created: %s\n", newSymbol.name);
                 insertSymbolCurrentScope(newSymbol);
+                if (parentNodeType == AST_FOR) {
+                    return IDENTIFIER;
+                }
                 return OK;
+
             } else {
-                SemanticSymbol* foundSymbol = findSymbol(currentNode->value.str);
+                printf("2\n");
+                SemanticSymbol tempSymbol;
+
+                SemanticSymbol* foundSymbol = findSymbolCurrentScope(currentNode->value.str);
 
                 if (foundSymbol == NULL) {
-                    printError(SEMANTICS_ERROR_UNDEF, "Promena '%s' neexistuje!\n",
-                               currentNode->value.str);
-                    memorySafeExit(SEMANTICS_ERROR_UNDEF);
+                    foundSymbol = findSymbolAndModifyAST(currentNode, &tempSymbol);
                 }
 
-                if (parentNodeType == AST_ASSIGN) {
+                if (foundSymbol == NULL) {
+                    printf("tu\n");
+                    // SETTER
+                    if (parentNodeType == AST_ASSIGN && childNum == 0) {
+                        SemanticSymbol newSymbol;
+
+                        initNewSymbol(currentNode, &newSymbol, SETTER, UNKNOWN_VAL, NULL_VAL,
+                                      scopesStack->nextTopElement - 1);
+
+                        insertUndeclaredReference(newSymbol.name, newSymbol);
+                        return IDENTIFIER;
+                    }
+
+                    // GETTER
+                    SemanticSymbol newSymbol;
+                    initNewSymbol(currentNode, &newSymbol, GETTER, NULL_VAL, UNKNOWN_VAL,
+                                  scopesStack->nextTopElement - 1);
+
+                    insertUndeclaredReference(newSymbol.name, newSymbol);
+
+                    if (parentNodeType == AST_CONDITION) {
+                        return IDENTIFIER;
+                    }
+                    return convertSemanticDataTypeToSemanticReturnValue(UNKNOWN_VAL);
+                }
+
+                if (parentNodeType == AST_ASSIGN && childNum == 0) {
                     return IDENTIFIER;
                 }
 
-                return convertSemanticDataTypeToSemanticReturnValue(foundSymbol->dataType);
+                if (parentNodeType == AST_CONDITION) {
+                    printf("3");
+                    return IDENTIFIER;
+                }
+
+                if (foundSymbol->symbolType == GETTER) {
+                    return convertSemanticDataTypeToSemanticReturnValue(foundSymbol->returnValue);
+                } else {
+                    return convertSemanticDataTypeToSemanticReturnValue(foundSymbol->dataType);
+                }
             }
             break;
         }
@@ -615,18 +794,15 @@ RecursiveSemanticAnalysisReturnValues recursiveNodeWalker(AstNode*    currentNod
                 SemanticSymbol newSymbol;
 
                 RecursiveSemanticAnalysisReturnValues childValue =
-                    recursiveNodeWalker(currentNode->child[1], AST_GLOBAL_ID);
-
-                if (childValue == ERROR) {
-                    return ERROR;
-                }
+                    recursiveNodeWalker(currentNode->child[1], AST_GLOBAL_ID, 1);
 
                 SemanticSymbolDataType varDataType =
                     convertSemanticReturnValueToSemanticDataType(childValue);
 
-                initNewSymbol(currentNode, &newSymbol, GLOBAL, varDataType, NULL_VAL);
+                initNewSymbol(currentNode, &newSymbol, GLOBAL, varDataType, NULL_VAL,
+                              scopesStack->nextTopElement - 1);
 
-                SemanticSymbol* foundSymbol = findSymbol(newSymbol.name);
+                SemanticSymbol* foundSymbol = findGlobalSymbol(newSymbol.name);
                 if (foundSymbol != NULL) {
                     // Jedná se o přiřazení nového hodnoty již existující globální proměnné
                     foundSymbol->dataType = newSymbol.dataType;
@@ -636,7 +812,7 @@ RecursiveSemanticAnalysisReturnValues recursiveNodeWalker(AstNode*    currentNod
                 insertSymbolGlobalScope(newSymbol);
                 return OK;
             } else {
-                SemanticSymbol* foundSymbol = findSymbol(currentNode->value.str);
+                SemanticSymbol* foundSymbol = findGlobalSymbol(currentNode->value.str);
 
                 if (foundSymbol == NULL) {
                     // Globální proměnné lze číst i bez definování, vrací hodnotu null
@@ -671,6 +847,16 @@ RecursiveSemanticAnalysisReturnValues recursiveNodeWalker(AstNode*    currentNod
             return STRING_DATA;
             break;
         }
+        case (AST_STRING_BLOCK): {
+            printLog("AST_STRING_BLOCK\n");
+            return STRING_DATA;
+            break;
+        }
+        case (AST_SMALL_NULL): {
+            printLog("AST_SMALL_NULL\n");
+            return NULL_DATA;
+            break;
+        }
         case (AST_KEYWORD_NUM): {
             printLog("AST_KEYWORD_NUM\n");
             return DATATYPE_KEYWORD;
@@ -685,9 +871,9 @@ RecursiveSemanticAnalysisReturnValues recursiveNodeWalker(AstNode*    currentNod
             printLog("AST_PLUS\n");
 
             RecursiveSemanticAnalysisReturnValues leftChild =
-                recursiveNodeWalker(currentNode->child[0], AST_PLUS);
+                recursiveNodeWalker(currentNode->child[0], AST_PLUS, 0);
             RecursiveSemanticAnalysisReturnValues rightChild =
-                recursiveNodeWalker(currentNode->child[1], AST_PLUS);
+                recursiveNodeWalker(currentNode->child[1], AST_PLUS, 1);
 
             if (leftChild == NUMBER_DATA && rightChild == NUMBER_DATA) {
                 return NUMBER_DATA;
@@ -702,7 +888,11 @@ RecursiveSemanticAnalysisReturnValues recursiveNodeWalker(AstNode*    currentNod
             }
 
             if ((leftChild == INT_DATA && rightChild == FLOAT_DATA) ||
-                (leftChild == FLOAT_DATA && rightChild == INT_DATA)) {
+                (leftChild == FLOAT_DATA && rightChild == INT_DATA) ||
+                (leftChild == NUMBER_DATA && rightChild == FLOAT_DATA) ||
+                (leftChild == NUMBER_DATA && rightChild == INT_DATA) ||
+                (leftChild == INT_DATA && rightChild == NUMBER_DATA) ||
+                (leftChild == FLOAT_DATA && rightChild == NUMBER_DATA)) {
                 return NUMBER_DATA;
             }
 
@@ -736,7 +926,6 @@ RecursiveSemanticAnalysisReturnValues recursiveNodeWalker(AstNode*    currentNod
             printError(SEMANTICS_ERROR_UNCOMPATIBLE,
                        "(+) Datove datove typy musi byt kompatibilni!\n");
             memorySafeExit(SEMANTICS_ERROR_UNCOMPATIBLE);
-            return ERROR;
 
             break;
         }
@@ -745,8 +934,8 @@ RecursiveSemanticAnalysisReturnValues recursiveNodeWalker(AstNode*    currentNod
 
             if (currentNode->arity == 1) {
                 RecursiveSemanticAnalysisReturnValues onlyChild =
-                    recursiveNodeWalker(currentNode->child[0], AST_MINUS);
-
+                    recursiveNodeWalker(currentNode->child[0], AST_MINUS, 0);
+                printf("%i\n", onlyChild);
                 if (onlyChild == NUMBER_DATA) {
                     return NUMBER_DATA;
                 }
@@ -764,9 +953,9 @@ RecursiveSemanticAnalysisReturnValues recursiveNodeWalker(AstNode*    currentNod
                 }
             } else {
                 RecursiveSemanticAnalysisReturnValues leftChild =
-                    recursiveNodeWalker(currentNode->child[0], AST_MINUS);
+                    recursiveNodeWalker(currentNode->child[0], AST_MINUS, 0);
                 RecursiveSemanticAnalysisReturnValues rightChild =
-                    recursiveNodeWalker(currentNode->child[1], AST_MINUS);
+                    recursiveNodeWalker(currentNode->child[1], AST_MINUS, 1);
 
                 if (leftChild == NUMBER_DATA && rightChild == NUMBER_DATA) {
                     return NUMBER_DATA;
@@ -781,7 +970,11 @@ RecursiveSemanticAnalysisReturnValues recursiveNodeWalker(AstNode*    currentNod
                 }
 
                 if ((leftChild == INT_DATA && rightChild == FLOAT_DATA) ||
-                    (leftChild == FLOAT_DATA && rightChild == INT_DATA)) {
+                    (leftChild == FLOAT_DATA && rightChild == INT_DATA) ||
+                    (leftChild == NUMBER_DATA && rightChild == FLOAT_DATA) ||
+                    (leftChild == NUMBER_DATA && rightChild == INT_DATA) ||
+                    (leftChild == INT_DATA && rightChild == NUMBER_DATA) ||
+                    (leftChild == FLOAT_DATA && rightChild == NUMBER_DATA)) {
                     return NUMBER_DATA;
                 }
 
@@ -800,12 +993,12 @@ RecursiveSemanticAnalysisReturnValues recursiveNodeWalker(AstNode*    currentNod
                         return NUMBER_DATA;  // výsledek odčítání je vždy číslo
                     }
                 }
+                printf("%i - %i\n", leftChild, rightChild);
             }
 
             printError(SEMANTICS_ERROR_UNCOMPATIBLE,
                        "(-) Datove datove typy musi byt kompatibilni!\n");
             memorySafeExit(SEMANTICS_ERROR_UNCOMPATIBLE);
-            return ERROR;
 
             break;
         }
@@ -813,9 +1006,9 @@ RecursiveSemanticAnalysisReturnValues recursiveNodeWalker(AstNode*    currentNod
             printLog("AST_MUL\n");
 
             RecursiveSemanticAnalysisReturnValues leftChild =
-                recursiveNodeWalker(currentNode->child[0], AST_MUL);
+                recursiveNodeWalker(currentNode->child[0], AST_MUL, 0);
             RecursiveSemanticAnalysisReturnValues rightChild =
-                recursiveNodeWalker(currentNode->child[1], AST_MUL);
+                recursiveNodeWalker(currentNode->child[1], AST_MUL, 1);
 
             if (leftChild == NUMBER_DATA && rightChild == NUMBER_DATA) {
                 return NUMBER_DATA;
@@ -830,7 +1023,11 @@ RecursiveSemanticAnalysisReturnValues recursiveNodeWalker(AstNode*    currentNod
             }
 
             if ((leftChild == INT_DATA && rightChild == FLOAT_DATA) ||
-                (leftChild == FLOAT_DATA && rightChild == INT_DATA)) {
+                (leftChild == FLOAT_DATA && rightChild == INT_DATA) ||
+                (leftChild == NUMBER_DATA && rightChild == FLOAT_DATA) ||
+                (leftChild == NUMBER_DATA && rightChild == INT_DATA) ||
+                (leftChild == INT_DATA && rightChild == NUMBER_DATA) ||
+                (leftChild == FLOAT_DATA && rightChild == NUMBER_DATA)) {
                 return NUMBER_DATA;
             }
 
@@ -865,7 +1062,6 @@ RecursiveSemanticAnalysisReturnValues recursiveNodeWalker(AstNode*    currentNod
             printError(SEMANTICS_ERROR_UNCOMPATIBLE,
                        "(*) Datove datove typy musi byt kompatibilni!\n");
             memorySafeExit(SEMANTICS_ERROR_UNCOMPATIBLE);
-            return ERROR;
 
             break;
         }
@@ -873,9 +1069,9 @@ RecursiveSemanticAnalysisReturnValues recursiveNodeWalker(AstNode*    currentNod
             printLog("AST_DIV\n");
 
             RecursiveSemanticAnalysisReturnValues leftChild =
-                recursiveNodeWalker(currentNode->child[0], AST_DIV);
+                recursiveNodeWalker(currentNode->child[0], AST_DIV, 0);
             RecursiveSemanticAnalysisReturnValues rightChild =
-                recursiveNodeWalker(currentNode->child[1], AST_DIV);
+                recursiveNodeWalker(currentNode->child[1], AST_DIV, 1);
 
             if (leftChild == NUMBER_DATA && rightChild == NUMBER_DATA) {
                 return NUMBER_DATA;
@@ -892,9 +1088,12 @@ RecursiveSemanticAnalysisReturnValues recursiveNodeWalker(AstNode*    currentNod
             }
 
             if ((leftChild == INT_DATA && rightChild == FLOAT_DATA) ||
-                (leftChild == FLOAT_DATA && rightChild == INT_DATA)) {
-                return NUMBER_DATA;  // Nelze určit zda výsledek dělení dvou celých čísel bude
-                                     // desetinný nebo celý
+                (leftChild == FLOAT_DATA && rightChild == INT_DATA) ||
+                (leftChild == NUMBER_DATA && rightChild == FLOAT_DATA) ||
+                (leftChild == NUMBER_DATA && rightChild == INT_DATA) ||
+                (leftChild == INT_DATA && rightChild == NUMBER_DATA) ||
+                (leftChild == FLOAT_DATA && rightChild == NUMBER_DATA)) {
+                return NUMBER_DATA;
             }
 
             if (leftChild == UNKNOWN_DATA || rightChild == UNKNOWN_DATA) {
@@ -915,39 +1114,56 @@ RecursiveSemanticAnalysisReturnValues recursiveNodeWalker(AstNode*    currentNod
             printError(SEMANTICS_ERROR_UNCOMPATIBLE,
                        "(/) Datove datove typy musi byt kompatibilni!\n");
             memorySafeExit(SEMANTICS_ERROR_UNCOMPATIBLE);
-            return ERROR;
+
+            break;
+        }
+        case (AST_TERNARY): {
+            printLog("AST_TERNARY\n");
+
+            RecursiveSemanticAnalysisReturnValues conditionChild =
+                recursiveNodeWalker(currentNode->child[0], AST_TERNARY, 0);
+            if (conditionChild == OK) {
+                printError(SEMANTICS_ERROR_UNCOMPATIBLE, "(?:) Neplatna podminka!\n");
+                memorySafeExit(SEMANTICS_ERROR_UNCOMPATIBLE);
+            }
+
+            RecursiveSemanticAnalysisReturnValues trueChild =
+                recursiveNodeWalker(currentNode->child[1], AST_TERNARY, 1);
+            if (trueChild == OK) {
+                printError(SEMANTICS_ERROR_UNCOMPATIBLE,
+                           "(?:) Neplatny vyraz pri platne podmince!\n");
+                memorySafeExit(SEMANTICS_ERROR_UNCOMPATIBLE);
+            }
+
+            RecursiveSemanticAnalysisReturnValues falseChild =
+                recursiveNodeWalker(currentNode->child[2], AST_TERNARY, 2);
+            if (falseChild == OK) {
+                printError(SEMANTICS_ERROR_UNCOMPATIBLE,
+                           "(?:) Neplatny vyraz pri neplatne podmince!\n");
+                memorySafeExit(SEMANTICS_ERROR_UNCOMPATIBLE);
+            }
+
+            return UNKNOWN_DATA;
 
             break;
         }
         case (AST_EQ): {
             printLog("AST_EQ\n");
 
-            RecursiveSemanticAnalysisReturnValues leftChild =
-                recursiveNodeWalker(currentNode->child[0], AST_EQ);
-            RecursiveSemanticAnalysisReturnValues rightChild =
-                recursiveNodeWalker(currentNode->child[1], AST_EQ);
+            recursiveNodeWalker(currentNode->child[0], AST_EQ, 0);
+            recursiveNodeWalker(currentNode->child[1], AST_EQ, 1);
 
-            if (leftChild == ERROR || rightChild == ERROR) {
-                printError(SEMANTICS_ERROR_UNCOMPATIBLE, "(==) Doslo k chybe!\n");
-                memorySafeExit(SEMANTICS_ERROR_UNCOMPATIBLE);
-                return ERROR;
-            }
             // Porovnat lze cokoliv, ale výsledek bude vždy bool hodnota
             return BOOLEAN_DATA;
 
             break;
         }
         case (AST_NEQ): {
-            RecursiveSemanticAnalysisReturnValues leftChild =
-                recursiveNodeWalker(currentNode->child[0], AST_EQ);
-            RecursiveSemanticAnalysisReturnValues rightChild =
-                recursiveNodeWalker(currentNode->child[1], AST_EQ);
+            printLog("AST_NEQ\n");
 
-            if (leftChild == ERROR || rightChild == ERROR) {
-                printError(SEMANTICS_ERROR_UNCOMPATIBLE, "(!=) Doslo k chybe!\n");
-                memorySafeExit(SEMANTICS_ERROR_UNCOMPATIBLE);
-                return ERROR;
-            }
+            recursiveNodeWalker(currentNode->child[0], AST_EQ, 0);
+            recursiveNodeWalker(currentNode->child[1], AST_EQ, 1);
+
             // Porovnat lze cokoliv, ale výsledek bude vždy bool hodnota
             return BOOLEAN_DATA;
 
@@ -957,17 +1173,44 @@ RecursiveSemanticAnalysisReturnValues recursiveNodeWalker(AstNode*    currentNod
             printLog("AST_LT\n");
 
             RecursiveSemanticAnalysisReturnValues leftChild =
-                recursiveNodeWalker(currentNode->child[0], AST_LT);
+                recursiveNodeWalker(currentNode->child[0], AST_LT, 0);
             RecursiveSemanticAnalysisReturnValues rightChild =
-                recursiveNodeWalker(currentNode->child[1], AST_LT);
+                recursiveNodeWalker(currentNode->child[1], AST_LT, 1);
 
-            if (leftChild == ERROR || rightChild == ERROR) {
-                printError(SEMANTICS_ERROR_UNCOMPATIBLE, "(<) Doslo k chybe!\n");
-                memorySafeExit(SEMANTICS_ERROR_UNCOMPATIBLE);
-                return ERROR;
+            if (leftChild == NUMBER_DATA && rightChild == NUMBER_DATA) {
+                return BOOLEAN_DATA;
             }
-            // Porovnat lze cokoliv, ale výsledek bude vždy bool hodnota
-            return BOOLEAN_DATA;
+
+            if (leftChild == INT_DATA && rightChild == INT_DATA) {
+                return BOOLEAN_DATA;
+            }
+
+            if (leftChild == FLOAT_DATA && rightChild == FLOAT_DATA) {
+                return BOOLEAN_DATA;
+            }
+
+            if (leftChild == NUMBER_DATA && (rightChild == INT_DATA || rightChild == FLOAT_DATA ||
+                                             rightChild == UNKNOWN_DATA)) {
+                return BOOLEAN_DATA;
+            }
+
+            if (leftChild == INT_DATA && (rightChild == NUMBER_DATA || rightChild == FLOAT_DATA ||
+                                          rightChild == UNKNOWN_DATA)) {
+                return BOOLEAN_DATA;
+            }
+
+            if (leftChild == FLOAT_DATA && (rightChild == INT_DATA || rightChild == NUMBER_DATA ||
+                                            rightChild == UNKNOWN_DATA)) {
+                return BOOLEAN_DATA;
+            }
+
+            if (leftChild == UNKNOWN_DATA &&
+                (rightChild == INT_DATA || rightChild == FLOAT_DATA || rightChild == NUMBER_DATA)) {
+                return BOOLEAN_DATA;
+            }
+
+            printError(SEMANTICS_ERROR_UNCOMPATIBLE, "(<) Nekompatibilni datove typy!\n");
+            memorySafeExit(SEMANTICS_ERROR_UNCOMPATIBLE);
 
             break;
         }
@@ -975,17 +1218,44 @@ RecursiveSemanticAnalysisReturnValues recursiveNodeWalker(AstNode*    currentNod
             printLog("AST_GT\n");
 
             RecursiveSemanticAnalysisReturnValues leftChild =
-                recursiveNodeWalker(currentNode->child[0], AST_GT);
+                recursiveNodeWalker(currentNode->child[0], AST_GT, 0);
             RecursiveSemanticAnalysisReturnValues rightChild =
-                recursiveNodeWalker(currentNode->child[1], AST_GT);
+                recursiveNodeWalker(currentNode->child[1], AST_GT, 1);
 
-            if (leftChild == ERROR || rightChild == ERROR) {
-                printError(SEMANTICS_ERROR_UNCOMPATIBLE, "(>) Doslo k chybe!\n");
-                memorySafeExit(SEMANTICS_ERROR_UNCOMPATIBLE);
-                return ERROR;
+            if (leftChild == NUMBER_DATA && rightChild == NUMBER_DATA) {
+                return BOOLEAN_DATA;
             }
-            // Porovnat lze cokoliv, ale výsledek bude vždy bool hodnota
-            return BOOLEAN_DATA;
+
+            if (leftChild == INT_DATA && rightChild == INT_DATA) {
+                return BOOLEAN_DATA;
+            }
+
+            if (leftChild == FLOAT_DATA && rightChild == FLOAT_DATA) {
+                return BOOLEAN_DATA;
+            }
+
+            if (leftChild == NUMBER_DATA && (rightChild == INT_DATA || rightChild == FLOAT_DATA ||
+                                             rightChild == UNKNOWN_DATA)) {
+                return BOOLEAN_DATA;
+            }
+
+            if (leftChild == INT_DATA && (rightChild == NUMBER_DATA || rightChild == FLOAT_DATA ||
+                                          rightChild == UNKNOWN_DATA)) {
+                return BOOLEAN_DATA;
+            }
+
+            if (leftChild == FLOAT_DATA && (rightChild == INT_DATA || rightChild == NUMBER_DATA ||
+                                            rightChild == UNKNOWN_DATA)) {
+                return BOOLEAN_DATA;
+            }
+
+            if (leftChild == UNKNOWN_DATA &&
+                (rightChild == INT_DATA || rightChild == FLOAT_DATA || rightChild == NUMBER_DATA)) {
+                return BOOLEAN_DATA;
+            }
+
+            printError(SEMANTICS_ERROR_UNCOMPATIBLE, "(>) Nekompatibilni datove typy!\n");
+            memorySafeExit(SEMANTICS_ERROR_UNCOMPATIBLE);
 
             break;
         }
@@ -993,17 +1263,44 @@ RecursiveSemanticAnalysisReturnValues recursiveNodeWalker(AstNode*    currentNod
             printLog("AST_GTE\n");
 
             RecursiveSemanticAnalysisReturnValues leftChild =
-                recursiveNodeWalker(currentNode->child[0], AST_GTE);
+                recursiveNodeWalker(currentNode->child[0], AST_GTE, 0);
             RecursiveSemanticAnalysisReturnValues rightChild =
-                recursiveNodeWalker(currentNode->child[1], AST_GTE);
+                recursiveNodeWalker(currentNode->child[1], AST_GTE, 1);
 
-            if (leftChild == ERROR || rightChild == ERROR) {
-                printError(SEMANTICS_ERROR_UNCOMPATIBLE, "(>=) Doslo k chybe!\n");
-                memorySafeExit(SEMANTICS_ERROR_UNCOMPATIBLE);
-                return ERROR;
+            if (leftChild == NUMBER_DATA && rightChild == NUMBER_DATA) {
+                return BOOLEAN_DATA;
             }
-            // Porovnat lze cokoliv, ale výsledek bude vždy bool hodnota
-            return BOOLEAN_DATA;
+
+            if (leftChild == INT_DATA && rightChild == INT_DATA) {
+                return BOOLEAN_DATA;
+            }
+
+            if (leftChild == FLOAT_DATA && rightChild == FLOAT_DATA) {
+                return BOOLEAN_DATA;
+            }
+
+            if (leftChild == NUMBER_DATA && (rightChild == INT_DATA || rightChild == FLOAT_DATA ||
+                                             rightChild == UNKNOWN_DATA)) {
+                return BOOLEAN_DATA;
+            }
+
+            if (leftChild == INT_DATA && (rightChild == NUMBER_DATA || rightChild == FLOAT_DATA ||
+                                          rightChild == UNKNOWN_DATA)) {
+                return BOOLEAN_DATA;
+            }
+
+            if (leftChild == FLOAT_DATA && (rightChild == INT_DATA || rightChild == NUMBER_DATA ||
+                                            rightChild == UNKNOWN_DATA)) {
+                return BOOLEAN_DATA;
+            }
+
+            if (leftChild == UNKNOWN_DATA &&
+                (rightChild == INT_DATA || rightChild == FLOAT_DATA || rightChild == NUMBER_DATA)) {
+                return BOOLEAN_DATA;
+            }
+
+            printError(SEMANTICS_ERROR_UNCOMPATIBLE, "(>=) Nekompatibilni datove typy!\n");
+            memorySafeExit(SEMANTICS_ERROR_UNCOMPATIBLE);
 
             break;
         }
@@ -1011,25 +1308,52 @@ RecursiveSemanticAnalysisReturnValues recursiveNodeWalker(AstNode*    currentNod
             printLog("AST_LTE\n");
 
             RecursiveSemanticAnalysisReturnValues leftChild =
-                recursiveNodeWalker(currentNode->child[0], AST_LTE);
+                recursiveNodeWalker(currentNode->child[0], AST_LTE, 0);
             RecursiveSemanticAnalysisReturnValues rightChild =
-                recursiveNodeWalker(currentNode->child[1], AST_LTE);
+                recursiveNodeWalker(currentNode->child[1], AST_LTE, 1);
 
-            if (leftChild == ERROR || rightChild == ERROR) {
-                printError(SEMANTICS_ERROR_UNCOMPATIBLE, "(<=) Doslo k chybe!\n");
-                memorySafeExit(SEMANTICS_ERROR_UNCOMPATIBLE);
-                return ERROR;
+            if (leftChild == NUMBER_DATA && rightChild == NUMBER_DATA) {
+                return BOOLEAN_DATA;
             }
-            // Porovnat lze cokoliv, ale výsledek bude vždy bool hodnota
-            return BOOLEAN_DATA;
+
+            if (leftChild == INT_DATA && rightChild == INT_DATA) {
+                return BOOLEAN_DATA;
+            }
+
+            if (leftChild == FLOAT_DATA && rightChild == FLOAT_DATA) {
+                return BOOLEAN_DATA;
+            }
+
+            if (leftChild == NUMBER_DATA && (rightChild == INT_DATA || rightChild == FLOAT_DATA ||
+                                             rightChild == UNKNOWN_DATA)) {
+                return BOOLEAN_DATA;
+            }
+
+            if (leftChild == INT_DATA && (rightChild == NUMBER_DATA || rightChild == FLOAT_DATA ||
+                                          rightChild == UNKNOWN_DATA)) {
+                return BOOLEAN_DATA;
+            }
+
+            if (leftChild == FLOAT_DATA && (rightChild == INT_DATA || rightChild == NUMBER_DATA ||
+                                            rightChild == UNKNOWN_DATA)) {
+                return BOOLEAN_DATA;
+            }
+
+            if (leftChild == UNKNOWN_DATA &&
+                (rightChild == INT_DATA || rightChild == FLOAT_DATA || rightChild == NUMBER_DATA)) {
+                return BOOLEAN_DATA;
+            }
+
+            printError(SEMANTICS_ERROR_UNCOMPATIBLE, "(<=) Nekompatibilni datove typy!\n");
+            memorySafeExit(SEMANTICS_ERROR_UNCOMPATIBLE);
 
             break;
         }
         case (AST_NOT): {
             printLog("AST_NOT\n");
 
-            RecursiveSemanticAnalysisReturnValues onlyChild =
-                recursiveNodeWalker(currentNode->child[0], AST_NOT);  // Negace má pouze jedno dítě
+            RecursiveSemanticAnalysisReturnValues onlyChild = recursiveNodeWalker(
+                currentNode->child[0], AST_NOT, 0);  // Negace má pouze jedno dítě
 
             if (onlyChild == BOOLEAN_DATA) {
                 return BOOLEAN_DATA;
@@ -1041,73 +1365,28 @@ RecursiveSemanticAnalysisReturnValues recursiveNodeWalker(AstNode*    currentNod
 
             printError(SEMANTICS_ERROR_UNCOMPATIBLE, "(!) Datovy typy musi byt kompatibilni!\n");
             memorySafeExit(SEMANTICS_ERROR_UNCOMPATIBLE);
-            return ERROR;
 
             break;
         }
         case (AST_AND): {
             printLog("AST_AND\n");
 
-            RecursiveSemanticAnalysisReturnValues leftChild =
-                recursiveNodeWalker(currentNode->child[0], AST_AND);
-            RecursiveSemanticAnalysisReturnValues rightChild =
-                recursiveNodeWalker(currentNode->child[1], AST_AND);
+            recursiveNodeWalker(currentNode->child[0], AST_AND, 0);
+            recursiveNodeWalker(currentNode->child[1], AST_AND, 1);
 
-            if (leftChild == BOOLEAN_DATA && rightChild == BOOLEAN_DATA) {
-                return BOOLEAN_DATA;
-            }
-
-            if (leftChild == UNKNOWN_DATA || rightChild == UNKNOWN_DATA) {
-                if (leftChild == BOOLEAN_DATA) {
-                    return leftChild;
-                }
-
-                if (rightChild == BOOLEAN_DATA) {
-                    return rightChild;
-                }
-
-                if (leftChild == UNKNOWN_DATA && rightChild == UNKNOWN_DATA) {
-                    return BOOLEAN_DATA;  // Výsledek logického součtu bude vždy bool hodnota
-                }
-            }
-
-            printError(SEMANTICS_ERROR_UNCOMPATIBLE,
-                       "(&&) Datove datove typy musi byt kompatibilni!\n");
-            memorySafeExit(SEMANTICS_ERROR_UNCOMPATIBLE);
-            return ERROR;
+            // Nelze říct, co bude návratová hodnota
+            return UNKNOWN_DATA;
 
             break;
         }
         case (AST_OR): {
             printLog("AST_OR\n");
 
-            RecursiveSemanticAnalysisReturnValues leftChild =
-                recursiveNodeWalker(currentNode->child[0], AST_OR);
-            RecursiveSemanticAnalysisReturnValues rightChild =
-                recursiveNodeWalker(currentNode->child[1], AST_OR);
+            recursiveNodeWalker(currentNode->child[0], AST_OR, 0);
+            recursiveNodeWalker(currentNode->child[1], AST_OR, 1);
 
-            if (leftChild == BOOLEAN_DATA && rightChild == BOOLEAN_DATA) {
-                return BOOLEAN_DATA;
-            }
-
-            if (leftChild == UNKNOWN_DATA || rightChild == UNKNOWN_DATA) {
-                if (leftChild == BOOLEAN_DATA) {
-                    return leftChild;
-                }
-
-                if (rightChild == BOOLEAN_DATA) {
-                    return rightChild;
-                }
-
-                if (leftChild == UNKNOWN_DATA && rightChild == UNKNOWN_DATA) {
-                    return BOOLEAN_DATA;  // Výsledek logického součinu bude vždy bool hodnota
-                }
-            }
-
-            printError(SEMANTICS_ERROR_UNCOMPATIBLE,
-                       "(||) Datove datove typy musi byt kompatibilni!\n");
-            memorySafeExit(SEMANTICS_ERROR_UNCOMPATIBLE);
-            return ERROR;
+            // Nelze říct, co bude návratová hodnota
+            return UNKNOWN_DATA;
 
             break;
         }
@@ -1115,23 +1394,20 @@ RecursiveSemanticAnalysisReturnValues recursiveNodeWalker(AstNode*    currentNod
             printLog("AST_IS\n");
 
             RecursiveSemanticAnalysisReturnValues leftChild =
-                recursiveNodeWalker(currentNode->child[0], AST_IS);
+                recursiveNodeWalker(currentNode->child[0], AST_IS, 0);
             RecursiveSemanticAnalysisReturnValues rightChild =
-                recursiveNodeWalker(currentNode->child[1], AST_IS);
+                recursiveNodeWalker(currentNode->child[1], AST_IS, 1);
 
-            if (leftChild == OK || leftChild == ERROR || leftChild == IDENTIFIER ||
-                leftChild == GOT_NODE_NULL) {
+            if (leftChild == OK || leftChild == IDENTIFIER) {
                 printError(SEMANTICS_ERROR_UNCOMPATIBLE,
                            "(is) Leva strana operatoru musi mit jako vysledek datovy typ!\n");
                 memorySafeExit(SEMANTICS_ERROR_UNCOMPATIBLE);
-                return ERROR;
             }
 
             if (rightChild != DATATYPE_KEYWORD) {
                 printError(SEMANTICS_ERROR_UNCOMPATIBLE,
                            "(is) Prava strana operatoru musi byt nazev datoveho typu!\n");
                 memorySafeExit(SEMANTICS_ERROR_UNCOMPATIBLE);
-                return ERROR;
             }
 
             return BOOLEAN_DATA;
@@ -1140,12 +1416,38 @@ RecursiveSemanticAnalysisReturnValues recursiveNodeWalker(AstNode*    currentNod
         }
         case (AST_DOUBLE_DOT): {
             printLog("AST_DOUBLE_DOT\n");
-            // TODO
+
+            RecursiveSemanticAnalysisReturnValues leftChild =
+                recursiveNodeWalker(currentNode->child[0], AST_DOUBLE_DOT, 0);
+            RecursiveSemanticAnalysisReturnValues rightChild =
+                recursiveNodeWalker(currentNode->child[1], AST_DOUBLE_DOT, 1);
+
+            if ((leftChild == NUMBER_DATA || leftChild == INT_DATA || leftChild == UNKNOWN_DATA) &&
+                (rightChild == NUMBER_DATA || rightChild == INT_DATA ||
+                 rightChild == UNKNOWN_DATA)) {
+                return OK;
+            }
+            printError(SEMANTICS_ERROR_UNCOMPATIBLE, "(..) Operandy musi byt cela cisla!\n");
+            memorySafeExit(SEMANTICS_ERROR_UNCOMPATIBLE);
+
             break;
         }
         case (AST_TRIPLE_DOT): {
             printLog("AST_TRIPLE_DOT\n");
-            // TODO
+
+            RecursiveSemanticAnalysisReturnValues leftChild =
+                recursiveNodeWalker(currentNode->child[0], AST_TRIPLE_DOT, 0);
+            RecursiveSemanticAnalysisReturnValues rightChild =
+                recursiveNodeWalker(currentNode->child[1], AST_TRIPLE_DOT, 1);
+
+            if ((leftChild == NUMBER_DATA || leftChild == INT_DATA || leftChild == UNKNOWN_DATA) &&
+                (rightChild == NUMBER_DATA || rightChild == INT_DATA ||
+                 rightChild == UNKNOWN_DATA)) {
+                return OK;
+            }
+            printError(SEMANTICS_ERROR_UNCOMPATIBLE, "(...) Operandy musi byt cela cisla!\n");
+            memorySafeExit(SEMANTICS_ERROR_UNCOMPATIBLE);
+
             break;
         }
         case (AST_RETURN): {
@@ -1155,12 +1457,9 @@ RecursiveSemanticAnalysisReturnValues recursiveNodeWalker(AstNode*    currentNod
 
             if (currentNode->child[0]->kind != AST_EMPTY) {
                 RecursiveSemanticAnalysisReturnValues childValue =
-                    recursiveNodeWalker(currentNode->child[0], AST_RETURN);
-                if (childValue == ERROR) {
-                    return ERROR;
-                }
+                    recursiveNodeWalker(currentNode->child[0], AST_RETURN, 0);
 
-                if (returnDataType != OK || returnDataType != GOT_NODE_NULL)
+                if (returnDataType != OK)
                     returnDataType = childValue;
             }
 
@@ -1180,88 +1479,162 @@ RecursiveSemanticAnalysisReturnValues recursiveNodeWalker(AstNode*    currentNod
         }
         case (AST_NULL): {
             printLog("AST_NULL\n");
+            if (parentNodeType == AST_IS) {
+                // Značí datový typ Null
+                return DATATYPE_KEYWORD;
+            }
             // Značí prázdný jednořádkový blok (jeho návratovou hodnotu)
             return NULL_DATA;
             break;
         }
         case (AST_BREAK): {
             printLog("AST_BREAK\n");
+
+            return OK;
             break;
         }
         case (AST_CONTINUE): {
             printLog("AST_CONTINUE\n");
+
+            return OK;
             break;
         }
         case (AST_LPAREN): {
             printLog("AST_LPAREN\n");
             // Tento AST uzel bych neměl dostat
-            printError(INTERNAL_ERROR, "Vice AST_LPAREN neni validni uzel stromu!\n");
+            printError(INTERNAL_ERROR, "Uzel AST_LPAREN neni validni uzel stromu!\n");
             memorySafeExit(INTERNAL_ERROR);
-            return ERROR;
             break;
         }
         case (AST_RPAREN): {
             printLog("AST_RPAREN\n");
             // Tento AST uzel bych neměl dostat
-            printError(INTERNAL_ERROR, "Vice AST_RPAREN neni validni uzel stromu!\n");
+            printError(INTERNAL_ERROR, "Uzel AST_RPAREN neni validni uzel stromu!\n");
             memorySafeExit(INTERNAL_ERROR);
-            return ERROR;
+            break;
+        }
+        case (AST_SETTER_CALL): {
+            printLog("AST_SETTER_CALL\n");
+
+            // Tento AST uzel bych neměl dostat
+            printError(INTERNAL_ERROR, "Uzel AST_SETTER_CALL neni validni uzel stromu!\n");
+            memorySafeExit(INTERNAL_ERROR);
+
+            break;
+        }
+        case (AST_GETTER_CALL): {
+            printLog("AST_GETTER_CALL\n");
+
+            // Tento AST uzel bych neměl dostat
+            printError(INTERNAL_ERROR, "Uzel AST_GETTER_CALL neni validni uzel stromu!\n");
+            memorySafeExit(INTERNAL_ERROR);
+
             break;
         }
     }
 
     printWarning("(%s) Neznamy stav: %i!\n", __func__, currentNode->kind);
-    return ERROR;
+    return GOT_NODE_NULL;
 }
 
-bool createScopeStack() {
+void createScopeStack() {
     DynamicHashTablePtrStackPtr stack = stackHashTablePtrConstruct(DEFAULT_INIT_ELEMENT_COUNT);
     if (stack == NULL) {
-        return false;
+        printError(INTERNAL_ERROR, "Selhalo vytvareni zasobniku!\n");
+        memorySafeExit(INTERNAL_ERROR);
+        return;
     }
 
     scopesStack = stack;
-    return true;
 }
 
-bool createNewScope() {
+void createNewScope() {
     HashTable* newScope = hashTableInit();
     if (newScope == NULL) {
-        return false;
+        printError(INTERNAL_ERROR, "Selhalo vytvareni ramce!\n");
+        memorySafeExit(INTERNAL_ERROR);
+        return;
     }
 
     hashTableInitItems(newScope);
 
     stackHashTablePtrPush(scopesStack, newScope);
-    return true;
 }
 
-bool deleteScope() {
+void deleteScope() {
     if (scopesStack == NULL) {
         printError(INTERNAL_ERROR, "(%s) Zasobnik neexistuje!\n", __func__);
-        return false;
+        memorySafeExit(INTERNAL_ERROR);
+        return;
     }
     if (stackHashTablePtrIsEmpty(scopesStack)) {
         printError(INTERNAL_ERROR, "(%s) Snaha odstranit prvek z prazdneho zasobniku!\n", __func__);
-        return false;
+        memorySafeExit(INTERNAL_ERROR);
+        return;
     }
 
     HashTable* newScope = stackHashTablePtrRead(scopesStack);
     if (newScope == NULL) {
         printError(INTERNAL_ERROR, "(%s) Na zasobniku byl prazdny ukazatel!\n", __func__);
-        return false;
+        memorySafeExit(INTERNAL_ERROR);
+        return;
     }
 
     hashTableDealloc(newScope);
 
     stackHashTablePtrPop(scopesStack);
+}
 
-    return true;
+SemanticSymbol* findSymbolAndModifyAST(AstNode* sourceNode, SemanticSymbol* destSymbol) {
+    unsigned toSearchScopeIndex = scopesStack->nextTopElement;
+    int      index              = -1;
+    char*    key                = sourceNode->value.str;
+    printf("%s\n", key);
+    unsigned symbolNameLength =
+        strlen(key) + 2 + digitsCount(scopesStack->nextTopElement);  // prostor pro separátor '$$'
+
+    char symbolName[symbolNameLength];
+
+    while (toSearchScopeIndex != 0) {
+        toSearchScopeIndex--;
+
+        // variableName$$scopeNumber ($$ pro rozlišení mezi funkcí a lokální proměnnou)
+        snprintf(symbolName, symbolNameLength, "%s$$%u", key, toSearchScopeIndex);
+        printf("%s\n", symbolName);
+        index = hashTableSearchItem(scopesStack->array[toSearchScopeIndex], symbolName);
+        if (index != -1) {
+            printf("found\n");
+            break;
+        }
+    }
+
+    if (index == -1) {
+        // Může to být i získávač nebo nastavovač
+        SemanticSymbol* foundSymbol = findGlobalSymbol(key);
+        if (foundSymbol != NULL) {
+            if (foundSymbol->symbolType == GETTER) {
+                sourceNode->kind = AST_GETTER_CALL;
+            } else if (foundSymbol->symbolType == GETTER) {
+                sourceNode->kind = AST_SETTER_CALL;
+            }
+        }
+        return foundSymbol;
+    }
+
+    SemanticSymbol* foundSymbol = &(scopesStack->array[toSearchScopeIndex]->items[index].symbol);
+
+    if (destSymbol != NULL) {
+        // Potřeba přejmenovat symbol v AST stromě
+        initNewSymbol(sourceNode, destSymbol, VARIABLE, foundSymbol->dataType,
+                      foundSymbol->returnValue, toSearchScopeIndex);
+    }
+    return foundSymbol;
 }
 
 SemanticSymbol* findSymbol(char* key) {
     unsigned toSearchScopeIndex = scopesStack->nextTopElement;
     int      index              = -1;
+
     while (toSearchScopeIndex != 0) {
         toSearchScopeIndex--;
 
@@ -1271,11 +1644,17 @@ SemanticSymbol* findSymbol(char* key) {
         }
     }
 
+    return &(scopesStack->array[toSearchScopeIndex]->items[index].symbol);
+}
+
+SemanticSymbol* findGlobalSymbol(char* key) {
+    int index = hashTableSearchItem(scopesStack->array[0], key);
+
     if (index == -1) {
         return NULL;
     }
 
-    return &(scopesStack->array[toSearchScopeIndex]->items[index].symbol);
+    return &(scopesStack->array[0]->items[index].symbol);
 }
 
 SemanticSymbol* findSymbolCurrentScope(char* key) {
@@ -1297,32 +1676,39 @@ SemanticSymbol* findSymbolCurrentScope(char* key) {
     return &(stackHashTablePtrRead(scopesStack)->items[index].symbol);
 }
 
-bool insertSymbolGlobalScope(SemanticSymbol symbol) {
-    if (scopesStack->nextTopElement == 0) {
-        printError(INTERNAL_ERROR, "Neni inicializovan ramec!\n");
+void insertSymbolGlobalScope(SemanticSymbol symbol) {
+    if (scopesStack == NULL) {
+        printError(INTERNAL_ERROR, "Neexistuje zasobnik!\n");
         memorySafeExit(INTERNAL_ERROR);
-        return false;
+        return;
+    }
+
+    if (stackHashTablePtrIsEmpty(scopesStack) == true) {
+        printError(INTERNAL_ERROR, "Neni inicializovan zadny ramec!\n");
+        memorySafeExit(INTERNAL_ERROR);
+        return;
     }
 
     int index = hashTableInsertItem(scopesStack->array[0], symbol.name, symbol);
 
     if (index == -1) {
-        return false;
+        printError(INTERNAL_ERROR, "Selhalo vlozeni prvku do globalniho ramce!\n");
+        memorySafeExit(INTERNAL_ERROR);
+        return;
     }
-
-    return true;
 }
 
-bool insertSymbolCurrentScope(SemanticSymbol symbol) {
+void insertSymbolCurrentScope(SemanticSymbol symbol) {
     if (scopesStack == NULL) {
-        printWarning("(%s) Neexistuje zasobnik!\n", __func__);
-        return NULL;
+        printError(INTERNAL_ERROR, "Neexistuje zasobnik!\n");
+        memorySafeExit(INTERNAL_ERROR);
+        return;
     }
 
     if (stackHashTablePtrIsEmpty(scopesStack) == true) {
-        printError(INTERNAL_ERROR, "Neni inicializovan ramec!\n");
+        printError(INTERNAL_ERROR, "Neni inicializovan zadny ramec!\n");
         memorySafeExit(INTERNAL_ERROR);
-        return NULL;
+        return;
     }
 
     HashTable* currentScope = stackHashTablePtrRead(scopesStack);
@@ -1330,57 +1716,57 @@ bool insertSymbolCurrentScope(SemanticSymbol symbol) {
     int index = hashTableInsertItem(currentScope, symbol.name, symbol);
 
     if (index == -1) {
-        return false;
-    }
-
-    return true;
+        printError(INTERNAL_ERROR, "Selhalo vlozeni prvku do ramce!\n");
+        memorySafeExit(INTERNAL_ERROR);
+    };
 }
 
-bool createUndeclaredFunctionCallsTable() {
-    undeclaredFunctionCalls = hashTableInit();
-    if (undeclaredFunctionCalls == NULL) {
-        printError(INTERNAL_ERROR,
-                   "Selhalo vytvoření tabulky pro volání nedeklarovaných funkcí!\n");
-        return false;
+void createUndeclaredFunctionCallsTable() {
+    undeclaredReferenceTable = hashTableInit();
+    if (undeclaredReferenceTable == NULL) {
+        printError(INTERNAL_ERROR, "Selhalo vytvoreni tabulky nedeklarovanych referenci!\n");
+        memorySafeExit(INTERNAL_ERROR);
     }
-    return true;
 }
 
-void removeUndeclaredFunctionCall(char* functionSymbolName) {
-    if (undeclaredFunctionCalls == NULL) {
-        printError(INTERNAL_ERROR, "(%s) Tabulka pro volání nedeklarovaných funkcí neexistuje!\n",
+void removeUndeclaredReference(char* referenceSymbolName) {
+    if (undeclaredReferenceTable == NULL) {
+        printError(INTERNAL_ERROR, "(%s) Tabulka pro nedeklarovane reference neexistuje!\n",
                    __func__);
         memorySafeExit(INTERNAL_ERROR);
         return;
     }
 
-    if (hashTableSearchItem(undeclaredFunctionCalls, functionSymbolName) == -1) {
+    if (hashTableSearchItem(undeclaredReferenceTable, referenceSymbolName) == -1) {
         return;
     }
 
-    hashTableDeleteItem(undeclaredFunctionCalls, functionSymbolName);
+    hashTableDeleteItem(undeclaredReferenceTable, referenceSymbolName);
 }
 
-void insertUndeclaredFunctionCall(char* functionSymbolName, SemanticSymbol symbol) {
-    if (undeclaredFunctionCalls == NULL) {
-        printError(INTERNAL_ERROR, "(%s) Tabulka pro volání nedeklarovaných funkcí neexistuje!\n",
+void insertUndeclaredReference(char* referenceSymbolName, SemanticSymbol symbol) {
+    if (undeclaredReferenceTable == NULL) {
+        // Uvolnění paměti zajišťuje AST strom
+        printError(INTERNAL_ERROR, "(%s) Tabulka pro nedeklarovane reference neexistuje!\n",
                    __func__);
         memorySafeExit(INTERNAL_ERROR);
         return;
     }
 
-    if (hashTableInsertItem(undeclaredFunctionCalls, functionSymbolName, symbol) == -1) {
-        printError(INTERNAL_ERROR, "(%s) Nepodařilo se vložit prvek do tabulky!\n", __func__);
+    if (hashTableInsertItem(undeclaredReferenceTable, referenceSymbolName, symbol) == -1) {
+        // Uvolnění paměti zajišťuje AST strom
+        printError(INTERNAL_ERROR, "(%s) Nepodarilo se vlozit prvek do tabulky!\n", __func__);
         memorySafeExit(INTERNAL_ERROR);
     }
 }
 
-bool initNewSymbol(AstNode* sourceNode, SemanticSymbol* destSymbol, SemanticSymbolTypes symbolType,
+void initNewSymbol(AstNode* sourceNode, SemanticSymbol* destSymbol, SemanticSymbolTypes symbolType,
                    SemanticSymbolDataType symbolDataType,
-                   SemanticSymbolDataType functionReturnValue) {
+                   SemanticSymbolDataType functionReturnValue, unsigned scope) {
     if (sourceNode == NULL || destSymbol == NULL) {
-        printWarning("(%s) got NULL instead of values!\n", __func__);
-        return false;
+        printError(INTERNAL_ERROR, "Neplatne hodnoty!\n");
+        memorySafeExit(INTERNAL_ERROR);
+        return;
     }
 
     destSymbol->symbolType = symbolType;
@@ -1400,28 +1786,65 @@ bool initNewSymbol(AstNode* sourceNode, SemanticSymbol* destSymbol, SemanticSymb
             if (newName == NULL) {
                 printError(INTERNAL_ERROR, "(%s) Selhala alokace pameti!", __func__);
                 memorySafeExit(INTERNAL_ERROR);
-                return false;
+                return;
             }
 
             destSymbol->name        = newName;
             destSymbol->returnValue = functionReturnValue;
 
+            // functionName$parametrCount
             snprintf(destSymbol->name, newNameLength, "%s$%lu", sourceNode->child[0]->value.str,
                      numberOfParams);
+
             destSymbol->paramCount = sourceNode->child[1]->arity;
 
             free(sourceNode->child[0]->value.str);
             sourceNode->child[0]->value.str = newName;
             break;
         }
-        case (VARIABLE): {
-            destSymbol->name = sourceNode->child[0]->value.str;
+        case (VARIABLE_DEFINITION): {
+            unsigned newNameLength = strlen(sourceNode->child[0]->value.str) + 2 +
+                                     digitsCount(scope);  // prostor pro separátor '$$'
 
-            destSymbol->dataType = symbolDataType;
+            char* newName = malloc(sizeof(char) * newNameLength);
+
+            if (newName == NULL) {
+                printError(INTERNAL_ERROR, "(%s) Selhala alokace pameti!", __func__);
+                memorySafeExit(INTERNAL_ERROR);
+                return;
+            }
+
+            destSymbol->name = newName;
+
+            snprintf(destSymbol->name, newNameLength, "%s$$%u", sourceNode->child[0]->value.str,
+                     scope);
+
+            free(sourceNode->child[0]->value.str);
+            sourceNode->child[0]->value.str = newName;
+            destSymbol->dataType            = symbolDataType;
             break;
         }
+        case (VARIABLE):
         case (FUNCTION_PARAMETER): {
-            destSymbol->name = sourceNode->value.str;
+            unsigned newNameLength = strlen(sourceNode->value.str) + 2 +
+                                     digitsCount(scope);  // prostor pro separátor '$$'
+
+            char* newName = malloc(sizeof(char) * newNameLength);
+
+            if (newName == NULL) {
+                printError(INTERNAL_ERROR, "(%s) Selhala alokace pameti!", __func__);
+                memorySafeExit(INTERNAL_ERROR);
+                return;
+            }
+
+            destSymbol->name = newName;
+
+            // variableName$$scopeNumber ($$ pro rozlišení mezi funkcí a lokální proměnnou)
+            snprintf(destSymbol->name, newNameLength, "%s$$%u", sourceNode->value.str, scope);
+
+            free(sourceNode->value.str);
+            sourceNode->value.str = newName;
+            destSymbol->dataType  = symbolDataType;
             break;
         }
         case (GLOBAL): {
@@ -1430,19 +1853,23 @@ bool initNewSymbol(AstNode* sourceNode, SemanticSymbol* destSymbol, SemanticSymb
             break;
         }
         case (SETTER): {
+            destSymbol->name     = sourceNode->value.str;
+            destSymbol->dataType = symbolDataType;
+            break;
         }
         case (GETTER): {
-            printWarning("NOT IMPLEMENTED!!!!");
-            return false;
+            destSymbol->name        = sourceNode->value.str;
+            destSymbol->returnValue = functionReturnValue;
+            break;
         }
         default: {
             printError(INTERNAL_ERROR, "(%s) Neplatny typ symbolu '%u`", __func__, symbolType);
             memorySafeExit(INTERNAL_ERROR);
-            return false;
+            return;
         }
     }
 
-    return true;
+    return;
 }
 
 RecursiveSemanticAnalysisReturnValues handleBuildinFunctions(AstNode* functionCallNode) {
@@ -1454,7 +1881,6 @@ RecursiveSemanticAnalysisReturnValues handleBuildinFunctions(AstNode* functionCa
         if (functionCallNode->child[1]->arity != 1) {
             printError(SEMANTICS_ERROR_UNEXPECTED, "(Ifj.read_str) Nevhodny pocet parametru!\n");
             memorySafeExit(SEMANTICS_ERROR_UNEXPECTED);
-            return ERROR;
         }
 
         return STRING_DATA;  // Předpokládám, že funkce nevrátí chybový datový typ
@@ -1466,39 +1892,45 @@ RecursiveSemanticAnalysisReturnValues handleBuildinFunctions(AstNode* functionCa
         if (functionCallNode->child[1]->arity != 1) {
             printError(SEMANTICS_ERROR_UNEXPECTED, "(Ifj.read_num) Nevhodny pocet parametru!\n");
             memorySafeExit(SEMANTICS_ERROR_UNEXPECTED);
-            return ERROR;
         }
 
         return NUMBER_DATA;  // Předpokládám, že funkce nevrátí chybový datový typ
     }
+
+    if (strncmp(functionName, "read_bool", 10) == 0) {
+        printLog("read_bool\n");
+
+        if (functionCallNode->child[1]->arity != 1) {
+            printError(SEMANTICS_ERROR_UNEXPECTED, "(Ifj.read_bool) Nevhodny pocet parametru!\n");
+            memorySafeExit(SEMANTICS_ERROR_UNEXPECTED);
+        }
+
+        return BOOLEAN_DATA;  // Předpokládám, že funkce nevrátí chybový datový typ
+    }
+
     if (strncmp(functionName, "write", 6) == 0) {
         printLog("write\n");
 
         if (functionCallNode->child[1]->arity != 2) {
             printError(SEMANTICS_ERROR_UNEXPECTED, "(Ifj.write) Nevhodny pocet parametru!\n");
             memorySafeExit(SEMANTICS_ERROR_UNEXPECTED);
-            return ERROR;
         }
 
-        if (recursiveNodeWalker(functionCallNode->child[1], AST_IFJ_CALL) == ERROR) {
-            printError(SEMANTICS_ERROR_INCORRECT, "(Ifj.write) Nevhodny parametr!\n");
-            memorySafeExit(SEMANTICS_ERROR_INCORRECT);
-            return ERROR;
-        }
+        recursiveNodeWalker(functionCallNode->child[1], AST_IFJ_CALL, 1);
 
         return NULL_DATA;
     }
+
     if (strncmp(functionName, "floor", 6) == 0) {
         printLog("floor\n");
 
         if (functionCallNode->child[1]->arity != 2) {
             printError(SEMANTICS_ERROR_UNEXPECTED, "(Ifj.floor) Nevhodny pocet parametru!\n");
             memorySafeExit(SEMANTICS_ERROR_UNEXPECTED);
-            return ERROR;
         }
 
         RecursiveSemanticAnalysisReturnValues onlyChild =
-            recursiveNodeWalker(functionCallNode->child[1]->child[0], AST_IFJ_CALL);
+            recursiveNodeWalker(functionCallNode->child[1]->child[0], AST_IFJ_CALL, 0);
         if (onlyChild == NUMBER_DATA || onlyChild == FLOAT_DATA || onlyChild == INT_DATA ||
             onlyChild == UNKNOWN_DATA) {
             return INT_DATA;
@@ -1506,101 +1938,91 @@ RecursiveSemanticAnalysisReturnValues handleBuildinFunctions(AstNode* functionCa
 
         printError(SEMANTICS_ERROR_INCORRECT, "(Ifj.floor) Nevhodny parametr!\n");
         memorySafeExit(SEMANTICS_ERROR_INCORRECT);
-        return ERROR;
     }
+
     if (strncmp(functionName, "str", 4) == 0) {
         printLog("str\n");
 
         if (functionCallNode->child[1]->arity != 2) {
             printError(SEMANTICS_ERROR_UNEXPECTED, "(Ifj.str) Nevhodny pocet parametru!\n");
             memorySafeExit(SEMANTICS_ERROR_UNEXPECTED);
-            return ERROR;
         }
 
-        if (recursiveNodeWalker(functionCallNode->child[1], AST_IFJ_CALL) == ERROR) {
-            printError(SEMANTICS_ERROR_INCORRECT, "(Ifj.str) Nevhodny parametr!\n");
-            memorySafeExit(SEMANTICS_ERROR_INCORRECT);
-            return ERROR;
-        }
+        recursiveNodeWalker(functionCallNode->child[1], AST_IFJ_CALL, 1);
+
         return STRING_DATA;
     }
+
     if (strncmp(functionName, "length", 7) == 0) {
         printLog("length\n");
 
         if (functionCallNode->child[1]->arity != 2) {
             printError(SEMANTICS_ERROR_UNEXPECTED, "(Ifj.length) Nevhodny pocet parametru!\n");
             memorySafeExit(SEMANTICS_ERROR_UNEXPECTED);
-            return ERROR;
         }
 
         RecursiveSemanticAnalysisReturnValues onlyChild =
-            recursiveNodeWalker(functionCallNode->child[1]->child[0], AST_IFJ_CALL);
+            recursiveNodeWalker(functionCallNode->child[1]->child[0], AST_IFJ_CALL, 0);
         if (onlyChild == STRING_DATA || onlyChild == UNKNOWN_DATA) {
             return INT_DATA;
         }
 
         printError(SEMANTICS_ERROR_INCORRECT, "(Ifj.length) Nevhodny parametr!\n");
         memorySafeExit(SEMANTICS_ERROR_INCORRECT);
-        return ERROR;
     }
+
     if (strncmp(functionName, "substring", 10) == 0) {
         printLog("substring\n");
 
         if (functionCallNode->child[1]->arity != 4) {
             printError(SEMANTICS_ERROR_UNEXPECTED, "(Ifj.substring) Nevhodny pocet parametru!\n");
             memorySafeExit(SEMANTICS_ERROR_UNEXPECTED);
-            return ERROR;
         }
 
         RecursiveSemanticAnalysisReturnValues firstChild =
-            recursiveNodeWalker(functionCallNode->child[1]->child[0], AST_IFJ_CALL);
+            recursiveNodeWalker(functionCallNode->child[1]->child[0], AST_IFJ_CALL, 0);
         if (firstChild != STRING_DATA && firstChild != UNKNOWN_DATA) {
             printError(SEMANTICS_ERROR_INCORRECT, "(Ifj.substring) Nevhodny prvni parametr!\n");
             memorySafeExit(SEMANTICS_ERROR_INCORRECT);
-            return ERROR;
         }
 
         RecursiveSemanticAnalysisReturnValues secondChild =
-            recursiveNodeWalker(functionCallNode->child[1]->child[1], AST_IFJ_CALL);
+            recursiveNodeWalker(functionCallNode->child[1]->child[1], AST_IFJ_CALL, 1);
         if (secondChild != NUMBER_DATA && secondChild != INT_DATA && secondChild != UNKNOWN_DATA) {
             printError(SEMANTICS_ERROR_INCORRECT, "(Ifj.substring) Nevhodny druhy parametr!\n");
             memorySafeExit(SEMANTICS_ERROR_INCORRECT);
-            return ERROR;
         }
 
         RecursiveSemanticAnalysisReturnValues thirdChild =
-            recursiveNodeWalker(functionCallNode->child[1]->child[2], AST_IFJ_CALL);
+            recursiveNodeWalker(functionCallNode->child[1]->child[2], AST_IFJ_CALL, 2);
         if (thirdChild != NUMBER_DATA && thirdChild != INT_DATA && thirdChild != UNKNOWN_DATA) {
             printError(SEMANTICS_ERROR_INCORRECT, "(Ifj.substring) Nevhodny treti parametr!\n");
             memorySafeExit(SEMANTICS_ERROR_INCORRECT);
-            return ERROR;
         }
 
         return STRING_DATA;  // Předpokládám, že funkce nevrátí chybový datový typ
     }
+
     if (strncmp(functionName, "strcmp", 7) == 0) {
         printLog("strcmp\n");
 
         if (functionCallNode->child[1]->arity != 3) {
             printError(SEMANTICS_ERROR_UNEXPECTED, "(Ifj.strcmp) Nevhodny pocet parametru!\n");
             memorySafeExit(SEMANTICS_ERROR_UNEXPECTED);
-            return ERROR;
         }
 
         RecursiveSemanticAnalysisReturnValues firstChild =
-            recursiveNodeWalker(functionCallNode->child[1]->child[0], AST_IFJ_CALL);
+            recursiveNodeWalker(functionCallNode->child[1]->child[0], AST_IFJ_CALL, 0);
         if (firstChild != STRING_DATA && firstChild != UNKNOWN_DATA) {
             printError(SEMANTICS_ERROR_INCORRECT, "(Ifj.strcmp) Nevhodny prvni parametr!\n");
             memorySafeExit(SEMANTICS_ERROR_INCORRECT);
-            return ERROR;
         }
 
         RecursiveSemanticAnalysisReturnValues secondChild =
-            recursiveNodeWalker(functionCallNode->child[1]->child[0], AST_IFJ_CALL);
+            recursiveNodeWalker(functionCallNode->child[1]->child[1], AST_IFJ_CALL, 1);
         if (secondChild != STRING_DATA && secondChild != UNKNOWN_DATA) {
             printError(SEMANTICS_ERROR_INCORRECT, "(Ifj.strcmp) Nevhodny druhy parametr!\n");
             memorySafeExit(SEMANTICS_ERROR_INCORRECT);
-            return ERROR;
         }
 
         return INT_DATA;
@@ -1612,23 +2034,20 @@ RecursiveSemanticAnalysisReturnValues handleBuildinFunctions(AstNode* functionCa
         if (functionCallNode->child[1]->arity != 3) {
             printError(SEMANTICS_ERROR_UNEXPECTED, "(Ifj.ord) Nevhodny pocet parametru!\n");
             memorySafeExit(SEMANTICS_ERROR_UNEXPECTED);
-            return ERROR;
         }
 
         RecursiveSemanticAnalysisReturnValues firstChild =
-            recursiveNodeWalker(functionCallNode->child[1]->child[0], AST_IFJ_CALL);
+            recursiveNodeWalker(functionCallNode->child[1]->child[0], AST_IFJ_CALL, 0);
         if (firstChild != STRING_DATA && firstChild != UNKNOWN_DATA) {
             printError(SEMANTICS_ERROR_INCORRECT, "(Ifj.ord) Nevhodny prvni parametr!\n");
             memorySafeExit(SEMANTICS_ERROR_INCORRECT);
-            return ERROR;
         }
 
         RecursiveSemanticAnalysisReturnValues secondChild =
-            recursiveNodeWalker(functionCallNode->child[1]->child[1], AST_IFJ_CALL);
+            recursiveNodeWalker(functionCallNode->child[1]->child[1], AST_IFJ_CALL, 1);
         if (secondChild != NUMBER_DATA && secondChild != INT_DATA && secondChild != UNKNOWN_DATA) {
             printError(SEMANTICS_ERROR_INCORRECT, "(Ifj.ord) Nevhodny druhy parametr!\n");
             memorySafeExit(SEMANTICS_ERROR_INCORRECT);
-            return ERROR;
         }
 
         return INT_DATA;
@@ -1640,15 +2059,13 @@ RecursiveSemanticAnalysisReturnValues handleBuildinFunctions(AstNode* functionCa
         if (functionCallNode->child[1]->arity != 2) {
             printError(SEMANTICS_ERROR_UNEXPECTED, "(Ifj.chr) Nevhodny pocet parametru!\n");
             memorySafeExit(SEMANTICS_ERROR_UNEXPECTED);
-            return ERROR;
         }
 
         RecursiveSemanticAnalysisReturnValues firstChild =
-            recursiveNodeWalker(functionCallNode->child[1]->child[0], AST_IFJ_CALL);
+            recursiveNodeWalker(functionCallNode->child[1]->child[0], AST_IFJ_CALL, 0);
         if (firstChild != NUMBER_DATA && firstChild != INT_DATA && firstChild != UNKNOWN_DATA) {
             printError(SEMANTICS_ERROR_INCORRECT, "(Ifj.char) Nevhodny parametr!\n");
             memorySafeExit(SEMANTICS_ERROR_INCORRECT);
-            return ERROR;
         }
 
         return STRING_DATA;
@@ -1656,7 +2073,7 @@ RecursiveSemanticAnalysisReturnValues handleBuildinFunctions(AstNode* functionCa
 
     printError(SEMANTICS_ERROR_UNDEF, "Neznama vestavena funkce: '%s'!\n", functionName);
     memorySafeExit(SEMANTICS_ERROR_UNDEF);
-    return ERROR;
+    return GOT_NODE_NULL;
 }
 
 size_t digitsCount(size_t n) {

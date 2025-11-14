@@ -1,0 +1,9 @@
+import "ifj25" for Ifj
+class Program {
+    static sign(x) {
+        if (x < 0) { -1 } else if (x == 0) { 0 } else { 1 }
+    }
+    static main() {
+        var r = sign(5)
+    }
+}

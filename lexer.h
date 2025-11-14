@@ -98,7 +98,7 @@ typedef enum {
     TOKEN_QUESTION_MARK,
     TOKEN_LTE,
     TOKEN_GTE,
-    TOKEN_NOT, // !=
+    TOKEN_NOT_EQUAL, // !=
     TOKEN_COLON,
     TOKEN_AND,
     TOKEN_OR,
@@ -126,7 +126,7 @@ typedef enum {
     TOKEN_KEYWORD_CONTINUE,
 	TOKEN_KEYWORD_BREAK,
 	TOKEN_COMMA,
-	TOKEN_NEGACE,
+	TOKEN_NOT,
     TOKEN_DOLLAR,
     TOKEN_STOP,
     TOKEN_EXPRESSION,
@@ -177,6 +177,6 @@ void lexer_free(void);
 Token lexer_token_next();
 TokenType match_identifikator(const char *identifikator);
 char *token_type_to_string(TokenType type);
-extern char *source;
+extern char *source_file;
 extern char *buf;
 #endif

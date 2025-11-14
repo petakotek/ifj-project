@@ -11,6 +11,7 @@
 
 #include "lexer.h"
 #include "semantic_analysis.h"
+#include "parser.h"
 
 #include <stdlib.h>
 #include <stdio.h>
@@ -38,6 +39,8 @@ void printError(enum errorCodes errCode, const char *fmt, ...) {
     va_end(args);
 }
 
+#define ENABLE_DEVELOPMENT_LOGGING // TODO tohle by se mělo dít při překladu
+#ifdef ENABLE_DEVELOPMENT_LOGGING
 void printWarning(const char *fmt, ...) {
     va_list args;
     va_start(args, fmt);
@@ -53,12 +56,26 @@ void printLog(const char *fmt, ...) {
     vfprintf(stderr, fmt, args);
     va_end(args);
 }
+#else
+void printWarning(const char *fmt, ...) {
+    va_list args;
+    va_start(args, fmt);
+    va_end(args);
+}
+
+void printLog(const char *fmt, ...) {
+    va_list args;
+    va_start(args, fmt);
+    va_end(args);
+}
+#endif
 
 bool memoryClean() {
     // TODO jednotlivé funkce pro vyčištění struktur a podobně
     // TODO už můžu přidat lexer_free() a zavření souboru/free na načtený soubor
     lexer_free();
- //   freeSematicsMemory();
+    parserFree();
+    freeSemanticsMemory();
     printWarning("Funkce memoryClean není implementovaná!\n");
     return false;
 }
@@ -124,7 +141,6 @@ char* read_all_stdin(void) {
     }
 
     size_t total_size = 0;
-    size_t check_zero_read = 0;
     size_t capacity = INITIAL_CAPACITY;
 
     while (1) {

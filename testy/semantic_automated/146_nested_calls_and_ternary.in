@@ -1,0 +1,7 @@
+import "ifj25" for Ifj
+class Program {
+    static f(a){ a }
+    static main(){ 
+        var r = (true) ? f(1+2) : f(3+4) 
+        }
+}
