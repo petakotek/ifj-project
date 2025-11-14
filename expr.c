@@ -295,7 +295,6 @@ void findPrecedenceRule(DynamicPrecedenceStackPtr stack, DynamicAstNodeStackPtr 
         printError(SYNTAX_ERROR, "(PSA) stack je ve findPrecedenceRule NULL\n");
         freeAstStack(stackA);
         stackAstNodeDestruct(stackA);
-        // freePrecedenceStack(stack);
         stackPrecedenceDestruct(stack);
         memorySafeExit(SYNTAX_ERROR);
     }
@@ -311,6 +310,10 @@ void findPrecedenceRule(DynamicPrecedenceStackPtr stack, DynamicAstNodeStackPtr 
     // hodim na zasobnik vse zpet
     while (!stackPrecedenceIsEmpty(stackTmp))
     {
+        if (!stack)
+        {
+            return;
+        }
         Token stackTop = stackPrecedenceRead(stackTmp);
         stackPrecedencePop(stackTmp);
         stackPrecedencePush(stack, stackTop);
@@ -353,7 +356,7 @@ void findPrecedenceRule(DynamicPrecedenceStackPtr stack, DynamicAstNodeStackPtr 
                 kids[0] = firstChild; // Levý uzel (i když by u unárních bylo přesnější dát pravý)
                 AstNode *newRoot = ast_new(getAstNodeTypeFromTokenType(p2.type), 1, kids); // vytvoření stromu s jedním dítětem, který bude ten výraz
                 stackAstNodePush(stackA, newRoot);
-
+                free(kids);
                 p2.type = TOKEN_EXPRESSION; // vratim na klasicky zasobnik jenom expression
                 stackPrecedencePush(stack, p2);
                 break;
@@ -369,16 +372,14 @@ void findPrecedenceRule(DynamicPrecedenceStackPtr stack, DynamicAstNodeStackPtr 
                 kids[0] = firstChild; // Levý uzel (i když by u unárních bylo přesnější dát pravý)
                 AstNode *newRoot = ast_new(AST_MINUS, 1, kids); // vytvoření stromu s jedním dítětem, který bude ten výraz
                 stackAstNodePush(stackA, newRoot);
-
+                free(kids);
                 p2.type = TOKEN_EXPRESSION; // vratim na klasicky zasobnik jenom expression
                 stackPrecedencePush(stack, p2);
                 break;
             }
             printError(SYNTAX_ERROR, "(PSA) pravidlo gramatiky nebylo nalezeno\n");
             freeAstStack(stackA);
-            stackAstNodeDestruct(stackA);
             freePrecedenceStack(stack);
-            stackPrecedenceDestruct(stack);
             memorySafeExit(SYNTAX_ERROR);
             break;
 
@@ -709,6 +710,28 @@ AstNode* parseExpression(Token *token, int flag)
     DynamicAstNodeStackPtr stackA = stackAstNodeConstruct(DEFAULT_INIT_ELEMENT_COUNT); // Zásobník uzlů, na které budou odkládány zpracované výrazy
 
     Token actualToken = *token; // aktuální token na vstupu, se kterým pracuji
+    switch (actualToken.type)
+    {
+        case TOKEN_IDENTIFIER:
+        case TOKEN_GLOBAL_ID:
+        case TOKEN_STRING:
+        case TOKEN_INTEGER:
+        case TOKEN_FLOAT:
+        case TOKEN_TRUE:
+        case TOKEN_FALSE:
+        case TOKEN_KEYWORD_IS:
+        case TOKEN_KEYWORD_NUM:
+        case TOKEN_KEYWORD_STRING:
+        case TOKEN_HEXA:
+        case TOKEN_KEYWORD_NULL_SMALL:
+        case TOKEN_FLOAT_EXP:
+        case TOKEN_INTEGER_EXP:
+            token->value.identifier = NULL;   // parser odovzdá vlastnictví PSA
+            break;
+
+        default:
+            break;
+    }
     int endFlag = 0;
     Token dollar; // $
     dollar.type = TOKEN_DOLLAR;

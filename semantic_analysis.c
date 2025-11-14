@@ -16,6 +16,7 @@
 //
 
 // TODO aktualizace dokumentačních komentářů
+// TODO kontrola error kódů!!!
 
 /**
  * @brief Ukazatel na zásobník pro ukládání jednotlivých rámců

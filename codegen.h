@@ -31,6 +31,9 @@ void emit_or(AstNode *node, FuncContext *funcContext);
 void emit_and(AstNode *node, FuncContext *funcContext);
 void emit_equal_not(AstNode *node, FuncContext *funcContext);
 void emit_greater_equal(AstNode *node, FuncContext *funcContext);
+
+void printN(const char *fmt, ...);
+
 void emitUnaryMinus(AstNode *node,FuncContext *funcStrukt);
 FuncContext *ConstuctorFuncContext();
 /**
