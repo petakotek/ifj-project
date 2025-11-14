@@ -88,7 +88,6 @@ typedef enum AstNodeType {
     AST_KEYWORD_STRING,  // String
     AST_STRING_BLOCK,
     AST_SMALL_NULL,
-    AST_HEXA,
 } AstNodeType;
 
 /**
