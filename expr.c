@@ -379,9 +379,7 @@ void findPrecedenceRule(DynamicPrecedenceStackPtr stack, DynamicAstNodeStackPtr 
             }
             printError(SYNTAX_ERROR, "(PSA) pravidlo gramatiky nebylo nalezeno\n");
             freeAstStack(stackA);
-            stackAstNodeDestruct(stackA);
             freePrecedenceStack(stack);
-            stackPrecedenceDestruct(stack);
             memorySafeExit(SYNTAX_ERROR);
             break;
 
