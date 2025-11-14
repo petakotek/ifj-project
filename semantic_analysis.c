@@ -1615,7 +1615,7 @@ SemanticSymbol* findSymbolAndModifyAST(AstNode* sourceNode, SemanticSymbol* dest
         if (foundSymbol != NULL) {
             if (foundSymbol->symbolType == GETTER) {
                 sourceNode->kind = AST_GETTER_CALL;
-            } else if (foundSymbol->symbolType == GETTER) {
+            } else if (foundSymbol->symbolType == SETTER) {
                 sourceNode->kind = AST_SETTER_CALL;
             }
         }
