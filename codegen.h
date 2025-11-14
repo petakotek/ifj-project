@@ -31,6 +31,7 @@ void emit_or(AstNode *node, FuncContext *funcContext);
 void emit_and(AstNode *node, FuncContext *funcContext);
 void emit_equal_not(AstNode *node, FuncContext *funcContext);
 void emit_greater_equal(AstNode *node, FuncContext *funcContext);
+void printN(const char *fmt, ...);
 
 // Pomocná struktura pro ukládání proměnných behem projizdeni uzlem funkce
 // abych si na zacatku funkce nadefinovali vsechny promenen ktere budou pouzity

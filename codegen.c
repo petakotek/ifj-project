@@ -10,6 +10,7 @@
 #include "parser.h"
 #include "semantic_analysis.h"
 #include "support_functions.h"
+#include "builtin_functions.h"
 #define MAX_LABELS 1000
 
 /*
@@ -1408,7 +1409,8 @@ void emit_command(AstNode *node,FuncContext *funcStruct) {
             // emit_null(node);
             break;
         case AST_IFJ_CALL:
-       		emitIfjFunc(node, funcStruct);
+       		//emitIfjFunc(node, funcStruct);
+            handleBuiltin(node, funcStruct);
          	break;
         default:
         	printf("%s \n",ast_node_type_to_string(node->kind));
