@@ -1602,7 +1602,7 @@ void emitGetter(AstNode* node) {
 	for (int i = 0; i < localVariables->count; i++) {
 	    printN("DEFVAR LF@%s", localVariables->var_names[i]);
 	}
-
+    printN("MOVE LF@retval nil@nil");
     for (int i = 0; i < node->child[2]->child[0]->arity; i++)
     {
         emit_command(node->child[2]->child[0]->child[i], context);
