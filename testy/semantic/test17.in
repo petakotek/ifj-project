@@ -2,27 +2,26 @@ import "ifj25" for Ifj
 class Program {
     // getter a setter
 
+
+    static main() { 
+        var z = x
+       // var a = z + 1
+        y = 1
+        var h = x()
+        var hh = y(4)
+        return
+    }
+
     static x {
         return 1
     }
 
     static y = (l) {
         return l + 1
-        c = b 
-        return "a"
     }
 
-    static main() { 
-        var z = x
-        var a = z + 1
-        var y = "a"
-        y = y + "c"
-        //var h = x()
-        //var hh = y(4)
-        //return
-    }
 
-    static x() {
+   static x() {
         return
     }
 
