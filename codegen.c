@@ -1305,7 +1305,7 @@ void emitWhile(AstNode* node, FuncContext *funcContext)
     if (node->child[0]->kind == AST_CONDITION)
     {
         // while -> condition -> AST samotneho operatoru
-        emit_command(node->child[0]->child[0], funcContext);
+        emit_command(node->child[0], funcContext);
         printN("PUSHS bool@false");
         printN("JUMPIFEQS %s", endLabel);
     }else{
