@@ -1532,15 +1532,6 @@ RecursiveSemanticAnalysisReturnValues recursiveNodeWalker(AstNode*    currentNod
 
             break;
         }
-        case (AST_HEXA): {
-            printLog("AST_HEXA\n");
-
-            // Tento AST uzel bych neměl dostat
-            printError(INTERNAL_ERROR, "Uzel AST_HEXA neni validni uzel stromu!\n");
-            memorySafeExit(INTERNAL_ERROR);
-
-            break;
-        }
     }
 
     printWarning("(%s) Neznamy stav: %i!\n", __func__, currentNode->kind);
