@@ -76,8 +76,7 @@ bool memoryClean() {
     lexer_free();
     parserFree();
     freeSemanticsMemory();
-    printWarning("Funkce memoryClean není implementovaná!\n");
-    return false;
+    return true;
 }
 
 void memorySafeExit(enum errorCodes errCode) {

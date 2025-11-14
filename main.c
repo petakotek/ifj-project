@@ -44,7 +44,7 @@ int main(){
 	AST = parser();
 	//funkcia ast_dump -> funkcia na kontrolny vypis ast stromu
 	ast_dump(AST);
-	codegen_generate(AST);
+	//codegen_generate(AST);
 	/*
 	bool output;
 	output = startSematicValidation(AST);
