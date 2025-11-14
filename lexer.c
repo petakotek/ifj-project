@@ -793,10 +793,18 @@ Token lexer_token_next() {
              case DIGIT_EXP: {
                  if (isdigit(c)) {
                      lexer->pos++;
-                 } else if ((c == '+' || c == '-') && isdigit(lexer->input[lexer->pos + 1])) {
-                     lexer->pos++;
-                     lexer->pos++;
-                 } else if (lexer->input[lexer->pos - 1] != '-' && lexer->input[lexer->pos - 1] != '+') {
+                 } else if ((c == '+' || c == '-')) {
+                     char next_char = lexer->input[lexer->pos + 1];
+                     if (isdigit(next_char)) {
+                         lexer->pos++;
+                     } else {
+                         free(buf);
+                         printError(LEX_ERROR,
+                                    "neznamy charakter v lexer_token_next: %c on line : %lu",
+                                    next_char, lexer->pos);
+                         memorySafeExit(LEX_ERROR);
+                    }
+                 } else if (lexer->input[lexer->pos - 1] != '-' && lexer->input[lexer->pos - 1] != '+' && !isdigit(c)) {
                      token.type             = TOKEN_INTEGER_EXP;
                      token.value.identifier = substring(zacatek, lexer->pos);
                      token.line             = radek;
@@ -804,21 +812,37 @@ Token lexer_token_next() {
                  } else {
                      free(buf);
                      printError(LEX_ERROR,
-                             "neznamy charakter v lexer_token_next"
-                             "%c on line : %lu",
-                             c, lexer->pos);
+                                "neznamy charakter v lexer_token_next: %c on line : %lu",
+                                c, lexer->pos);
                      memorySafeExit(LEX_ERROR);
                  }
                  break;
              }
-            case FLOAT_EXP: {
-                if (isdigit(c) ||c == '+' || c == '-') {
+             case FLOAT_EXP: {
+                if (isdigit(c)) {
                     lexer->pos++;
+                } else if ((c == '+' || c == '-')) {
+                    char next_char = lexer->input[lexer->pos + 1];
+                    if (isdigit(next_char)) {
+                        lexer->pos++;
+                    } else {
+                        free(buf);
+                        printError(LEX_ERROR,
+                                    "neznamy charakter v lexer_token_next: %c on line : %lu",
+                                    next_char, lexer->pos);
+                        memorySafeExit(LEX_ERROR);
+                    }
+                } else if (lexer->input[lexer->pos - 1] != '-' && lexer->input[lexer->pos - 1] != '+' && !isdigit(c)) {
+                    token.type             = TOKEN_FLOAT;
+                    token.value.identifier = substring(zacatek, lexer->pos);
+                    token.line             = radek;
+                    goto token_found;
                 } else {
-	                token.type             = TOKEN_FLOAT_EXP;
-	                token.value.identifier = substring(zacatek, lexer->pos);
-	                token.line             = radek;
-	                goto token_found;
+                    free(buf);
+                    printError(LEX_ERROR,
+                                "neznamy charakter v lexer_token_next: %c on line : %lu",
+                                c, lexer->pos);
+                    memorySafeExit(LEX_ERROR);
                 }
                 break;
             }
@@ -880,16 +904,16 @@ Token lexer_token_next() {
                         hexa_count = 0;
                         lexer->pos++;
                     } else if (next == 'n') {
-                    	append_char(&buf, &delak, &kapacity, '\\');
-                        append_char(&buf, &delak, &kapacity, 'n');
+                    append_char(&buf, &delak, &kapacity, '\\');
+                        append_char(&buf, &delak, &kapacity, '\n');
                         lexer->pos++;
                     } else if (next == 'r') {
                     append_char(&buf, &delak, &kapacity, '\\');
-                        append_char(&buf, &delak, &kapacity, 'r');
+                        append_char(&buf, &delak, &kapacity, '\r');
                         lexer->pos++;
                     } else if (next == 't') {
                     append_char(&buf, &delak, &kapacity, '\\');
-                        append_char(&buf, &delak, &kapacity, 't');
+                        append_char(&buf, &delak, &kapacity, '\t');
                         lexer->pos++;
                     } else if (next == '"' || next == '\\') {
                     append_char(&buf, &delak, &kapacity, '\\');
