@@ -9,155 +9,11 @@ expr strom po skoncení funcke parseExpression
     [STRING_PLUS]
       [IDENTIFIER] (str="a")
       [INT_LIT] (int=1)
+    [EMPTY]
 expr strom po skoncení funcke parseExpression
 ===== AST STROM =====
 [INT_LIT] (int=2)
-0 FLAG
-FUNC false
-1 Aktualni token INTEGER a stacktop: DOLLAR [9, 8]
-DOLLAR 
-	Operace <
-		2 budu hazet na stack klasicky
-			3 < (9, 8) INTEGER STOP DOLLAR 
-FUNC false
-4 Aktualni token NEW_LINE a stacktop: INTEGER [8, 9]
-INTEGER STOP DOLLAR 
-			param count 1
-Final etapa: EXPRESSION DOLLAR 
-string INT_LIT
-Final stack: EXPRESSION DOLLAR 
-precedencna odovzdala token jeho type je = 33
-0 FLAG
-FUNC false
-1 Aktualni token IDENTIFIER a stacktop: DOLLAR [9, 8]
-DOLLAR 
-	Operace <
-		2 budu hazet na stack klasicky
-			3 < (9, 8) IDENTIFIER STOP DOLLAR 
-FUNC false
-			param count 1
-0 FLAG
-FUNC false
-1 Aktualni token IDENTIFIER a stacktop: DOLLAR [9, 8]
-DOLLAR 
-	Operace <
-		2 budu hazet na stack klasicky
-			3 < (9, 8) IDENTIFIER STOP DOLLAR 
-FUNC false
-4 Aktualni token PLUS a stacktop: IDENTIFIER [8, 0]
-IDENTIFIER STOP DOLLAR 
-	Operace >
-			param count 1
-			5 > (8, 0) EXPRESSION DOLLAR 
-FUNC false
-6 Aktualni token PLUS a stacktop: EXPRESSION [9, 0]
-EXPRESSION DOLLAR 
-	Operace <
-		7 budu hazet na stack slozite
-			8 < (9, 0) PLUS EXPRESSION STOP DOLLAR 
-FUNC false
-9 Aktualni token INTEGER a stacktop: PLUS [0, 8]
-PLUS EXPRESSION STOP DOLLAR 
-	Operace <
-		10 budu hazet na stack klasicky
-			11 < (0, 8) INTEGER STOP PLUS EXPRESSION STOP DOLLAR 
-FUNC false
-12 Aktualni token RPAREN a stacktop: INTEGER [8, 11]
-INTEGER STOP PLUS EXPRESSION STOP DOLLAR 
-	Operace >
-			param count 1
-			13 > (8, 11) EXPRESSION PLUS EXPRESSION STOP DOLLAR 
-FUNC false
-14 Aktualni token RPAREN a stacktop: EXPRESSION [0, 11]
-EXPRESSION PLUS EXPRESSION STOP DOLLAR 
-	Operace >
-			param count 3
-			15 > (0, 11) EXPRESSION DOLLAR 
-FUNC false
-splnila se podminka
-EXPRESSION DOLLAR 
-16 Aktualni token RPAREN a stacktop: EXPRESSION [9, 11]
-EXPRESSION DOLLAR 
-string STRING_PLUS
-Final stack: EXPRESSION DOLLAR 
-				returned
-ZASOBNIK PO ZPRACOVANI FUNKCE: EXPRESSION DOLLAR 
-FUNC false
-splnila se podminka
-EXPRESSION DOLLAR 
-4 Aktualni token NEW_LINE a stacktop: EXPRESSION [9, 9]
-EXPRESSION DOLLAR 
-string FUNC_CALL
-Final stack: EXPRESSION DOLLAR 
-precedencna odovzdala token jeho type je = 33
-0 FLAG
-FUNC false
-1 Aktualni token INTEGER a stacktop: DOLLAR [9, 8]
-DOLLAR 
-	Operace <
-		2 budu hazet na stack klasicky
-			3 < (9, 8) INTEGER STOP DOLLAR 
-FUNC false
-4 Aktualni token NEW_LINE a stacktop: INTEGER [8, 9]
-INTEGER STOP DOLLAR 
-			param count 1
-Final etapa: EXPRESSION DOLLAR 
-string INT_LIT
-Final stack: EXPRESSION DOLLAR 
-precedencna odovzdala token jeho type je = 33
-0 FLAG
-FUNC false
-1 Aktualni token LPAREN a stacktop: DOLLAR [9, 10]
-DOLLAR 
-	Operace <
-		2 budu hazet na stack klasicky
-			3 < (9, 10) LPAREN STOP DOLLAR 
-FUNC false
-4 Aktualni token IDENTIFIER a stacktop: LPAREN [10, 8]
-LPAREN STOP DOLLAR 
-	Operace <
-		5 budu hazet na stack klasicky
-			6 < (10, 8) IDENTIFIER STOP LPAREN STOP DOLLAR 
-FUNC false
-7 Aktualni token STAR a stacktop: IDENTIFIER [8, 1]
-IDENTIFIER STOP LPAREN STOP DOLLAR 
-	Operace >
-			param count 1
-			8 > (8, 1) EXPRESSION LPAREN STOP DOLLAR 
-FUNC false
-9 Aktualni token STAR a stacktop: EXPRESSION [10, 1]
-EXPRESSION LPAREN STOP DOLLAR 
-	Operace <
-		10 budu hazet na stack slozite
-			11 < (10, 1) STAR EXPRESSION STOP LPAREN STOP DOLLAR 
-FUNC false
-12 Aktualni token IDENTIFIER a stacktop: STAR [1, 8]
-STAR EXPRESSION STOP LPAREN STOP DOLLAR 
-	Operace <
-		13 budu hazet na stack klasicky
-			14 < (1, 8) IDENTIFIER STOP STAR EXPRESSION STOP LPAREN STOP DOLLAR 
-FUNC false
-15 Aktualni token RPAREN a stacktop: IDENTIFIER [8, 11]
-IDENTIFIER STOP STAR EXPRESSION STOP LPAREN STOP DOLLAR 
-	Operace >
-			param count 1
-			16 > (8, 11) EXPRESSION STAR EXPRESSION STOP LPAREN STOP DOLLAR 
-FUNC false
-17 Aktualni token RPAREN a stacktop: EXPRESSION [1, 11]
-EXPRESSION STAR EXPRESSION STOP LPAREN STOP DOLLAR 
-	Operace >
-			param count 3
-			18 > (1, 11) EXPRESSION LPAREN STOP DOLLAR 
-FUNC false
-19 Aktualni token RPAREN a stacktop: EXPRESSION [10, 11]
-EXPRESSION LPAREN STOP DOLLAR 
-			20 = (10, 11) RPAREN EXPRESSION LPAREN STOP DOLLAR 
-FUNC false
-21 Aktualni token SLASH a stacktop: RPAREN [11, 1]
-RPAREN EXPRESSION LPAREN STOP DOLLAR 
-	Operace >
-			param count 3
-			22 > (11, 1) EXPRESSION DOexpr strom po skoncení funcke parseExpression
+expr strom po skoncení funcke parseExpression
 ===== AST STROM =====
 [STRING_DIV]
   [STRING_MUL]
@@ -199,6 +55,7 @@ PARSER IS DONE
                   [STRING_PLUS]
                     [IDENTIFIER] (str="a")
                     [INT_LIT] (int=1)
+                  [EMPTY]
             [VAR]
               [IDENTIFIER] (str="b")
               [ASSIGN]
@@ -227,323 +84,137 @@ PARSER IS DONE
                 [INT_LIT] (int=5)
             [RETURN]
               [IDENTIFIER] (str="a")
-LLAR 
-FUNC false
-23 Aktualni token SLASH a stacktop: EXPRESSION [9, 1]
-EXPRESSION DOLLAR 
-	Operace <
-		24 budu hazet na stack slozite
-			25 < (9, 1) SLASH EXPRESSION STOP DOLLAR 
-FUNC false
-26 Aktualni token LPAREN a stacktop: SLASH [1, 10]
-SLASH EXPRESSION STOP DOLLAR 
-	Operace <
-		27 budu hazet na stack klasicky
-			28 < (1, 10) LPAREN STOP SLASH EXPRESSION STOP DOLLAR 
-FUNC false
-29 Aktualni token IDENTIFIER a stacktop: LPAREN [10, 8]
-LPAREN STOP SLASH EXPRESSION STOP DOLLAR 
-	Operace <
-		30 budu hazet na stack klasicky
-			31 < (10, 8) IDENTIFIER STOP LPAREN STOP SLASH EXPRESSION STOP DOLLAR 
-FUNC false
-32 Aktualni token MINUS a stacktop: IDENTIFIER [8, 0]
-IDENTIFIER STOP LPAREN STOP SLASH EXPRESSION STOP DOLLAR 
-	Operace >
-			param count 1
-			33 > (8, 0) EXPRESSION LPAREN STOP SLASH EXPRESSION STOP DOLLAR 
-FUNC false
-34 Aktualni token MINUS a stacktop: EXPRESSION [10, 0]
-EXPRESSION LPAREN STOP SLASH EXPRESSION STOP DOLLAR 
-	Operace <
-		35 budu hazet na stack slozite
-			36 < (10, 0) MINUS EXPRESSION STOP LPAREN STOP SLASH EXPRESSION STOP DOLLAR 
-FUNC false
-37 Aktualni token IDENTIFIER a stacktop: MINUS [0, 8]
-MINUS EXPRESSION STOP LPAREN STOP SLASH EXPRESSION STOP DOLLAR 
-	Operace <
-		38 budu hazet na stack klasicky
-			39 < (0, 8) IDENTIFIER STOP MINUS EXPRESSION STOP LPAREN STOP SLASH EXPRESSION STOP DOLLAR 
-FUNC false
-40 Aktualni token RPAREN a stacktop: IDENTIFIER [8, 11]
-IDENTIFIER STOP MINUS EXPRESSION STOP LPAREN STOP SLASH EXPRESSION STOP DOLLAR 
-	Operace >
-			param count 1
-			41 > (8, 11) EXPRESSION MINUS EXPRESSION STOP LPAREN STOP SLASH EXPRESSION STOP DOLLAR 
-FUNC false
-42 Aktualni token RPAREN a stacktop: EXPRESSION [0, 11]
-EXPRESSION MINUS EXPRESSION STOP LPAREN STOP SLASH EXPRESSION STOP DOLLAR 
-	Operace >
-			param count 3
-			43 > (0, 11) EXPRESSION LPAREN STOP SLASH EXPRESSION STOP DOLLAR 
-FUNC false
-44 Aktualni token RPAREN a stacktop: EXPRESSION [10, 11]
-EXPRESSION LPAREN STOP SLASH EXPRESSION STOP DOLLAR 
-			45 = (10, 11) RPAREN EXPRESSION LPAREN STOP SLASH EXPRESSION STOP DOLLAR 
-FUNC false
-46 Aktualni token NEW_LINE a stacktop: RPAREN [11, 9]
-RPAREN EXPRESSION LPAREN STOP SLASH EXPRESSION STOP DOLLAR 
-	Operace >
-			param count 3
-			47 > (11, 9) EXPRESSION SLASH EXPRESSION STOP DOLLAR 
-FUNC false
-48 Aktualni token NEW_LINE a stacktop: EXPRESSION [1, 9]
-EXPRESSION SLASH EXPRESSION STOP DOLLAR 
-	Operace >
-			param count 3
-			49 > (1, 9) EXPRESSION DOLLAR 
-FUNC false
-splnila se podminka
-EXPRESSION DOLLAR 
-50 Aktualni token NEW_LINE a stacktop: EXPRESSION [9, 9]
-EXPRESSION DOLLAR 
-string STRING_DIV
-Final stack: EXPRESSION DOLLAR 
+LOG: AST_PROLOG
+LOG: AST_MAIN_CLASS
+LOG: AST_MAIN_CLASS_BLOCK
+LOG: AST_FUNC_DEC
+LOG: AST_PARAM
+LOG: AST_EMPTY
+LOG: AST_BLOCK
+LOG: AST_STATEMENT_LIST
+LOG: AST_VAR
+LOG: AST_INT_LIT
+LOG: AST_ASSIGN
+LOG: AST_IDENTIFIER
+LOG: AST_FUNC_CALL
+LOG: AST_VAR
+LOG: AST_INT_LIT
+LOG: AST_VAR
+LOG: AST_DIV
+LOG: AST_MUL
+LOG: AST_IDENTIFIER
+LOG: AST_IDENTIFIER
+LOG: AST_MINUS
+LOG: AST_IDENTIFIER
+LOG: AST_IDENTIFIER
+LOG: AST_FUNC_DEC
+LOG: AST_PARAM
+LOG: AST_IDENTIFIER
+LOG: AST_EMPTY
+LOG: AST_BLOCK
+LOG: AST_STATEMENT_LIST
+LOG: AST_ASSIGN
+LOG: AST_IDENTIFIER
+LOG: AST_MUL
+LOG: AST_INT_LIT
+LOG: AST_INT_LIT
+LOG: AST_RETURN
+LOG: AST_IDENTIFIER
+===== AST STROM =====
+[PROGRAM]
+  [PROLOG]
+  [MAIN_CLASS]
+    [IDENTIFIER] (str="Program")
+    [MAIN_CLASS_BLOCK]
+      [FUNC_DEC]
+        [IDENTIFIER] (str="main$0")
+        [PARAM]
+          [EMPTY]
+        [BLOCK]
+          [STATEMENT_LIST]
+            [VAR]
+              [IDENTIFIER] (str="a$$1")
+              [ASSIGN]
+                [INT_LIT] (int=1)
+            [ASSIGN]
+              [IDENTIFIER] (str="a$$1")
+              [FUNC_CALL]
+                [IDENTIFIER] (str="foo$1")
+                [PARAM]
+                  [STRING_PLUS]
+                    [IDENTIFIER] (str="a")
+                    [INT_LIT] (int=1)
+                  [EMPTY]
+            [VAR]
+              [IDENTIFIER] (str="b$$1")
+              [ASSIGN]
+                [INT_LIT] (int=2)
+            [VAR]
+              [IDENTIFIER] (str="c$$1")
+              [ASSIGN]
+                [STRING_DIV]
+                  [STRING_MUL]
+                    [IDENTIFIER] (str="a$$1")
+                    [IDENTIFIER] (str="b$$1")
+                  [STRING_MINUS]
+                    [IDENTIFIER] (str="a$$1")
+                    [IDENTIFIER] (str="b$$1")
+      [FUNC_DEC]
+        [IDENTIFIER] (str="foo$1")
+        [PARAM]
+          [IDENTIFIER] (str="a$$1")
+          [EMPTY]
+        [BLOCK]
+          [STATEMENT_LIST]
+            [ASSIGN]
+              [IDENTIFIER] (str="a$$1")
+              [STRING_MUL]
+                [INT_LIT] (int=9)
+                [INT_LIT] (int=5)
+            [RETURN]
+              [IDENTIFIER] (str="a$$1")
 precedencna odovzdala token jeho type je = 33
-0 FLAG
-FUNC false
-1 Aktualni token INTEGER a stacktop: DOLLAR [9, 8]
-DOLLAR 
-	Operace <
-		2 budu hazet na stack klasicky
-			3 < (9, 8) INTEGER STOP DOLLAR 
-FUNC false
-4 Aktualni token STAR a stacktop: INTEGER [8, 1]
-INTEGER STOP DOLLAR 
-	Operace >
-			param count 1
-			5 > (8, 1) EXPRESSION DOLLAR 
-FUNC false
-6 Aktualni token STAR a stacktop: EXPRESSION [9, 1]
-EXPRESSION DOLLAR 
-	Operace <
-		7 budu hazet na stack slozite
-			8 < (9, 1) STAR EXPRESSION STOP DOLLAR 
-FUNC false
-9 Aktualni token INTEGER a stacktop: STAR [1, 8]
-STAR EXPRESSION STOP DOLLAR 
-	Operace <
-		10 budu hazet na stack klasicky
-			11 < (1, 8) INTEGER STOP STAR EXPRESSION STOP DOLLAR 
-FUNC false
-12 Aktualni token NEW_LINE a stacktop: INTEGER [8, 9]
-INTEGER STOP STAR EXPRESSION STOP DOLLAR 
-			param count 1
-Final etapa: EXPRESSION STAR EXPRESSION STOP DOLLAR 
-			param count 3
-Final etapa: EXPRESSION DOLLAR 
-string STRING_MUL
-Final stack: EXPRESSION DOLLAR 
 precedencna odovzdala token jeho type je = 33
-0 FLAG
-FUNC false
-1 Aktualni token IDENTIFIER a stacktop: DOLLAR [9, 8]
-DOLLAR 
-	Operace <
-		2 budu hazet na stack klasicky
-			3 < (9, 8) IDENTIFIER STOP DOLLAR 
-FUNC false
-4 Aktualni token NEW_LINE a stacktop: IDENTIFIER [8, 9]
-IDENTIFIER STOP DOLLAR 
-			param count 1
-Final etapa: EXPRESSION DOLLAR 
-string IDENTIFIER
-Final stack: EXPRESSION DOLLAR 
 precedencna odovzdala token jeho type je = 33
-.IFJcode25
-JUMP $$main
-LABEL $foo$0
-CREATEFRAME
-PUSHFRAME
-DEFVAR LF@retval
-DEFVAR LF@foo_ln_0
-DEFVAR LF@foo_rn_0
-DEFVAR LF@foo_ty_0
-DEFVAR LF@a
-POPS LF@a
-MOVE LF@retval nil@nil
-PUSHS int@9
-PUSHS int@5
-POPS LF@foo_rn_0
-POPS LF@foo_ln_0
-PUSHS LF@foo_ln_0
-PUSHS LF@foo_rn_0
-TYPES
-POPS LF@foo_ty_0
-TYPES
-PUSHS LF@foo_ty_0
-JUMPIFEQS foo$ok$0
-JUMP foo$err$0
-LABEL foo$ok$0
-PUSHS LF@foo_ty_0
-PUSHS string@string
-JUMPIFEQS foo$err$0
-PUSHS LF@foo_ln_0
-PUSHS LF@foo_rn_0
-MULS
-JUMP foo$end$0
-LABEL foo$err$0
-EXIT int@4
-LABEL foo$end$0
-
-POPS LF@a
-PUSHS LF@a
-POPS LF@retval
-JUMP $foo$0$foo$0
-LABEL $foo$0$foo$0
-PUSHS LF@retval
-POPFRAME
-RETURN
-LABEL $$main
-CREATEFRAME
-PUSHFRAME
-DEFVAR LF@retval
-DEFVAR LF@a
-DEFVAR LF@main_ln_0
-DEFVAR LF@main_rn_0
-DEFVAR LF@main_ty_0
-DEFVAR LF@main_rs_0
-DEFVAR LF@b
-DEFVAR LF@c
-DEFVAR LF@main_ln_1
-DEFVAR LF@main_rn_1
-DEFVAR LF@main_ty_1
-DEFVAR LF@main_ln_2
-DEFVAR LF@main_rn_2
-DEFVAR LF@main_ty_2
-DEFVAR LF@main_ln_3
-DEFVAR LF@main_rn_3
-DEFVAR LF@main_ty_3
-MOVE LF@retval nil@nil
-PUSHS int@1
-POPS LF@a
-CREATEFRAME
-PUSHS LF@a
-PUSHS int@1
-POPS LF@main_rn_0
-POPS LF@main_ln_0
-PUSHS LF@main_ln_0
-PUSHS LF@main_rn_0
-TYPES
-POPS LF@main_ty_0
-TYPES
-PUSHS LF@main_ty_0
-JUMPIFEQS main$ok$0
-JUMP main$err$0
-LABEL main$ok$0
-PUSHS LF@main_ty_0
-PUSHS string@string
-JUMPIFEQS main$concat$0
-PUSHS LF@main_ty_0
-PUSHS string@int
-JUMPIFEQS main$add$0
-PUSHS LF@main_ty_0
-PUSHS string@float
-JUMPIFEQS main$add$0
-JUMP main$err$0
-LABEL main$add$0
-PUSHS LF@main_ln_0
-PUSHS LF@main_rn_0
-ADDS
-JUMP main$end$0
-LABEL main$concat$0
-CONCAT LF@main_ln_0 LF@main_rn_0 LF@main_rs_0
-PUSHS LF@main_rs_0
-JUMP main$end$0
-LABEL main$err$0
-EXIT int@4
-LABEL main$end$0
-
-CALL $foo$0
-POPS LF@a
-PUSHS int@2
-POPS LF@b
-PUSHS LF@a
-PUSHS LF@b
-POPS LF@main_rn_2
-POPS LF@main_ln_2
-PUSHS LF@main_ln_2
-PUSHS LF@main_rn_2
-TYPES
-POPS LF@main_ty_2
-TYPES
-PUSHS LF@main_ty_2
-JUMPIFEQS main$ok$2
-JUMP main$err$2
-LABEL main$ok$2
-PUSHS LF@main_ty_2
-PUSHS string@string
-JUMPIFEQS main$err$2
-PUSHS LF@main_ln_2
-PUSHS LF@main_rn_2
-MULS
-JUMP main$end$2
-LABEL main$err$2
-EXIT int@4
-LABEL main$end$2
-
-PUSHS LF@a
-PUSHS LF@b
-POPS LF@main_rn_3
-POPS LF@main_ln_3
-PUSHS LF@main_ln_3
-PUSHS LF@main_rn_3
-TYPES
-POPS LF@main_ty_3
-TYPES
-PUSHS LF@main_ty_3
-JUMPIFEQS main$ok$3
-JUMP main$err$3
-LABEL main$ok$3
-PUSHS LF@main_ty_3
-PUSHS string@string
-JUMPIFEQS main$err$3
-PUSHS LF@main_ln_3
-PUSHS LF@main_rn_3
-SUBS
-JUMP main$end$3
-LABEL main$err$3
-EXIT int@4
-LABEL main$end$3
-
-POPS LF@main_rn_1
-POPS LF@main_ln_1
-PUSHS LF@main_ln_1
-PUSHS LF@main_rn_1
-TYPES
-POPS LF@main_ty_1
-TYPES
-PUSHS LF@main_ty_1
-JUMPIFEQS main$ok$1
-JUMP main$err$1
-LABEL main$ok$1
-PUSHS LF@main_ty_1
-PUSHS string@string
-JUMPIFEQS main$err$1
-PUSHS LF@main_ty_1
-PUSHS string@int
-JUMPIFEQS main$intdiv$1
-PUSHS LF@main_rn_1
-PUSHS float@0x0p+0
-JUMPIFEQS main$divzero$1
-PUSHS LF@main_ln_1
-PUSHS LF@main_rn_1
-DIVS
-JUMP main$end$1
-LABEL main$intdiv$1
-PUSHS LF@main_rn_1
-PUSHS int@0
-JUMPIFEQS main$divzero$1
-INT2FLOAT LF@main_ln_1 LF@main_ln_1
-INT2FLOAT LF@main_rn_1 LF@main_rn_1
-PUSHS LF@main_ln_1
-PUSHS LF@main_rn_1
-DIVS
-JUMP main$end$1
-LABEL main$divzero$1
-EXIT int@57
-LABEL main$err$1
-EXIT int@4
-LABEL main$end$1
-POPS LF@c
-EXIT int@0
+precedencna odovzdala token jeho type je = 33
+precedencna odovzdala token jeho type je = 33
+precedencna odovzdala token jeho type je = 33
+0
+2
+a
+a$$1
+found
+0
+2
+a
+a$$1
+found
+0
+2
+b
+b$$1
+found
+0
+2
+a
+a$$1
+found
+0
+2
+b
+b$$1
+found
+0
+1
+created: a$$1
+0
+2
+a
+a$$1
+found
+0
+2
+a
+a$$1
+found
+Vysledek sem_anal: 1
