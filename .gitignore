@@ -4,3 +4,10 @@ ifj25
 *.o
 my_env
 hashTests
+vgcore*
+prog.out
+test.in
+ic25int-linux-x86_64
+output.txt
+testvgcore.*
+*.log
