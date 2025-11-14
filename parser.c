@@ -152,6 +152,9 @@ AstNode *parser()
                     case TOKEN_GLOBAL_ID:
                         stackAstNodePush(AstStack,new_leaf(AST_GLOBAL_ID,token));
                         break;
+                    case TOKEN_HEXA:
+                        stackAstNodePush(AstStack, new_leaf(AST_INT_LIT, token));
+                        break;
                     case TOKEN_TRUE:
                         stackAstNodePush(AstStack,new_leaf(AST_BOOL_LIT,token));
                         break;
@@ -467,6 +470,10 @@ void Block_content_func_check(DynamicSymbolStackPtr Stack, Token token)
         case TOKEN_LPAREN:
         case TOKEN_TRUE:
         case TOKEN_FALSE:
+        case TOKEN_HEXA:
+        case TOKEN_KEYWORD_NULL_SMALL:
+        case TOKEN_FLOAT_EXP:
+        case TOKEN_INTEGER_EXP:
             pushCheck(stackSymbolPush(Stack, makeReduce(AST_STATEMENT_LIST, 1)));
             pushCheck(stackSymbolPush(Stack, makeNonterm(N_oExpr)));
             return;
@@ -590,7 +597,13 @@ void Oneline_expr_opt_func(DynamicSymbolStackPtr Stack, Token token)
         case TOKEN_INTEGER:
         case TOKEN_FLOAT:
         case TOKEN_STRING:
+        case TOKEN_HEXA:
         case TOKEN_LPAREN:
+        case TOKEN_TRUE:
+        case TOKEN_FALSE:
+        case TOKEN_KEYWORD_NULL_SMALL:
+        case TOKEN_FLOAT_EXP:
+        case TOKEN_INTEGER_EXP:
             pushCheck(stackSymbolPush(Stack, makeNonterm(N_oExpr)));
             return;
 
@@ -745,6 +758,12 @@ void Var_arg_func(DynamicSymbolStackPtr Stack, Token token)
         case TOKEN_INTEGER:
         case TOKEN_FLOAT:
         case TOKEN_STRING:
+        case TOKEN_HEXA:
+        case TOKEN_TRUE:
+        case TOKEN_FALSE:
+        case TOKEN_KEYWORD_NULL_SMALL:
+        case TOKEN_FLOAT_EXP:
+        case TOKEN_INTEGER_EXP:
             pushCheck(stackSymbolPush(Stack, makeReduce(AST_PARAM, 2)));
             pushCheck(stackSymbolPush(Stack, makeNonterm(N_Var_arg_list)));
             pushCheck(stackSymbolPush(Stack, makeNonterm(N_Expr)));
@@ -951,6 +970,12 @@ void Return_expr_func(DynamicSymbolStackPtr Stack, Token token)
         case TOKEN_INTEGER:
         case TOKEN_FLOAT:
         case TOKEN_STRING:
+        case TOKEN_HEXA:
+        case TOKEN_TRUE:
+        case TOKEN_FALSE:
+        case TOKEN_FLOAT_EXP:
+        case TOKEN_INTEGER_EXP:
+        case TOKEN_KEYWORD_NULL_SMALL:
             pushCheck(stackSymbolPush(Stack, makeNonterm(N_Expr)));
             break;
         case TOKEN_LPAREN:
@@ -1212,6 +1237,9 @@ void tokenFree(Token *token)
         case TOKEN_STRING:
         case TOKEN_INTEGER:
         case TOKEN_FLOAT:
+        case TOKEN_FLOAT_EXP:
+        case TOKEN_HEXA:
+        case TOKEN_INTEGER_EXP:
         case TOKEN_KEYWORD_BREAK:
         case TOKEN_KEYWORD_CLASS:
         case TOKEN_KEYWORD_CONTINUE:

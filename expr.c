@@ -235,6 +235,9 @@ void tokenPrecedenceFree(Token *token)
         case TOKEN_KEYWORD_NUM:
         case TOKEN_KEYWORD_STRING:
         case TOKEN_HEXA:
+        case TOKEN_KEYWORD_NULL_SMALL:
+        case TOKEN_FLOAT_EXP:
+        case TOKEN_INTEGER_EXP:
             if (token->value.identifier)
             {
                 free(token->value.identifier);
