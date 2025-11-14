@@ -2,10 +2,20 @@ import "ifj25" for Ifj
 class Program {
 // Vestavěné funkce
     static main() {
-        Ifj.write("a")
-        Ifj.write(true)
-        Ifj.write(1)
-        Ifj.write(1.2)
-        Ifj.write(null)
+        //var x = 5
+        //var b = x
+        //Ifj.write(b)
+        
+        //Ifj.write("a")
+
+        Ifj.write(1+1)
+
+        //Ifj.write(true)
+        
+        //Ifj.write(1)
+        
+        //Ifj.write(1.2)
+        
+        //Ifj.write(null)
     }
 }

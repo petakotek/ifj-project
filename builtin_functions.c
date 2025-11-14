@@ -56,8 +56,8 @@ void emitReadBool() {
 
 
 void emitWrite(AstNode* functionCallNode, FuncContext* context) {
-    printf("here\n");
-    //context->counter;
+    printN("\n#ZACATEK:");
+    static unsigned writeCounter = 0;
     /*
     static Ifj.write(term) → Null
 Vypíše hodnotu termu term (libovolného typu) na standardní výstup ihned a bez žádných
@@ -73,7 +73,7 @@ symboly typu string, int (!), float a nil.
 
     if(param->kind == AST_EMPTY) return;
 
-    
+            // TODO bool
             if (param->kind == AST_IDENTIFIER) {
                 printN("WRITE LF@%s", param->value.str);
             } else if (param->kind == AST_STRING_LIT) {
@@ -83,10 +83,15 @@ symboly typu string, int (!), float a nil.
             } else if (param->kind == AST_FLOAT_LIT) {
                 printN("WRITE float@%a", param->value.float_val);
             } else if (param->kind == AST_SMALL_NULL) {
+                printN("WRITE null@null");
             } else {
                 emit_command(param, context);
+                printN("DEFVAR LF@temp$var$write$%u",writeCounter);
+                printN("POPS LF@temp$var$write$%u", writeCounter);
+                printN("WRITE LF@temp$var$write$%u", writeCounter);
             }
    // char* label = generatorLable("write", context, false);
-
-    printN("TADY: %s");
+    
+   writeCounter++;
+    printN("#:KONEC\n");
 }
