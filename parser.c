@@ -28,6 +28,7 @@ Token token;
 AstNode *ast_root = NULL;
 DynamicSymbolStackPtr Stack = NULL;
 
+
 AstNode *parser()
 {
     AstStack = stackAstNodeConstruct(DEFAULT_INIT_ELEMENT_COUNT);
@@ -41,9 +42,8 @@ AstNode *parser()
     pushCheck(stackSymbolPush(Stack,makeTerm(TOKEN_EOF)));
     pushCheck(stackSymbolPush(Stack,makeNonterm(N_Program)));
     token = lexer_token_next();
-    Symbol Stack_top;
 
-    Token *gLookahead = NULL;
+    Symbol Stack_top;
     gLookahead = &token;
 
 
@@ -724,7 +724,7 @@ void Var_EXT_func(DynamicSymbolStackPtr Stack, Token token)
     }
 
     // epsilon vetva (koniec deklarácie bez priradenia)
-    else if (token.type == TOKEN_NEW_LINE || TOKEN_BLOCK_END)
+    else if (token.type == TOKEN_NEW_LINE ||  TOKEN_BLOCK_END)
     {
         pushCheck(stackSymbolPush(Stack, makeReduce(AST_EMPTY, 0)));
     }
