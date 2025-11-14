@@ -1218,8 +1218,21 @@ void emitUnaryMinus(AstNode *node, FuncContext *funcStrukt) {
     printN("PUSHS LF@%s", ln);
     printN("SUBS");
 }
+void emit_is(AstNode *node, FuncContext *funcStruct){
+	if (node->child[0]->kind == AST_IDENTIFIER) {
+         printN("PUSHS LF@%s",node->child[0]->value.str);
+     }else{
+     emit_command(node->child[0], funcStruct);
+     }
+    int id = node->tmp_id;
+
+}
 void emit_assigned(AstNode *node, FuncContext *funcStruct) {
-    emit_command(node->child[1], funcStruct);
+	if(node->child[0]->kind == AST_IDENTIFIER){
+		printN("PUSHS LF@%s",node->child[0]->value.str);
+	}else{
+		emit_command(node->child[1], funcStruct);
+	}
     printN("POPS LF@%s",node->child[0]->value.str);
 }
 void emit_var(AstNode *node, FuncContext *funcStruct){
