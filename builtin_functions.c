@@ -82,6 +82,7 @@ symboly typu string, int (!), float a nil.
                 printN("WRITE int@%lld", param->value.int_val);
             } else if (param->kind == AST_FLOAT_LIT) {
                 printN("WRITE float@%a", param->value.float_val);
+            } else if (param->kind == AST_SMALL_NULL) {
             } else {
                 emit_command(param, context);
             }
