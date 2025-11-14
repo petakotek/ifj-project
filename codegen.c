@@ -1228,16 +1228,17 @@ void emit_is(AstNode *node, FuncContext *funcStruct){
 
 }
 void emit_assigned(AstNode *node, FuncContext *funcStruct) {
-	if(node->child[0]->kind == AST_IDENTIFIER){
-		printN("PUSHS LF@%s",node->child[0]->value.str);
-	}else{
 		emit_command(node->child[1], funcStruct);
-	}
-    printN("POPS LF@%s",node->child[0]->value.str);
+	    printN("POPS LF@%s",node->child[0]->value.str);
 }
+/*
+*opravi
+*/
 void emit_var(AstNode *node, FuncContext *funcStruct){
+	if(node->child[1]->kind != AST_EMPTY){
 	emit_command(node->child[1]->child[0], funcStruct);
 	printN("POPS LF@%s",node->child[0]->value.str);
+	}
 }
 void emitIfChain(AstNode *node, FuncContext *funcContext)
 {
@@ -1477,6 +1478,10 @@ void emitFor(AstNode* node, FuncContext *funcContext)
  * @brief switch zajisti zavolani sablon
  * @params ukazatel na uzel
  * @params ukazatel na hash_table
+ */
+ /*
+ * TODO udelat if condition aby poznal co tam ma udelat
+ * TODO false nebo null je false ostatni pushu true
  */
 void emit_command(AstNode *node,FuncContext *funcStruct) {
     ast_node_type_to_string(node->kind);
