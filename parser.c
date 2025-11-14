@@ -1276,7 +1276,7 @@ void tokenFree(Token *token)
 void parserFree(void)
 {
     tokenFree(&token);
-    tokenFree(gLookahead);
+    gLookahead = NULL;
     if(AstStack)
     {
         while(!stackAstNodeIsEmpty(AstStack))

@@ -274,6 +274,7 @@ void ast_value_from_token(AstValue *out, AstNodeType kind, Token *token) {
         case AST_BOOL_LIT:
             out->is_bool = true;
             out->str = dup_cstr(token->value.identifier);
+            break;
         default:
             break;
     }
