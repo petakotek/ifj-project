@@ -240,6 +240,7 @@ void freeSemanticsMemory() {
 RecursiveSemanticAnalysisReturnValues recursiveNodeWalker(AstNode*    currentNode,
                                                           AstNodeType parentNodeType,
                                                           size_t      childNum) {
+    static int returnCounter = 0;
     if (currentNode == NULL) {
         printWarning("Predan ukazatel na NULL\n");
         return GOT_NODE_NULL;
@@ -354,22 +355,28 @@ RecursiveSemanticAnalysisReturnValues recursiveNodeWalker(AstNode*    currentNod
                 parentNodeType != AST_FOR) {
                 createNewScope();
             }
-
-            AstNodeType fakeParentType = AST_BLOCK;
+            RecursiveSemanticAnalysisReturnValues childValue;
 
             if (parentNodeType == AST_FUNC_DEC || parentNodeType == AST_SETTER ||
                 parentNodeType == AST_GETTER) {
-                fakeParentType = AST_FUNC_DEC;
+                // Potřeba ověřit počet návratových příkazů z funkce
+                unsigned oldReturnCount = returnCounter;
+                // Pro onelineblock u funkcí
+                childValue = recursiveNodeWalker(currentNode->child[0], AST_FUNC_DEC, 0);
+                unsigned newReturnCount = returnCounter;
+
+                if(newReturnCount-1 > oldReturnCount) {
+                    // Během zpracovávání funkce bylo nalezeno 2 a více návratových příkazů
+                    // Nelze proto určit návratovou hodnotu funkce
+                    childValue = UNKNOWN_DATA;
+                }
             }
 
-            RecursiveSemanticAnalysisReturnValues childValue =
-                recursiveNodeWalker(currentNode->child[0], fakeParentType, 0);
+            else {
+                childValue = recursiveNodeWalker(currentNode->child[0], AST_BLOCK, 0);
+            }
 
             deleteScope();
-            
-            // TODO pokud je více return tak nevím, který z nich bude zrovna platný
-            // Nějak to vymyslet, aby to pokud bude ve funkci více než 1 return vracelo UNKNOWN_DATA
-            childValue =UNKNOWN_DATA;
 
             return childValue;
             break;
@@ -379,12 +386,12 @@ RecursiveSemanticAnalysisReturnValues recursiveNodeWalker(AstNode*    currentNod
 
             RecursiveSemanticAnalysisReturnValues returnValue = OK;
             bool                                  foundReturn = false;
-            unsigned returnCounter = 0;
 
             RecursiveSemanticAnalysisReturnValues childValue;
             for (size_t i = 0; i < currentNode->arity; i++) {
                 childValue = recursiveNodeWalker(currentNode->child[i], AST_STATEMENT_LIST, i);
                 if (currentNode->child[i]->kind == AST_RETURN) {
+                    returnCounter++;
                     foundReturn = true;
                     returnValue = childValue;
                 }
@@ -679,7 +686,6 @@ RecursiveSemanticAnalysisReturnValues recursiveNodeWalker(AstNode*    currentNod
             break;
         }
         case (AST_IDENTIFIER): {
-
             printLog("AST_IDENTIFIER\n");
             if (parentNodeType == AST_PARAM || parentNodeType == AST_FOR) {
                 SemanticSymbol newSymbol;
@@ -1510,7 +1516,7 @@ RecursiveSemanticAnalysisReturnValues recursiveNodeWalker(AstNode*    currentNod
 
             break;
         }
-                case (AST_INT_LIT_EXP): {
+        case (AST_INT_LIT_EXP): {
             printLog("AST_INT_LIT_EXP\n");
 
             // Tento AST uzel bych neměl dostat
