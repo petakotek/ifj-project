@@ -352,7 +352,6 @@ RecursiveSemanticAnalysisReturnValues recursiveNodeWalker(AstNode*    currentNod
             printLog("AST_BLOCK\n");
             if (parentNodeType != AST_FUNC_DEC && parentNodeType != AST_SETTER &&
                 parentNodeType != AST_FOR) {
-                printf("vytvarim blok\n");
                 createNewScope();
             }
 
@@ -706,10 +705,9 @@ RecursiveSemanticAnalysisReturnValues recursiveNodeWalker(AstNode*    currentNod
             break;
         }
         case (AST_IDENTIFIER): {
+
             printLog("AST_IDENTIFIER\n");
-            printf("0\n");
             if (parentNodeType == AST_PARAM || parentNodeType == AST_FOR) {
-                printf("1\n");
                 SemanticSymbol newSymbol;
 
                 SemanticSymbolDataType symbolDataType = UNKNOWN_VAL;
@@ -728,7 +726,6 @@ RecursiveSemanticAnalysisReturnValues recursiveNodeWalker(AstNode*    currentNod
                                newSymbol.name);
                     memorySafeExit(SEMANTICS_ERROR_REDEF);
                 }
-                printf("created: %s\n", newSymbol.name);
                 insertSymbolCurrentScope(newSymbol);
                 if (parentNodeType == AST_FOR) {
                     return IDENTIFIER;
@@ -736,7 +733,6 @@ RecursiveSemanticAnalysisReturnValues recursiveNodeWalker(AstNode*    currentNod
                 return OK;
 
             } else {
-                printf("2\n");
                 SemanticSymbol tempSymbol;
 
                 SemanticSymbol* foundSymbol = findSymbolCurrentScope(currentNode->value.str);
@@ -746,7 +742,6 @@ RecursiveSemanticAnalysisReturnValues recursiveNodeWalker(AstNode*    currentNod
                 }
 
                 if (foundSymbol == NULL) {
-                    printf("tu\n");
                     // SETTER
                     if (parentNodeType == AST_ASSIGN && childNum == 0) {
                         SemanticSymbol newSymbol;
@@ -776,7 +771,6 @@ RecursiveSemanticAnalysisReturnValues recursiveNodeWalker(AstNode*    currentNod
                 }
 
                 if (parentNodeType == AST_CONDITION) {
-                    printf("3");
                     return IDENTIFIER;
                 }
 
@@ -936,7 +930,7 @@ RecursiveSemanticAnalysisReturnValues recursiveNodeWalker(AstNode*    currentNod
             if (currentNode->arity == 1) {
                 RecursiveSemanticAnalysisReturnValues onlyChild =
                     recursiveNodeWalker(currentNode->child[0], AST_MINUS, 0);
-                printf("%i\n", onlyChild);
+
                 if (onlyChild == NUMBER_DATA) {
                     return NUMBER_DATA;
                 }
@@ -994,7 +988,6 @@ RecursiveSemanticAnalysisReturnValues recursiveNodeWalker(AstNode*    currentNod
                         return NUMBER_DATA;  // výsledek odčítání je vždy číslo
                     }
                 }
-                printf("%i - %i\n", leftChild, rightChild);
             }
 
             printError(SEMANTICS_ERROR_UNCOMPATIBLE,
@@ -1590,7 +1583,7 @@ SemanticSymbol* findSymbolAndModifyAST(AstNode* sourceNode, SemanticSymbol* dest
     unsigned toSearchScopeIndex = scopesStack->nextTopElement;
     int      index              = -1;
     char*    key                = sourceNode->value.str;
-    printf("%s\n", key);
+
     unsigned symbolNameLength =
         strlen(key) + 2 + digitsCount(scopesStack->nextTopElement);  // prostor pro separátor '$$'
 
@@ -1601,10 +1594,9 @@ SemanticSymbol* findSymbolAndModifyAST(AstNode* sourceNode, SemanticSymbol* dest
 
         // variableName$$scopeNumber ($$ pro rozlišení mezi funkcí a lokální proměnnou)
         snprintf(symbolName, symbolNameLength, "%s$$%u", key, toSearchScopeIndex);
-        printf("%s\n", symbolName);
+
         index = hashTableSearchItem(scopesStack->array[toSearchScopeIndex], symbolName);
         if (index != -1) {
-            printf("found\n");
             break;
         }
     }
