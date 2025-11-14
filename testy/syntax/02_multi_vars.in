@@ -6,6 +6,7 @@ class Program {
         var c = 3
         a = b + c
         b = a - 1
+        b = -a
         c = a * b
     }
 }

@@ -8,3 +8,6 @@ run_test.sh
 vgcore*
 prog.out
 test.in
+ic25int-linux-x86_64
+output.txt
+test

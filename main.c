@@ -4,6 +4,7 @@
  * Soubor: main.c
  * Popis: Vstupni bod do programu spojuje jednotlivé moduly
  */
+ #include "lexer.h"
 #include <stddef.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -27,7 +28,7 @@ int main(){
 	if(stdin == NULL){
 		return 0;
 	}
-	char *source_file = NULL;
+	source_file = NULL;
 	//volani funcke na nacteni souboru
 	source_file = read_all_stdin();
 	if (source_file == NULL) {
@@ -43,7 +44,7 @@ int main(){
 	AST = parser();
 	//funkcia ast_dump -> funkcia na kontrolny vypis ast stromu
 	ast_dump(AST);
-	//codegen_generate(AST);
+	codegen_generate(AST);
 	/*
 	bool output;
 	output = startSematicValidation(AST);
