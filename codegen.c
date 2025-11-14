@@ -1173,6 +1173,13 @@ void emit_is(AstNode *node, FuncContext *funcStruct){
 
 }
 void emit_assigned(AstNode *node, FuncContext *funcStruct) {
+    if (node->child[0]->kind == AST_SETTER_CALL)
+    {
+        emit_command(node->child[1], funcStruct);
+        emitSetterCall(node->child[0]);
+        return;
+    }
+    
 		emit_command(node->child[1], funcStruct);
 	    printN("POPS LF@%s",node->child[0]->value.str);
 }
@@ -1281,12 +1288,12 @@ void emitWhile(AstNode* node, FuncContext *funcContext)
     free(labelStart);
 }
 
-void emitBreak(AstNode* node, FuncContext *funcContext)
+void emitBreak(FuncContext *funcContext)
 {
     printN("JUMP %s", generatorLable("end", funcContext, false));
 }
 
-void emitContinue(AstNode* node, FuncContext *funcContext) {
+void emitContinue(FuncContext *funcContext) {
     printN("JUMP %s", generatorLable("start", funcContext, false));
 }
 
@@ -1429,6 +1436,91 @@ void emitFor(AstNode* node, FuncContext *funcContext)
     free(labelStart);
 }
 
+void emitSetterCall(AstNode* node) {
+    printN("CALL %s", node->value.str);
+}
+
+void emitSetter(AstNode* node) {
+    DynamiclabelStackStackPtr labelStack = stacklabelStackConstruct(DEFAULT_INIT_ELEMENT_COUNT);
+    
+	FuncContext *context = ConstuctorFuncContext();
+    context->counter++;
+	context->func_name = node->child[0]->value.str;
+	
+	context->label_stack = labelStack;
+    char* labelEnd = generatorLable("setterEnd", context, false);
+    context->label_end = labelEnd;
+	printN("LABEL %s", node->child[0]->value.str);
+    printN("CREATEFRAME");
+    printN("PUSHFRAME");
+
+    char *pname = node->child[1]->child[0]->value.str;
+     	printN("DEFVAR LF@%s", pname);
+      	printN("POPS LF@%s", pname); // popne si ze zasobniku hodnotu parametru
+
+    VarList *localVariables = varListCreate();
+	collectLocalVars(node->child[2], localVariables, context);//funkce uvnitr
+	for (int i = 0; i < localVariables->count; i++) {
+	    printN("DEFVAR LF@%s", localVariables->var_names[i]);
+	}
+
+    for (int i = 0; i < node->child[2]->child[0]->arity; i++)
+    {
+        emit_command(node->child[2]->child[0]->child[i], context);
+    }
+    printN("LABEL %s", context->label_end);
+    printN("POPFRAME");
+    printN("RETURN");
+
+
+    varListDescrution(localVariables);
+	stacklabelStackDestruct(labelStack);
+	DestructorFuncContext(context);
+	free(labelEnd);
+}
+
+void emitGetterCall(AstNode* node) {
+	printN("CALL %s", node->value.str);
+}
+
+void emitGetter(AstNode* node) {
+    DynamiclabelStackStackPtr labelStack = stacklabelStackConstruct(DEFAULT_INIT_ELEMENT_COUNT);
+    
+	FuncContext *context = ConstuctorFuncContext();
+    context->counter++;
+	context->func_name = node->child[0]->value.str;
+	
+	context->label_stack = labelStack;
+    char* labelEnd = generatorLable("getterEnd", context, false);
+    context->label_end = labelEnd;
+	printN("LABEL %s", node->child[0]->value.str);
+    printN("CREATEFRAME");
+    printN("PUSHFRAME");
+
+    VarList *localVariables = varListCreate();
+    varlist_add(localVariables, "retval");
+	collectLocalVars(node->child[2], localVariables, context);//funkce uvnitr
+	for (int i = 0; i < localVariables->count; i++) {
+	    printN("DEFVAR LF@%s", localVariables->var_names[i]);
+	}
+
+    for (int i = 0; i < node->child[2]->child[0]->arity; i++)
+    {
+        emit_command(node->child[2]->child[0]->child[i], context);
+    }
+    printN("LABEL %s", context->label_end);
+    printN("PUSHS LF@retval");
+    printN("POPFRAME");
+    printN("RETURN");
+
+
+    varListDescrution(localVariables);
+	stacklabelStackDestruct(labelStack);
+	DestructorFuncContext(context);
+	free(labelEnd);
+    
+}
+
 /*
  * @brief switch zajisti zavolani sablon
  * @params ukazatel na uzel
@@ -1483,26 +1575,38 @@ void emit_command(AstNode *node,FuncContext *funcStruct) {
         case AST_FOR:
             emitFor(node, funcStruct);
             break;
+
+
+
+
         case AST_SETTER_CALL:
-            printN("AHOJ SETTER CALL");
+            // printN("AHOJ SETTER CALL");
+            emitSetterCall(node);
             break;
         case AST_GETTER_CALL:
-            printN("AHOJ GETTER CALL");
+            // printN("AHOJ GETTER CALL");
+            emitGetterCall(node);
             break;
         case AST_SETTER:
-            printN("AHOJ SETTER");
+            // printN("AHOJ SETTER");
+            emitSetter(node);
             break;
         case AST_GETTER:
-            printN("AHOJ GETTER");
+            // printN("AHOJ GETTER");
+            emitGetter(node);
             break;
+
+
+
+
         case AST_IF_CHAIN:
             emitIfChain(node, funcStruct);
             break;
         case AST_BREAK:
-            emitBreak(node, funcStruct);
+            emitBreak(funcStruct);
             break;
         case AST_CONTINUE:
-            emitContinue(node, funcStruct);
+            emitContinue(funcStruct);
             break;
         case AST_RETURN:
             // Nová implementace: navrat z funkce

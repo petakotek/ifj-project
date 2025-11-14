@@ -32,6 +32,10 @@ void emit_or(AstNode *node, FuncContext *funcContext);
 void emit_and(AstNode *node, FuncContext *funcContext);
 void emit_equal_not(AstNode *node, FuncContext *funcContext);
 void emit_greater_equal(AstNode *node, FuncContext *funcContext);
+void emitSetterCall(AstNode *node);
+void emitGetterCall(AstNode *node);
+void emitSetter(AstNode* node);
+void emitGetter(AstNode* node);
 
 void printN(const char *fmt, ...);
 
