@@ -817,11 +817,6 @@ RecursiveSemanticAnalysisReturnValues recursiveNodeWalker(AstNode*    currentNod
             return STRING_DATA;
             break;
         }
-        case (AST_STRING_BLOCK): {
-            printLog("AST_STRING_BLOCK\n");
-            return STRING_DATA;
-            break;
-        }
         case (AST_SMALL_NULL): {
             printLog("AST_SMALL_NULL\n");
             return NULL_DATA;

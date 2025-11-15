@@ -331,7 +331,5 @@ void Else_item_func(DynamicSymbolStackPtr Stack, Token token);
 void Else_chain_func(DynamicSymbolStackPtr Stack, Token token);
 void callIfjCheckfunc(DynamicSymbolStackPtr Stack, Token token);
 void AssignIfjIdCheckFunc(DynamicSymbolStackPtr Stack, Token token);
-void smallNullCheckFunc(DynamicSymbolStackPtr Stack, Token token);
-void smallNullCheckTypeFunc(DynamicSymbolStackPtr Stack, Token token);
 void parserFree(void);
 #endif // PARSER_H
