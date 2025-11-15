@@ -14,10 +14,14 @@ typedef struct {
     char *label_end;
     int value_counter;
     bool main;
+    char *label_end_while;
+    char *label_end_for;
+    char *label_start_while;
+    char *label_start_for;
 } FuncContext;
 void emit_prolog();
 void emit_command(AstNode *node,FuncContext *funcContext);
-char *generatorLable(char *func_name,FuncContext *funcContext, bool pridaniDoStacku);
+char *generatorLable(char *func_name,FuncContext *funcContext, bool pridaniDoStacku, size_t counter);
 void codegen_generate(AstNode *root);
 char *resize_label_name(char *prefix,size_t *size);
 void emitPlus(AstNode *node, FuncContext *funcContext);
