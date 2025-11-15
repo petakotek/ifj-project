@@ -1545,6 +1545,7 @@ SemValidationStates handleComparisonOperators(AstNode* currentNode, AstNodeType 
             return BOOLEAN_DATA;
     }
 
+    printLog("%i %s %i\n", leftChild, operatorName, rightChild);
     size_t errorMessageLength = strlen("(__) Nekompatibilni datove typy!\n");
     char   errorMessage[errorMessageLength];
     snprintf(errorMessage, errorMessageLength, "(%s) Nekompatibilni datove typy!\n", operatorName);
@@ -1605,6 +1606,7 @@ SemValidationStates handleMathOperators(AstNode* currentNode, AstNodeType operat
         }
     }
 
+    printLog("%i %s %i\n", leftChild, operatorName, rightChild);
     size_t errorMessageLength = strlen("(_) Nekompatibilni datove typy!\n");
     char   errorMessage[errorMessageLength];
     snprintf(errorMessage, errorMessageLength, "(%s) Nekompatibilni datove typy!\n", operatorName);
