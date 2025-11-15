@@ -37,24 +37,20 @@ int main(){
     }
 	// inicializovani struktury staraji se o cteni ze souboru
 	lexer_init(source_file);
-//	print_and_free_tokens();
-//	exit(0);
+	//	print_and_free_tokens();
+	//	exit(0);
 	// tvorba stromu pres parser
 	AstNode *AST;
 	AST = parser();
 	//funkcia ast_dump -> funkcia na kontrolny vypis ast stromu
+
+	/**
 	ast_dump(AST);
-	/** 
 	bool output;
 	output = startSematicValidation(AST);
 	printf("Vysledek sem_anal: %i\n", output);
-<<<<<<< HEAD
 
 	ast_dump(AST);
-=======
-	
-
->>>>>>> 55a25d6bc2966aea67f7d719f943d79cdb1c0ed2
 	codegen_generate(AST);
 	*/
 	memorySafeExit(NO_ERROR);

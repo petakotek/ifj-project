@@ -46,6 +46,9 @@ void lexer_free(void) {
         lexer = NULL;
     } else {
     }
+    if(buf != NULL){
+    	free(buf);
+    }
 }
 /*
  *	Funkce na identifikaci identifikator
@@ -1246,6 +1249,7 @@ Token lexer_token_next() {
     memorySafeExit(LEX_ERROR);
 token_found:;
     free(buf);
+    buf = NULL;
 token_found_string:;
     return token;
 }

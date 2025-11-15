@@ -1449,8 +1449,14 @@ void emitContinue(FuncContext *funcContext) {
     printN("JUMP %s", generatorLable("start", funcContext, false));
 }
 void emitCondition(AstNode *node,FuncContext *funcContext){
+
 	if(node->arity == 1){
-		if(node->child[0]->kind == AstNode)
+		AstNode *child = node->child[0];
+		if(child->kind == AST_SMALL_NULL || (child->kind == AST_BOOL_LIT && strcmp(child->value.str,"false") == 0)){
+			printN("PUSH bool@false");
+		}else{
+			printN("PUSH bool@true");
+		}
 	}
 }
 /**
