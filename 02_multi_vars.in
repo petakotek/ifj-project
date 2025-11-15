@@ -1,11 +1,12 @@
 import "ifj25" for Ifj
 class Program {
     static main() {
-        var a = 10
-        var b = "text"
-        var c = null
-        var isNum = a is Num
-        var isString = b is String
-        var isNull = c is Null
+        var sum = 0
+        for (i in 1 .. (3 + 3)) {
+            if (i == 4) {
+                break
+            }
+            sum = sum + i
+        }
     }
 }
