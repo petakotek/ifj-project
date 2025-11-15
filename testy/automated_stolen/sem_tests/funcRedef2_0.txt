@@ -10,7 +10,7 @@ class Program {
     }
 
     static unicorn(val) {
-        
+        unicorn = unicorn
     }
 
     static main(){

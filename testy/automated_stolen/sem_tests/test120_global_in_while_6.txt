@@ -2,12 +2,12 @@
 import "ifj25" for Ifj
 class Program {
     static main() {
-        var __i
-        var __limit
+        var i
+        var limit
         while (__i == __limit) {
             Ifj.write(__i)
             Ifj.write("\n")
-            __i = __i + 1
+            __i = i + 1
         }
     }
 }
