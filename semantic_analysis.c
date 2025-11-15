@@ -348,6 +348,10 @@ SemValidationStates recursiveNodeWalker(AstNode* currentNode, AstNodeType parent
                 recursiveNodeWalker(currentNode->child[i], fakeParentType, i);
             }
 
+            if(parentNodeType == AST_FUNC_CALL) {
+                deleteScope();
+            }
+
             return OK;
         }
         case (AST_BLOCK): {
@@ -427,6 +431,8 @@ SemValidationStates recursiveNodeWalker(AstNode* currentNode, AstNodeType parent
                 // Na stejný řetězec ukazuje AST strom
                 functionReturnValue = foundSymbol->returnValue;
             }
+
+            recursiveNodeWalker(currentNode->child[1], AST_FUNC_CALL, 0);
 
             return convSemSymbDTypeToSemValStates(functionReturnValue);
         }
