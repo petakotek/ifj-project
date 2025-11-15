@@ -795,8 +795,19 @@ SemValidationStates recursiveNodeWalker(AstNode* currentNode, AstNodeType parent
         }
         case (AST_MINUS): {
             printLog("AST_MINUS\n");
-            return handleMathOperators(currentNode, AST_MINUS, "-");
-            break;
+            // Unární mínus
+            if (currentNode->arity == 1) {
+                SemValidationStates onlyChild = recursiveNodeWalker(currentNode->child[0], AST_MINUS, 0);
+                if (onlyChild == NUMBER_DATA)
+                    return NUMBER_DATA;
+                if (onlyChild == INT_DATA)
+                    return INT_DATA;
+                if (onlyChild == UNKNOWN_DATA)
+                    return UNKNOWN_DATA;
+                EXEC_END(SEMANTICS_ERROR_UNCOMPATIBLE, "(unarni -)  Nekompatibilni datovy typ!\n");
+                break;
+            } else // Binární mínus
+                return handleMathOperators(currentNode, AST_MINUS, "-");
         }
         case (AST_MUL): {
             printLog("AST_MUL\n");
