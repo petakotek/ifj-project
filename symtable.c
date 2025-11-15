@@ -136,8 +136,7 @@ void hashTableDeleteItem(HashTable *hashT, char *key) {
                                .key))  // prohledavani dokud se nenarazi na matchujici klic
         {
             shift++;
-            rounded =
-                true;  // pomocná proměnná pro kontrolu, že nedochází k průchodu pole stále dokola
+            rounded = true;  // pomocná proměnná pro kontrolu, že nedochází k průchodu pole stále dokola
             if ((indexToSearch + shift) == TABLE_CAPACITY && indexToSearch != 0) {
                 indexToSearch = 0;
                 rounded = true;  // pomocná proměnná pro kontrolu, že nedochází k průchodu pole
@@ -152,8 +151,7 @@ void hashTableDeleteItem(HashTable *hashT, char *key) {
         hashT->items[indexToSearch + shift].key       = NULL;
         hashT->items[indexToSearch + shift].isDeleted = true;
         hashT->items[indexToSearch + shift].isEmpty   = true;
-        hashT->items[indexToSearch + shift].symbol.name =
-            NULL;  // Uvolnění paměti zajišťují funkce pro AS strom
+        hashT->items[indexToSearch + shift].symbol.name = NULL;  // Uvolnění paměti zajišťují funkce pro AS strom
     }
     hashT->tableSize--;
 }
@@ -165,7 +163,6 @@ void hashTableDeleteItem(HashTable *hashT, char *key) {
 int hashTableSearchItem(HashTable *hashT, char *key) {
     int  indexToSearch = hashItem(key);
     int  shift         = 1;
-    bool rounded       = false;
     int  originalIndex = indexToSearch;
 
     // test jestli neni rovnou na prvni pozici
