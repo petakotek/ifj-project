@@ -52,7 +52,6 @@ int main(){
 
 	codegen_generate(AST);
 	*/
-	free(source_file);
 	memorySafeExit(NO_ERROR);
 
 }

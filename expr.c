@@ -409,6 +409,7 @@ void findPrecedenceRule(DynamicPrecedenceStackPtr stack, DynamicAstNodeStackPtr 
                 free(kids); // uvolneni deti, nebudou uz potreba
                 stackAstNodePush(stackA, newRoot);
 
+                tokenPrecedenceFree(&p2);
                 p2.type = TOKEN_EXPRESSION; // vratim na klasicky zasobnik jenom expression
                 stackPrecedencePush(stack, p2);
 
@@ -813,7 +814,6 @@ AstNode* parseExpression(Token *token, int flag)
                     freePrecedenceStack(stackP);
                     freeAstStack(stackA);
                     tokenPrecedenceFree(&actualToken);
-                    free(token);
                     token = NULL;
                     memorySafeExit(SYNTAX_ERROR);
                     break;

@@ -76,6 +76,7 @@ bool memoryClean() {
     lexer_free();
     parserFree();
     freeSemanticsMemory();
+    free(source_file);
     return true;
 }
 
