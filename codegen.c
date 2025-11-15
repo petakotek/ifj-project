@@ -185,7 +185,7 @@ void add_binop_tmps(VarList* vars, const char* func, int id,AstNode *node) {
        varlist_add(vars, buf);
 	    snprintf(buf, sizeof buf, "%s_rs_%d", func, id);
 	    varlist_add(vars, buf);
-    }else if(node->kind == AST_GT || node->kind == AST_LT || node->kind == AST_LTE || node->kind == AST_GTE){
+    }else if(node->kind == AST_GT || node->kind == AST_LT || node->kind == AST_LTE || node->kind == AST_GTE || node->kind == AST_IS){
    		snprintf(buf, sizeof buf, "%s_ln_%d", func, id);
        	varlist_add(vars, buf);
         snprintf(buf, sizeof buf, "%s_rn_%d", func, id);
@@ -255,6 +255,7 @@ void collectLocalVars(AstNode *node, VarList *vars,FuncContext *funcStruct) {
           case AST_EQ:
           case AST_LT:
           case AST_GT:
+          case AST_IS:
           case AST_LTE:
           case AST_GTE:
           case AST_AND:
@@ -263,7 +264,12 @@ void collectLocalVars(AstNode *node, VarList *vars,FuncContext *funcStruct) {
               add_binop_tmps(vars, funcStruct->func_name, node->tmp_id,node);
               break;
           }
-
+          case AST_WHILE:
+          case AST_FOR:
+          case AST_IF_CHAIN:{
+          	node->tmp_id = funcStruct->value_counter++;
+           break;
+          }
           case AST_NOT: {
               node->tmp_id = funcStruct->value_counter++;
               // např. jen typ a jedna hodnota:
@@ -1240,38 +1246,76 @@ void emitUnaryMinus(AstNode *node, FuncContext *funcStrukt) {
     printN("LABEL %s",label_end);
 
 }
-void emit_is(AstNode *node, FuncContext *funcStruct){
-    // Vyhodnocení levého a pravého operandu do zásobníku
-    for (int i = 0; i < 2; i++) {
-        emit_command(node->child[i], funcStruct);
-    }
-
+void emit_is(AstNode *node, FuncContext *funcStruct) {
+    emit_command(node->child[0], funcStruct);
     int id = node->tmp_id;
-    char ln[128], rn[128], ty[128];
+    char ln[128], lty[128];
     snprintf(ln, sizeof ln, "%s_ln_%d", funcStruct->func_name, id);
-    snprintf(rn, sizeof rn, "%s_rn_%d", funcStruct->func_name, id);
-    snprintf(ty, sizeof ty, "%s_ty_%d", funcStruct->func_name, id);
-
-    char label_err[128], label_end[128], label_ok[128];
+    snprintf(lty, sizeof lty, "%s_lty_%d", funcStruct->func_name, id);
+    char label_num[128], label_string[128], label_null[128];
+    char label_ok[128], label_err[128], label_end[128];
+    snprintf(label_num, sizeof label_num, "%s$Num$%d", funcStruct->func_name, id);
+    snprintf(label_string, sizeof label_string, "%s$String$%d", funcStruct->func_name, id);
+    snprintf(label_null, sizeof label_null, "%s$Null$%d", funcStruct->func_name, id);
+    snprintf(label_ok, sizeof label_ok, "%s$ok$%d", funcStruct->func_name, id);
     snprintf(label_err, sizeof label_err, "%s$err$%d", funcStruct->func_name, id);
     snprintf(label_end, sizeof label_end, "%s$end$%d", funcStruct->func_name, id);
-    snprintf(label_ok, sizeof label_ok, "%s$ok$%d", funcStruct->func_name, id);
 
-    // Přeměna levého operandu na typ (string)
-    printN("TYPE");
+    // Pop levého operandu do LF@ln
+    printN("POPS LF@%s", ln);
 
-    // Porovnání s pravým operandem
+    // Zjisti typ levého operandu
+    printN("PUSHS LF@%s", ln);
+    printN("TYPES");
+    printN("POPS LF@%s", lty);
+
+    switch (node->child[1]->kind) {
+        case AST_KEYWORD_NUM:    // "Num"
+            printN("JUMP %s", label_num);
+            break;
+        case AST_KEYWORD_STRING: // "String"
+            printN("JUMP %s", label_string);
+            break;
+        case AST_NULL:   // "Null"
+            printN("JUMP %s", label_null);
+            break;
+        default:
+            printN("PUSHS bool@false");
+            return;
+    }
+
+    // ---- Num ----
+    printN("LABEL %s", label_num);
+    printN("PUSHS LF@%s", lty);
+    printN("PUSHS string@int");
     printN("JUMPIFEQS %s", label_ok);
+    printN("PUSHS LF@%s", lty);
+    printN("PUSHS string@float");
+    printN("JUMPIFEQS %s", label_ok);
+    printN("JUMP %s", label_err);
 
-    // Pokud ne, push false a skoč na konec
-    printN("PUSHS bool@false");
-    printN("JUMP %s", label_end);
+    // ---- String ----
+    printN("LABEL %s", label_string);
+    printN("PUSHS LF@%s", lty);
+    printN("PUSHS string@string");
+    printN("JUMPIFEQS %s", label_ok);
+    printN("JUMP %s", label_err);
 
-    // Pokud ano, push true
+    // ---- Null ----
+    printN("LABEL %s", label_null);
+    printN("PUSHS LF@%s", lty);
+    printN("PUSHS string@nil");
+    printN("JUMPIFEQS %s", label_ok);
+    printN("JUMP %s", label_err);
+
+    // ---- výsledek ----
     printN("LABEL %s", label_ok);
     printN("PUSHS bool@true");
+    printN("JUMP %s", label_end);
 
-    // Konec
+    printN("LABEL %s", label_err);
+    printN("PUSHS bool@false");
+
     printN("LABEL %s", label_end);
 }
 void emit_assigned(AstNode *node, FuncContext *funcStruct) {
@@ -1404,7 +1448,11 @@ void emitBreak(FuncContext *funcContext)
 void emitContinue(FuncContext *funcContext) {
     printN("JUMP %s", generatorLable("start", funcContext, false));
 }
-
+void emitCondition(AstNode *node,FuncContext *funcContext){
+	if(node->arity == 1){
+		if(node->child[0]->kind == AstNode)
+	}
+}
 /**
  *
  */
@@ -1776,27 +1824,20 @@ void emit_command(AstNode *node,FuncContext *funcStruct) {
             break;
 
         case AST_EMPTY:
-            // Nová implementace: Prazdny uzel (nic nedelat)
             break;
 
         // Operace (Expression)
         case AST_PLUS:
-            emitPlus(node, funcStruct);  // Byla implementována, jen pro úplnost.
+            emitPlus(node, funcStruct);
             break;
         case AST_MINUS:
-            // Nová implementace: Odčítání
-            emitMinus(node,funcStruct);  // Byla implementována, jen pro úplnost.
-            // emitMinus(node, op_emit);
+            emitMinus(node,funcStruct);
             break;
         case AST_MUL:
         	emitMul(node, funcStruct);
-            // Nová implementace: Násobení
-            // emitMul(node, op_emit);
             break;
         case AST_DIV:
        		emitDiv(node, funcStruct);
-            // Nová implementace: Dělení
-            // emitDiv(node, op_emit);
             break;
         case AST_EQ:
             emit_equal(node, funcStruct);
@@ -1827,11 +1868,10 @@ void emit_command(AstNode *node,FuncContext *funcStruct) {
         case AST_RPAREN:
             break;
         case AST_NULL:
-            // Nová implementace: Reprezentace literálu NULL
-            // emit_null(node);
+       		printN("PUSHS string@Null");
             break;
         case AST_CONDITION:
-        	emitChildren(node,funcStruct);
+        	emitCondition(node,funcStruct);
          	break;
         case AST_IFJ_CALL:
        		//emitIfjFunc(node, funcStruct);
