@@ -1598,15 +1598,24 @@ SemanticSymbol* findSymbolAndModifyAST(AstNode* sourceNode, SemanticSymbol* dest
 
     if (index == -1) {
         // Může to být i získávač nebo nastavovač
-        SemanticSymbol* foundSymbol = findGlobalSymbol(key);
-        if (foundSymbol != NULL) {
-            if (foundSymbol->symbolType == GETTER) {
-                sourceNode->kind = AST_GETTER_CALL;
-            } else if (foundSymbol->symbolType == SETTER) {
-                sourceNode->kind = AST_SETTER_CALL;
-            }
+        unsigned symbolNameLength = strlen(key) + 3;  // prostor pro '$_'
+
+        char getterName[symbolNameLength];
+        snprintf(getterName, symbolNameLength, "%s$%s", key, "g");
+        SemanticSymbol* foundGetter = findGlobalSymbol(getterName);
+        if (foundGetter != NULL) {
+            sourceNode->kind = AST_GETTER_CALL;
+            return foundGetter;
         }
-        return foundSymbol;
+
+        char setterName[symbolNameLength];
+        snprintf(setterName, symbolNameLength, "%s$%s", key, "s");
+        SemanticSymbol* foundSetter = findGlobalSymbol(setterName);
+        if (foundSetter != NULL) {
+            sourceNode->kind = AST_SETTER_CALL;
+        }
+
+        return NULL;
     }
 
     SemanticSymbol* foundSymbol = &(scopesStack->array[toSearchScopeIndex]->items[index].symbol);
@@ -1841,13 +1850,45 @@ void initNewSymbol(AstNode* sourceNode, SemanticSymbol* destSymbol, SemanticSymb
             break;
         }
         case (SETTER): {
-            destSymbol->name     = sourceNode->value.str;
-            destSymbol->dataType = symbolDataType;
+            unsigned newNameLength = strlen(sourceNode->value.str) + 3;  // prostor pro postfix '$s'
+
+            char* newName = malloc(sizeof(char) * newNameLength);
+
+            if (newName == NULL) {
+                printError(INTERNAL_ERROR, "(%s) Selhala alokace pameti!", __func__);
+                memorySafeExit(INTERNAL_ERROR);
+                return;
+            }
+
+            destSymbol->name = newName;
+
+            // setterName$s ($s pro rozlišení mezi nastavovačem a získávačem)
+            snprintf(destSymbol->name, newNameLength, "%s$%s", sourceNode->value.str, "s");
+
+            free(sourceNode->value.str);
+            sourceNode->value.str = newName;
+            destSymbol->dataType  = symbolDataType;
             break;
         }
         case (GETTER): {
-            destSymbol->name        = sourceNode->value.str;
-            destSymbol->returnValue = functionReturnValue;
+            unsigned newNameLength = strlen(sourceNode->value.str) + 3;  // prostor pro postfix '$g'
+
+            char* newName = malloc(sizeof(char) * newNameLength);
+
+            if (newName == NULL) {
+                printError(INTERNAL_ERROR, "(%s) Selhala alokace pameti!", __func__);
+                memorySafeExit(INTERNAL_ERROR);
+                return;
+            }
+
+            destSymbol->name = newName;
+
+            // getterName$g ($s pro rozlišení mezi nastavovačem a získávačem)
+            snprintf(destSymbol->name, newNameLength, "%s$%s", sourceNode->value.str, "g");
+
+            free(sourceNode->value.str);
+            sourceNode->value.str = newName;
+            destSymbol->dataType  = symbolDataType;
             break;
         }
         default: {
