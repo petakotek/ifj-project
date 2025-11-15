@@ -16,8 +16,14 @@ $(EXEC): $(OBJ)
 
 clean:
 	rm -f $(OBJ) $(EXEC)
+	rm -rf xvoldrv00.zip ./tmpIsItOk
 
 .PHONY: all clean
 
 # TODO zabalení dle zadání
-# pack
+pack:
+	rm -rf xvoldrv00.zip ./tmpIsItOk
+#	clang-format -i *.c *.h
+	zip xvoldrv00.zip *.c *.h rozdeleni rozsireni dokumentace.pdf Makefile
+	mkdir ./tmpIsItOk
+	./is_it_ok.sh xvoldrv00.zip ./tmpIsItOk
