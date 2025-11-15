@@ -40,7 +40,7 @@ void emitSetterCall(AstNode *node);
 void emitGetterCall(AstNode *node);
 void emitSetter(AstNode* node);
 void emitGetter(AstNode* node);
-
+void emitCondition(AstNode *node,FuncContext *funcContext);
 void printN(const char *fmt, ...);
 
 void emitUnaryMinus(AstNode *node,FuncContext *funcStrukt);
