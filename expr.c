@@ -192,7 +192,7 @@ AstNodeType getAstNodeTypeFromTokenType(TokenType type)
     case TOKEN_KEYWORD_STRING:      return AST_KEYWORD_STRING;
     case TOKEN_KEYWORD_NULL_SMALL:  return AST_SMALL_NULL;
     case TOKEN_KEYWORD_NULL:        return AST_NULL;
-    case TOKEN_STRING_BLOCK:        return AST_STRING_BLOCK;
+    case TOKEN_STRING_BLOCK:        return AST_STRING_LIT;
     case TOKEN_HEXA:			    return AST_INT_LIT;
     case TOKEN_INTEGER_EXP:		    return AST_INT_LIT_EXP;
     case TOKEN_FLOAT_EXP:           return AST_FLOAT_LIT_EXP;
@@ -409,6 +409,7 @@ void findPrecedenceRule(DynamicPrecedenceStackPtr stack, DynamicAstNodeStackPtr 
                 free(kids); // uvolneni deti, nebudou uz potreba
                 stackAstNodePush(stackA, newRoot);
 
+                tokenPrecedenceFree(&p2);
                 p2.type = TOKEN_EXPRESSION; // vratim na klasicky zasobnik jenom expression
                 stackPrecedencePush(stack, p2);
 

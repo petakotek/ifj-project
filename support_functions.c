@@ -73,13 +73,13 @@ void printLog(const char *fmt, ...) {
 bool memoryClean() {
     // TODO jednotlivé funkce pro vyčištění struktur a podobně
     // TODO už můžu přidat lexer_free() a zavření souboru/free na načtený soubor
-    free(source_file);
     if(buf != NULL){
 
     }
     lexer_free();
     parserFree();
     freeSemanticsMemory();
+    free(source_file);
     return true;
 }
 
