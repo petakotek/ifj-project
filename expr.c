@@ -289,8 +289,7 @@ void findPrecedenceRule(DynamicPrecedenceStackPtr stack, DynamicAstNodeStackPtr 
     {
         printError(SYNTAX_ERROR, "(PSA) stack je ve findPrecedenceRule NULL\n");
         freeAstStack(stackA);
-        stackAstNodeDestruct(stackA);
-        stackPrecedenceDestruct(stack);
+        freePrecedenceStack(stack);
         memorySafeExit(SYNTAX_ERROR);
     }
     DynamicPrecedenceStackPtr stackTmp;
@@ -314,7 +313,7 @@ void findPrecedenceRule(DynamicPrecedenceStackPtr stack, DynamicAstNodeStackPtr 
         stackPrecedencePop(stackTmp);
         stackPrecedencePush(stack, stackTop);
     }
-    stackPrecedenceDestruct(stackTmp); // uvolnim nakonec nepouzivany zasobnik
+    freePrecedenceStack(stackTmp); // uvolnim nakonec nepouzivany zasobnik
 
     if (DEBUG)
         printLog("\t\t\tparam count %d\n", count);
@@ -563,7 +562,7 @@ void printStack(DynamicPrecedenceStackPtr stack)
          stackPrecedencePop(stackTmp);
          stackPrecedencePush(stack, topToken);
     }
-    stackPrecedenceDestruct(stackTmp); // uvolnim docasny zasobnik
+    freePrecedenceStack(stackTmp); // uvolnim docasny zasobnik
 
     if (DEBUG)
         printLog("\n");
@@ -742,6 +741,8 @@ AstNode* parseExpression(Token *token, int flag)
         case TOKEN_KEYWORD_IS:
         case TOKEN_KEYWORD_NUM:
         case TOKEN_KEYWORD_STRING:
+        case TOKEN_KEYWORD_NULL:
+        case TOKEN_STRING_BLOCK:
         case TOKEN_HEXA:
         case TOKEN_KEYWORD_NULL_SMALL:
         case TOKEN_FLOAT_EXP:
@@ -826,8 +827,8 @@ AstNode* parseExpression(Token *token, int flag)
         if (actualToken.type == TOKEN_EOF)
         {
             printError(SYNTAX_ERROR, "(PSA) Narazilo na konec souboru, nemelo se tak stat\n");
-            stackAstNodeDestruct(stackA); // uvolneni zásobníku uzlů
-            stackPrecedenceDestruct(stackP); // uvolnění zásobníku výrazů
+            freeAstStack(stackA); // uvolneni zásobníku uzlů
+            freePrecedenceStack(stackP); // uvolnění zásobníku výrazů
             memorySafeExit(SYNTAX_ERROR);
             break;
         }
@@ -963,7 +964,7 @@ AstNode* parseExpression(Token *token, int flag)
             }
 
             stackAstNodeDestruct(stackA); // uvolneni zásobníku uzlů
-            stackPrecedenceDestruct(stackP); // uvolnění zásobníku výrazů
+            freePrecedenceStack(stackP); // uvolnění zásobníku výrazů
             *token = actualToken;
             return root; // koren, ktery vracim Kubovi na cely vyraz
         }
