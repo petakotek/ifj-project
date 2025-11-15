@@ -855,19 +855,10 @@ SemValidationStates recursiveNodeWalker(AstNode* currentNode, AstNodeType parent
         case (AST_NOT): {
             printLog("AST_NOT\n");
 
-            SemValidationStates onlyChild = recursiveNodeWalker(currentNode->child[0], AST_NOT,
-                                                                0);  // Negace má pouze jedno dítě
-
-            if (onlyChild == BOOLEAN_DATA) {
-                return BOOLEAN_DATA;
-            }
-
-            if (onlyChild == UNKNOWN_DATA) {
-                return BOOLEAN_DATA;  // Výsledek logické negace bude vždy bool hodnota
-            }
-
-            EXEC_END(SEMANTICS_ERROR_UNCOMPATIBLE, "(!) Datovy typy musi byt kompatibilni!\n");
-            break;
+            recursiveNodeWalker(currentNode->child[0], AST_NOT,
+                                0);  // Negace má pouze jedno dítě
+            // Vstup může být cokoliv, ale výstup je vždy bool hodnota
+            return BOOLEAN_DATA;
         }
         case (AST_AND): {
             printLog("AST_AND\n");
