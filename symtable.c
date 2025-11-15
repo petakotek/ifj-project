@@ -58,65 +58,63 @@ void hashTableInitItems(HashTable *hashT) {
  * @return Funkce vraci index v poli polozek
  */
 int hashTableInsertItem(HashTable *hashT, char *key, SemanticSymbol token) {
-    int indexToStore = hashItem(key, hashT);  // zahashovani retezce na index v poli polozek hashovaci tabulky
+    if (hashT == NULL || key == NULL) return -1;
 
-    if (hashT->tableSize >= hashT->tableCapacity) {
-        hashTableRealloc(hashT);
+ 
+    int existing = hashTableSearchItem(hashT, key);
+    if (existing != -1)
+    {
+        hashT->items[existing].symbol = token;
+        return existing;
     }
 
-    // na indexu položky už nějaký prvek je
-    if (hashT->items[indexToStore].isEmpty == false) {
+    // 2. Klíč neexistuje → vlož nový
+    if (hashT->tableSize >= hashT->tableCapacity)
+    {
+        if (!hashTableRealloc(hashT)) {
+            printError(INTERNAL_ERROR, "Selhani realokace");
+            return -1;
+        }
+    }
 
-        int current = indexToStore;
-        int shift = 0;
-        while (hashT->items[current].isEmpty == false && hashT->items[current].isDeleted == false) {
-            shift++;
+    int index = hashItem(key, hashT);
+    int steps = 0;
 
-            current = (indexToStore + shift) % hashT->tableCapacity;  // MODULO pro cyklické prohledávání
+    while (steps < hashT->tableCapacity) {
+        int curr = (index + steps) % hashT->tableCapacity;
+        TableItem *item = &hashT->items[curr];
 
-            if (shift >= hashT->tableCapacity) {
-                if (!hashTableRealloc(hashT)) {
-                    printError(INTERNAL_ERROR, "Selhani realokace tabulky");
-                    return -1;
-                }
+        if (item->isEmpty || item->isDeleted)
+        {
+            if (item->key != NULL)
+            {
+                free(item->key);
             }
+
+            item->key = malloc(strlen(key) + 1);
+            if (item->key == NULL) {
+                printError(INTERNAL_ERROR, "Chyba alokace klice");
+                return -1;
+            }
+            strcpy(item->key, key);
+
+            item->symbol = token;
+            item->isEmpty = false;
+            item->isDeleted = false;
+
+            hashT->tableSize++;
+            return curr;
         }
 
-
-        hashT->items[indexToStore + shift].key = malloc(sizeof(char) * (strlen(key) + 1));  // alokace řetězce, který bude vkládán do hashovací tabulky
-
-        if (hashT->items[indexToStore + shift].key == NULL)  // kontrola alokace
-        {
-            printError(INTERNAL_ERROR, "Chyba alokace klice prvku v tabulce symbolu pri vkladani");
-        }
-
-        strcpy(hashT->items[indexToStore + shift].key, key);
-        hashT->items[indexToStore + shift].isDeleted = false;
-        hashT->items[indexToStore + shift].isEmpty   = false;
-        hashT->items[indexToStore + shift].symbol    = token;
-
-        hashT->tableSize++;
-        return indexToStore + shift;
-
-    } else {
-        hashT->items[indexToStore].key =
-            malloc(sizeof(char) *
-                   (strlen(key) + 1));  // alokace řetězce, který bude vkládán do hashovací tabulky
-
-        if (hashT->items[indexToStore].key == NULL)  // kontrola alokace
-        {
-            printError(INTERNAL_ERROR, "Chyba alokace klice prvku v tabulce symbolu pri vkladani");
-        }
-        // nastavení hodnot jednotlivým prvkům
-        strcpy(hashT->items[indexToStore].key, key);
-        hashT->items[indexToStore].isDeleted = false;
-        hashT->items[indexToStore].isEmpty   = false;
-        hashT->items[indexToStore].symbol    = token;
-
-        hashT->tableSize++;
-
-        return indexToStore;
+        steps++;
     }
+
+    // Tabulka plná → realokuj a zkus znovu
+    if (!hashTableRealloc(hashT)) {
+        printError(INTERNAL_ERROR, "Selhani realokace po vycerpani");
+        return -1;
+    }
+    return hashTableInsertItem(hashT, key, token);  // rekurze
 }
 /**
  * @brief Funkce smaže prvek v poli v tabulce, pokud je nalezen
@@ -130,9 +128,11 @@ void hashTableDeleteItem(HashTable *hashT, char *key) {
         printError(INTERNAL_ERROR, "Polozka v tabulce neni\n");
     }else{
         free(hashT->items[deleteIndex].key);
+        hashT->items[deleteIndex].key = NULL;
         hashT->items[deleteIndex].isDeleted = true;
-        hashT->items[deleteIndex].isEmpty = true;
+        hashT->items[deleteIndex].isEmpty = false;
         hashT->items[deleteIndex].symbol.name = NULL;  // Uvolnění paměti zajišťují funkce pro AS strom
+        printf("tady jsem  index:%d\n", deleteIndex);
     }
     hashT->tableSize--;
 }
@@ -154,7 +154,6 @@ int hashTableSearchItem(HashTable *hashT, char *key) {
     while (true) {
         shift++;
         int currentIndex = (indexToSearch + shift) % hashT->tableCapacity;
-
         // Pokud narazíme na prázdnou pozici, klíč není v tabulce
         if (hashT->items[currentIndex].key == NULL && hashT->items[currentIndex].isDeleted == false) {
             return -1;
