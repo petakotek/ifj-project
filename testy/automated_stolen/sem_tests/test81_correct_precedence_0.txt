@@ -1,0 +1,23 @@
+// Correct: Operator precedence
+import "ifj25" for Ifj
+class Program {
+    static main() {
+        var result 
+        result = 1 + 2 * 3
+        Ifj.write("1+2*3 = ")
+        Ifj.write(result)
+        Ifj.write("\n")
+        
+        var result2 
+        result2 = (1 + 2) * 3
+        Ifj.write("(1+2)*3 = ")
+        Ifj.write(result2)
+        Ifj.write("\n")
+        
+        var result3 
+        result3 = 10 - 2 * 3 + 4 / 2
+        Ifj.write("Complex: ")
+        Ifj.write(result3)
+        Ifj.write("\n")
+    }
+}

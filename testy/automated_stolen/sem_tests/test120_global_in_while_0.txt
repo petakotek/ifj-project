@@ -1,0 +1,13 @@
+// Correct: globals in while loop controlling and updating
+import "ifj25" for Ifj
+class Program {
+    static main() {
+        var __i
+        var __limit
+        while (__i == __limit) {
+            Ifj.write(__i)
+            Ifj.write("\n")
+            __i = __i + 1
+        }
+    }
+}

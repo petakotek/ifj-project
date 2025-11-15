@@ -1,0 +1,14 @@
+// Semantic error: Type mismatch in arithmetic operation
+import "ifj25" for Ifj
+class Program {
+    static main() {
+        var a 
+        a = "hello"
+        var b 
+        b = 5
+        var result 
+        result = a - b  // ERROR: cannot subtract number from string
+        Ifj.write(result)
+        Ifj.write("\n")
+    }
+}

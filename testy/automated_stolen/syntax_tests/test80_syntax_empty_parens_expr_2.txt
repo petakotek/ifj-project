@@ -1,0 +1,10 @@
+// Syntax error: Empty parentheses in expression
+import "ifj25" for Ifj
+class Program {
+    static main() {
+        var x 
+        x = ()  // ERROR: empty parentheses
+        Ifj.write(x)
+        Ifj.write("\n")
+    }
+}

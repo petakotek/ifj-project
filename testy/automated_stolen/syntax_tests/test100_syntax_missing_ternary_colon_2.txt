@@ -1,0 +1,12 @@
+// Syntax error: Missing colon in ternary
+import "ifj25" for Ifj
+class Program {
+    static main() {
+        var x 
+        x = 5
+        var result 
+        result = x > 3 ? 10 20  // ERROR: missing :
+        Ifj.write(result)
+        Ifj.write("\n")
+    }
+}

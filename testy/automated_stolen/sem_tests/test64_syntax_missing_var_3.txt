@@ -1,0 +1,9 @@
+// Syntax error: Missing var keyword
+import "ifj25" for Ifj
+class Program {
+    static main() {
+        x = 5  // ERROR: missing var keyword
+        Ifj.write(x)
+        Ifj.write("\n")
+    }
+}

@@ -1,0 +1,25 @@
+// Correct: Valid string operations
+import "ifj25" for Ifj
+class Program {
+    static main() {
+        var str1 
+        str1 = "Hello"
+        var str2 
+        str2 = "World"
+        var result 
+        result = str1 + " " + str2
+        Ifj.write(result)
+        Ifj.write("\n")
+        
+        var repeated 
+        repeated = str1 * 3
+        Ifj.write(repeated)
+        Ifj.write("\n")
+        
+        var cmp 
+        cmp = Ifj.strcmp(str1, str2)
+        Ifj.write("Compare result: ")
+        Ifj.write(cmp)
+        Ifj.write("\n")
+    }
+}

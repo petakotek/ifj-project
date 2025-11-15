@@ -18,3 +18,6 @@ clean:
 	rm -f $(OBJ) $(EXEC)
 
 .PHONY: all clean
+
+# TODO zabalení dle zadání
+# pack

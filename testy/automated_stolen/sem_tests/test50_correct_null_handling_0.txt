@@ -1,0 +1,27 @@
+// Correct: Null handling and type checking
+import "ifj25" for Ifj
+class Program {
+    static main() {
+        var x 
+        x = Ifj.read_num()
+        if (x != null) {
+            if (x is Num) {
+                Ifj.write("Got a number: ")
+                Ifj.write(x)
+                Ifj.write("\n")
+            } else {
+                Ifj.write("Not a number\n")
+            }
+        } else {
+            Ifj.write("Input was null\n")
+        }
+        
+        var y 
+        y = null
+        if (y is Null) {
+            Ifj.write("y is null\n")
+        } else {
+            Ifj.write("y is not null\n")
+        }
+    }
+}

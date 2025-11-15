@@ -1,0 +1,14 @@
+// Semantic error: Adding number to string (invalid)
+import "ifj25" for Ifj
+class Program {
+    static main() {
+        var num 
+        num = 42
+        var str 
+        str = "The answer is "
+        var result 
+        result = num + str  // ERROR: cannot add string to number
+        Ifj.write(result)
+        Ifj.write("\n")
+    }
+}

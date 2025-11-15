@@ -1,0 +1,32 @@
+// Correct: Complex expression with all operators
+import "ifj25" for Ifj
+class Program {
+    static main() {
+        var a 
+        a = 10
+        var b 
+        b = 5
+        var c 
+        c = 2
+        
+        var result 
+        result = (a + b) * c - a / b + 1
+        Ifj.write("Complex result: ")
+        Ifj.write(result)
+        Ifj.write("\n")
+        
+        var cond 
+        cond = (a > b) == (b > c)
+        if (cond) {
+            Ifj.write("Condition true\n")
+        } else {
+            Ifj.write("Condition false\n")
+        }
+        
+        var tern 
+        tern = a > b ? (a + b) : (a - b)
+        Ifj.write("Ternary: ")
+        Ifj.write(tern)
+        Ifj.write("\n")
+    }
+}
