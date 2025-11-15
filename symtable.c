@@ -57,7 +57,7 @@ void hashTableInitItems(HashTable *hashT) {
  * polem a hledá první volný index
  * @return Funkce vraci index v poli polozek
  */
-int hashTableInsertItem(HashTable *hashT, char *key, SemanticSymbol token) {
+int hashTableInsertItem(HashTable *hashT, char *key, SemSymbol token) {
     int indexToStore = hashItem(key, hashT);  // zahashovani retezce na index v poli polozek hashovaci tabulky
 
     if (hashT->tableSize >= hashT->tableCapacity) {
@@ -129,7 +129,8 @@ void hashTableDeleteItem(HashTable *hashT, char *key) {
     {
         printError(INTERNAL_ERROR, "Polozka v tabulce neni\n");
     }else{
-        free(hashT->items[deleteIndex].key);
+        //free(hashT->items[deleteIndex].key); // Ukazuje na stejný řetězec jako AST uzel
+        hashT->items[deleteIndex].key = NULL;
         hashT->items[deleteIndex].isDeleted = true;
         hashT->items[deleteIndex].isEmpty = true;
         hashT->items[deleteIndex].symbol.name = NULL;  // Uvolnění paměti zajišťují funkce pro AS strom
