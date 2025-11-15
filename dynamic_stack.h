@@ -7,6 +7,9 @@
  * @author Vojtěch Voldřich (xvoldrv00)
  */
 
+ // TODO dokumentační komentáře a další codestyle věci
+
+
 #ifndef DYNAMIC_STACK
 #define DYNAMIC_STACK 1
 

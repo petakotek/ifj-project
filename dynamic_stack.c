@@ -7,6 +7,9 @@
  * @author Vojtěch Voldřich (xvoldrv00)
  */
 
+// TODO dokumentační komentáře a další codestyle věci
+
+
 #include "dynamic_stack.h"
 #include "ast_strom.h"
 
