@@ -4,7 +4,7 @@ IndentWidth: 4           # počet mezer pro odsazení
 TabWidth: 4              # šířka tabulátoru
 UseTab: Never            # vždy používat mezery, ne taby
 ContinuationIndentWidth: 4  # odsazení pokračujících řádků (např. u dlouhých funkcí)
-ColumnLimit: 100         # maximální délka řádku (můžeš změnit)
+ColumnLimit: 120         # maximální délka řádku (Použita hodnota ze zadání)
 SpacesBeforeTrailingComments: 2
 AlignConsecutiveAssignments: true
 AlignConsecutiveDeclarations: true

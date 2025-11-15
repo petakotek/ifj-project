@@ -1,0 +1,27 @@
+// Correct: Getter and setter usage
+import "ifj25" for Ifj
+class Program {
+    static value {
+        if (__stored) {
+            return __stored
+        } else {
+            return 0
+        }
+    }
+    
+    static value=(v) {
+        __stored = v
+    }
+    
+    static main() {
+        value = 42
+        Ifj.write("Value is: ")
+        Ifj.write(value)
+        Ifj.write("\n")
+        
+        value = 100
+        Ifj.write("New value is: ")
+        Ifj.write(value)
+        Ifj.write("\n")
+    }
+}

@@ -5,13 +5,16 @@
         "Nastavovac",
         "nastavovač",
         "nastavovače",
+        "nastavovačem",
         "NOTEQ",
         "RPAREN",
         "strcmp",
+        "Symb",
         "Upsize",
         "Ziskavac",
         "získávač",
-        "získávače"
+        "získávače",
+        "získávačem"
     ],
     "files.associations": {
         "support_functions.h": "c",

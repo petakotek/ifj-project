@@ -1,0 +1,41 @@
+// Correct: Using all builtin functions
+import "ifj25" for Ifj
+class Program {
+    static main() {
+        var num 
+        num = 42.7
+        var floored 
+        floored = Ifj.floor(num)
+        Ifj.write("Floor of ")
+        Ifj.write(num)
+        Ifj.write(" is ")
+        Ifj.write(floored)
+        Ifj.write("\n")
+        
+        var str 
+        str = Ifj.str(num)
+        var len 
+        len = Ifj.length(str)
+        Ifj.write("String length: ")
+        Ifj.write(len)
+        Ifj.write("\n")
+        
+        var sub 
+        sub = Ifj.substring(str, 0, 2)
+        Ifj.write("Substring: ")
+        Ifj.write(sub)
+        Ifj.write("\n")
+        
+        var ascii 
+        ascii = Ifj.ord("A", 0)
+        Ifj.write("ASCII of A: ")
+        Ifj.write(ascii)
+        Ifj.write("\n")
+        
+        var ch 
+        ch = Ifj.chr(65)
+        Ifj.write("Character 65: ")
+        Ifj.write(ch)
+        Ifj.write("\n")
+    }
+}

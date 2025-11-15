@@ -1,0 +1,25 @@
+// Correct: Complex arithmetic expressions
+import "ifj25" for Ifj
+class Program {
+    static main() {
+        var a 
+        a = 10
+        var b 
+        b = 5
+        var c 
+        c = 2
+        var result 
+        result = (a + b) * c - a / b
+        Ifj.write("Result: ")
+        Ifj.write(result)
+        Ifj.write("\n")
+        
+        var d 
+        d = a > b
+        if (d) {
+            Ifj.write("a is greater than b\n")
+        } else {
+            Ifj.write("a is not greater than b\n")
+        }
+    }
+}

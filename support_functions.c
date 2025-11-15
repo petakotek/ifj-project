@@ -24,6 +24,12 @@
 #define INITIAL_CAPACITY 1024
 
 /**
+ * @brief Ukazatel na vstupní znakové pole
+ * 
+ */
+extern char* source_file;
+
+/**
  * @brief Zajišťuje volání destruktorů dynamicky alokovaných struktur
  *
  * @return true Vyčištění paměti proběhlo v pořádku

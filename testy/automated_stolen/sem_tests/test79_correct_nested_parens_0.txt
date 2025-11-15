@@ -1,0 +1,17 @@
+// Correct: Deeply nested parentheses
+import "ifj25" for Ifj
+class Program {
+    static main() {
+        var result 
+        result = ((((((5))))))
+        Ifj.write("Nested result: ")
+        Ifj.write(result)
+        Ifj.write("\n")
+        
+        var calc 
+        calc = (((1 + 2) * (3 + 4)))
+        Ifj.write("Calculation: ")
+        Ifj.write(calc)
+        Ifj.write("\n")
+    }
+}
