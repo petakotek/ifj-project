@@ -18,7 +18,7 @@
 #include "lexer.h"
 #include "support_functions.h"
 
-#define DEBUG false // přepínač pro povolení debugovacích výpisů
+#define DEBUG true // přepínač pro povolení debugovacích výpisů
 
 typedef enum {
     R, // >
@@ -810,7 +810,11 @@ AstNode* parseExpression(Token *token, int flag)
                     printError(SYNTAX_ERROR,
                         "(PSA) Za klicovym slovem Is nasleduje nezname klicove slovo: %s\n ",
                         token_type_to_string(actualToken.type));
-                        
+                    freePrecedenceStack(stackP);
+                    freeAstStack(stackA);
+                    tokenPrecedenceFree(&actualToken);
+                    free(token);
+                    token = NULL;
                     memorySafeExit(SYNTAX_ERROR);
                     break;
                 }
