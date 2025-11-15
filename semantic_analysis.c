@@ -562,11 +562,13 @@ RecursiveSemanticAnalysisReturnValues recursiveNodeWalker(AstNode*    currentNod
                     return OK;
                 }
 
-                leftSymbol->dataType = rightSymbol->dataType;
+                //leftSymbol->dataType = rightSymbol->dataType;
+                leftSymbol->dataType = UNKNOWN_VAL;
             }
 
             if (leftSymbol != NULL) {
-                leftSymbol->dataType = convertSemanticReturnValueToSemanticDataType(rightChild);
+                //leftSymbol->dataType = convertSemanticReturnValueToSemanticDataType(rightChild);
+                leftSymbol->dataType= UNKNOWN_VAL;
             }
             return OK;
 
