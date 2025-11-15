@@ -330,7 +330,6 @@ SemValidationStates recursiveNodeWalker(AstNode* currentNode, AstNodeType parent
 
             insertSymbolGlobalScope(newSymbol);
 
-            printf("Mažu %s\n", newSymbol.name);
             removeUndeclaredReference(newSymbol.name);
 
             return OK;
@@ -1556,7 +1555,7 @@ SemValidationStates handleComparisonOperators(AstNode* currentNode, AstNodeType 
     }
 
     printLog("%i %s %i\n", leftChild, operatorName, rightChild);
-    size_t errorMessageLength = strlen("(__) Nekompatibilni datove typy!\n");
+    size_t errorMessageLength = strlen("(__) Nekompatibilni datove typy!\n") + 1;
     char   errorMessage[errorMessageLength];
     snprintf(errorMessage, errorMessageLength, "(%s) Nekompatibilni datove typy!\n", operatorName);
     EXEC_END(SEMANTICS_ERROR_UNCOMPATIBLE, errorMessage);
@@ -1617,7 +1616,7 @@ SemValidationStates handleMathOperators(AstNode* currentNode, AstNodeType operat
     }
 
     printLog("%i %s %i\n", leftChild, operatorName, rightChild);
-    size_t errorMessageLength = strlen("(_) Nekompatibilni datove typy!\n");
+    size_t errorMessageLength = strlen("(_) Nekompatibilni datove typy!\n") + 1;
     char   errorMessage[errorMessageLength];
     snprintf(errorMessage, errorMessageLength, "(%s) Nekompatibilni datove typy!\n", operatorName);
     EXEC_END(SEMANTICS_ERROR_UNCOMPATIBLE, errorMessage);
