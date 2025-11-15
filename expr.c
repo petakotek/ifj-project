@@ -18,7 +18,7 @@
 #include "lexer.h"
 #include "support_functions.h"
 
-#define DEBUG true // přepínač pro povolení debugovacích výpisů
+#define DEBUG false // přepínač pro povolení debugovacích výpisů
 
 typedef enum {
     R, // >
@@ -806,7 +806,8 @@ AstNode* parseExpression(Token *token, int flag)
                 // Možné případy pravé strany u klíčového slova Is
                 if (actualToken.type != TOKEN_KEYWORD_STRING 
                     && actualToken.type != TOKEN_KEYWORD_NUM
-                    && actualToken.type != TOKEN_KEYWORD_NULL) // Doplnit popripade
+                    && actualToken.type != TOKEN_KEYWORD_NULL
+                    && actualToken.type != TOKEN_LPAREN) // Doplnit popripade
                 {
                     printError(SYNTAX_ERROR,
                         "(PSA) Za klicovym slovem Is nasleduje nezname klicove slovo: %s\n ",

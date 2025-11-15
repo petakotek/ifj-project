@@ -86,7 +86,6 @@ typedef enum AstNodeType {
 
     AST_KEYWORD_NUM,     // Num
     AST_KEYWORD_STRING,  // String
-    AST_STRING_BLOCK,
     AST_SMALL_NULL,
     AST_FLOAT_LIT_EXP,
     AST_INT_LIT_EXP,
