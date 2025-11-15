@@ -196,11 +196,19 @@ void add_binop_tmps(VarList* vars, const char* func, int id,AstNode *node) {
 	    varlist_add(vars, buf);
     }else if(node->kind == AST_MUL){
     	snprintf(buf, sizeof buf, "%s_ln_%d", func, id);
+    	varlist_add(vars, buf);
         snprintf(buf, sizeof buf, "%s_rn_%d", func, id);
+       	varlist_add(vars, buf);
         snprintf(buf, sizeof buf, "%s_rty_%d", func, id);
+       	varlist_add(vars, buf);
         snprintf(buf, sizeof buf, "%s_lty_%d", func, id);
+       	varlist_add(vars, buf);
         snprintf(buf, sizeof buf, "%s_rs_%d", func, id);
+       	varlist_add(vars, buf);
+        snprintf(buf, sizeof buf, "%s_rs_%d", func, id);
+       	varlist_add(vars, buf);
         snprintf(buf, sizeof buf, "%s_counter_%d", func, id);
+       	varlist_add(vars, buf);
     }
     else{
     	snprintf(buf, sizeof buf, "%s_ln_%d", func, id);
@@ -635,6 +643,7 @@ void emitMul(AstNode *node, FuncContext *funcStruct) {
     // Konec smyčky - vynucení výsledku na zásobník
     printN("LABEL %s", label_loop_end);
     printN("PUSHS LF@%s", rs);
+    printN("JUMP %s",label_end);
 
     // CHYBA
     printN("LABEL %s", label_err);
@@ -1288,7 +1297,7 @@ void emit_var(AstNode *node, FuncContext *funcStruct){
 void emit_Global(AstNode *node, FuncContext *funcStruct){
 	if(node->child[1]->kind != AST_EMPTY){
 	emit_command(node->child[1]->child[0], funcStruct);
-	printN("POPS LF@%s",node->child[0]->value.str);
+	printN("POPS GF@%s",node->child[0]->value.str);
 	}
 }
 void emitIfChain(AstNode *node, FuncContext *funcContext)
@@ -1630,8 +1639,6 @@ void emitGetter(AstNode* node) {
  * TODO false nebo null je false ostatni pushu true
  */
 void emit_command(AstNode *node,FuncContext *funcStruct) {
-    ast_node_type_to_string(node->kind);
-
     switch (node->kind) {
         case AST_PROLOG:
             emit_prolog();
@@ -1640,6 +1647,7 @@ void emit_command(AstNode *node,FuncContext *funcStruct) {
         		emitGlobal(node);
           		printN("JUMP main$0");
             	emitChildren(node, funcStruct);
+
            	break;
         case AST_PROGRAM:
         case AST_BLOCK:
@@ -1757,9 +1765,14 @@ void emit_command(AstNode *node,FuncContext *funcStruct) {
            printN("PUSHS LF@%s", node->value.str);
             break;
         }
+        break;
         case AST_GLOBAL_ID:
             // Nová implementace: nacteni globalni promenne
-            // emit_global_id(node);
+            if(node->arity != 0){
+            emit_Global(node, funcStruct);
+            }else {
+            printN("PUSHS GF@%s", node->value.str);
+            }
             break;
 
         case AST_EMPTY:
@@ -1831,8 +1844,9 @@ void emit_command(AstNode *node,FuncContext *funcStruct) {
     }
 }
 void codegen_generate(AstNode *root) {
-    FuncContext *funcStruct = NULL;
+	FuncContext *funcStruct = ConstuctorFuncContext();
     emitChildren(root,funcStruct);
+    DestructorFuncContext(funcStruct);
     /*
     printN("EXIT %s", NO_ERROR);
     printN("LABEL error %s", RUNTIME_SEMANTICS_ERROR_BAD_TYPE);
