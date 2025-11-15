@@ -51,9 +51,6 @@ void hashTableInitItems(HashTable *hashT) {
     }
 }
 
-// TODO v celém symtable.* opravit názvy proměnných a přesunout dokumentační komentáře na správné
-// místo a obecná oprava chování, hashTableInsertItem neumí signalizovat že došlo k chybě (index =
-// -1)
 /**
  * @brief Funkce vloží prvek do pole položek hashovací tabulky a vrátí index, na kterém byla položka
  * uložena. V případě, že index, který vypočítala hashovací funkce je již obsazený postupuje dál
@@ -61,26 +58,32 @@ void hashTableInitItems(HashTable *hashT) {
  * @return Funkce vraci index v poli polozek
  */
 int hashTableInsertItem(HashTable *hashT, char *key, SemanticSymbol token) {
-    int indexToStore =
-        hashItem(key);  // zahashovani retezce na index v poli polozek hashovaci tabulky
+    int indexToStore = hashItem(key, hashT);  // zahashovani retezce na index v poli polozek hashovaci tabulky
+
     if (hashT->tableSize >= hashT->tableCapacity) {
         hashTableRealloc(hashT);
     }
 
     // na indexu položky už nějaký prvek je
     if (hashT->items[indexToStore].isEmpty == false) {
-        int shift = 1;  // o kolik prvku oproti puvodnimu indexu je treba se posunout aby se nasel
-                        // volny index
 
-        while (hashT->items[indexToStore + shift].isEmpty !=
-               true)  // linearni hledani volneho mista
-        {
+        int current = indexToStore;
+        int shift = 0;
+        while (hashT->items[current].isEmpty == false && hashT->items[current].isDeleted == false) {
             shift++;
+
+            current = (indexToStore + shift) % hashT->tableCapacity;  // MODULO pro cyklické prohledávání
+
+            if (shift >= hashT->tableCapacity) {
+                if (!hashTableRealloc(hashT)) {
+                    printError(INTERNAL_ERROR, "Selhani realokace tabulky");
+                    return -1;
+                }
+            }
         }
 
-        hashT->items[indexToStore + shift].key =
-            malloc(sizeof(char) *
-                   (strlen(key) + 1));  // alokace řetězce, který bude vkládán do hashovací tabulky
+
+        hashT->items[indexToStore + shift].key = malloc(sizeof(char) * (strlen(key) + 1));  // alokace řetězce, který bude vkládán do hashovací tabulky
 
         if (hashT->items[indexToStore + shift].key == NULL)  // kontrola alokace
         {
@@ -120,38 +123,16 @@ int hashTableInsertItem(HashTable *hashT, char *key, SemanticSymbol token) {
  * @return Funkce nemá návratovou hodnotu, v případě nenalezení prvku v tabulce tiskne error
  */
 void hashTableDeleteItem(HashTable *hashT, char *key) {
-    int indexToSearch = hashItem(key);
 
-    if (hashT->items[indexToSearch].key != NULL && !strcmp(key, hashT->items[indexToSearch].key)) {
-        free(hashT->items[indexToSearch].key);
-        hashT->items[indexToSearch].key       = NULL;
-        hashT->items[indexToSearch].isDeleted = true;
-        hashT->items[indexToSearch].isEmpty   = true;
-
-    } else {
-        int  shift   = 1;
-        bool rounded = false;
-        while (hashT->items[indexToSearch + shift].key != NULL &&
-               strcmp(key, hashT->items[indexToSearch + shift]
-                               .key))  // prohledavani dokud se nenarazi na matchujici klic
-        {
-            shift++;
-            rounded = true;  // pomocná proměnná pro kontrolu, že nedochází k průchodu pole stále dokola
-            if ((indexToSearch + shift) == TABLE_CAPACITY && indexToSearch != 0) {
-                indexToSearch = 0;
-                rounded = true;  // pomocná proměnná pro kontrolu, že nedochází k průchodu pole
-                                 // stále dokola
-
-            } else if (rounded && (indexToSearch + shift) == TABLE_CAPACITY) {
-                printError(INTERNAL_ERROR, "Prvek v tabulce nebyl nalezen");
-                return;
-            }
-        }
-        free(hashT->items[indexToSearch + shift].key);
-        hashT->items[indexToSearch + shift].key       = NULL;
-        hashT->items[indexToSearch + shift].isDeleted = true;
-        hashT->items[indexToSearch + shift].isEmpty   = true;
-        hashT->items[indexToSearch + shift].symbol.name = NULL;  // Uvolnění paměti zajišťují funkce pro AS strom
+    int deleteIndex = hashTableSearchItem(hashT, key);
+    if (deleteIndex == -1)
+    {
+        printError(INTERNAL_ERROR, "Polozka v tabulce neni\n");
+    }else{
+        free(hashT->items[deleteIndex].key);
+        hashT->items[deleteIndex].isDeleted = true;
+        hashT->items[deleteIndex].isEmpty = true;
+        hashT->items[deleteIndex].symbol.name = NULL;  // Uvolnění paměti zajišťují funkce pro AS strom
     }
     hashT->tableSize--;
 }
@@ -161,8 +142,8 @@ void hashTableDeleteItem(HashTable *hashT, char *key) {
  * @return Funkce vraci index v poli hashovaci tabulky, pokud nenajde vraci -1
  */
 int hashTableSearchItem(HashTable *hashT, char *key) {
-    int  indexToSearch = hashItem(key);
-    int  shift         = 1;
+    int  indexToSearch = hashItem(key, hashT);
+    int  shift         = 0;
     int  originalIndex = indexToSearch;
 
     // test jestli neni rovnou na prvni pozici
@@ -175,7 +156,7 @@ int hashTableSearchItem(HashTable *hashT, char *key) {
         int currentIndex = (indexToSearch + shift) % hashT->tableCapacity;
 
         // Pokud narazíme na prázdnou pozici, klíč není v tabulce
-        if (hashT->items[currentIndex].key == NULL) {
+        if (hashT->items[currentIndex].key == NULL && hashT->items[currentIndex].isDeleted == false) {
             return -1;
         }
 
@@ -217,7 +198,7 @@ void hashTableDealloc(HashTable *hashT) {
  * @param key ukazatel na řetězec, který bude vkládán
  * @return Vrací index v poli struktur, který je využit při hledání, mazání, vkládání
  */
-int hashItem(char *key) {
+int hashItem(char *key, HashTable *hashT) {
     if (key == NULL) {
         printError(INTERNAL_ERROR, "Nelze hashovat NULL prvek");
         return INTERNAL_ERROR;
@@ -230,7 +211,7 @@ int hashItem(char *key) {
         hash = ((hash << 5) + hash) + c;
     }
 
-    return hash % TABLE_CAPACITY;
+    return hash % hashT->tableCapacity;
 }
 
 /**
