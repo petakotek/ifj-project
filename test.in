@@ -1,0 +1,19 @@
+import "ifj25" for Ifj
+class Program {
+
+    static someGetter {
+        var x = "ahojGetter"
+        Ifj.write(x)
+        return x
+    }
+
+    static someSetter=(hodnota) {
+        Ifj.write(hodnota)
+    }
+
+    static main() {
+        someSetter = "ahojSetter"
+
+        var getValueFromGetter = someGetter
+    }
+}
