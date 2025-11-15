@@ -744,7 +744,9 @@ SemValidationStates recursiveNodeWalker(AstNode* currentNode, AstNodeType parent
 
                 if (foundSymbol == NULL) {
                     // Globální proměnné lze číst i bez definování, vrací hodnotu null
-                    return NULL_DATA;
+                    // return NULL_DATA;
+                    // IMPORTANT, protože není statická sémantická kontrola je potřeba přetypovat.
+                    return UNKNOWN_DATA;
                 }
 
                 if (parentNodeType == AST_ASSIGN) {
@@ -771,7 +773,9 @@ SemValidationStates recursiveNodeWalker(AstNode* currentNode, AstNodeType parent
         }
         case (AST_SMALL_NULL): {
             printLog("AST_SMALL_NULL\n");
-            return NULL_DATA;
+            // return NULL_DATA;
+            // IMPORTANT, protože není statická sémantická kontrola je potřeba přetypovat.
+            return UNKNOWN_DATA;
         }
         case (AST_KEYWORD_NUM): {
             printLog("AST_KEYWORD_NUM\n");
@@ -924,7 +928,9 @@ SemValidationStates recursiveNodeWalker(AstNode* currentNode, AstNodeType parent
         case (AST_RETURN): {
             printLog("AST_RETURN\n");
 
-            SemValidationStates returnDataType = NULL_DATA;
+            // SemValidationStates returnDataType = NULL_DATA;
+            // IMPORTANT, protože není statická sémantická kontrola je potřeba přetypovat.
+            SemValidationStates returnDataType = UNKNOWN_DATA;
 
             if (currentNode->child[0]->kind != AST_EMPTY) {
                 SemValidationStates childValue = recursiveNodeWalker(currentNode->child[0], AST_RETURN, 0);
@@ -951,7 +957,10 @@ SemValidationStates recursiveNodeWalker(AstNode* currentNode, AstNodeType parent
                 return DATATYPE_KEYWORD;
             }
             // Značí prázdný jednořádkový blok (jeho návratovou hodnotu)
-            return NULL_DATA;
+            // return NULL_DATA;
+
+            // IMPORTANT, protože není statická sémantická kontrola je potřeba přetypovat.
+            return UNKNOWN_DATA;
         }
         case (AST_BREAK): {
             printLog("AST_BREAK\n");
@@ -1385,7 +1394,9 @@ SemValidationStates handleBuildinFunctions(AstNode* functionCallNode) {
 
         recursiveNodeWalker(functionCallNode->child[1], AST_IFJ_CALL, 1);
 
-        return NULL_DATA;
+        // return NULL_DATA;
+        // IMPORTANT, protože není statická sémantická kontrola je potřeba přetypovat.
+        return UNKNOWN_DATA;
     }
 
     if (strncmp(functionName, "floor", 6) == 0) {
