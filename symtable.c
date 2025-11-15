@@ -68,7 +68,6 @@ int hashTableInsertItem(HashTable *hashT, char *key, SemanticSymbol token) {
         return existing;
     }
 
-    // 2. Klíč neexistuje → vlož nový
     if (hashT->tableSize >= hashT->tableCapacity)
     {
         if (!hashTableRealloc(hashT)) {
