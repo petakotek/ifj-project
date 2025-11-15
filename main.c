@@ -44,20 +44,12 @@ int main(){
 	AST = parser();
 	//funkcia ast_dump -> funkcia na kontrolny vypis ast stromu
 	ast_dump(AST);
-	/** 
 	bool output;
 	output = startSematicValidation(AST);
 	printf("Vysledek sem_anal: %i\n", output);
-<<<<<<< HEAD
 
 	ast_dump(AST);
-=======
-	
-
->>>>>>> 55a25d6bc2966aea67f7d719f943d79cdb1c0ed2
 	codegen_generate(AST);
-	*/
-	free(source_file);
 	memorySafeExit(NO_ERROR);
 
 }
