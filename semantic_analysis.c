@@ -18,7 +18,6 @@
 #define NEWEST_SCOPE scopesStack->nextTopElement - 1
 
 // TODO aktualizace dokumentačních komentářů
-// TODO kontrola error kódů!!!
 
 /**
  * @brief Ukazatel na zásobník pro ukládání jednotlivých rámců
@@ -207,7 +206,7 @@ bool startSematicValidation(AstNode* root) {
 
     for (size_t i = 0; i < root->arity; i++) {
         if (recursiveNodeWalker(root->child[i], AST_PROGRAM, i) != OK) {
-            freeSemanticsMemory();
+            EXEC_END(INTERNAL_ERROR, "Spatna struktura stromu!\n");
             return false;
         }
     }
@@ -566,7 +565,7 @@ SemValidationStates recursiveNodeWalker(AstNode* currentNode, AstNodeType parent
             SemValidationStates conditionChildValue = recursiveNodeWalker(currentNode->child[0], AST_IF, 0);
 
             if (conditionChildValue != OK) {
-                EXEC_END(SEMANTICS_ERROR_UNCOMPATIBLE, "(if) Neplatna podminka!\n");
+                EXEC_END(SEMANTICS_ERROR_OTHERS, "(if) Neplatna podminka!\n");
             }
 
             // Sémantická kontrola bloku
@@ -594,7 +593,7 @@ SemValidationStates recursiveNodeWalker(AstNode* currentNode, AstNodeType parent
             } else {
                 SemValidationStates childValue = recursiveNodeWalker(currentNode->child[0], AST_CONDITION, 0);
                 if (childValue == OK) {
-                    EXEC_END(SEMANTICS_ERROR_UNCOMPATIBLE, "(condition) Neplatna podminka!\n");
+                    EXEC_END(SEMANTICS_ERROR_OTHERS, "(condition) Neplatna podminka!\n");
                 }
                 return OK;
             }
@@ -612,7 +611,7 @@ SemValidationStates recursiveNodeWalker(AstNode* currentNode, AstNodeType parent
             SemValidationStates conditionChildValue = recursiveNodeWalker(currentNode->child[0], AST_WHILE, 0);
 
             if (conditionChildValue != OK) {
-                EXEC_END(SEMANTICS_ERROR_UNCOMPATIBLE, "(while) Neplatna podminka!\n");
+                EXEC_END(SEMANTICS_ERROR_OTHERS, "(while) Neplatna podminka!\n");
             }
 
             // Sémantická kontrola bloku
@@ -630,7 +629,7 @@ SemValidationStates recursiveNodeWalker(AstNode* currentNode, AstNodeType parent
             SemValidationStates conditionChildValue = recursiveNodeWalker(currentNode->child[0], AST_FOR, 0);
 
             if (conditionChildValue != OK) {
-                EXEC_END(SEMANTICS_ERROR_UNCOMPATIBLE, "(for) Neplatna podminka!\n");
+                EXEC_END(SEMANTICS_ERROR_OTHERS, "(for) Neplatna podminka!\n");
             }
 
             // Sémantická kontrola bloku
@@ -807,17 +806,17 @@ SemValidationStates recursiveNodeWalker(AstNode* currentNode, AstNodeType parent
 
             SemValidationStates conditionChild = recursiveNodeWalker(currentNode->child[0], AST_TERNARY, 0);
             if (conditionChild == OK) {
-                EXEC_END(SEMANTICS_ERROR_UNCOMPATIBLE, "(?:) Neplatna podminka!\n");
+                EXEC_END(SEMANTICS_ERROR_OTHERS, "(?:) Neplatna podminka!\n");
             }
 
             SemValidationStates trueChild = recursiveNodeWalker(currentNode->child[1], AST_TERNARY, 1);
             if (trueChild == OK) {
-                EXEC_END(SEMANTICS_ERROR_UNCOMPATIBLE, "(?:) Neplatny vyraz pri platne podmince!\n");
+                EXEC_END(SEMANTICS_ERROR_OTHERS, "(?:) Neplatny vyraz pri platne podmince!\n");
             }
 
             SemValidationStates falseChild = recursiveNodeWalker(currentNode->child[2], AST_TERNARY, 2);
             if (falseChild == OK) {
-                EXEC_END(SEMANTICS_ERROR_UNCOMPATIBLE, "(?:) Neplatny vyraz pri neplatne podmince!\n");
+                EXEC_END(SEMANTICS_ERROR_OTHERS, "(?:) Neplatny vyraz pri neplatne podmince!\n");
             }
 
             return UNKNOWN_DATA;
