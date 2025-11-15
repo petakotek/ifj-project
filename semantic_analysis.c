@@ -365,7 +365,7 @@ RecursiveSemanticAnalysisReturnValues recursiveNodeWalker(AstNode*    currentNod
                 childValue = recursiveNodeWalker(currentNode->child[0], AST_FUNC_DEC, 0);
                 unsigned newReturnCount = returnCounter;
 
-                if(newReturnCount-1 > oldReturnCount) {
+                if (newReturnCount - 1 > oldReturnCount) {
                     // Během zpracovávání funkce bylo nalezeno 2 a více návratových příkazů
                     // Nelze proto určit návratovou hodnotu funkce
                     childValue = UNKNOWN_DATA;
