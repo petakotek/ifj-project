@@ -289,6 +289,8 @@ void append_char(char **buf, int *delka, int *kapacita, char c) {
         }
     }
     (*buf)[(*delka)++] = c;  // zapisovani znaku do bufferu
+    (*buf)[*delka] = '\0';
+    
 }
 Token lexer_token_next() {
     // inicializace bufferu na string
