@@ -45,7 +45,6 @@ int main(){
 	//funkcia ast_dump -> funkcia na kontrolny vypis ast stromu
 
 	ast_dump(AST);
-
 	bool output;
 	output = startSematicValidation(AST);
 	printf("Vysledek sem_anal: %i\n", output);

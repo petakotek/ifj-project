@@ -16,6 +16,7 @@
  * Proměna  která je potřebna byti viditelnou v celem souboru
  */
 static LexerState *lexer = NULL;
+static int CountComents = 0;
 char *buf = NULL;
 char *source_file = NULL;
 // pocatecni kapacita buffer ktere je pouzivat pro pridavani znaku do stringu
@@ -288,7 +289,8 @@ void append_char(char **buf, int *delka, int *kapacita, char c) {
         }
     }
     (*buf)[(*delka)++] = c;  // zapisovani znaku do bufferu
-    (*buf)[*delka] = '\0';  
+    (*buf)[*delka] = '\0';
+    
 }
 Token lexer_token_next() {
     // inicializace bufferu na string
@@ -866,47 +868,53 @@ Token lexer_token_next() {
             /*
              * Zpracovani komentaru a jejich preskoceni
              */
-            case BACKSLASH: {
-                if (c == '/') {
-                    stav = LINE_COMMENT;
-                    lexer->pos++;
-                } else if (c == '*') {
-                    stav = BLOCK_COMMENT;
-                    lexer->pos++;
-                } else {
-                    token.type = TOKEN_SLASH;
-                    token.line = radek;
-                    goto token_found;
-                }
-                break;
-            }
-            case LINE_COMMENT: {
-                if (c == '\n') {
-                	token.type = TOKEN_NEW_LINE;
-                 	token.line = radek;
-                  	lexer->pos++;
-                	goto token_found;
-                }
-                lexer->pos++;
-                break;
-            }
-            case BLOCK_COMMENT: {
-                if (c == '*') {
-                    stav = STAR_COMMENT;
-                }
-                lexer->pos++;
-                break;
-            }
-            case STAR_COMMENT: {
-                if (c == '/') {
-                    stav = START_LEX;
-                } else {  // vstup je napriklad ** coz neni konec komentare tak se vracime do
-                          // blokoveho komentare
-                    stav = BLOCK_COMMENT;
-                }
-                lexer->pos++;
-                break;
-            }
+
+             case BACKSLASH: {
+                 if (c == '/') {
+                     stav = LINE_COMMENT;
+                     lexer->pos++;
+                 } else if (c == '*') {
+                     stav = BLOCK_COMMENT;
+                     CountComents = 1;
+                     lexer->pos++;
+                 } else {
+                     token.type = TOKEN_SLASH;
+                     token.line = radek;
+                     goto token_found;
+                 }
+                 break;
+             }
+
+             case LINE_COMMENT: {
+                 if (c == '\n') {
+                     token.type = TOKEN_NEW_LINE;
+                     token.line = radek;
+                     lexer->pos++;
+                     goto token_found;
+                 }
+                 lexer->pos++;
+                 break;
+             }
+
+             case BLOCK_COMMENT: {
+                 if (c == '/' && lexer->input[lexer->pos + 1] == '*') {
+                     CountComents++;
+                     lexer->pos += 2;
+                     break;
+                 }
+
+                 if (c == '*' && lexer->input[lexer->pos + 1] == '/') {
+                     CountComents--;
+                     lexer->pos += 2;
+                     if (CountComents == 0) {
+                         stav = START_LEX;
+                     }
+                     break;
+                 }
+
+                 lexer->pos++;
+                 break;
+             }
             case STRING: {
                 if (c == '"') {
                     stav = DOUBLE_QUO;  // druhá uvozovka

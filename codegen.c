@@ -390,10 +390,11 @@ void emitFuncDec(AstNode *root){
 	free(label_end);
 	}
 void emit_call_func(AstNode *node,FuncContext *funcStruct){
-	printN("CREATEFRAME");
 	for(int i = 0; i < node->child[1]->arity;i++){
 	emit_command(node->child[1]->child[i],funcStruct);
 	}
+	printN("CREATEFRAME");
+	printN("PUSHFRAME");
 	printN("CALL $%s$0",node->child[0]->value.str);
 }
 void emitIfjFunc(AstNode *node,FuncContext *funcStruct) {
@@ -1825,6 +1826,7 @@ void emit_command(AstNode *node,FuncContext *funcStruct) {
         case AST_IDENTIFIER:
         if(strcmp(node->value.str,"Program") != 0){
            printN("PUSHS LF@%s", node->value.str);
+           printLog("kontrolni print %s  \n",node->value.str);
             break;
         }
         break;

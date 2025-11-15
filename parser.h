@@ -62,8 +62,6 @@ typedef enum
     N_Else_item,
     N_callIfjCheck,
     N_AssignIfjIdCheck,
-    N_SMALL_NULL_CHECK,
-    N_SMALL_NULL_CHECK_TYPE,
 } Nonterm;
 
 AstNode* parser();
