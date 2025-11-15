@@ -1,20 +1,14 @@
 import "ifj25" for Ifj
 
 class Program {
-    static func1() {
-        return 1
+    static isEven(n) {
+        if (n == 0) {
+            return true
+        }
+        return isEven(n - 1)
     }
-
-    static func2() {
-        return func1() + 2
-    }
-
-    static func3() {
-        return func2() * 3
-    }
-
     static main() {
-        var result = func3()
-        Ifj.write(result)
+        var x = isEven(4)
+        Ifj.write(x)
     }
 }
