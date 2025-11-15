@@ -1737,9 +1737,6 @@ void emit_command(AstNode *node,FuncContext *funcStruct) {
         case AST_KEYWORD_STRING:
         	printN("PUSHS string@string");
           	break;
-        case AST_STRING_BLOCK:
-        	printN("PUSHS string@%s",node->value.str);
-         	break;
         case AST_SMALL_NULL:
        		printN("PUSHS nil@nil");
          	break;
