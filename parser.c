@@ -1260,6 +1260,8 @@ void tokenFree(Token *token)
         case TOKEN_KEYWORD_RETURN:
         case TOKEN_TRUE:
         case TOKEN_FALSE:
+        case STRING_BLOCK:
+        
             if (token->value.identifier) 
             {
                 free(token->value.identifier);
