@@ -1,0 +1,17 @@
+precedencna odovzdala token jeho type je = 33
+precedencna odovzdala token jeho type je = 33
+Vysledek sem_anal: 1
+.IFJcode25
+DEFVAR GF@__counter
+MOVE GF@__counter nil@nil
+JUMP main$0
+LABEL main$0
+CREATEFRAME
+PUSHFRAME
+DEFVAR LF@retval
+DEFVAR LF@main$0_ln_0
+DEFVAR LF@main$0_rn_0
+DEFVAR LF@main$0_ty_0
+DEFVAR LF@main$0_rs_0
+MOVE LF@retval nil@nil
+EXIT int@0
