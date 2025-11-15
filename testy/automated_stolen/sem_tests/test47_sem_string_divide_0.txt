@@ -7,7 +7,8 @@ class Program {
         var num 
         num = 2
         var result 
-        result = str / num  // ERROR: cannot divide string
+        result = str / num  // ERROR: cannot divide string (STATICAN)
+        //result = "str" / 2 // V základu
         Ifj.write(result)
         Ifj.write("\n")
     }

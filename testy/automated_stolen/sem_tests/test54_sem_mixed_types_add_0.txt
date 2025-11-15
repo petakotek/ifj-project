@@ -7,7 +7,7 @@ class Program {
         var str 
         str = "The answer is "
         var result 
-        result = num + str  // ERROR: cannot add string to number
+        result = num + str  // ERROR: cannot add string to number STATICAN
         Ifj.write(result)
         Ifj.write("\n")
     }
