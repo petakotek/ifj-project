@@ -1,0 +1,18 @@
+.IFJcode25
+JUMP main$0
+LABEL main$0
+CREATEFRAME
+PUSHFRAME
+DEFVAR LF@retval
+DEFVAR LF@a$$1
+DEFVAR LF@b$$1
+DEFVAR LF@c$$1
+DEFVAR LF@isNum$$1
+DEFVAR LF@isString$$1
+DEFVAR LF@isNull$$1
+MOVE LF@retval nil@nil
+PUSHS int@10
+POPS LF@a$$1
+PUSHS string@text
+POPS LF@b$$1
+SMALL_NULL 

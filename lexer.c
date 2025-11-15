@@ -46,6 +46,9 @@ void lexer_free(void) {
         lexer = NULL;
     } else {
     }
+    if(buf != NULL){
+    	free(buf);
+    }
 }
 /*
  *	Funkce na identifikaci identifikator
@@ -376,6 +379,7 @@ Token lexer_token_next() {
 
                 case STRING:
                     free(buf);
+                    buf = NULL;
                     printError(LEX_ERROR,
                                "Nedokonceny string"
                                "%c on line : %lu",
@@ -384,21 +388,23 @@ Token lexer_token_next() {
                     break;
 
                 case STRING_BLOCK:
-                    free(buf);
-                    printError(LEX_ERROR,
-                               "Nedokonceny string_block"
-                               "%c on line : %lu",
-                               c, lexer->pos);
-                    memorySafeExit(LEX_ERROR);
-                    break;
+                free(buf);
+                buf = NULL;
+                printError(LEX_ERROR,
+                           "Nedokonceny string"
+                           "%c on line : %lu",
+                           c, lexer->pos);
+                memorySafeExit(LEX_ERROR);
+                break;
 
                 case ZNAK_HEXA:
-                    free(buf);
-                    printError(LEX_ERROR,
-                               "Nedokonceny string"
-                               "%c on line : %lu",
-                               c, lexer->pos);
-                    memorySafeExit(LEX_ERROR);
+                free(buf);
+                buf = NULL;
+                printError(LEX_ERROR,
+                           "Nedokonceny string"
+                           "%c on line : %lu",
+                           c, lexer->pos);
+                memorySafeExit(LEX_ERROR);
                     break;
 
                 case DOUBLE_QUO:
@@ -408,12 +414,14 @@ Token lexer_token_next() {
                     goto token_found_string;
 
                 case END_QUO:
-                    free(buf);
-                    printError(LEX_ERROR, "Nedokonceny block string %c on line : %lu", c,
-                               lexer->pos);
-                    memorySafeExit(LEX_ERROR);
+                free(buf);
+                buf = NULL;
+                printError(LEX_ERROR,
+                           "Nedokonceny string"
+                           "%c on line : %lu",
+                           c, lexer->pos);
+                memorySafeExit(LEX_ERROR);
                     break;
-
                 case END_DOUBLE_QUO:
                     token.type         = TOKEN_STRING_BLOCK;
                     token.line         = radek;
@@ -504,6 +512,7 @@ Token lexer_token_next() {
                 // Logické operátory
                 case AND_HALF:
                     free(buf);
+                    buf = NULL;
                     printError(LEX_ERROR,
                                "neznamy charakter"
                                "%c on line : %lu",
@@ -517,6 +526,7 @@ Token lexer_token_next() {
 
                 case OR_HALF:
                     free(buf);
+                    buf = NULL;
                     printError(LEX_ERROR,
                                "neznamy charakter"
                                "%c on line : %lu",
@@ -652,6 +662,7 @@ Token lexer_token_next() {
                     zacatek = lexer->pos;
                 } else {
                     free(buf);
+                    buf = NULL;
                     printError(LEX_ERROR,
                                "nezname pismeno v lexer_token_next "
                                "%c on line : %lu",
@@ -682,6 +693,7 @@ Token lexer_token_next() {
                     lexer->pos++;
                 } else {
                     free(buf);
+                    buf = NULL;
                     printError(LEX_ERROR,
                                "nezname pismeno v lexer_token_next"
                                "%c on line : %lu",
@@ -759,6 +771,7 @@ Token lexer_token_next() {
                     lexer->pos++;
                 } else if (isdigit(c)) {
                     free(buf);
+                    buf = NULL;
                     printError(LEX_ERROR,
                                "neznamy charakter v lexer_token_next"
                                "%c on line : %lu",
@@ -811,6 +824,7 @@ Token lexer_token_next() {
                      goto token_found;
                  } else {
                      free(buf);
+                     buf = NULL;
                      printError(LEX_ERROR,
                                 "neznamy charakter v lexer_token_next: %c on line : %lu",
                                 c, lexer->pos);
@@ -827,6 +841,7 @@ Token lexer_token_next() {
                         lexer->pos++;
                     } else {
                         free(buf);
+                        buf = NULL;
                         printError(LEX_ERROR,
                                     "neznamy charakter v lexer_token_next: %c on line : %lu",
                                     next_char, lexer->pos);
@@ -839,6 +854,7 @@ Token lexer_token_next() {
                     goto token_found;
                 } else {
                     free(buf);
+                    buf = NULL;
                     printError(LEX_ERROR,
                                 "neznamy charakter v lexer_token_next: %c on line : %lu",
                                 c, lexer->pos);
@@ -921,6 +937,7 @@ Token lexer_token_next() {
                         lexer->pos++;
                     } else {
                         free(buf);
+                        buf = NULL;
                         printError(LEX_ERROR,
                                    "neznamy charakter v lexer_token_next"
                                    "%c on line : %lu",
@@ -929,6 +946,7 @@ Token lexer_token_next() {
                     }
                 } else if (c == '\0' || c == '\n') {
                     free(buf);
+                    buf = NULL;
                     printError(LEX_ERROR,
                                "neznamy charakter v lexer_token_next"
                                "%c on line : %lu",
@@ -957,6 +975,7 @@ Token lexer_token_next() {
                         hexa_count = 0;
                     } else {
                         free(buf);
+                        buf = NULL;
                         printError(LEX_ERROR,
                                    "neznamy charakter v lexer_token_next"
                                    "%c on line : %lu",
@@ -987,6 +1006,7 @@ Token lexer_token_next() {
                     lexer->pos++;
                 } else if (c == '\0') {
                     free(buf);
+                    buf = NULL;
                     printError(LEX_ERROR,
                                "neznamy charakter v lexer_token_next"
                                "%c on line : %lu",
@@ -1017,7 +1037,7 @@ Token lexer_token_next() {
                     token.type         = TOKEN_STRING_BLOCK;
                     token.line         = radek;
                     token.value.identifier = substring(zacatek+3, lexer->pos - 3);
-                    goto token_found_string;
+                    goto token_found;
                 } else {
                     stav = STRING_BLOCK;  // nebyl to konec, zpět do
                                           // bloku
@@ -1179,6 +1199,7 @@ Token lexer_token_next() {
                     lexer->pos++;
                 } else {
                     free(buf);
+                    buf = NULL;
                     printError(LEX_ERROR,
                                "neznamy charakter v lexer_token_next"
                                "%c on line : %lu",
@@ -1199,6 +1220,7 @@ Token lexer_token_next() {
                     lexer->pos++;
                 } else {
                     free(buf);
+                    buf = NULL;
                     printError(LEX_ERROR,
                                "neznamy charakter v lexer_token_next"
                                "%c on line : %lu",
@@ -1231,6 +1253,7 @@ Token lexer_token_next() {
             }
             default:
                 free(buf);
+                buf = NULL;
                 printError(LEX_ERROR,
                            "neznamy charakter v lexer_token_next"
                            "%c on line : %lu",
@@ -1239,6 +1262,7 @@ Token lexer_token_next() {
         }
     }
     free(buf);
+    buf = NULL;
     printError(LEX_ERROR,
                "neznamy charakter v lexer_token_next"
                "%c on line : %lu",
@@ -1246,6 +1270,7 @@ Token lexer_token_next() {
     memorySafeExit(LEX_ERROR);
 token_found:;
     free(buf);
+    buf = NULL;
 token_found_string:;
     return token;
 }

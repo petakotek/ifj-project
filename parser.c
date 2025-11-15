@@ -474,6 +474,7 @@ void Block_content_func_check(DynamicSymbolStackPtr Stack, Token token)
         case TOKEN_KEYWORD_NULL_SMALL:
         case TOKEN_FLOAT_EXP:
         case TOKEN_INTEGER_EXP:
+        case STRING_BLOCK:
             pushCheck(stackSymbolPush(Stack, makeReduce(AST_STATEMENT_LIST, 1)));
             pushCheck(stackSymbolPush(Stack, makeNonterm(N_oExpr)));
             return;
@@ -604,6 +605,7 @@ void Oneline_expr_opt_func(DynamicSymbolStackPtr Stack, Token token)
         case TOKEN_KEYWORD_NULL_SMALL:
         case TOKEN_FLOAT_EXP:
         case TOKEN_INTEGER_EXP:
+        case TOKEN_STRING_BLOCK:
             pushCheck(stackSymbolPush(Stack, makeNonterm(N_oExpr)));
             return;
 
@@ -764,6 +766,7 @@ void Var_arg_func(DynamicSymbolStackPtr Stack, Token token)
         case TOKEN_KEYWORD_NULL_SMALL:
         case TOKEN_FLOAT_EXP:
         case TOKEN_INTEGER_EXP:
+        case TOKEN_STRING_BLOCK:
             pushCheck(stackSymbolPush(Stack, makeReduce(AST_PARAM, 2)));
             pushCheck(stackSymbolPush(Stack, makeNonterm(N_Var_arg_list)));
             pushCheck(stackSymbolPush(Stack, makeNonterm(N_Expr)));
@@ -976,6 +979,7 @@ void Return_expr_func(DynamicSymbolStackPtr Stack, Token token)
         case TOKEN_FLOAT_EXP:
         case TOKEN_INTEGER_EXP:
         case TOKEN_KEYWORD_NULL_SMALL:
+        case TOKEN_STRING_BLOCK:
             pushCheck(stackSymbolPush(Stack, makeNonterm(N_Expr)));
             break;
         case TOKEN_LPAREN:
@@ -1260,6 +1264,8 @@ void tokenFree(Token *token)
         case TOKEN_KEYWORD_RETURN:
         case TOKEN_TRUE:
         case TOKEN_FALSE:
+        case STRING_BLOCK:
+
             if (token->value.identifier) 
             {
                 free(token->value.identifier);

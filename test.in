@@ -1,19 +1,9 @@
 import "ifj25" for Ifj
 class Program {
-
-    static someGetter {
-        var x = "ahojGetter"
-        Ifj.write(x)
-        return x
-    }
-
-    static someSetter=(hodnota) {
-        Ifj.write(hodnota)
-    }
-
     static main() {
-        someSetter = "ahojSetter"
-
-        var getValueFromGetter = someGetter
+        var a = 10
+        var b = "text"
+        var c = null
+        var isNull = c is null
     }
 }
