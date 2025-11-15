@@ -813,7 +813,6 @@ AstNode* parseExpression(Token *token, int flag)
                     freePrecedenceStack(stackP);
                     freeAstStack(stackA);
                     tokenPrecedenceFree(&actualToken);
-                    free(token);
                     token = NULL;
                     memorySafeExit(SYNTAX_ERROR);
                     break;
