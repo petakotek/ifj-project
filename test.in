@@ -1,9 +1,13 @@
 import "ifj25" for Ifj
 class Program {
+    static isEven(n) {
+        if (n == 0) {
+            return true
+        }
+        return isEven(n - 1)
+    }
     static main() {
-        var a = 10
-        var b = "text"
-        var c = null
-        var isNull = c is null
+        var x = isEven(4)
+        Ifj.write(x)
     }
 }

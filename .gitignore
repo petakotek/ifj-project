@@ -12,3 +12,5 @@ output.txt
 testvgcore.*
 *.log
 gmon.out
+tmpIsItOk*
+xvoldrv00.zip

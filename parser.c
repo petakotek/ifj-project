@@ -52,7 +52,7 @@ AstNode *parser()
     while (!stackSymbolIsEmpty(Stack))
     {
         Stack_top = stackSymbolRead(Stack);
-        //printf("%d\n",Stack_top.is_reduce);
+        //printLog("%d\n",Stack_top.is_reduce);
         if (Stack_top.is_reduce)
         {
             size_t n = Stack_top.reduce_arity;
@@ -118,8 +118,8 @@ AstNode *parser()
         else if(Stack_top.is_terminal)
         {
 
-            //printf("%d\n",token.type);
-            //printf("%d\n",Stack_top.symbol);
+            //printLog("%d\n",token.type);
+            //printLog("%d\n",Stack_top.symbol);
             if ((TokenType)Stack_top.symbol == token.type)
             {
                 bool ok = true;
@@ -169,7 +169,7 @@ AstNode *parser()
 
 
 
-                //printf("ok\n");
+                //printLog("ok\n");
                 tokenFree(&token);
                 stackSymbolPop(Stack);
                 token = lexer_token_next(); 
@@ -271,23 +271,23 @@ AstNode *parser()
                 case N_Expr:
                     Expr_func(Stack, gLookahead, AstStack, 0);
                     token = *gLookahead;
-                    printf("precedencna odovzdala token jeho type je = %d\n",token.type);
+                    printLog("precedencna odovzdala token jeho type je = %d\n",token.type);
                     break;
                 case N_cExpr:
                     Expr_func(Stack, gLookahead, AstStack, 1);
                     token = *gLookahead;
-                    printf("precedencna odovzdala token jeho type je = %d\n",token.type);
+                    printLog("precedencna odovzdala token jeho type je = %d\n",token.type);
                     break;
                 case N_lExpr:
                     Expr_func(Stack, gLookahead, AstStack, -1);
-                    printf("%d",1);
+                    printLog("%d",1);
                     token = *gLookahead;
-                    printf("precedencna odovzdala token jeho type je = %d\n",token.type);
+                    printLog("precedencna odovzdala token jeho type je = %d\n",token.type);
                     break;
                 case N_oExpr:
                     Expr_func(Stack, gLookahead, AstStack, -2);
                     token = *gLookahead;
-                    printf("precedencna odovzdala token jeho type je = %d\n",token.type);
+                    printLog("precedencna odovzdala token jeho type je = %d\n",token.type);
                     break;
 
                 case N_New_line_check:

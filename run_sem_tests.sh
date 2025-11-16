@@ -6,8 +6,20 @@
 
 set -u
 
-TEST_DIR="./testy/semantic_automated_stolen/"
+TEST_DIR="testy/automated_stolen/sem_tests"
 PROJECT_BIN="./ifj25"
+
+# timeout for each test (anything accepted by `timeout`, e.g., 5s, 200ms); set TEST_TIMEOUT=0 to disable
+TEST_TIMEOUT="${TEST_TIMEOUT:-5s}"
+USE_TIMEOUT=1
+if [[ "${TEST_TIMEOUT}" == "0" ]]; then
+	USE_TIMEOUT=0
+else
+	if ! command -v timeout >/dev/null 2>&1; then
+		echo "Utility 'timeout' not found but TEST_TIMEOUT is enabled." >&2
+		exit 1
+	fi
+fi
 
 # simple ANSI colors (disabled when stdout is not a TTY)
 if [[ -t 1 ]]; then
@@ -39,7 +51,8 @@ passed=0
 failed=0
 skipped=0
 
-printf "${BOLD}Running semantic tests in %s${RESET}\n\n" "${TEST_DIR}"
+printf "${BOLD}Running semantic tests in %s (timeout=%s)${RESET}\n\n" "${TEST_DIR}" \
+	"$([[ ${USE_TIMEOUT} -eq 1 ]] && echo "${TEST_TIMEOUT}" || echo "disabled")"
 
 shopt -s nullglob
 for file in "${TEST_DIR}"/*.txt; do
@@ -55,17 +68,32 @@ for file in "${TEST_DIR}"/*.txt; do
 	fi
 
 	# Run interpreter with file as stdin; suppress stdout for clean summary.
-	if "${PROJECT_BIN}" < "${file}" > /dev/null 2>&1; then
-		exit_code=0
+	timed_out=0
+	if [[ ${USE_TIMEOUT} -eq 1 ]]; then
+		if timeout "${TEST_TIMEOUT}" "${PROJECT_BIN}" < "${file}" > /dev/null 2>&1; then
+			exit_code=0
+		else
+			exit_code=$?
+			if [[ "${exit_code}" -eq 124 ]]; then
+				exit_code=99
+				timed_out=1
+			fi
+		fi
 	else
-		exit_code=$?
+		if "${PROJECT_BIN}" < "${file}" > /dev/null 2>&1; then
+			exit_code=0
+		else
+			exit_code=$?
+		fi
 	fi
 
 	if [[ "${exit_code}" -eq "${expected}" ]]; then
-		printf "${GREEN}[PASS]${RESET} %-30s expected=%s got=%s\n" "${base}" "${expected}" "${exit_code}"
+		printf "${GREEN}[PASS]${RESET} %-30s expected=%s got=%s%s\n" \
+			"${base}" "${expected}" "${exit_code}" "$([[ ${timed_out} -eq 1 ]] && echo ' (timeout)' || echo '')"
 		((passed++))
 	else
-		printf "${RED}[FAIL]${RESET} %-30s expected=%s got=%s\n" "${base}" "${expected}" "${exit_code}"
+		printf "${RED}[FAIL]${RESET} %-30s expected=%s got=%s%s\n" \
+			"${base}" "${expected}" "${exit_code}" "$([[ ${timed_out} -eq 1 ]] && echo ' (timeout)' || echo '')"
 		((failed++))
 	fi
 done

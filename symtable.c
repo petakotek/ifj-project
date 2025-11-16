@@ -57,7 +57,7 @@ void hashTableInitItems(HashTable *hashT) {
  * polem a hledá první volný index
  * @return Funkce vraci index v poli polozek
  */
-int hashTableInsertItem(HashTable *hashT, char *key, SemanticSymbol token) {
+int hashTableInsertItem(HashTable *hashT, char *key, SemSymbol token) {
     if (hashT == NULL || key == NULL) return -1;
 
  

@@ -32,8 +32,8 @@ int main(){
 	//volani funcke na nacteni souboru
 	source_file = read_all_stdin();
 	if (source_file == NULL) {
-		fprintf(stderr, "Chyba: selhalo načítání vstupů\n");
-        return 1;
+		printError(LEX_ERROR, "Selhalo načítání vstupů\n");
+        memorySafeExit(LEX_ERROR);
     }
 	// inicializovani struktury staraji se o cteni ze souboru
 	lexer_init(source_file);
@@ -45,15 +45,12 @@ int main(){
 	//funkcia ast_dump -> funkcia na kontrolny vypis ast stromu
 
 	ast_dump(AST);
-	/*
-	ast_dump(AST);
 	bool output;
 	output = startSematicValidation(AST);
-	printf("Vysledek sem_anal: %i\n", output);
+	printLog("Vysledek sem_anal: %i\n", output);
 
+	ast_dump(AST);
 	codegen_generate(AST);
-	*/
-	
 	memorySafeExit(NO_ERROR);
 
 }
