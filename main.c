@@ -50,7 +50,7 @@ int main(){
 	printf("Vysledek sem_anal: %i\n", output);
 
 	ast_dump(AST);
-//	codegen_generate(AST);
+	codegen_generate(AST);
 	memorySafeExit(NO_ERROR);
 
 }

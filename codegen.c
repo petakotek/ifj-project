@@ -379,23 +379,21 @@ void emitFuncDec(AstNode *root){
 		printN("PUSHS LF@retval");
 		printN("POPFRAME");
 		printN("RETURN");
-		// free(label); // ! TADY splní se obě podmínky?
 	}else{
 		printN("EXIT int@0");
 	}
 	varListDescrution(local_vars);
 	stacklabelStackDestruct(label_stack);
 	DestructorFuncContext(context);
-	free(label); // ! TADY
+	free(label);
 	free(label_end);
 	}
 void emit_call_func(AstNode *node,FuncContext *funcStruct){
-	for(int i = 0; i < node->child[1]->arity;i++){
-	emit_command(node->child[1]->child[i],funcStruct);
-	}
-	printN("CREATEFRAME");
-	printN("PUSHFRAME");
-	printN("CALL $%s$0",node->child[0]->value.str);
+		printN("CREATEFRAME");
+		for(int i = 0; i < node->child[1]->arity;i++){
+		emit_command(node->child[1]->child[i],funcStruct);
+		}
+		printN("CALL $%s$0",node->child[0]->value.str);
 }
 void emitIfjFunc(AstNode *node,FuncContext *funcStruct) {
                  AstNode *callee = node->child[0];
@@ -1826,7 +1824,6 @@ void emit_command(AstNode *node,FuncContext *funcStruct) {
         case AST_IDENTIFIER:
         if(strcmp(node->value.str,"Program") != 0){
            printN("PUSHS LF@%s", node->value.str);
-           printLog("kontrolni print %s  \n",node->value.str);
             break;
         }
         break;

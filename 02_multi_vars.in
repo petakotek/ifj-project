@@ -1,14 +1,12 @@
 import "ifj25" for Ifj
 
 class Program {
-    static isEven(n) {
-        if (n == 0) {
-            return true
-        }
-        return isEven(n - 1)
-    }
     static main() {
-        var x = isEven(4)
+        var x = helper(10)
         Ifj.write(x)
+    }
+
+    static helper(n) {
+        return n * 2
     }
 }
