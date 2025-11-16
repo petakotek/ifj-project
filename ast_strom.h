@@ -86,8 +86,9 @@ typedef enum AstNodeType {
 
     AST_KEYWORD_NUM,     // Num
     AST_KEYWORD_STRING,  // String
-    AST_STRING_BLOCK,
     AST_SMALL_NULL,
+    AST_FLOAT_LIT_EXP,
+    AST_INT_LIT_EXP,
 } AstNodeType;
 
 /**
@@ -187,5 +188,6 @@ AstNode *build_param_flat(size_t n, AstNode **kids);
 AstNode *build_stmtlist_flat(size_t n, AstNode **kids);
 AstNode *build_classblock_flat(size_t n, AstNode **kids);
 AstNode *build_ifchain_flat(size_t n, AstNode **kids);
+double floatExp(const char *s);
 
 #endif  // AST_STROM_H

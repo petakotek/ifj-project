@@ -1,0 +1,31 @@
+// Correct: Null literal usage
+import "ifj25" for Ifj
+class Program {
+    static main() {
+        var x 
+        x = null
+        
+        if (x == null) {
+            Ifj.write("x is null\n")
+        } else {
+            Ifj.write("x is not null\n")
+        }
+        
+        if (x != null) {
+            Ifj.write("x has value\n")
+        } else {
+            Ifj.write("x is still null\n")
+        }
+        
+        var y 
+        y = 10
+        
+        if (y != null) {
+            Ifj.write("y has value: ")
+            Ifj.write(y)
+            Ifj.write("\n")
+        } else {
+            Ifj.write("y is null\n")
+        }
+    }
+}

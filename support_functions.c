@@ -24,6 +24,12 @@
 #define INITIAL_CAPACITY 1024
 
 /**
+ * @brief Ukazatel na vstupní znakové pole
+ * 
+ */
+extern char* source_file;
+
+/**
  * @brief Zajišťuje volání destruktorů dynamicky alokovaných struktur
  *
  * @return true Vyčištění paměti proběhlo v pořádku
@@ -73,9 +79,13 @@ void printLog(const char *fmt, ...) {
 bool memoryClean() {
     // TODO jednotlivé funkce pro vyčištění struktur a podobně
     // TODO už můžu přidat lexer_free() a zavření souboru/free na načtený soubor
+    if(buf != NULL){
+
+    }
     lexer_free();
     parserFree();
     freeSemanticsMemory();
+    free(source_file);
     return true;
 }
 

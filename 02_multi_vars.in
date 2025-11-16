@@ -1,0 +1,12 @@
+import "ifj25" for Ifj
+
+class Program {
+    static main() {
+        var x = helper(10)
+        Ifj.write(x)
+    }
+
+    static helper(n) {
+        return n * 2
+    }
+}

@@ -1,7 +1,7 @@
 import "ifj25" for Ifj
 class Program {
     static main() {
-        var d = 5 /* 44 */ + 5
+        var d = """ hello """
 
     }
 }

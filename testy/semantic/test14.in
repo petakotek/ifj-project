@@ -11,10 +11,19 @@ class Program {
         return a
     }
 
+    static moreRets(x) {
+        if(x == 1) {
+            return 1
+        } else {
+            return "a"
+        }
+    }
+
     static main() {
         var x = func()
         var y = func() + 5
         var z = y + func("a")
+        var sa = moreRets(2) - 2
     }
 
 }

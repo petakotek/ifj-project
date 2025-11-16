@@ -13,10 +13,15 @@ typedef struct {
     int counter;
     char *label_end;
     int value_counter;
+    bool main;
+    char *label_end_while;
+    char *label_end_for;
+    char *label_start_while;
+    char *label_start_for;
 } FuncContext;
 void emit_prolog();
 void emit_command(AstNode *node,FuncContext *funcContext);
-char *generatorLable(char *func_name,FuncContext *funcContext, bool pridaniDoStacku);
+char *generatorLable(char *func_name,FuncContext *funcContext, bool pridaniDoStacku, size_t counter);
 void codegen_generate(AstNode *root);
 char *resize_label_name(char *prefix,size_t *size);
 void emitPlus(AstNode *node, FuncContext *funcContext);
@@ -31,26 +36,31 @@ void emit_or(AstNode *node, FuncContext *funcContext);
 void emit_and(AstNode *node, FuncContext *funcContext);
 void emit_equal_not(AstNode *node, FuncContext *funcContext);
 void emit_greater_equal(AstNode *node, FuncContext *funcContext);
-
+void emitSetterCall(AstNode *node);
+void emitGetterCall(AstNode *node);
+void emitSetter(AstNode* node);
+void emitGetter(AstNode* node);
+void emitCondition(AstNode *node,FuncContext *funcContext);
 void printN(const char *fmt, ...);
 
 void emitUnaryMinus(AstNode *node,FuncContext *funcStrukt);
 FuncContext *ConstuctorFuncContext();
+
 /**
- * Funkcia pre generovanie kodu pustupnosti if a else funkcii
+ * @brief Funkcia pre generovanie kodu pustupnosti if a else funkcii
  * @param node aktualny uzol s ktorym pracujeme
  * @param funcContext struktura pre vytvorenie labla obsahujuca counter,...
 */
 void emitIfChain(AstNode *node, FuncContext *funcContext);
 /**
- * Funkcia pre generovanie kodu if funkcii
+ * @brief Funkcia pre generovanie kodu if funkcii
  * @param node aktualny uzol s ktorym pracujeme
  * @param endlabel label konca if retazca
  * @param funcContext struktura pre vytvorenie labla obsahujuca counter,...
 */
 void emitIf(AstNode *node, FuncContext *funcContext, char *endLabel);
 /**
- * Funkcia pre generovanie kodu else funkcii
+ * @brief Funkcia pre generovanie kodu else funkcii
  * @param node aktualny uzol s ktorym pracujeme
  * @param funcContext struktura pre vytvorenie labla obsahujuca counter,...
 */

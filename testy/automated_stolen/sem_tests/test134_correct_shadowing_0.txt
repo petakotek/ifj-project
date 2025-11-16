@@ -1,0 +1,18 @@
+// Correct: variable shadowing in nested scopes
+import "ifj25" for Ifj
+class Program {
+    static main() {
+        var x
+        x = 10
+        Ifj.write(x)
+        Ifj.write("\n")
+        {
+            var x  // shadows outer x (allowed in different scope)
+            x = 20
+            Ifj.write(x)
+            Ifj.write("\n")
+        }
+        Ifj.write(x)  // outer x still 10
+        Ifj.write("\n")
+    }
+}

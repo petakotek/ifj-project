@@ -48,7 +48,7 @@ typedef enum {
      */
     GETTER,
 
-} SemanticSymbolTypes;
+} SemSymbolTypes;
 
 /**
  * @brief Číselník datových typů symbolů
@@ -56,9 +56,8 @@ typedef enum {
  */
 typedef enum {
     /**
-     * @brief Číslo
+     * @brief Hodnota je (pravděpodobně desetinné) číslo
      *
-     * Nelze určit zda je celé nebo desetinné
      */
     NUMBER_VAL,
     /**
@@ -66,11 +65,6 @@ typedef enum {
      *
      */
     INT_VAL,
-    /**
-     * @brief Desetinné číslo
-     *
-     */
-    FLOAT_VAL,
     /**
      * @brief Řetězec
      *
@@ -93,7 +87,7 @@ typedef enum {
      * @note Všechny operátory berou tento typ jako validní
      */
     UNKNOWN_VAL
-} SemanticSymbolDataType;
+} SemSymbDataType;
 
 /**
  * @brief Číselník návratových hodnot při rekurzivním průchodu přes AST
@@ -106,10 +100,8 @@ typedef enum {
      */
     OK,
     /**
-     * @brief Výstupem zpracování uzlu je číslo
+     * @brief Výstupem zpracování uzlu je (pravděpodobně desetinné) číslo
      *
-     * Používáno v místech, kde nelze určit zda je číslo celé nebo desetinné
-     * @note Všechny operátory očekávající číslo jej akceptují jako validní
      */
     NUMBER_DATA,
     /**
@@ -117,11 +109,6 @@ typedef enum {
      *
      */
     INT_DATA,
-    /**
-     * @brief Výsledkem zpracování uzlu je desetinné číslo
-     *
-     */
-    FLOAT_DATA,
     /**
      * @brief Výstupem zpracování uzlu (a jeho potomků) je řetězec
      *
@@ -162,7 +149,7 @@ typedef enum {
      * Zda se jedná o chybu rozhodne volající funkce
      */
     GOT_NODE_NULL,
-} RecursiveSemanticAnalysisReturnValues;
+} SemValidationStates;
 
 /**
  * @brief Struktura pro uložení symbolu do tabulky symbolů
@@ -179,7 +166,7 @@ typedef struct {
      * @brief Typ symbolu
      *
      */
-    SemanticSymbolTypes symbolType;
+    SemSymbolTypes symbolType;
     /**
      * @brief Příslušný rámec symbolu
      *
@@ -189,7 +176,7 @@ typedef struct {
      * @brief Datový typ dat, která symbol obsahuje
      *
      */
-    SemanticSymbolDataType dataType;
+    SemSymbDataType dataType;
     /**
      * @brief Počet parametrů
      *
@@ -199,8 +186,8 @@ typedef struct {
      * @brief Návratová hodnota funkce
      *
      */
-    SemanticSymbolDataType returnValue;
-} SemanticSymbol;
+    SemSymbDataType returnValue;
+} SemSymbol;
 
 /**
  * @brief Funkce pro zahájení sémantické kontroly

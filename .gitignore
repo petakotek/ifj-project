@@ -11,3 +11,6 @@ ic25int-linux-x86_64
 output.txt
 testvgcore.*
 *.log
+gmon.out
+tmpIsItOk*
+xvoldrv00.zip

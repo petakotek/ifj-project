@@ -1,0 +1,25 @@
+// Correct: String concatenation and multiplication
+import "ifj25" for Ifj
+class Program {
+    static main() {
+        var str1 
+        str1 = "Hello"
+        var str2 
+        str2 = "World"
+        
+        var greeting 
+        greeting = str1 + " " + str2
+        Ifj.write(greeting)
+        Ifj.write("\n")
+        
+        var repeated 
+        repeated = "Ha" * 3
+        Ifj.write(repeated)
+        Ifj.write("\n")
+        
+        var multi 
+        multi = (str1 * 2) + (str2 * 2)
+        Ifj.write(multi)
+        Ifj.write("\n")
+    }
+}

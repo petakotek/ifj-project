@@ -17,7 +17,7 @@ void handleBuiltin(AstNode *ifjFunctionCall, FuncContext* context) {
         printLog("read_num\n");
     }
     if (strncmp(functionName, "write", 6) == 0) {
-        printLog("write\n");
+     //   printLog("write\n");
         emitWrite(ifjFunctionCall, context);
     }
     if (strncmp(functionName, "floor", 6) == 0) {
@@ -44,7 +44,6 @@ void handleBuiltin(AstNode *ifjFunctionCall, FuncContext* context) {
 
 void emitReadStr() {
 
-    
 }
 
 void emitReadNum() {
@@ -57,7 +56,7 @@ void emitReadBool() {
 
 
 void emitWrite(AstNode* functionCallNode, FuncContext* context) {
-    printN("\n#ZACATEK:");
+  //  printN("\n#ZACATEK:");
     static unsigned writeCounter = 0;
     //AstNode* param = functionCallNode->child[1]->child[0];
 
@@ -92,5 +91,5 @@ void emitWrite(AstNode* functionCallNode, FuncContext* context) {
             } */
     
    writeCounter++;
-    printN("#:KONEC\n");
+  //  printN("#:KONEC\n");
 }
