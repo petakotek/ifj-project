@@ -1,0 +1,10 @@
+import "ifj25" for Ifj
+class Program {
+// Vestavěné funkce
+    static main() {
+        var s = "ahoj"
+        var o = Ifj.ord(s, 2.0)
+        var b = Ifj.chr(o)
+        Ifj.write(b)
+    }
+}

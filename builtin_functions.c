@@ -1,95 +1,357 @@
+// TODO hlavička
+
 #include "builtin_functions.h"
 
 #include <string.h>
 
 #include "support_functions.h"
 
+/**
+ * @brief Funkce pro přečtení vstupu jako řetězce
+ *
+ */
+void emitReadStr();
+
+/**
+ * @brief Funkce pro přečtení vstupu jako čísla
+ *
+ */
+void emitReadNum();
+
+/**
+ * @brief Funkce pro přečtení vstupu jako bool hodnoty
+ *
+ */
+void emitReadBool();
+
+/**
+ * @brief Funkce por výpis libovolné hodnoty na výstup
+ *
+ * @param functionCallNode Uzel s voláním funkce
+ * @param context Kontext
+ */
 void emitWrite(AstNode* functionCallNode, FuncContext* context);
 
-void handleBuiltin(AstNode *ifjFunctionCall, FuncContext* context) {
+/**
+ * @brief Funkce pro převod desetinného čísla na celé, useknutím desetinné části
+ *
+ * @param functionCallNode Uzel s voláním funkce
+ * @param context Kontext
+ */
+void emitFloor(AstNode* functionCallNode, FuncContext* context);
 
-    char * functionName = ifjFunctionCall->child[0]->value.str;
-    if (strncmp(functionName, "read_str", 9) == 0) {
-        printLog("read_str\n");
-    }
+/**
+ * @brief VFunkce pro převod libovolné vstupní hodnoty na odpovídající řetězec
+ *
+ * @param functionCallNode Uzel s voláním funkce
+ * @param context Kontext
+ */
+void emitStr(AstNode* functionCallNode, FuncContext* context);
 
-    if (strncmp(functionName, "read_num", 9) == 0) {
-        printLog("read_num\n");
-    }
-    if (strncmp(functionName, "write", 6) == 0) {
-     //   printLog("write\n");
+/**
+ * @brief Funkce pro získání délky řetězce
+ *
+ * @param functionCallNode Uzel s voláním funkce
+ * @param context Kontext
+ */
+void emitLength(AstNode* functionCallNode, FuncContext* context);
+
+/**
+ * @brief TODO
+ *
+ * @param functionCallNode Uzel s voláním funkce
+ * @param context Kontext
+ */
+void emitSubstring(AstNode* functionCallNode, FuncContext* context);
+
+/**
+ * @brief Funkce pro porovnání dvou řetězců
+ *
+ * @param functionCallNode Uzel s voláním funkce
+ * @param context Kontext
+ */
+void emitStrcmp(AstNode* functionCallNode, FuncContext* context);
+
+/**
+ * @brief Funkce pro převod znaku zadaného indexem v řetězci na číslo
+ *
+ * @param functionCallNode Uzel s voláním funkce
+ * @param context Kontext
+ */
+void emitOrd(AstNode* functionCallNode, FuncContext* context);
+
+/**
+ * @brief Funkce pro převod celého čísla na znak
+ *
+ * @param functionCallNode Uzel s voláním funkce
+ * @param context Kontext
+ */
+void emitChr(AstNode* functionCallNode, FuncContext* context);
+
+void handleBuiltin(AstNode* ifjFunctionCall, FuncContext* context) {
+    char* functionName = ifjFunctionCall->child[0]->value.str;
+    if (strncmp(functionName, "read_str", 9) == 0)
+        emitReadStr();
+    else if (strncmp(functionName, "read_num", 9) == 0)
+        emitReadNum();
+    else if (strncmp(functionName, "read_bool", 10) == 0)
+        emitReadBool();
+    else if (strncmp(functionName, "write", 6) == 0)
         emitWrite(ifjFunctionCall, context);
-    }
-    if (strncmp(functionName, "floor", 6) == 0) {
-        printLog("floor\n");
-    }
-    if (strncmp(functionName, "str", 4) == 0) {
-        printLog("str\n");
-    }
-    if (strncmp(functionName, "substring", 10) == 0) {
-        printLog("substring\n");
-    }
-    if (strncmp(functionName, "strcmp", 7) == 0) {
-        printLog("strcmp\n");
-    }
-
-    if (strncmp(functionName, "ord", 4) == 0) {
-        printLog("ord\n");
-    }
-
-    if (strncmp(functionName, "chr", 4) == 0) {
-        printLog("chr\n");
-    }
+    else if (strncmp(functionName, "floor", 6) == 0)
+        emitFloor(ifjFunctionCall, context);
+    else if (strncmp(functionName, "str", 4) == 0)
+        emitStr(ifjFunctionCall, context);
+    else if (strncmp(functionName, "length", 7) == 0)
+        emitLength(ifjFunctionCall, context);
+    else if (strncmp(functionName, "substring", 10) == 0)
+        printWarning("Neni implementace Ifj.substring\n");
+    else if (strncmp(functionName, "strcmp", 7) == 0)
+        printWarning("Neni implementace Ifj.strcmp\n");
+    else if (strncmp(functionName, "ord", 4) == 0)
+        emitOrd(ifjFunctionCall, context);
+    else if (strncmp(functionName, "chr", 4) == 0)
+        emitChr(ifjFunctionCall, context);
 }
 
 void emitReadStr() {
+    static unsigned readStrCounter = 0;
 
+    printN("DEFVAR LF@temp$var$readStr$%u", readStrCounter);
+    printN("READ LF@temp$var$readStr$%u string", readStrCounter);
+    printN("PUSHS LF@temp$var$readStr$%u", readStrCounter);
+
+    readStrCounter++;
 }
 
 void emitReadNum() {
+    static unsigned readNumCounter = 0;
 
+    printN("DEFVAR LF@temp$var$readNum$%u", readNumCounter);
+    printN("READ LF@temp$var$readNum$%u float", readNumCounter);
+    printN("PUSHS LF@temp$var$readNum$%u", readNumCounter);
+
+    readNumCounter++;
 }
 
 void emitReadBool() {
+    static unsigned readBoolCounter = 0;
 
+    printN("DEFVAR LF@temp$var$readBool$%u", readBoolCounter);
+    printN("READ LF@temp$var$readBool$%u bool", readBoolCounter);
+    printN("PUSHS LF@temp$var$readBool$%u", readBoolCounter);
+
+    readBoolCounter++;
 }
-
 
 void emitWrite(AstNode* functionCallNode, FuncContext* context) {
-  //  printN("\n#ZACATEK:");
     static unsigned writeCounter = 0;
-    //AstNode* param = functionCallNode->child[1]->child[0];
 
     emit_command(functionCallNode->child[1]->child[0], context);
-    printN("DEFVAR LF@temp$var$write$%u",writeCounter);
+    printN("DEFVAR LF@temp$var$write$%u", writeCounter);
     printN("POPS LF@temp$var$write$%u", writeCounter);
     printN("WRITE LF@temp$var$write$%u", writeCounter);
+    printN("PUSHS nil@nil");
 
-    // TODO upravit aby to vždy šlo přes emit_command()
-
-   /*  if(param->kind == AST_EMPTY) return;
-
-            // TODO bool
-            if (param->kind == AST_IDENTIFIER) {
-                printN("WRITE LF@%s", param->value.str);
-            } else if (param->kind == AST_STRING_LIT) {
-                printN("WRITE string@%s", param->value.str);
-            } else if (param->kind == AST_INT_LIT) {
-                printN("WRITE int@%lld", param->value.int_val);
-            } else if (param->kind == AST_BOOL_LIT) {
-                printN("WRITE bool@%s", param->value.str);
-            } else if (param->kind == AST_FLOAT_LIT) {
-                printN("WRITE float@%a", param->value.float_val);
-            } else if (param->kind == AST_SMALL_NULL) {
-                printN("WRITE nil@nil");
-            } else {
-                emit_command(param, context);
-                printN("DEFVAR LF@temp$var$write$%u",writeCounter);
-                printN("POPS LF@temp$var$write$%u", writeCounter);
-                printN("WRITE LF@temp$var$write$%u", writeCounter);
-                //printN("PUSHS LF@temp$var$write$%u", writeCounter);
-            } */
-    
-   writeCounter++;
-  //  printN("#:KONEC\n");
+    writeCounter++;
 }
+
+void emitFloor(AstNode* functionCallNode, FuncContext* context) {
+    static unsigned floorCounter = 0;
+
+    emit_command(functionCallNode->child[1]->child[0], context);
+
+    // Parametry
+    printN("DEFVAR LF@temp$var$floorVal$%u", floorCounter);
+    printN("DEFVAR LF@temp$var$floorType$%u", floorCounter);
+    printN("POPS LF@temp$var$floorVal$%u", floorCounter);
+
+    // Podmínka
+    printN("TYPE LF@temp$var$floorType$%u LF@temp$var$floorVal$%u", floorCounter, floorCounter);
+    printN("JUMPIFEQ temp$label$floor$operation$%u LF@temp$var$floorType$%u string@float", floorCounter, floorCounter);
+    printN("JUMPIFEQ temp$label$floor$noOp$%u LF@temp$var$floorType$%u string@int", floorCounter, floorCounter);
+    // Chyba
+    printN("EXIT int@%i", RUNTIME_SEMANTICS_ERROR_BAD_TYPE);
+
+    // Desetinné číslo
+    printN("LABEL temp$label$floor$operation$%u", floorCounter);
+    printN("PUSHS LF@temp$var$floorVal$%u", floorCounter);
+    printN("FLOAT2INTS");
+    printN("JUMP temp$label$floor$end$%u", floorCounter);
+
+    // Celé číslo
+    printN("LABEL temp$label$floor$noOp$%u", floorCounter);
+    printN("PUSHS LF@temp$var$floorVal$%u", floorCounter);
+    printN("JUMP temp$label$floor$end$%u", floorCounter);
+
+    printN("LABEL temp$label$floor$end$%u", floorCounter);
+
+    floorCounter++;
+}
+
+void emitStr(AstNode* functionCallNode, FuncContext* context) {
+    static unsigned strCounter = 0;
+
+    emit_command(functionCallNode->child[1]->child[0], context);
+
+    // Parametry
+    printN("DEFVAR LF@temp$var$strVal$%u", strCounter);
+    printN("DEFVAR LF@temp$var$strType$%u", strCounter);
+    printN("POPS LF@temp$var$strVal$%u", strCounter);
+
+    // Podmínka
+    printN("TYPE LF@temp$var$strType$%u LF@temp$var$strVal$%u", strCounter, strCounter);
+    printN("JUMPIFEQ temp$label$str$float$%u LF@temp$var$strType$%u string@float", strCounter, strCounter);
+    printN("JUMPIFEQ temp$label$str$int$%u LF@temp$var$strType$%u string@int", strCounter, strCounter);
+    printN("JUMPIFEQ temp$label$str$string$%u LF@temp$var$strType$%u string@string", strCounter, strCounter);
+    printN("JUMPIFEQ temp$label$str$bool$%u LF@temp$var$strType$%u string@bool", strCounter, strCounter);
+    printN("JUMPIFEQ temp$label$str$null$%u LF@temp$var$strType$%u string@nil", strCounter, strCounter);
+
+    // Chyba
+    printN("EXIT int@%i", RUNTIME_SEMANTICS_ERROR_BAD_TYPE);
+
+    // Desetinné číslo
+    printN("LABEL temp$label$str$float$%u", strCounter);
+    printN("PUSHS LF@temp$var$strVal$%u", strCounter);
+    printN("FLOAT2STRS");
+    printN("JUMP temp$label$str$end$%u", strCounter);
+
+    // Celé číslo
+    printN("LABEL temp$label$str$int$%u", strCounter);
+    printN("PUSHS LF@temp$var$strVal$%u", strCounter);
+    printN("INT2STRS");
+    printN("JUMP temp$label$str$end$%u", strCounter);
+
+    // Řetězec
+    printN("LABEL temp$label$str$string$%u", strCounter);
+    printN("PUSHS LF@temp$var$strVal$%u", strCounter);
+    printN("JUMP temp$label$str$end$%u", strCounter);
+
+    // Bool
+    printN("LABEL temp$label$str$bool$%u", strCounter);
+    printN("JUMPIFEQ  temp$label$str$bool$true$%u LF@temp$var$strType$%u string@bool", strCounter, strCounter);
+
+    // Bool - false
+    printN("PUSHS string@false");
+    printN("JUMP temp$label$str$end$%u", strCounter);
+
+    // Bool - true
+    printN("LABEL temp$label$str$bool$true$%u", strCounter);
+    printN("PUSHS string@true");
+    printN("JUMP temp$label$str$end$%u", strCounter);
+
+    // Null
+    printN("LABEL temp$label$str$null$%u", strCounter);
+    printN("PUSHS string@nil", strCounter);
+    printN("JUMP temp$label$str$end$%u", strCounter);
+
+    printN("LABEL temp$label$str$end$%u", strCounter);
+
+    strCounter++;
+}
+
+void emitLength(AstNode* functionCallNode, FuncContext* context) {
+    static unsigned lengthCounter = 0;
+
+    emit_command(functionCallNode->child[1]->child[0], context);
+
+    // Parametry
+    printN("DEFVAR LF@temp$var$lengthVal$%u", lengthCounter);
+    printN("DEFVAR LF@temp$var$lengthType$%u", lengthCounter);
+    printN("POPS LF@temp$var$lengthVal$%u", lengthCounter);
+
+    // Podmínka
+    printN("TYPE LF@temp$var$lengthType$%u LF@temp$var$lengthVal$%u", lengthCounter, lengthCounter);
+    printN("JUMPIFEQ temp$label$length$operation$%u LF@temp$var$lengthType$%u string@string", lengthCounter,
+           lengthCounter);
+    // Chyba
+    printN("EXIT int@%i", RUNTIME_SEMANTICS_ERROR_BAD_TYPE);
+
+    // Řetězec
+    printN("LABEL temp$label$length$operation$%u", lengthCounter);
+    printN("DEFVAR LF@temp$var$lengthRet$%u", lengthCounter);
+    printN("STRLEN LF@temp$var$lengthRet$%u LF@temp$var$lengthVal$%u", lengthCounter, lengthCounter);
+    printN("PUSHS LF@temp$var$lengthRet$%u", lengthCounter);
+
+    lengthCounter++;
+}
+
+void emitSubstring(AstNode* functionCallNode, FuncContext* context) {}
+void emitStrcmp(AstNode* functionCallNode, FuncContext* context) {}
+
+void emitOrd(AstNode* functionCallNode, FuncContext* context) {
+    static unsigned ordCounter = 0;
+
+    emit_command(functionCallNode->child[1]->child[0], context);
+    emit_command(functionCallNode->child[1]->child[1], context);
+
+    // Parametry
+    printN("DEFVAR LF@temp$var$ordStr$%u", ordCounter);
+    printN("DEFVAR LF@temp$var$ordNum$%u", ordCounter);
+    printN("DEFVAR LF@temp$var$ordType$%u", ordCounter);
+    printN("POPS LF@temp$var$ordNum$%u", ordCounter);
+    printN("POPS LF@temp$var$ordStr$%u", ordCounter);
+
+    // Podmínka pro řetězec
+    printN("TYPE LF@temp$var$ordType$%u LF@temp$var$ordStr$%u", ordCounter, ordCounter);
+    printN("JUMPIFNEQ temp$label$ord$error$%u LF@temp$var$ordType$%u string@string", ordCounter, ordCounter);
+
+    // Podmínka pro číslo
+    printN("TYPE LF@temp$var$ordType$%u LF@temp$var$ordNum$%u", ordCounter, ordCounter);
+    printN("JUMPIFEQ temp$label$ord$operation$%u LF@temp$var$ordType$%u string@int", ordCounter, ordCounter);
+    // Desetinné číslo, ale možná celočíselné
+    printN("DEFVAR LF@temp$var$ordIsInt$%u", ordCounter);
+    printN("ISINT LF@temp$var$ordIsInt$%u LF@temp$var$ordNum$%u", ordCounter, ordCounter);
+    printN("JUMPIFEQ temp$label$ord$float$%u LF@temp$var$ordIsInt$%u bool@true", ordCounter, ordCounter);
+    // Chyba
+    printN("LABEL temp$label$ord$error$%u", ordCounter);
+    printN("EXIT int@%i", RUNTIME_SEMANTICS_ERROR_BAD_TYPE);
+
+    // Celé desetinné číslo
+    printN("LABEL temp$label$ord$float$%u", ordCounter);
+    printN("FLOAT2INT LF@temp$var$ordNum$%u LF@temp$var$ordNum$%u", ordCounter, ordCounter);
+
+    // Celé číslo
+    printN("LABEL temp$label$ord$operation$%u", ordCounter);
+    printN("DEFVAR LF@temp$var$ordOut$%u", ordCounter);
+    printN("STRI2INT LF@temp$var$ordOut$%u LF@temp$var$ordStr$%u LF@temp$var$ordNum$%u", ordCounter, ordCounter,
+           ordCounter);
+    printN("PUSHS LF@temp$var$ordOut$%u", ordCounter);
+
+    ordCounter++;
+}
+
+void emitChr(AstNode* functionCallNode, FuncContext* context) {
+    static unsigned chrCounter = 0;
+
+    emit_command(functionCallNode->child[1]->child[0], context);
+
+    // Parametry
+    printN("DEFVAR LF@temp$var$chrVal$%u", chrCounter);
+    printN("DEFVAR LF@temp$var$chrType$%u", chrCounter);
+    printN("POPS LF@temp$var$chrVal$%u", chrCounter);
+
+    // Podmínka
+    printN("TYPE LF@temp$var$chrType$%u LF@temp$var$chrVal$%u", chrCounter, chrCounter);
+    printN("JUMPIFEQ temp$label$chr$operation$%u LF@temp$var$chrType$%u string@int", chrCounter, chrCounter);
+    // Desetinné číslo, ale možná celočíselný
+
+    printN("DEFVAR LF@temp$var$chrIsInt$%u", chrCounter);
+    printN("ISINT LF@temp$var$chrIsInt$%u LF@temp$var$chrVal$%u", chrCounter, chrCounter);
+    printN("JUMPIFEQ temp$label$chr$float$%u LF@temp$var$chrIsInt$%u bool@true", chrCounter, chrCounter);
+    // Chyba
+    printN("EXIT int@%i", RUNTIME_SEMANTICS_ERROR_BAD_TYPE);
+
+    // Celé desetinné číslo
+    printN("LABEL temp$label$chr$float$%u", chrCounter);
+    printN("FLOAT2INT LF@temp$var$chrVal$%u LF@temp$var$chrVal$%u", chrCounter, chrCounter);
+
+    // Celé číslo
+    printN("LABEL temp$label$chr$operation$%u", chrCounter);
+    printN("PUSHS LF@temp$var$chrVal$%u", chrCounter);
+    printN("INT2CHARS");
+
+    chrCounter++;
+}
+
+// TODO Patička

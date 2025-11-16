@@ -3,18 +3,16 @@ class Program {
 // Vestavěné funkce
     static main() {
         var x = 5
-        //var b = x
-        Ifj.write(x)
+        var b = x + 1
+        Ifj.write(b)
         x = x+ 5
         Ifj.write(x)
-        Ifj.write(x)
-        Ifj.write(x)
-        
+
         Ifj.write("a")
 
         Ifj.write(1+1)
 
-        Ifj.write(true)
+        Ifj.write(false)
         
         Ifj.write(1)
         Ifj.write(" ")
