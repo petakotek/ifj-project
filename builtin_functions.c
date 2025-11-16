@@ -107,7 +107,7 @@ void handleBuiltin(AstNode* ifjFunctionCall, FuncContext* context) {
     else if (strncmp(functionName, "substring", 10) == 0)
         printWarning("Neni implementace Ifj.substring\n");
     else if (strncmp(functionName, "strcmp", 7) == 0)
-        printWarning("Neni implementace Ifj.strcmp\n");
+        emitStrcmp(ifjFunctionCall, context);
     else if (strncmp(functionName, "ord", 4) == 0)
         emitOrd(ifjFunctionCall, context);
     else if (strncmp(functionName, "chr", 4) == 0)
@@ -277,7 +277,68 @@ void emitLength(AstNode* functionCallNode, FuncContext* context) {
 }
 
 void emitSubstring(AstNode* functionCallNode, FuncContext* context) {}
-void emitStrcmp(AstNode* functionCallNode, FuncContext* context) {}
+
+void emitStrcmp(AstNode* functionCallNode, FuncContext* context) {
+    static unsigned strcmpCounter = 0;
+
+    emit_command(functionCallNode->child[1]->child[0], context);
+    emit_command(functionCallNode->child[1]->child[1], context);
+
+    printN("DEFVAR LF@temp$var$strcmpS1$%u", strcmpCounter);
+    printN("DEFVAR LF@temp$var$strcmpS2$%u", strcmpCounter);
+    printN("DEFVAR LF@temp$var$strcmpType$%u", strcmpCounter);
+    printN("DEFVAR LF@temp$var$strcmpCmpResult%u", strcmpCounter);
+
+    printN("POPS LF@temp$var$strcmpS2$%u", strcmpCounter);
+    printN("POPS LF@temp$var$strcmpS1$%u", strcmpCounter);
+
+    // Podmínka pro řetězec 1
+    printN("TYPE LF@temp$var$strcmpType$%u LF@temp$var$strcmpS1$%u", strcmpCounter, strcmpCounter);
+    printN("JUMPIFNEQ temp$label$strcmp$error$%u LF@temp$var$strcmpType$%u string@string", strcmpCounter,
+           strcmpCounter);
+
+    // Podmínka pro řetězec 2
+    printN("TYPE LF@temp$var$strcmpType$%u LF@temp$var$strcmpS2$%u", strcmpCounter, strcmpCounter);
+    printN("JUMPIFNEQ temp$label$strcmp$error$%u LF@temp$var$strcmpType$%u string@string", strcmpCounter,
+           strcmpCounter);
+
+    printN("JUMP temp$label$strcmp$operation$%u", strcmpCounter);
+    // Chyba
+    printN("LABEL temp$label$strcmp$error$%u", strcmpCounter);
+    printN("EXIT int@%i", RUNTIME_SEMANTICS_ERROR_BAD_TYPE);
+
+    // Operace
+    printN("LABEL temp$label$strcmp$operation$%u", strcmpCounter);
+    // Operace - s1 < s2
+    printN("LT LF@temp$var$strcmpCmpResult%u LF@temp$var$strcmpS1$%u LF@temp$var$strcmpS2$%u", strcmpCounter,
+           strcmpCounter, strcmpCounter);
+    printN("JUMPIFEQ temp$label$strcmp$smaller$%u LF@temp$var$strcmpCmpResult%u bool@true", strcmpCounter,
+           strcmpCounter);
+    // Operace - s1 > s2
+    printN("GT LF@temp$var$strcmpCmpResult%u LF@temp$var$strcmpS1$%u LF@temp$var$strcmpS2$%u", strcmpCounter,
+           strcmpCounter, strcmpCounter);
+    printN("JUMPIFEQ temp$label$strcmp$higher$%u LF@temp$var$strcmpCmpResult%u bool@true", strcmpCounter,
+           strcmpCounter);
+    // Operace - s1 = s2
+    printN("JUMP temp$label$strcmp$equal$%u", strcmpCounter);
+
+    // s1 < s2
+    printN("LABEL temp$label$strcmp$smaller$%u", strcmpCounter);
+    printN("PUSHS int@-1");
+    printN("JUMP temp$label$strcmp$end$%u", strcmpCounter);
+    // s1 > s2
+    printN("LABEL temp$label$strcmp$higher$%u", strcmpCounter);
+    printN("PUSHS int@1");
+    printN("JUMP temp$label$strcmp$end$%u", strcmpCounter);
+    // s1 = s2
+    printN("LABEL temp$label$strcmp$equal$%u", strcmpCounter);
+    printN("PUSHS int@0");
+    printN("JUMP temp$label$strcmp$end$%u", strcmpCounter);
+
+    printN("LABEL temp$label$strcmp$end$%u", strcmpCounter);
+
+    strcmpCounter++;
+}
 
 void emitOrd(AstNode* functionCallNode, FuncContext* context) {
     static unsigned ordCounter = 0;
