@@ -189,5 +189,6 @@ AstNode *build_stmtlist_flat(size_t n, AstNode **kids);
 AstNode *build_classblock_flat(size_t n, AstNode **kids);
 AstNode *build_ifchain_flat(size_t n, AstNode **kids);
 double floatExp(const char *s);
+char *stringChanging(char * tmp);
 
 #endif  // AST_STROM_H
