@@ -5,10 +5,13 @@ class Program {
         var y = 10
         if (x < 0) {
             x = -1
-        } else if (x > y) {
+            Ifj.write(x)
+        } else if (x > 4) {
             x = x + 1
+            Ifj.write(x)
         } else {
             x = x + 2
+            Ifj.write(x)
         }
     }
 }

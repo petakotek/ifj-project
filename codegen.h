@@ -10,14 +10,9 @@
 typedef struct {
     char *func_name;
     DynamiclabelStackStackPtr label_stack;
-    int counter;
     char *label_end;
     int value_counter;
     bool main;
-    char *label_end_while;
-    char *label_end_for;
-    char *label_start_while;
-    char *label_start_for;
 } FuncContext;
 void emit_prolog();
 void emit_command(AstNode *node,FuncContext *funcContext);
