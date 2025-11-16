@@ -258,7 +258,6 @@ FuncContext *ConstuctorFuncContext(){
 	funcStruct->label_stack = NULL;
 	funcStruct->label_end = NULL;
 	funcStruct->main = false;
-	funcStruct->counter = 0;
 	funcStruct->value_counter = 0;
 	return funcStruct;
 }
@@ -292,6 +291,7 @@ void collectLocalVars(AstNode *node, VarList *vars,FuncContext *funcStruct) {
           case AST_GTE:
           case AST_AND:
           case AST_NOT:
+          case AST_TERNARY:
           case AST_OR: {
               node->tmp_id = funcStruct->value_counter++;
               add_binop_tmps(vars, funcStruct->func_name, node->tmp_id,node);
@@ -1385,7 +1385,7 @@ void emitIf(AstNode *node, FuncContext *funcContext, char *endLabel)
     char *label = NULL;
     label = generatorLable("ifEnd",funcContext,true,if_counter);
     //dame skontrolovat podmienku
-    emit_command(node->child[0], funcContext);
+    emitCondition(node->child[0], funcContext);
     // mame vysledok podmienky true/false na zasobniku
     // pridame si tam umelo false
     printN("PUSHS bool@false");
@@ -1458,7 +1458,10 @@ void emitContinue(FuncContext *funcContext) {
     free(label);
 }
 void emitCondition(AstNode *node,FuncContext *funcContext){
-
+	if(node->kind == AST_LT || node->kind == AST_LTE || node->kind == AST_EQ || node->kind == AST_GT || node->kind == AST_GTE || node->kind == AST_OR || node->kind == AST_NOT || node->kind == AST_NEQ || node->kind == AST_AND || node->kind == AST_IS){
+		emit_command(node,funcContext);
+		return;
+	}
 	AstNode *child = node->child[0];
 	if(child->kind == AST_LT || child->kind == AST_LTE || child->kind == AST_EQ || child->kind == AST_GT || child->kind == AST_GTE || child->kind == AST_OR || child->kind == AST_NOT || child->kind == AST_NEQ || child->kind == AST_AND || child->kind == AST_IS){
 		emit_command(child, funcContext);
@@ -1619,7 +1622,6 @@ void emitSetter(AstNode* node) {
     DynamiclabelStackStackPtr labelStack = stacklabelStackConstruct(DEFAULT_INIT_ELEMENT_COUNT);
 
 	FuncContext *context = ConstuctorFuncContext();
-    context->counter++;
 	context->func_name = node->child[0]->value.str;
 
 	context->label_stack = labelStack;
@@ -1662,7 +1664,6 @@ void emitGetter(AstNode* node) {
     DynamiclabelStackStackPtr labelStack = stacklabelStackConstruct(DEFAULT_INIT_ELEMENT_COUNT);
 
 	FuncContext *context = ConstuctorFuncContext();
-    context->counter++;
 	context->func_name = node->child[0]->value.str;
 
 	context->label_stack = labelStack;
@@ -1695,7 +1696,20 @@ void emitGetter(AstNode* node) {
 	free(labelEnd);
 
 }
-
+void emit_ternarni(AstNode *node, FuncContext *funcStruct){
+    char label_true[128], label_end[128];
+    int id = node->tmp_id;
+    snprintf(label_true, sizeof label_true, "%s$true$%d", funcStruct->func_name, id);
+    snprintf(label_end, sizeof label_end, "%s$end$%d", funcStruct->func_name, id);
+    emitCondition(node->child[0], funcStruct);
+    printN("PUSHS bool@true");
+    printN("JUMPIFEQS %s", label_true);
+    emit_command(node->child[2], funcStruct);
+    printN("JUMP %s", label_end);
+    printN("LABEL %s", label_true);
+    emit_command(node->child[1], funcStruct);
+    printN("LABEL %s", label_end);
+}
 /*
  * @brief switch zajisti zavolani sablon
  * @params ukazatel na uzel
@@ -1883,6 +1897,9 @@ void emit_command(AstNode *node,FuncContext *funcStruct) {
         case AST_NULL:
        		printN("PUSHS string@Null");
             break;
+        case AST_TERNARY:
+        	emit_ternarni(node,funcStruct);
+         	break;
         case AST_CONDITION:
         	emitCondition(node,funcStruct);
          	break;
