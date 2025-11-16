@@ -1,0 +1,14 @@
+import "ifj25" for Ifj
+class Program {
+// Vestavěné funkce
+    static main() {
+       var x = "aaaa"
+       x = Ifj.length(x) 
+       
+       var y = true
+       var z = Ifj.str(y)
+       z = Ifj.length(z)
+        var a = x + z
+        Ifj.write(a)
+    }
+}

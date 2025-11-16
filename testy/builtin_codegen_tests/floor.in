@@ -1,0 +1,10 @@
+import "ifj25" for Ifj
+class Program {
+// Vestavěné funkce
+    static main() {
+       var x = 1.5
+       x = Ifj.floor(x) 
+       var y = x + 1
+       Ifj.write(x)
+    }
+}

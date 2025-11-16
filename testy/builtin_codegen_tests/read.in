@@ -1,0 +1,12 @@
+import "ifj25" for Ifj
+class Program {
+// Vestavěné funkce
+    static main() {
+       var x = Ifj.read_str()
+       Ifj.write(x)
+       
+       var z = Ifj.read_num()
+       var y = 1.5 + 1
+       Ifj.write(y)
+    }
+}
