@@ -1063,13 +1063,13 @@ void deleteScope() {
         return;
     }
 
-    HashTable* newScope = stackHashTablePtrRead(scopesStack);
-    if (newScope == NULL) {
+    HashTable* scopeToDelete = stackHashTablePtrRead(scopesStack);
+    if (scopeToDelete == NULL) {
         EXEC_END(INTERNAL_ERROR, "Na zasobniku byl prazdny ukazatel!\n");
         return;
     }
 
-    hashTableDealloc(newScope);
+    hashTableDealloc(scopeToDelete);
 
     stackHashTablePtrPop(scopesStack);
 }
