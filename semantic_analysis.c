@@ -725,7 +725,7 @@ SemValidationStates recursiveNodeWalker(AstNode* currentNode, AstNodeType parent
             printLog("AST_GLOBAL_ID\n");
 
             if (parentNodeType == AST_STATEMENT_LIST) {
-                SemSymbol newSymbol = {.symbolType = GLOBAL, .returnValue = NULL_VAL, .scope = NEWEST_SCOPE};
+                SemSymbol newSymbol = {.symbolType = GLOBAL, .returnValue = NULL_VAL, .scope = 0};
 
                 SemValidationStates childValue = recursiveNodeWalker(currentNode->child[1], AST_GLOBAL_ID, 1);
 
