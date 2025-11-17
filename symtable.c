@@ -131,7 +131,6 @@ void hashTableDeleteItem(HashTable *hashT, char *key) {
         hashT->items[deleteIndex].isDeleted = true;
         hashT->items[deleteIndex].isEmpty = false;
         hashT->items[deleteIndex].symbol.name = NULL;  // Uvolnění paměti zajišťují funkce pro AS strom
-        printf("tady jsem  index:%d\n", deleteIndex);
     }
     hashT->tableSize--;
 }

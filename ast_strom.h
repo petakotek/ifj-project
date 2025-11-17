@@ -90,6 +90,7 @@ typedef enum AstNodeType {
     AST_SMALL_NULL,
     AST_FLOAT_LIT_EXP,
     AST_INT_LIT_EXP,
+    AST_STRING_BLOCK,
 } AstNodeType;
 
 /**
@@ -190,5 +191,8 @@ AstNode *build_stmtlist_flat(size_t n, AstNode **kids);
 AstNode *build_classblock_flat(size_t n, AstNode **kids);
 AstNode *build_ifchain_flat(size_t n, AstNode **kids);
 double floatExp(const char *s);
+char *stringChanging(char *tmp);
+char *stringChangingLit(char *tmp);
+char *escapeString(char *tmp);
 
 #endif  // AST_STROM_H
