@@ -1,0 +1,82 @@
+.IFJcode25
+JUMP main$0
+LABEL main$0
+CREATEFRAME
+PUSHFRAME
+DEFVAR LF@retval
+DEFVAR LF@main$0_ty_bool_0
+DEFVAR LF@main$0_val_bool_0
+DEFVAR LF@x$$1
+DEFVAR LF@main$0_ty_bool_1
+DEFVAR LF@main$0_val_bool_1
+DEFVAR LF@main$0_ln_2
+DEFVAR LF@main$0_rn_2
+DEFVAR LF@main$0_rty_2
+DEFVAR LF@main$0_lty_2
+DEFVAR LF@main$0_ty_bool_3
+DEFVAR LF@main$0_val_bool_3
+DEFVAR LF@main$0_ty_bool_4
+DEFVAR LF@main$0_val_bool_4
+MOVE LF@retval nil@nil
+PUSHS LF@x$$1
+POPS LF@main$0_ln_2
+PUSHS LF@main$0_ln_2
+TYPES
+POPS LF@main$0_lty_2
+JUMP main$0$Null$2
+LABEL main$0$Num$2
+PUSHS LF@main$0_lty_2
+PUSHS string@int
+JUMPIFEQS main$0$ok$2
+PUSHS LF@main$0_lty_2
+PUSHS string@float
+JUMPIFEQS main$0$ok$2
+JUMP main$0$err$2
+LABEL main$0$String$2
+PUSHS LF@main$0_lty_2
+PUSHS string@string
+JUMPIFEQS main$0$ok$2
+JUMP main$0$err$2
+LABEL main$0$Null$2
+PUSHS LF@main$0_lty_2
+PUSHS string@nil
+JUMPIFEQS main$0$ok$2
+JUMP main$0$err$2
+LABEL main$0$ok$2
+PUSHS bool@true
+JUMP main$0$end_is$2
+LABEL main$0$err$2
+PUSHS bool@false
+LABEL main$0$end_is$2
+PUSHS bool@false
+JUMPIFEQS main$0$ifEnd$1
+PUSHS string@null_type
+DEFVAR LF@temp$var$write$0
+DEFVAR LF@temp$var$writeType$0
+POPS LF@temp$var$write$0
+TYPE LF@temp$var$writeType$0 LF@temp$var$write$0
+JUMPIFNEQ temp$label$write$write$0 LF@temp$var$writeType$0 string@float
+ISINT LF@temp$var$writeType$0  LF@temp$var$write$0
+JUMPIFNEQ temp$label$write$write$0 LF@temp$var$writeType$0  bool@true
+FLOAT2INT LF@temp$var$write$0 LF@temp$var$write$0
+LABEL temp$label$write$write$0
+WRITE LF@temp$var$write$0
+PUSHS nil@nil
+JUMP main$0$ifchainend$0
+LABEL main$0$ifEnd$1
+PUSHS string@not_null_type
+DEFVAR LF@temp$var$write$1
+DEFVAR LF@temp$var$writeType$1
+POPS LF@temp$var$write$1
+TYPE LF@temp$var$writeType$1 LF@temp$var$write$1
+JUMPIFNEQ temp$label$write$write$1 LF@temp$var$writeType$1 string@float
+ISINT LF@temp$var$writeType$1  LF@temp$var$write$1
+JUMPIFNEQ temp$label$write$write$1 LF@temp$var$writeType$1  bool@true
+FLOAT2INT LF@temp$var$write$1 LF@temp$var$write$1
+LABEL temp$label$write$write$1
+WRITE LF@temp$var$write$1
+PUSHS nil@nil
+JUMP main$0$ifchainend$0
+LABEL main$0$ifchainend$0
+LABEL main$0$end$0
+EXIT int@0

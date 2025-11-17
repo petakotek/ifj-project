@@ -1,0 +1,10 @@
+import "ifj25" for Ifj
+
+class Program {
+    static main() {
+        var x
+        if (x == null) {
+            Ifj.write("is_null")
+        }
+    }
+}

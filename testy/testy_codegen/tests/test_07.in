@@ -1,0 +1,13 @@
+import "ifj25" for Ifj
+
+class Program {
+    static add(a, b) {
+        return a + b
+    }
+
+    static main() {
+        var sum
+        sum = add(3, 7)
+        Ifj.write(sum)
+    }
+}

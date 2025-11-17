@@ -1,0 +1,11 @@
+import "ifj25" for Ifj
+
+class Program {
+    static main() {
+        var ansStr
+        ansStr = Ifj.str(99)
+        var result
+        result = "Odpoved je " + ansStr
+        Ifj.write(result)
+    }
+}

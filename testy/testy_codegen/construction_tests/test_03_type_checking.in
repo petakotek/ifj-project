@@ -1,0 +1,19 @@
+import "ifj25" for Ifj
+
+class Program {
+    static processValue(arg) {
+        if (arg is Num) {
+            Ifj.write("number")
+            return arg
+        } else {
+            Ifj.write("not_number")
+            return null
+        }
+    }
+
+    static main() {
+        var result
+        result = processValue(100)
+        Ifj.write(result)
+    }
+}

@@ -1,0 +1,2101 @@
+
+[0;34m[TEST][0m test_01_return_value
+========================================
+expr strom po skoncení funcke parseExpression
+===== AST STROM =====
+[INT_LIT] (int=42)
+LOG: precedencna odovzdala token jeho type je = 33
+ERROR (2) : (PSA) Zadany vyraz neni syntakticky spravny (neocekavany znak nebo samostatne stojici operator)
+FAIL: Compilation failed (Exit Code: 2)
+
+[0;34m[TEST][0m test_02_function_param
+========================================
+expr strom po skoncení funcke parseExpression
+===== AST STROM =====
+[STRING_IS]
+  [IDENTIFIER] (str=arg)
+  [KEYWORD_NUM]
+LOG: 1LOG: precedencna odovzdala token jeho type je = 21
+expr strom po skoncení funcke parseExpression
+===== AST STROM =====
+[STRING_MUL]
+  [IDENTIFIER] (str=arg)
+  [INT_LIT] (int=2)
+LOG: precedencna odovzdala token jeho type je = 33
+expr strom po skoncení funcke parseExpression
+===== AST STROM =====
+[SMALL_NULL]
+LOG: precedencna odovzdala token jeho type je = 33
+ERROR (2) : (PSA) Zadany vyraz neni syntakticky spravny (neocekavany znak nebo samostatne stojici operator)
+FAIL: Compilation failed (Exit Code: 2)
+
+[0;34m[TEST][0m test_03_type_checking
+========================================
+expr strom po skoncení funcke parseExpression
+===== AST STROM =====
+[STRING_IS]
+  [IDENTIFIER] (str=arg)
+  [KEYWORD_NUM]
+LOG: 1LOG: precedencna odovzdala token jeho type je = 21
+expr strom po skoncení funcke parseExpression
+===== AST STROM =====
+[STRING_LIT] (str=number)
+LOG: precedencna odovzdala token jeho type je = 21
+expr strom po skoncení funcke parseExpression
+===== AST STROM =====
+[IDENTIFIER] (str=arg)
+LOG: precedencna odovzdala token jeho type je = 33
+expr strom po skoncení funcke parseExpression
+===== AST STROM =====
+[STRING_LIT] (str=not_number)
+LOG: precedencna odovzdala token jeho type je = 21
+expr strom po skoncení funcke parseExpression
+===== AST STROM =====
+[SMALL_NULL]
+LOG: precedencna odovzdala token jeho type je = 33
+expr strom po skoncení funcke parseExpression
+===== AST STROM =====
+[FUNC_CALL]
+  [IDENTIFIER] (str=processValue)
+  [PARAM]
+    [INT_LIT] (int=100)
+    [EMPTY]
+LOG: precedencna odovzdala token jeho type je = 33
+expr strom po skoncení funcke parseExpression
+===== AST STROM =====
+[IDENTIFIER] (str=result)
+LOG: precedencna odovzdala token jeho type je = 21
+PARSER IS DONE
+===== AST STROM =====
+[PROGRAM]
+  [PROLOG]
+  [MAIN_CLASS]
+    [IDENTIFIER] (str=Program)
+    [MAIN_CLASS_BLOCK]
+      [FUNC_DEC]
+        [IDENTIFIER] (str=processValue)
+        [PARAM]
+          [IDENTIFIER] (str=arg)
+          [EMPTY]
+        [BLOCK]
+          [STATEMENT_LIST]
+            [IF CHAIN]
+              [IF]
+                [CONDITION]
+                  [STRING_IS]
+                    [IDENTIFIER] (str=arg)
+                    [KEYWORD_NUM]
+                [BLOCK]
+                  [STATEMENT_LIST]
+                    [IFJ_CALL]
+                      [IDENTIFIER] (str=write)
+                      [PARAM]
+                        [STRING_LIT] (str=number)
+                        [EMPTY]
+                    [RETURN]
+                      [IDENTIFIER] (str=arg)
+              [ELSE]
+                [BLOCK]
+                  [STATEMENT_LIST]
+                    [IFJ_CALL]
+                      [IDENTIFIER] (str=write)
+                      [PARAM]
+                        [STRING_LIT] (str=not_number)
+                        [EMPTY]
+                    [RETURN]
+                      [SMALL_NULL]
+      [FUNC_DEC]
+        [IDENTIFIER] (str=main)
+        [PARAM]
+          [EMPTY]
+        [BLOCK]
+          [STATEMENT_LIST]
+            [VAR]
+              [IDENTIFIER] (str=result)
+              [EMPTY]
+            [ASSIGN]
+              [IDENTIFIER] (str=result)
+              [FUNC_CALL]
+                [IDENTIFIER] (str=processValue)
+                [PARAM]
+                  [INT_LIT] (int=100)
+                  [EMPTY]
+            [IFJ_CALL]
+              [IDENTIFIER] (str=write)
+              [PARAM]
+                [IDENTIFIER] (str=result)
+                [EMPTY]
+LOG: AST_PROLOG
+LOG: AST_MAIN_CLASS
+LOG: AST_MAIN_CLASS_BLOCK
+LOG: AST_FUNC_DEC
+LOG: AST_PARAM
+LOG: AST_IDENTIFIER
+LOG: AST_EMPTY
+LOG: AST_BLOCK
+LOG: AST_STATEMENT_LIST
+LOG: AST_IF_CHAIN
+LOG: AST_IF
+LOG: AST_CONDITION
+LOG: AST_IS
+LOG: AST_IDENTIFIER
+LOG: AST_KEYWORD_NUM
+LOG: AST_BLOCK
+LOG: AST_STATEMENT_LIST
+LOG: AST_IFJ_CALL
+LOG: write
+LOG: AST_PARAM
+LOG: AST_STRING_LIT
+LOG: AST_EMPTY
+LOG: AST_RETURN
+LOG: AST_IDENTIFIER
+LOG: AST_ELSE
+LOG: AST_BLOCK
+LOG: AST_STATEMENT_LIST
+LOG: AST_IFJ_CALL
+LOG: write
+LOG: AST_PARAM
+LOG: AST_STRING_LIT
+LOG: AST_EMPTY
+LOG: AST_RETURN
+LOG: AST_SMALL_NULL
+LOG: AST_FUNC_DEC
+LOG: AST_PARAM
+LOG: AST_EMPTY
+LOG: AST_BLOCK
+LOG: AST_STATEMENT_LIST
+LOG: AST_VAR
+LOG: AST_ASSIGN
+LOG: AST_IDENTIFIER
+LOG: AST_FUNC_CALL
+LOG: AST_PARAM
+LOG: AST_INT_LIT
+LOG: AST_EMPTY
+LOG: AST_IFJ_CALL
+LOG: write
+LOG: AST_PARAM
+LOG: AST_IDENTIFIER
+LOG: AST_EMPTY
+LOG: Vysledek sem_anal: 1
+FAIL: Output mismatch
+Expected (Normalized): number
+100
+Actual (Normalized):   number100
+
+[0;34m[TEST][0m test_04_arithmetic
+========================================
+expr strom po skoncení funcke parseExpression
+===== AST STROM =====
+[INT_LIT] (int=32)
+LOG: precedencna odovzdala token jeho type je = 33
+expr strom po skoncení funcke parseExpression
+===== AST STROM =====
+[INT_LIT] (int=84)
+LOG: precedencna odovzdala token jeho type je = 33
+expr strom po skoncení funcke parseExpression
+===== AST STROM =====
+[STRING_GT]
+  [STRING_MINUS]
+    [IDENTIFIER] (str=a)
+    [INT_LIT] (int=1)
+  [STRING_MUL]
+    [IDENTIFIER] (str=b)
+    [INT_LIT] (int=1)
+LOG: 1LOG: precedencna odovzdala token jeho type je = 21
+expr strom po skoncení funcke parseExpression
+===== AST STROM =====
+[STRING_LIT] (str=greater)
+LOG: precedencna odovzdala token jeho type je = 21
+expr strom po skoncení funcke parseExpression
+===== AST STROM =====
+[STRING_LIT] (str=lesser)
+LOG: precedencna odovzdala token jeho type je = 21
+PARSER IS DONE
+===== AST STROM =====
+[PROGRAM]
+  [PROLOG]
+  [MAIN_CLASS]
+    [IDENTIFIER] (str=Program)
+    [MAIN_CLASS_BLOCK]
+      [FUNC_DEC]
+        [IDENTIFIER] (str=main)
+        [PARAM]
+          [EMPTY]
+        [BLOCK]
+          [STATEMENT_LIST]
+            [VAR]
+              [IDENTIFIER] (str=a)
+              [EMPTY]
+            [ASSIGN]
+              [IDENTIFIER] (str=a)
+              [INT_LIT] (int=32)
+            [VAR]
+              [IDENTIFIER] (str=b)
+              [EMPTY]
+            [ASSIGN]
+              [IDENTIFIER] (str=b)
+              [INT_LIT] (int=84)
+            [IF CHAIN]
+              [IF]
+                [CONDITION]
+                  [STRING_GT]
+                    [STRING_MINUS]
+                      [IDENTIFIER] (str=a)
+                      [INT_LIT] (int=1)
+                    [STRING_MUL]
+                      [IDENTIFIER] (str=b)
+                      [INT_LIT] (int=1)
+                [BLOCK]
+                  [STATEMENT_LIST]
+                    [IFJ_CALL]
+                      [IDENTIFIER] (str=write)
+                      [PARAM]
+                        [STRING_LIT] (str=greater)
+                        [EMPTY]
+              [ELSE]
+                [BLOCK]
+                  [STATEMENT_LIST]
+                    [IFJ_CALL]
+                      [IDENTIFIER] (str=write)
+                      [PARAM]
+                        [STRING_LIT] (str=lesser)
+                        [EMPTY]
+LOG: AST_PROLOG
+LOG: AST_MAIN_CLASS
+LOG: AST_MAIN_CLASS_BLOCK
+LOG: AST_FUNC_DEC
+LOG: AST_PARAM
+LOG: AST_EMPTY
+LOG: AST_BLOCK
+LOG: AST_STATEMENT_LIST
+LOG: AST_VAR
+LOG: AST_ASSIGN
+LOG: AST_IDENTIFIER
+LOG: AST_INT_LIT
+LOG: AST_VAR
+LOG: AST_ASSIGN
+LOG: AST_IDENTIFIER
+LOG: AST_INT_LIT
+LOG: AST_IF_CHAIN
+LOG: AST_IF
+LOG: AST_CONDITION
+LOG: AST_GT
+LOG: AST_MINUS
+LOG: AST_IDENTIFIER
+LOG: AST_INT_LIT
+LOG: AST_MUL
+LOG: AST_IDENTIFIER
+LOG: AST_INT_LIT
+LOG: AST_BLOCK
+LOG: AST_STATEMENT_LIST
+LOG: AST_IFJ_CALL
+LOG: write
+LOG: AST_PARAM
+LOG: AST_STRING_LIT
+LOG: AST_EMPTY
+LOG: AST_ELSE
+LOG: AST_BLOCK
+LOG: AST_STATEMENT_LIST
+LOG: AST_IFJ_CALL
+LOG: write
+LOG: AST_PARAM
+LOG: AST_STRING_LIT
+LOG: AST_EMPTY
+LOG: Vysledek sem_anal: 1
+PASS
+
+[0;34m[TEST][0m test_05_assignment
+========================================
+expr strom po skoncení funcke parseExpression
+===== AST STROM =====
+[INT_LIT] (int=10)
+LOG: precedencna odovzdala token jeho type je = 33
+expr strom po skoncení funcke parseExpression
+===== AST STROM =====
+[STRING_MUL]
+  [IDENTIFIER] (str=x)
+  [INT_LIT] (int=42)
+LOG: precedencna odovzdala token jeho type je = 33
+expr strom po skoncení funcke parseExpression
+===== AST STROM =====
+[IDENTIFIER] (str=y)
+LOG: precedencna odovzdala token jeho type je = 21
+PARSER IS DONE
+===== AST STROM =====
+[PROGRAM]
+  [PROLOG]
+  [MAIN_CLASS]
+    [IDENTIFIER] (str=Program)
+    [MAIN_CLASS_BLOCK]
+      [FUNC_DEC]
+        [IDENTIFIER] (str=main)
+        [PARAM]
+          [EMPTY]
+        [BLOCK]
+          [STATEMENT_LIST]
+            [VAR]
+              [IDENTIFIER] (str=x)
+              [EMPTY]
+            [ASSIGN]
+              [IDENTIFIER] (str=x)
+              [INT_LIT] (int=10)
+            [VAR]
+              [IDENTIFIER] (str=y)
+              [EMPTY]
+            [ASSIGN]
+              [IDENTIFIER] (str=y)
+              [STRING_MUL]
+                [IDENTIFIER] (str=x)
+                [INT_LIT] (int=42)
+            [IFJ_CALL]
+              [IDENTIFIER] (str=write)
+              [PARAM]
+                [IDENTIFIER] (str=y)
+                [EMPTY]
+LOG: AST_PROLOG
+LOG: AST_MAIN_CLASS
+LOG: AST_MAIN_CLASS_BLOCK
+LOG: AST_FUNC_DEC
+LOG: AST_PARAM
+LOG: AST_EMPTY
+LOG: AST_BLOCK
+LOG: AST_STATEMENT_LIST
+LOG: AST_VAR
+LOG: AST_ASSIGN
+LOG: AST_IDENTIFIER
+LOG: AST_INT_LIT
+LOG: AST_VAR
+LOG: AST_ASSIGN
+LOG: AST_IDENTIFIER
+LOG: AST_MUL
+LOG: AST_IDENTIFIER
+LOG: AST_INT_LIT
+LOG: AST_IFJ_CALL
+LOG: write
+LOG: AST_PARAM
+LOG: AST_IDENTIFIER
+LOG: AST_EMPTY
+LOG: Vysledek sem_anal: 1
+PASS
+
+[0;34m[TEST][0m test_06_str_builtin
+========================================
+expr strom po skoncení funcke parseExpression
+===== AST STROM =====
+[INT_LIT] (int=100)
+LOG: precedencna odovzdala token jeho type je = 33
+expr strom po skoncení funcke parseExpression
+===== AST STROM =====
+[IDENTIFIER] (str=num)
+LOG: precedencna odovzdala token jeho type je = 21
+expr strom po skoncení funcke parseExpression
+===== AST STROM =====
+[IDENTIFIER] (str=str)
+LOG: precedencna odovzdala token jeho type je = 21
+PARSER IS DONE
+===== AST STROM =====
+[PROGRAM]
+  [PROLOG]
+  [MAIN_CLASS]
+    [IDENTIFIER] (str=Program)
+    [MAIN_CLASS_BLOCK]
+      [FUNC_DEC]
+        [IDENTIFIER] (str=main)
+        [PARAM]
+          [EMPTY]
+        [BLOCK]
+          [STATEMENT_LIST]
+            [VAR]
+              [IDENTIFIER] (str=num)
+              [EMPTY]
+            [ASSIGN]
+              [IDENTIFIER] (str=num)
+              [INT_LIT] (int=100)
+            [VAR]
+              [IDENTIFIER] (str=str)
+              [EMPTY]
+            [ASSIGN]
+              [IDENTIFIER] (str=str)
+              [IFJ_CALL]
+                [IDENTIFIER] (str=str)
+                [PARAM]
+                  [IDENTIFIER] (str=num)
+                  [EMPTY]
+            [IFJ_CALL]
+              [IDENTIFIER] (str=write)
+              [PARAM]
+                [IDENTIFIER] (str=str)
+                [EMPTY]
+LOG: AST_PROLOG
+LOG: AST_MAIN_CLASS
+LOG: AST_MAIN_CLASS_BLOCK
+LOG: AST_FUNC_DEC
+LOG: AST_PARAM
+LOG: AST_EMPTY
+LOG: AST_BLOCK
+LOG: AST_STATEMENT_LIST
+LOG: AST_VAR
+LOG: AST_ASSIGN
+LOG: AST_IDENTIFIER
+LOG: AST_INT_LIT
+LOG: AST_VAR
+LOG: AST_ASSIGN
+LOG: AST_IDENTIFIER
+LOG: AST_IFJ_CALL
+LOG: str
+LOG: AST_PARAM
+LOG: AST_IDENTIFIER
+LOG: AST_EMPTY
+LOG: AST_IFJ_CALL
+LOG: write
+LOG: AST_PARAM
+LOG: AST_IDENTIFIER
+LOG: AST_EMPTY
+LOG: Vysledek sem_anal: 1
+FAIL: Output mismatch
+Expected (Normalized): 100
+Actual (Normalized):   100.00
+
+[0;34m[TEST][0m test_07_string_concat
+========================================
+expr strom po skoncení funcke parseExpression
+===== AST STROM =====
+[INT_LIT] (int=99)
+LOG: precedencna odovzdala token jeho type je = 21
+expr strom po skoncení funcke parseExpression
+===== AST STROM =====
+[STRING_PLUS]
+  [STRING_LIT] (str=Odpoved\032je\032)
+  [IDENTIFIER] (str=ansStr)
+LOG: precedencna odovzdala token jeho type je = 33
+expr strom po skoncení funcke parseExpression
+===== AST STROM =====
+[IDENTIFIER] (str=result)
+LOG: precedencna odovzdala token jeho type je = 21
+PARSER IS DONE
+===== AST STROM =====
+[PROGRAM]
+  [PROLOG]
+  [MAIN_CLASS]
+    [IDENTIFIER] (str=Program)
+    [MAIN_CLASS_BLOCK]
+      [FUNC_DEC]
+        [IDENTIFIER] (str=main)
+        [PARAM]
+          [EMPTY]
+        [BLOCK]
+          [STATEMENT_LIST]
+            [VAR]
+              [IDENTIFIER] (str=ansStr)
+              [EMPTY]
+            [ASSIGN]
+              [IDENTIFIER] (str=ansStr)
+              [IFJ_CALL]
+                [IDENTIFIER] (str=str)
+                [PARAM]
+                  [INT_LIT] (int=99)
+                  [EMPTY]
+            [VAR]
+              [IDENTIFIER] (str=result)
+              [EMPTY]
+            [ASSIGN]
+              [IDENTIFIER] (str=result)
+              [STRING_PLUS]
+                [STRING_LIT] (str=Odpoved\032je\032)
+                [IDENTIFIER] (str=ansStr)
+            [IFJ_CALL]
+              [IDENTIFIER] (str=write)
+              [PARAM]
+                [IDENTIFIER] (str=result)
+                [EMPTY]
+LOG: AST_PROLOG
+LOG: AST_MAIN_CLASS
+LOG: AST_MAIN_CLASS_BLOCK
+LOG: AST_FUNC_DEC
+LOG: AST_PARAM
+LOG: AST_EMPTY
+LOG: AST_BLOCK
+LOG: AST_STATEMENT_LIST
+LOG: AST_VAR
+LOG: AST_ASSIGN
+LOG: AST_IDENTIFIER
+LOG: AST_IFJ_CALL
+LOG: str
+LOG: AST_PARAM
+LOG: AST_INT_LIT
+LOG: AST_EMPTY
+LOG: AST_VAR
+LOG: AST_ASSIGN
+LOG: AST_IDENTIFIER
+LOG: AST_PLUS
+LOG: AST_STRING_LIT
+LOG: AST_IDENTIFIER
+LOG: AST_IFJ_CALL
+LOG: write
+LOG: AST_PARAM
+LOG: AST_IDENTIFIER
+LOG: AST_EMPTY
+LOG: Vysledek sem_anal: 1
+FAIL: Output mismatch
+Expected (Normalized): Odpovedje99
+Actual (Normalized):   Odpovedje99.00
+
+[0;34m[TEST][0m test_08_getter
+========================================
+expr strom po skoncení funcke parseExpression
+===== AST STROM =====
+[GLOBAL_ID] (str=__a)
+LOG: 1LOG: precedencna odovzdala token jeho type je = 21
+expr strom po skoncení funcke parseExpression
+===== AST STROM =====
+[STRING_PLUS]
+  [GLOBAL_ID] (str=__a)
+  [INT_LIT] (int=10)
+LOG: precedencna odovzdala token jeho type je = 33
+expr strom po skoncení funcke parseExpression
+===== AST STROM =====
+[SMALL_NULL]
+LOG: precedencna odovzdala token jeho type je = 33
+expr strom po skoncení funcke parseExpression
+===== AST STROM =====
+[IDENTIFIER] (str=unicorn)
+LOG: precedencna odovzdala token jeho type je = 21
+PARSER IS DONE
+===== AST STROM =====
+[PROGRAM]
+  [PROLOG]
+  [MAIN_CLASS]
+    [IDENTIFIER] (str=Program)
+    [MAIN_CLASS_BLOCK]
+      [GETTER]
+        [IDENTIFIER] (str=unicorn)
+        [PARAM]
+          [EMPTY]
+        [BLOCK]
+          [STATEMENT_LIST]
+            [IF CHAIN]
+              [IF]
+                [CONDITION]
+                  [GLOBAL_ID] (str=__a)
+                [BLOCK]
+                  [STATEMENT_LIST]
+                    [RETURN]
+                      [STRING_PLUS]
+                        [GLOBAL_ID] (str=__a)
+                        [INT_LIT] (int=10)
+              [ELSE]
+                [BLOCK]
+                  [STATEMENT_LIST]
+                    [RETURN]
+                      [SMALL_NULL]
+      [FUNC_DEC]
+        [IDENTIFIER] (str=main)
+        [PARAM]
+          [EMPTY]
+        [BLOCK]
+          [STATEMENT_LIST]
+            [IFJ_CALL]
+              [IDENTIFIER] (str=write)
+              [PARAM]
+                [IDENTIFIER] (str=unicorn)
+                [EMPTY]
+LOG: AST_PROLOG
+LOG: AST_MAIN_CLASS
+LOG: AST_MAIN_CLASS_BLOCK
+LOG: AST_GETTER
+LOG: AST_BLOCK
+LOG: AST_STATEMENT_LIST
+LOG: AST_IF_CHAIN
+LOG: AST_IF
+LOG: AST_CONDITION
+LOG: AST_GLOBAL_ID
+LOG: AST_BLOCK
+LOG: AST_STATEMENT_LIST
+LOG: AST_RETURN
+LOG: AST_PLUS
+LOG: AST_GLOBAL_ID
+LOG: AST_INT_LIT
+LOG: AST_ELSE
+LOG: AST_BLOCK
+LOG: AST_STATEMENT_LIST
+LOG: AST_RETURN
+LOG: AST_SMALL_NULL
+LOG: AST_FUNC_DEC
+LOG: AST_PARAM
+LOG: AST_EMPTY
+LOG: AST_BLOCK
+LOG: AST_STATEMENT_LIST
+LOG: AST_IFJ_CALL
+LOG: write
+LOG: AST_PARAM
+LOG: AST_IDENTIFIER
+LOG: AST_EMPTY
+LOG: Vysledek sem_anal: 1
+Error at line: 73
+Label does not exist!
+FAIL: Interpreter error (Exit Code: 52)
+
+[0;34m[TEST][0m test_09_setter
+========================================
+expr strom po skoncení funcke parseExpression
+===== AST STROM =====
+[IDENTIFIER] (str=val)
+LOG: precedencna odovzdala token jeho type je = 33
+expr strom po skoncení funcke parseExpression
+===== AST STROM =====
+[STRING_LIT] (str=set)
+LOG: precedencna odovzdala token jeho type je = 21
+expr strom po skoncení funcke parseExpression
+===== AST STROM =====
+[INT_LIT] (int=5)
+LOG: precedencna odovzdala token jeho type je = 33
+PARSER IS DONE
+===== AST STROM =====
+[PROGRAM]
+  [PROLOG]
+  [MAIN_CLASS]
+    [IDENTIFIER] (str=Program)
+    [MAIN_CLASS_BLOCK]
+      [SETTER]
+        [IDENTIFIER] (str=unicorn)
+        [PARAM]
+          [IDENTIFIER] (str=val)
+          [EMPTY]
+        [BLOCK]
+          [STATEMENT_LIST]
+            [GLOBAL_ID]
+              [GLOBAL_ID] (str=__a)
+              [ASSIGN]
+                [IDENTIFIER] (str=val)
+            [IFJ_CALL]
+              [IDENTIFIER] (str=write)
+              [PARAM]
+                [STRING_LIT] (str=set)
+                [EMPTY]
+      [FUNC_DEC]
+        [IDENTIFIER] (str=main)
+        [PARAM]
+          [EMPTY]
+        [BLOCK]
+          [STATEMENT_LIST]
+            [ASSIGN]
+              [IDENTIFIER] (str=unicorn)
+              [INT_LIT] (int=5)
+LOG: AST_PROLOG
+LOG: AST_MAIN_CLASS
+LOG: AST_MAIN_CLASS_BLOCK
+LOG: AST_SETTER
+LOG: AST_PARAM
+LOG: AST_IDENTIFIER
+LOG: AST_EMPTY
+LOG: AST_BLOCK
+LOG: AST_STATEMENT_LIST
+LOG: AST_GLOBAL_ID
+LOG: AST_ASSIGN
+LOG: AST_IDENTIFIER
+WARNING: Nevhodna navratova hodnota 7
+LOG: AST_IFJ_CALL
+LOG: write
+LOG: AST_PARAM
+LOG: AST_STRING_LIT
+LOG: AST_EMPTY
+LOG: AST_FUNC_DEC
+LOG: AST_PARAM
+LOG: AST_EMPTY
+LOG: AST_BLOCK
+LOG: AST_STATEMENT_LIST
+LOG: AST_ASSIGN
+LOG: AST_IDENTIFIER
+LOG: AST_INT_LIT
+LOG: Tabulka nedeklarovaných referencí není prázdná! Výpis obsahu níže:
+LOG: Klíč:      unicorn$s
+LOG: isDeleted: 0
+LOG: isEmpty:   0
+LOG: -
+ERROR (3) : Reference na nedeklarovany getter, setter nebo funkci!
+FAIL: Compilation failed (Exit Code: 3)
+
+[0;34m[TEST][0m test_10_if_else
+========================================
+expr strom po skoncení funcke parseExpression
+===== AST STROM =====
+[INT_LIT] (int=10)
+LOG: precedencna odovzdala token jeho type je = 33
+expr strom po skoncení funcke parseExpression
+===== AST STROM =====
+[STRING_GT]
+  [IDENTIFIER] (str=x)
+  [INT_LIT] (int=20)
+LOG: 1LOG: precedencna odovzdala token jeho type je = 21
+expr strom po skoncení funcke parseExpression
+===== AST STROM =====
+[STRING_LIT] (str=greater)
+LOG: precedencna odovzdala token jeho type je = 21
+expr strom po skoncení funcke parseExpression
+===== AST STROM =====
+[STRING_LIT] (str=not_greater)
+LOG: precedencna odovzdala token jeho type je = 21
+PARSER IS DONE
+===== AST STROM =====
+[PROGRAM]
+  [PROLOG]
+  [MAIN_CLASS]
+    [IDENTIFIER] (str=Program)
+    [MAIN_CLASS_BLOCK]
+      [FUNC_DEC]
+        [IDENTIFIER] (str=main)
+        [PARAM]
+          [EMPTY]
+        [BLOCK]
+          [STATEMENT_LIST]
+            [VAR]
+              [IDENTIFIER] (str=x)
+              [EMPTY]
+            [ASSIGN]
+              [IDENTIFIER] (str=x)
+              [INT_LIT] (int=10)
+            [IF CHAIN]
+              [IF]
+                [CONDITION]
+                  [STRING_GT]
+                    [IDENTIFIER] (str=x)
+                    [INT_LIT] (int=20)
+                [BLOCK]
+                  [STATEMENT_LIST]
+                    [IFJ_CALL]
+                      [IDENTIFIER] (str=write)
+                      [PARAM]
+                        [STRING_LIT] (str=greater)
+                        [EMPTY]
+              [ELSE]
+                [BLOCK]
+                  [STATEMENT_LIST]
+                    [IFJ_CALL]
+                      [IDENTIFIER] (str=write)
+                      [PARAM]
+                        [STRING_LIT] (str=not_greater)
+                        [EMPTY]
+LOG: AST_PROLOG
+LOG: AST_MAIN_CLASS
+LOG: AST_MAIN_CLASS_BLOCK
+LOG: AST_FUNC_DEC
+LOG: AST_PARAM
+LOG: AST_EMPTY
+LOG: AST_BLOCK
+LOG: AST_STATEMENT_LIST
+LOG: AST_VAR
+LOG: AST_ASSIGN
+LOG: AST_IDENTIFIER
+LOG: AST_INT_LIT
+LOG: AST_IF_CHAIN
+LOG: AST_IF
+LOG: AST_CONDITION
+LOG: AST_GT
+LOG: AST_IDENTIFIER
+LOG: AST_INT_LIT
+LOG: AST_BLOCK
+LOG: AST_STATEMENT_LIST
+LOG: AST_IFJ_CALL
+LOG: write
+LOG: AST_PARAM
+LOG: AST_STRING_LIT
+LOG: AST_EMPTY
+LOG: AST_ELSE
+LOG: AST_BLOCK
+LOG: AST_STATEMENT_LIST
+LOG: AST_IFJ_CALL
+LOG: write
+LOG: AST_PARAM
+LOG: AST_STRING_LIT
+LOG: AST_EMPTY
+LOG: Vysledek sem_anal: 1
+PASS
+
+[0;34m[TEST][0m test_11_while
+========================================
+expr strom po skoncení funcke parseExpression
+===== AST STROM =====
+[INT_LIT] (int=3)
+LOG: precedencna odovzdala token jeho type je = 33
+expr strom po skoncení funcke parseExpression
+===== AST STROM =====
+[STRING_GT]
+  [IDENTIFIER] (str=i)
+  [INT_LIT] (int=0)
+LOG: 1LOG: precedencna odovzdala token jeho type je = 21
+expr strom po skoncení funcke parseExpression
+===== AST STROM =====
+[IDENTIFIER] (str=i)
+LOG: precedencna odovzdala token jeho type je = 21
+expr strom po skoncení funcke parseExpression
+===== AST STROM =====
+[STRING_MINUS]
+  [IDENTIFIER] (str=i)
+  [INT_LIT] (int=1)
+LOG: precedencna odovzdala token jeho type je = 33
+expr strom po skoncení funcke parseExpression
+===== AST STROM =====
+[STRING_LIT] (str=done)
+LOG: precedencna odovzdala token jeho type je = 21
+PARSER IS DONE
+===== AST STROM =====
+[PROGRAM]
+  [PROLOG]
+  [MAIN_CLASS]
+    [IDENTIFIER] (str=Program)
+    [MAIN_CLASS_BLOCK]
+      [FUNC_DEC]
+        [IDENTIFIER] (str=main)
+        [PARAM]
+          [EMPTY]
+        [BLOCK]
+          [STATEMENT_LIST]
+            [VAR]
+              [IDENTIFIER] (str=i)
+              [EMPTY]
+            [ASSIGN]
+              [IDENTIFIER] (str=i)
+              [INT_LIT] (int=3)
+            [WHILE]
+              [CONDITION]
+                [STRING_GT]
+                  [IDENTIFIER] (str=i)
+                  [INT_LIT] (int=0)
+              [BLOCK]
+                [STATEMENT_LIST]
+                  [IFJ_CALL]
+                    [IDENTIFIER] (str=write)
+                    [PARAM]
+                      [IDENTIFIER] (str=i)
+                      [EMPTY]
+                  [ASSIGN]
+                    [IDENTIFIER] (str=i)
+                    [STRING_MINUS]
+                      [IDENTIFIER] (str=i)
+                      [INT_LIT] (int=1)
+            [IFJ_CALL]
+              [IDENTIFIER] (str=write)
+              [PARAM]
+                [STRING_LIT] (str=done)
+                [EMPTY]
+LOG: AST_PROLOG
+LOG: AST_MAIN_CLASS
+LOG: AST_MAIN_CLASS_BLOCK
+LOG: AST_FUNC_DEC
+LOG: AST_PARAM
+LOG: AST_EMPTY
+LOG: AST_BLOCK
+LOG: AST_STATEMENT_LIST
+LOG: AST_VAR
+LOG: AST_ASSIGN
+LOG: AST_IDENTIFIER
+LOG: AST_INT_LIT
+LOG: AST_WHILE
+LOG: AST_CONDITION
+LOG: AST_GT
+LOG: AST_IDENTIFIER
+LOG: AST_INT_LIT
+LOG: AST_BLOCK
+LOG: AST_STATEMENT_LIST
+LOG: AST_IFJ_CALL
+LOG: write
+LOG: AST_PARAM
+LOG: AST_IDENTIFIER
+LOG: AST_EMPTY
+LOG: AST_ASSIGN
+LOG: AST_IDENTIFIER
+LOG: AST_MINUS
+LOG: AST_IDENTIFIER
+LOG: AST_INT_LIT
+LOG: AST_IFJ_CALL
+LOG: write
+LOG: AST_PARAM
+LOG: AST_STRING_LIT
+LOG: AST_EMPTY
+LOG: Vysledek sem_anal: 1
+Error at line: 68
+Symbol already exists!
+FAIL: Interpreter error (Exit Code: 52)
+
+[0;34m[TEST][0m test_12_global_var
+========================================
+expr strom po skoncení funcke parseExpression
+===== AST STROM =====
+[INT_LIT] (int=42)
+LOG: precedencna odovzdala token jeho type je = 33
+expr strom po skoncení funcke parseExpression
+===== AST STROM =====
+[GLOBAL_ID] (str=__a)
+LOG: precedencna odovzdala token jeho type je = 21
+PARSER IS DONE
+===== AST STROM =====
+[PROGRAM]
+  [PROLOG]
+  [MAIN_CLASS]
+    [IDENTIFIER] (str=Program)
+    [MAIN_CLASS_BLOCK]
+      [FUNC_DEC]
+        [IDENTIFIER] (str=main)
+        [PARAM]
+          [EMPTY]
+        [BLOCK]
+          [STATEMENT_LIST]
+            [GLOBAL_ID]
+              [GLOBAL_ID] (str=__a)
+              [ASSIGN]
+                [INT_LIT] (int=42)
+            [IFJ_CALL]
+              [IDENTIFIER] (str=write)
+              [PARAM]
+                [GLOBAL_ID] (str=__a)
+                [EMPTY]
+LOG: AST_PROLOG
+LOG: AST_MAIN_CLASS
+LOG: AST_MAIN_CLASS_BLOCK
+LOG: AST_FUNC_DEC
+LOG: AST_PARAM
+LOG: AST_EMPTY
+LOG: AST_BLOCK
+LOG: AST_STATEMENT_LIST
+LOG: AST_GLOBAL_ID
+LOG: AST_ASSIGN
+LOG: AST_INT_LIT
+LOG: AST_IFJ_CALL
+LOG: write
+LOG: AST_PARAM
+LOG: AST_GLOBAL_ID
+LOG: AST_EMPTY
+LOG: Vysledek sem_anal: 1
+PASS
+
+[0;34m[TEST][0m test_13_null_check
+========================================
+expr strom po skoncení funcke parseExpression
+===== AST STROM =====
+[STRING_EQ]
+  [IDENTIFIER] (str=x)
+  [SMALL_NULL]
+LOG: 1LOG: precedencna odovzdala token jeho type je = 21
+expr strom po skoncení funcke parseExpression
+===== AST STROM =====
+[STRING_LIT] (str=is_null)
+LOG: precedencna odovzdala token jeho type je = 21
+PARSER IS DONE
+===== AST STROM =====
+[PROGRAM]
+  [PROLOG]
+  [MAIN_CLASS]
+    [IDENTIFIER] (str=Program)
+    [MAIN_CLASS_BLOCK]
+      [FUNC_DEC]
+        [IDENTIFIER] (str=main)
+        [PARAM]
+          [EMPTY]
+        [BLOCK]
+          [STATEMENT_LIST]
+            [VAR]
+              [IDENTIFIER] (str=x)
+              [EMPTY]
+            [IF CHAIN]
+              [IF]
+                [CONDITION]
+                  [STRING_EQ]
+                    [IDENTIFIER] (str=x)
+                    [SMALL_NULL]
+                [BLOCK]
+                  [STATEMENT_LIST]
+                    [IFJ_CALL]
+                      [IDENTIFIER] (str=write)
+                      [PARAM]
+                        [STRING_LIT] (str=is_null)
+                        [EMPTY]
+LOG: AST_PROLOG
+LOG: AST_MAIN_CLASS
+LOG: AST_MAIN_CLASS_BLOCK
+LOG: AST_FUNC_DEC
+LOG: AST_PARAM
+LOG: AST_EMPTY
+LOG: AST_BLOCK
+LOG: AST_STATEMENT_LIST
+LOG: AST_VAR
+LOG: AST_IF_CHAIN
+LOG: AST_IF
+LOG: AST_CONDITION
+LOG: AST_EQ
+LOG: AST_IDENTIFIER
+LOG: AST_SMALL_NULL
+LOG: AST_BLOCK
+LOG: AST_STATEMENT_LIST
+LOG: AST_IFJ_CALL
+LOG: write
+LOG: AST_PARAM
+LOG: AST_STRING_LIT
+LOG: AST_EMPTY
+LOG: Vysledek sem_anal: 1
+Error at line: 18
+Symbol has not been initilized!
+FAIL: Interpreter error (Exit Code: 56)
+
+[0;34m[TEST][0m test_14_null_type_check
+========================================
+expr strom po skoncení funcke parseExpression
+===== AST STROM =====
+[STRING_IS]
+  [IDENTIFIER] (str=x)
+  [NULL]
+LOG: 1LOG: precedencna odovzdala token jeho type je = 21
+expr strom po skoncení funcke parseExpression
+===== AST STROM =====
+[STRING_LIT] (str=null_type)
+LOG: precedencna odovzdala token jeho type je = 21
+expr strom po skoncení funcke parseExpression
+===== AST STROM =====
+[STRING_LIT] (str=not_null_type)
+LOG: precedencna odovzdala token jeho type je = 21
+PARSER IS DONE
+===== AST STROM =====
+[PROGRAM]
+  [PROLOG]
+  [MAIN_CLASS]
+    [IDENTIFIER] (str=Program)
+    [MAIN_CLASS_BLOCK]
+      [FUNC_DEC]
+        [IDENTIFIER] (str=main)
+        [PARAM]
+          [EMPTY]
+        [BLOCK]
+          [STATEMENT_LIST]
+            [VAR]
+              [IDENTIFIER] (str=x)
+              [EMPTY]
+            [IF CHAIN]
+              [IF]
+                [CONDITION]
+                  [STRING_IS]
+                    [IDENTIFIER] (str=x)
+                    [NULL]
+                [BLOCK]
+                  [STATEMENT_LIST]
+                    [IFJ_CALL]
+                      [IDENTIFIER] (str=write)
+                      [PARAM]
+                        [STRING_LIT] (str=null_type)
+                        [EMPTY]
+              [ELSE]
+                [BLOCK]
+                  [STATEMENT_LIST]
+                    [IFJ_CALL]
+                      [IDENTIFIER] (str=write)
+                      [PARAM]
+                        [STRING_LIT] (str=not_null_type)
+                        [EMPTY]
+LOG: AST_PROLOG
+LOG: AST_MAIN_CLASS
+LOG: AST_MAIN_CLASS_BLOCK
+LOG: AST_FUNC_DEC
+LOG: AST_PARAM
+LOG: AST_EMPTY
+LOG: AST_BLOCK
+LOG: AST_STATEMENT_LIST
+LOG: AST_VAR
+LOG: AST_IF_CHAIN
+LOG: AST_IF
+LOG: AST_CONDITION
+LOG: AST_IS
+LOG: AST_IDENTIFIER
+LOG: AST_NULL
+LOG: AST_BLOCK
+LOG: AST_STATEMENT_LIST
+LOG: AST_IFJ_CALL
+LOG: write
+LOG: AST_PARAM
+LOG: AST_STRING_LIT
+LOG: AST_EMPTY
+LOG: AST_ELSE
+LOG: AST_BLOCK
+LOG: AST_STATEMENT_LIST
+LOG: AST_IFJ_CALL
+LOG: write
+LOG: AST_PARAM
+LOG: AST_STRING_LIT
+LOG: AST_EMPTY
+LOG: Vysledek sem_anal: 1
+Error at line: 21
+Symbol has not been initilized!
+FAIL: Interpreter error (Exit Code: 56)
+
+[0;34m[TEST][0m test_15_block_scope
+========================================
+expr strom po skoncení funcke parseExpression
+===== AST STROM =====
+[INT_LIT] (int=1)
+LOG: precedencna odovzdala token jeho type je = 33
+expr strom po skoncení funcke parseExpression
+===== AST STROM =====
+[INT_LIT] (int=2)
+LOG: precedencna odovzdala token jeho type je = 33
+expr strom po skoncení funcke parseExpression
+===== AST STROM =====
+[IDENTIFIER] (str=x)
+LOG: precedencna odovzdala token jeho type je = 21
+expr strom po skoncení funcke parseExpression
+===== AST STROM =====
+[IDENTIFIER] (str=x)
+LOG: precedencna odovzdala token jeho type je = 21
+PARSER IS DONE
+===== AST STROM =====
+[PROGRAM]
+  [PROLOG]
+  [MAIN_CLASS]
+    [IDENTIFIER] (str=Program)
+    [MAIN_CLASS_BLOCK]
+      [FUNC_DEC]
+        [IDENTIFIER] (str=main)
+        [PARAM]
+          [EMPTY]
+        [BLOCK]
+          [STATEMENT_LIST]
+            [VAR]
+              [IDENTIFIER] (str=x)
+              [EMPTY]
+            [ASSIGN]
+              [IDENTIFIER] (str=x)
+              [INT_LIT] (int=1)
+            [BLOCK]
+              [STATEMENT_LIST]
+                [VAR]
+                  [IDENTIFIER] (str=x)
+                  [EMPTY]
+                [ASSIGN]
+                  [IDENTIFIER] (str=x)
+                  [INT_LIT] (int=2)
+                [IFJ_CALL]
+                  [IDENTIFIER] (str=write)
+                  [PARAM]
+                    [IDENTIFIER] (str=x)
+                    [EMPTY]
+            [IFJ_CALL]
+              [IDENTIFIER] (str=write)
+              [PARAM]
+                [IDENTIFIER] (str=x)
+                [EMPTY]
+LOG: AST_PROLOG
+LOG: AST_MAIN_CLASS
+LOG: AST_MAIN_CLASS_BLOCK
+LOG: AST_FUNC_DEC
+LOG: AST_PARAM
+LOG: AST_EMPTY
+LOG: AST_BLOCK
+LOG: AST_STATEMENT_LIST
+LOG: AST_VAR
+LOG: AST_ASSIGN
+LOG: AST_IDENTIFIER
+LOG: AST_INT_LIT
+LOG: AST_BLOCK
+LOG: AST_STATEMENT_LIST
+LOG: AST_VAR
+LOG: AST_ASSIGN
+LOG: AST_IDENTIFIER
+LOG: AST_INT_LIT
+LOG: AST_IFJ_CALL
+LOG: write
+LOG: AST_PARAM
+LOG: AST_IDENTIFIER
+LOG: AST_EMPTY
+LOG: AST_IFJ_CALL
+LOG: write
+LOG: AST_PARAM
+LOG: AST_IDENTIFIER
+LOG: AST_EMPTY
+LOG: Vysledek sem_anal: 1
+FAIL: Output mismatch
+Expected (Normalized): 2
+1
+Actual (Normalized):   21
+
+[0;34m[TEST][0m test_16_nested_if
+========================================
+expr strom po skoncení funcke parseExpression
+===== AST STROM =====
+[INT_LIT] (int=15)
+LOG: precedencna odovzdala token jeho type je = 33
+expr strom po skoncení funcke parseExpression
+===== AST STROM =====
+[STRING_GT]
+  [IDENTIFIER] (str=x)
+  [INT_LIT] (int=10)
+LOG: 1LOG: precedencna odovzdala token jeho type je = 21
+expr strom po skoncení funcke parseExpression
+===== AST STROM =====
+[STRING_LT]
+  [IDENTIFIER] (str=x)
+  [INT_LIT] (int=20)
+LOG: 1LOG: precedencna odovzdala token jeho type je = 21
+expr strom po skoncení funcke parseExpression
+===== AST STROM =====
+[STRING_LIT] (str=in_range)
+LOG: precedencna odovzdala token jeho type je = 21
+PARSER IS DONE
+===== AST STROM =====
+[PROGRAM]
+  [PROLOG]
+  [MAIN_CLASS]
+    [IDENTIFIER] (str=Program)
+    [MAIN_CLASS_BLOCK]
+      [FUNC_DEC]
+        [IDENTIFIER] (str=main)
+        [PARAM]
+          [EMPTY]
+        [BLOCK]
+          [STATEMENT_LIST]
+            [VAR]
+              [IDENTIFIER] (str=x)
+              [EMPTY]
+            [ASSIGN]
+              [IDENTIFIER] (str=x)
+              [INT_LIT] (int=15)
+            [IF CHAIN]
+              [IF]
+                [CONDITION]
+                  [STRING_GT]
+                    [IDENTIFIER] (str=x)
+                    [INT_LIT] (int=10)
+                [BLOCK]
+                  [STATEMENT_LIST]
+                    [IF CHAIN]
+                      [IF]
+                        [CONDITION]
+                          [STRING_LT]
+                            [IDENTIFIER] (str=x)
+                            [INT_LIT] (int=20)
+                        [BLOCK]
+                          [STATEMENT_LIST]
+                            [IFJ_CALL]
+                              [IDENTIFIER] (str=write)
+                              [PARAM]
+                                [STRING_LIT] (str=in_range)
+                                [EMPTY]
+LOG: AST_PROLOG
+LOG: AST_MAIN_CLASS
+LOG: AST_MAIN_CLASS_BLOCK
+LOG: AST_FUNC_DEC
+LOG: AST_PARAM
+LOG: AST_EMPTY
+LOG: AST_BLOCK
+LOG: AST_STATEMENT_LIST
+LOG: AST_VAR
+LOG: AST_ASSIGN
+LOG: AST_IDENTIFIER
+LOG: AST_INT_LIT
+LOG: AST_IF_CHAIN
+LOG: AST_IF
+LOG: AST_CONDITION
+LOG: AST_GT
+LOG: AST_IDENTIFIER
+LOG: AST_INT_LIT
+LOG: AST_BLOCK
+LOG: AST_STATEMENT_LIST
+LOG: AST_IF_CHAIN
+LOG: AST_IF
+LOG: AST_CONDITION
+LOG: AST_LT
+LOG: AST_IDENTIFIER
+LOG: AST_INT_LIT
+LOG: AST_BLOCK
+LOG: AST_STATEMENT_LIST
+LOG: AST_IFJ_CALL
+LOG: write
+LOG: AST_PARAM
+LOG: AST_STRING_LIT
+LOG: AST_EMPTY
+LOG: Vysledek sem_anal: 1
+PASS
+
+[0;34m[TEST][0m test_17_string_repeat
+========================================
+expr strom po skoncení funcke parseExpression
+===== AST STROM =====
+[STRING_LIT] (str=a)
+LOG: precedencna odovzdala token jeho type je = 33
+expr strom po skoncení funcke parseExpression
+===== AST STROM =====
+[STRING_MUL]
+  [IDENTIFIER] (str=s)
+  [INT_LIT] (int=3)
+LOG: precedencna odovzdala token jeho type je = 21
+PARSER IS DONE
+===== AST STROM =====
+[PROGRAM]
+  [PROLOG]
+  [MAIN_CLASS]
+    [IDENTIFIER] (str=Program)
+    [MAIN_CLASS_BLOCK]
+      [FUNC_DEC]
+        [IDENTIFIER] (str=main)
+        [PARAM]
+          [EMPTY]
+        [BLOCK]
+          [STATEMENT_LIST]
+            [VAR]
+              [IDENTIFIER] (str=s)
+              [EMPTY]
+            [ASSIGN]
+              [IDENTIFIER] (str=s)
+              [STRING_LIT] (str=a)
+            [IFJ_CALL]
+              [IDENTIFIER] (str=write)
+              [PARAM]
+                [STRING_MUL]
+                  [IDENTIFIER] (str=s)
+                  [INT_LIT] (int=3)
+                [EMPTY]
+LOG: AST_PROLOG
+LOG: AST_MAIN_CLASS
+LOG: AST_MAIN_CLASS_BLOCK
+LOG: AST_FUNC_DEC
+LOG: AST_PARAM
+LOG: AST_EMPTY
+LOG: AST_BLOCK
+LOG: AST_STATEMENT_LIST
+LOG: AST_VAR
+LOG: AST_ASSIGN
+LOG: AST_IDENTIFIER
+LOG: AST_STRING_LIT
+LOG: AST_IFJ_CALL
+LOG: write
+LOG: AST_PARAM
+LOG: AST_MUL
+LOG: AST_IDENTIFIER
+LOG: AST_INT_LIT
+LOG: AST_EMPTY
+LOG: Vysledek sem_anal: 1
+PASS
+
+[0;34m[TEST][0m test_18_division
+========================================
+expr strom po skoncení funcke parseExpression
+===== AST STROM =====
+[INT_LIT] (int=84)
+LOG: precedencna odovzdala token jeho type je = 33
+expr strom po skoncení funcke parseExpression
+===== AST STROM =====
+[INT_LIT] (int=2)
+LOG: precedencna odovzdala token jeho type je = 33
+expr strom po skoncení funcke parseExpression
+===== AST STROM =====
+[INT_LIT] (int=4)
+LOG: precedencna odovzdala token jeho type je = 33
+expr strom po skoncení funcke parseExpression
+===== AST STROM =====
+[STRING_DIV]
+  [STRING_DIV]
+    [IDENTIFIER] (str=a)
+    [IDENTIFIER] (str=b)
+  [IDENTIFIER] (str=c)
+LOG: precedencna odovzdala token jeho type je = 21
+PARSER IS DONE
+===== AST STROM =====
+[PROGRAM]
+  [PROLOG]
+  [MAIN_CLASS]
+    [IDENTIFIER] (str=Program)
+    [MAIN_CLASS_BLOCK]
+      [FUNC_DEC]
+        [IDENTIFIER] (str=main)
+        [PARAM]
+          [EMPTY]
+        [BLOCK]
+          [STATEMENT_LIST]
+            [VAR]
+              [IDENTIFIER] (str=a)
+              [EMPTY]
+            [ASSIGN]
+              [IDENTIFIER] (str=a)
+              [INT_LIT] (int=84)
+            [VAR]
+              [IDENTIFIER] (str=b)
+              [EMPTY]
+            [ASSIGN]
+              [IDENTIFIER] (str=b)
+              [INT_LIT] (int=2)
+            [VAR]
+              [IDENTIFIER] (str=c)
+              [EMPTY]
+            [ASSIGN]
+              [IDENTIFIER] (str=c)
+              [INT_LIT] (int=4)
+            [IFJ_CALL]
+              [IDENTIFIER] (str=write)
+              [PARAM]
+                [STRING_DIV]
+                  [STRING_DIV]
+                    [IDENTIFIER] (str=a)
+                    [IDENTIFIER] (str=b)
+                  [IDENTIFIER] (str=c)
+                [EMPTY]
+LOG: AST_PROLOG
+LOG: AST_MAIN_CLASS
+LOG: AST_MAIN_CLASS_BLOCK
+LOG: AST_FUNC_DEC
+LOG: AST_PARAM
+LOG: AST_EMPTY
+LOG: AST_BLOCK
+LOG: AST_STATEMENT_LIST
+LOG: AST_VAR
+LOG: AST_ASSIGN
+LOG: AST_IDENTIFIER
+LOG: AST_INT_LIT
+LOG: AST_VAR
+LOG: AST_ASSIGN
+LOG: AST_IDENTIFIER
+LOG: AST_INT_LIT
+LOG: AST_VAR
+LOG: AST_ASSIGN
+LOG: AST_IDENTIFIER
+LOG: AST_INT_LIT
+LOG: AST_IFJ_CALL
+LOG: write
+LOG: AST_PARAM
+LOG: AST_DIV
+LOG: AST_DIV
+LOG: AST_IDENTIFIER
+LOG: AST_IDENTIFIER
+LOG: AST_IDENTIFIER
+LOG: AST_EMPTY
+LOG: Vysledek sem_anal: 1
+FAIL: Output mismatch
+Expected (Normalized): 10
+Actual (Normalized):   HEX_FLOAT[1.5p+3]
+
+[0;34m[TEST][0m test_19_logical_and
+========================================
+expr strom po skoncení funcke parseExpression
+===== AST STROM =====
+[STRING_AND]
+  [BOOL_LIT] (str=true)
+  [BOOL_LIT] (str=true)
+LOG: 1LOG: precedencna odovzdala token jeho type je = 21
+expr strom po skoncení funcke parseExpression
+===== AST STROM =====
+[STRING_LIT] (str=true_and)
+LOG: precedencna odovzdala token jeho type je = 21
+expr strom po skoncení funcke parseExpression
+===== AST STROM =====
+[STRING_AND]
+  [BOOL_LIT] (str=true)
+  [BOOL_LIT] (str=false)
+LOG: 1LOG: precedencna odovzdala token jeho type je = 21
+expr strom po skoncení funcke parseExpression
+===== AST STROM =====
+[STRING_LIT] (str=should_not_print)
+LOG: precedencna odovzdala token jeho type je = 21
+expr strom po skoncení funcke parseExpression
+===== AST STROM =====
+[STRING_LIT] (str=false_and)
+LOG: precedencna odovzdala token jeho type je = 21
+PARSER IS DONE
+===== AST STROM =====
+[PROGRAM]
+  [PROLOG]
+  [MAIN_CLASS]
+    [IDENTIFIER] (str=Program)
+    [MAIN_CLASS_BLOCK]
+      [FUNC_DEC]
+        [IDENTIFIER] (str=main)
+        [PARAM]
+          [EMPTY]
+        [BLOCK]
+          [STATEMENT_LIST]
+            [IF CHAIN]
+              [IF]
+                [CONDITION]
+                  [STRING_AND]
+                    [BOOL_LIT] (str=true)
+                    [BOOL_LIT] (str=true)
+                [BLOCK]
+                  [STATEMENT_LIST]
+                    [IFJ_CALL]
+                      [IDENTIFIER] (str=write)
+                      [PARAM]
+                        [STRING_LIT] (str=true_and)
+                        [EMPTY]
+            [IF CHAIN]
+              [IF]
+                [CONDITION]
+                  [STRING_AND]
+                    [BOOL_LIT] (str=true)
+                    [BOOL_LIT] (str=false)
+                [BLOCK]
+                  [STATEMENT_LIST]
+                    [IFJ_CALL]
+                      [IDENTIFIER] (str=write)
+                      [PARAM]
+                        [STRING_LIT] (str=should_not_print)
+                        [EMPTY]
+              [ELSE]
+                [BLOCK]
+                  [STATEMENT_LIST]
+                    [IFJ_CALL]
+                      [IDENTIFIER] (str=write)
+                      [PARAM]
+                        [STRING_LIT] (str=false_and)
+                        [EMPTY]
+LOG: AST_PROLOG
+LOG: AST_MAIN_CLASS
+LOG: AST_MAIN_CLASS_BLOCK
+LOG: AST_FUNC_DEC
+LOG: AST_PARAM
+LOG: AST_EMPTY
+LOG: AST_BLOCK
+LOG: AST_STATEMENT_LIST
+LOG: AST_IF_CHAIN
+LOG: AST_IF
+LOG: AST_CONDITION
+LOG: AST_AND
+LOG: AST_BOOL_LIT
+LOG: AST_BOOL_LIT
+LOG: AST_BLOCK
+LOG: AST_STATEMENT_LIST
+LOG: AST_IFJ_CALL
+LOG: write
+LOG: AST_PARAM
+LOG: AST_STRING_LIT
+LOG: AST_EMPTY
+LOG: AST_IF_CHAIN
+LOG: AST_IF
+LOG: AST_CONDITION
+LOG: AST_AND
+LOG: AST_BOOL_LIT
+LOG: AST_BOOL_LIT
+LOG: AST_BLOCK
+LOG: AST_STATEMENT_LIST
+LOG: AST_IFJ_CALL
+LOG: write
+LOG: AST_PARAM
+LOG: AST_STRING_LIT
+LOG: AST_EMPTY
+LOG: AST_ELSE
+LOG: AST_BLOCK
+LOG: AST_STATEMENT_LIST
+LOG: AST_IFJ_CALL
+LOG: write
+LOG: AST_PARAM
+LOG: AST_STRING_LIT
+LOG: AST_EMPTY
+LOG: Vysledek sem_anal: 1
+FAIL: Output mismatch
+Expected (Normalized): true_and
+false_and
+Actual (Normalized):   true_andfalse_and
+
+[0;34m[TEST][0m test_20_logical_or
+========================================
+expr strom po skoncení funcke parseExpression
+===== AST STROM =====
+[STRING_OR]
+  [BOOL_LIT] (str=false)
+  [BOOL_LIT] (str=true)
+LOG: 1LOG: precedencna odovzdala token jeho type je = 21
+expr strom po skoncení funcke parseExpression
+===== AST STROM =====
+[STRING_LIT] (str=true_or)
+LOG: precedencna odovzdala token jeho type je = 21
+expr strom po skoncení funcke parseExpression
+===== AST STROM =====
+[STRING_OR]
+  [BOOL_LIT] (str=false)
+  [BOOL_LIT] (str=false)
+LOG: 1LOG: precedencna odovzdala token jeho type je = 21
+expr strom po skoncení funcke parseExpression
+===== AST STROM =====
+[STRING_LIT] (str=should_not_print)
+LOG: precedencna odovzdala token jeho type je = 21
+expr strom po skoncení funcke parseExpression
+===== AST STROM =====
+[STRING_LIT] (str=false_or)
+LOG: precedencna odovzdala token jeho type je = 21
+PARSER IS DONE
+===== AST STROM =====
+[PROGRAM]
+  [PROLOG]
+  [MAIN_CLASS]
+    [IDENTIFIER] (str=Program)
+    [MAIN_CLASS_BLOCK]
+      [FUNC_DEC]
+        [IDENTIFIER] (str=main)
+        [PARAM]
+          [EMPTY]
+        [BLOCK]
+          [STATEMENT_LIST]
+            [IF CHAIN]
+              [IF]
+                [CONDITION]
+                  [STRING_OR]
+                    [BOOL_LIT] (str=false)
+                    [BOOL_LIT] (str=true)
+                [BLOCK]
+                  [STATEMENT_LIST]
+                    [IFJ_CALL]
+                      [IDENTIFIER] (str=write)
+                      [PARAM]
+                        [STRING_LIT] (str=true_or)
+                        [EMPTY]
+            [IF CHAIN]
+              [IF]
+                [CONDITION]
+                  [STRING_OR]
+                    [BOOL_LIT] (str=false)
+                    [BOOL_LIT] (str=false)
+                [BLOCK]
+                  [STATEMENT_LIST]
+                    [IFJ_CALL]
+                      [IDENTIFIER] (str=write)
+                      [PARAM]
+                        [STRING_LIT] (str=should_not_print)
+                        [EMPTY]
+              [ELSE]
+                [BLOCK]
+                  [STATEMENT_LIST]
+                    [IFJ_CALL]
+                      [IDENTIFIER] (str=write)
+                      [PARAM]
+                        [STRING_LIT] (str=false_or)
+                        [EMPTY]
+LOG: AST_PROLOG
+LOG: AST_MAIN_CLASS
+LOG: AST_MAIN_CLASS_BLOCK
+LOG: AST_FUNC_DEC
+LOG: AST_PARAM
+LOG: AST_EMPTY
+LOG: AST_BLOCK
+LOG: AST_STATEMENT_LIST
+LOG: AST_IF_CHAIN
+LOG: AST_IF
+LOG: AST_CONDITION
+LOG: AST_OR
+LOG: AST_BOOL_LIT
+LOG: AST_BOOL_LIT
+LOG: AST_BLOCK
+LOG: AST_STATEMENT_LIST
+LOG: AST_IFJ_CALL
+LOG: write
+LOG: AST_PARAM
+LOG: AST_STRING_LIT
+LOG: AST_EMPTY
+LOG: AST_IF_CHAIN
+LOG: AST_IF
+LOG: AST_CONDITION
+LOG: AST_OR
+LOG: AST_BOOL_LIT
+LOG: AST_BOOL_LIT
+LOG: AST_BLOCK
+LOG: AST_STATEMENT_LIST
+LOG: AST_IFJ_CALL
+LOG: write
+LOG: AST_PARAM
+LOG: AST_STRING_LIT
+LOG: AST_EMPTY
+LOG: AST_ELSE
+LOG: AST_BLOCK
+LOG: AST_STATEMENT_LIST
+LOG: AST_IFJ_CALL
+LOG: write
+LOG: AST_PARAM
+LOG: AST_STRING_LIT
+LOG: AST_EMPTY
+LOG: Vysledek sem_anal: 1
+FAIL: Output mismatch
+Expected (Normalized): true_or
+false_or
+Actual (Normalized):   true_orfalse_or
+
+[0;34m[TEST][0m test_21_logical_not
+========================================
+expr strom po skoncení funcke parseExpression
+===== AST STROM =====
+[STRING_NEGACE]
+  [BOOL_LIT] (str=false)
+LOG: 1LOG: precedencna odovzdala token jeho type je = 21
+expr strom po skoncení funcke parseExpression
+===== AST STROM =====
+[STRING_LIT] (str=not_false)
+LOG: precedencna odovzdala token jeho type je = 21
+expr strom po skoncení funcke parseExpression
+===== AST STROM =====
+[STRING_NEGACE]
+  [BOOL_LIT] (str=true)
+LOG: 1LOG: precedencna odovzdala token jeho type je = 21
+expr strom po skoncení funcke parseExpression
+===== AST STROM =====
+[STRING_LIT] (str=should_not_print)
+LOG: precedencna odovzdala token jeho type je = 21
+expr strom po skoncení funcke parseExpression
+===== AST STROM =====
+[STRING_LIT] (str=not_true)
+LOG: precedencna odovzdala token jeho type je = 21
+PARSER IS DONE
+===== AST STROM =====
+[PROGRAM]
+  [PROLOG]
+  [MAIN_CLASS]
+    [IDENTIFIER] (str=Program)
+    [MAIN_CLASS_BLOCK]
+      [FUNC_DEC]
+        [IDENTIFIER] (str=main)
+        [PARAM]
+          [EMPTY]
+        [BLOCK]
+          [STATEMENT_LIST]
+            [IF CHAIN]
+              [IF]
+                [CONDITION]
+                  [STRING_NEGACE]
+                    [BOOL_LIT] (str=false)
+                [BLOCK]
+                  [STATEMENT_LIST]
+                    [IFJ_CALL]
+                      [IDENTIFIER] (str=write)
+                      [PARAM]
+                        [STRING_LIT] (str=not_false)
+                        [EMPTY]
+            [IF CHAIN]
+              [IF]
+                [CONDITION]
+                  [STRING_NEGACE]
+                    [BOOL_LIT] (str=true)
+                [BLOCK]
+                  [STATEMENT_LIST]
+                    [IFJ_CALL]
+                      [IDENTIFIER] (str=write)
+                      [PARAM]
+                        [STRING_LIT] (str=should_not_print)
+                        [EMPTY]
+              [ELSE]
+                [BLOCK]
+                  [STATEMENT_LIST]
+                    [IFJ_CALL]
+                      [IDENTIFIER] (str=write)
+                      [PARAM]
+                        [STRING_LIT] (str=not_true)
+                        [EMPTY]
+LOG: AST_PROLOG
+LOG: AST_MAIN_CLASS
+LOG: AST_MAIN_CLASS_BLOCK
+LOG: AST_FUNC_DEC
+LOG: AST_PARAM
+LOG: AST_EMPTY
+LOG: AST_BLOCK
+LOG: AST_STATEMENT_LIST
+LOG: AST_IF_CHAIN
+LOG: AST_IF
+LOG: AST_CONDITION
+LOG: AST_NOT
+LOG: AST_BOOL_LIT
+LOG: AST_BLOCK
+LOG: AST_STATEMENT_LIST
+LOG: AST_IFJ_CALL
+LOG: write
+LOG: AST_PARAM
+LOG: AST_STRING_LIT
+LOG: AST_EMPTY
+LOG: AST_IF_CHAIN
+LOG: AST_IF
+LOG: AST_CONDITION
+LOG: AST_NOT
+LOG: AST_BOOL_LIT
+LOG: AST_BLOCK
+LOG: AST_STATEMENT_LIST
+LOG: AST_IFJ_CALL
+LOG: write
+LOG: AST_PARAM
+LOG: AST_STRING_LIT
+LOG: AST_EMPTY
+LOG: AST_ELSE
+LOG: AST_BLOCK
+LOG: AST_STATEMENT_LIST
+LOG: AST_IFJ_CALL
+LOG: write
+LOG: AST_PARAM
+LOG: AST_STRING_LIT
+LOG: AST_EMPTY
+LOG: Vysledek sem_anal: 1
+FAIL: Output mismatch
+Expected (Normalized): not_false
+not_true
+Actual (Normalized):   not_falsenot_true
+
+[0;34m[TEST][0m test_22_less_than
+========================================
+expr strom po skoncení funcke parseExpression
+===== AST STROM =====
+[INT_LIT] (int=5)
+LOG: precedencna odovzdala token jeho type je = 33
+expr strom po skoncení funcke parseExpression
+===== AST STROM =====
+[INT_LIT] (int=10)
+LOG: precedencna odovzdala token jeho type je = 33
+expr strom po skoncení funcke parseExpression
+===== AST STROM =====
+[STRING_LT]
+  [IDENTIFIER] (str=a)
+  [IDENTIFIER] (str=b)
+LOG: 1LOG: precedencna odovzdala token jeho type je = 21
+expr strom po skoncení funcke parseExpression
+===== AST STROM =====
+[STRING_LIT] (str=less)
+LOG: precedencna odovzdala token jeho type je = 21
+PARSER IS DONE
+===== AST STROM =====
+[PROGRAM]
+  [PROLOG]
+  [MAIN_CLASS]
+    [IDENTIFIER] (str=Program)
+    [MAIN_CLASS_BLOCK]
+      [FUNC_DEC]
+        [IDENTIFIER] (str=main)
+        [PARAM]
+          [EMPTY]
+        [BLOCK]
+          [STATEMENT_LIST]
+            [VAR]
+              [IDENTIFIER] (str=a)
+              [EMPTY]
+            [ASSIGN]
+              [IDENTIFIER] (str=a)
+              [INT_LIT] (int=5)
+            [VAR]
+              [IDENTIFIER] (str=b)
+              [EMPTY]
+            [ASSIGN]
+              [IDENTIFIER] (str=b)
+              [INT_LIT] (int=10)
+            [IF CHAIN]
+              [IF]
+                [CONDITION]
+                  [STRING_LT]
+                    [IDENTIFIER] (str=a)
+                    [IDENTIFIER] (str=b)
+                [BLOCK]
+                  [STATEMENT_LIST]
+                    [IFJ_CALL]
+                      [IDENTIFIER] (str=write)
+                      [PARAM]
+                        [STRING_LIT] (str=less)
+                        [EMPTY]
+LOG: AST_PROLOG
+LOG: AST_MAIN_CLASS
+LOG: AST_MAIN_CLASS_BLOCK
+LOG: AST_FUNC_DEC
+LOG: AST_PARAM
+LOG: AST_EMPTY
+LOG: AST_BLOCK
+LOG: AST_STATEMENT_LIST
+LOG: AST_VAR
+LOG: AST_ASSIGN
+LOG: AST_IDENTIFIER
+LOG: AST_INT_LIT
+LOG: AST_VAR
+LOG: AST_ASSIGN
+LOG: AST_IDENTIFIER
+LOG: AST_INT_LIT
+LOG: AST_IF_CHAIN
+LOG: AST_IF
+LOG: AST_CONDITION
+LOG: AST_LT
+LOG: AST_IDENTIFIER
+LOG: AST_IDENTIFIER
+LOG: AST_BLOCK
+LOG: AST_STATEMENT_LIST
+LOG: AST_IFJ_CALL
+LOG: write
+LOG: AST_PARAM
+LOG: AST_STRING_LIT
+LOG: AST_EMPTY
+LOG: Vysledek sem_anal: 1
+PASS
+
+[0;34m[TEST][0m test_23_greater_than
+========================================
+expr strom po skoncení funcke parseExpression
+===== AST STROM =====
+[INT_LIT] (int=10)
+LOG: precedencna odovzdala token jeho type je = 33
+expr strom po skoncení funcke parseExpression
+===== AST STROM =====
+[INT_LIT] (int=5)
+LOG: precedencna odovzdala token jeho type je = 33
+expr strom po skoncení funcke parseExpression
+===== AST STROM =====
+[STRING_GT]
+  [IDENTIFIER] (str=a)
+  [IDENTIFIER] (str=b)
+LOG: 1LOG: precedencna odovzdala token jeho type je = 21
+expr strom po skoncení funcke parseExpression
+===== AST STROM =====
+[STRING_LIT] (str=greater)
+LOG: precedencna odovzdala token jeho type je = 21
+PARSER IS DONE
+===== AST STROM =====
+[PROGRAM]
+  [PROLOG]
+  [MAIN_CLASS]
+    [IDENTIFIER] (str=Program)
+    [MAIN_CLASS_BLOCK]
+      [FUNC_DEC]
+        [IDENTIFIER] (str=main)
+        [PARAM]
+          [EMPTY]
+        [BLOCK]
+          [STATEMENT_LIST]
+            [VAR]
+              [IDENTIFIER] (str=a)
+              [EMPTY]
+            [ASSIGN]
+              [IDENTIFIER] (str=a)
+              [INT_LIT] (int=10)
+            [VAR]
+              [IDENTIFIER] (str=b)
+              [EMPTY]
+            [ASSIGN]
+              [IDENTIFIER] (str=b)
+              [INT_LIT] (int=5)
+            [IF CHAIN]
+              [IF]
+                [CONDITION]
+                  [STRING_GT]
+                    [IDENTIFIER] (str=a)
+                    [IDENTIFIER] (str=b)
+                [BLOCK]
+                  [STATEMENT_LIST]
+                    [IFJ_CALL]
+                      [IDENTIFIER] (str=write)
+                      [PARAM]
+                        [STRING_LIT] (str=greater)
+                        [EMPTY]
+LOG: AST_PROLOG
+LOG: AST_MAIN_CLASS
+LOG: AST_MAIN_CLASS_BLOCK
+LOG: AST_FUNC_DEC
+LOG: AST_PARAM
+LOG: AST_EMPTY
+LOG: AST_BLOCK
+LOG: AST_STATEMENT_LIST
+LOG: AST_VAR
+LOG: AST_ASSIGN
+LOG: AST_IDENTIFIER
+LOG: AST_INT_LIT
+LOG: AST_VAR
+LOG: AST_ASSIGN
+LOG: AST_IDENTIFIER
+LOG: AST_INT_LIT
+LOG: AST_IF_CHAIN
+LOG: AST_IF
+LOG: AST_CONDITION
+LOG: AST_GT
+LOG: AST_IDENTIFIER
+LOG: AST_IDENTIFIER
+LOG: AST_BLOCK
+LOG: AST_STATEMENT_LIST
+LOG: AST_IFJ_CALL
+LOG: write
+LOG: AST_PARAM
+LOG: AST_STRING_LIT
+LOG: AST_EMPTY
+LOG: Vysledek sem_anal: 1
+PASS
+
+[0;34m[TEST][0m test_24_overload_no_params
+========================================
+expr strom po skoncení funcke parseExpression
+===== AST STROM =====
+[INT_LIT] (int=42)
+LOG: precedencna odovzdala token jeho type je = 33
+expr strom po skoncení funcke parseExpression
+===== AST STROM =====
+[FUNC_CALL]
+  [IDENTIFIER] (str=getValue)
+  [PARAM]
+    [EMPTY]
+LOG: precedencna odovzdala token jeho type je = 33
+expr strom po skoncení funcke parseExpression
+===== AST STROM =====
+[IDENTIFIER] (str=result)
+LOG: precedencna odovzdala token jeho type je = 21
+PARSER IS DONE
+===== AST STROM =====
+[PROGRAM]
+  [PROLOG]
+  [MAIN_CLASS]
+    [IDENTIFIER] (str=Program)
+    [MAIN_CLASS_BLOCK]
+      [FUNC_DEC]
+        [IDENTIFIER] (str=getValue)
+        [PARAM]
+          [EMPTY]
+        [BLOCK]
+          [STATEMENT_LIST]
+            [RETURN]
+              [INT_LIT] (int=42)
+      [FUNC_DEC]
+        [IDENTIFIER] (str=main)
+        [PARAM]
+          [EMPTY]
+        [BLOCK]
+          [STATEMENT_LIST]
+            [VAR]
+              [IDENTIFIER] (str=result)
+              [EMPTY]
+            [ASSIGN]
+              [IDENTIFIER] (str=result)
+              [FUNC_CALL]
+                [IDENTIFIER] (str=getValue)
+                [PARAM]
+                  [EMPTY]
+            [IFJ_CALL]
+              [IDENTIFIER] (str=write)
+              [PARAM]
+                [IDENTIFIER] (str=result)
+                [EMPTY]
+LOG: AST_PROLOG
+LOG: AST_MAIN_CLASS
+LOG: AST_MAIN_CLASS_BLOCK
+LOG: AST_FUNC_DEC
+LOG: AST_PARAM
+LOG: AST_EMPTY
+LOG: AST_BLOCK
+LOG: AST_STATEMENT_LIST
+LOG: AST_RETURN
+LOG: AST_INT_LIT
+LOG: AST_FUNC_DEC
+LOG: AST_PARAM
+LOG: AST_EMPTY
+LOG: AST_BLOCK
+LOG: AST_STATEMENT_LIST
+LOG: AST_VAR
+LOG: AST_ASSIGN
+LOG: AST_IDENTIFIER
+LOG: AST_FUNC_CALL
+LOG: AST_PARAM
+LOG: AST_EMPTY
+LOG: AST_IFJ_CALL
+LOG: write
+LOG: AST_PARAM
+LOG: AST_IDENTIFIER
+LOG: AST_EMPTY
+LOG: Vysledek sem_anal: 1
+PASS
+
+[0;34m[TEST][0m test_25_overload_with_param
+========================================
+expr strom po skoncení funcke parseExpression
+===== AST STROM =====
+[INT_LIT] (int=10)
+LOG: precedencna odovzdala token jeho type je = 33
+expr strom po skoncení funcke parseExpression
+===== AST STROM =====
+[STRING_MUL]
+  [IDENTIFIER] (str=x)
+  [INT_LIT] (int=2)
+LOG: precedencna odovzdala token jeho type je = 33
+ERROR (2) : (PSA) Zadany vyraz neni syntakticky spravny (neocekavany znak nebo samostatne stojici operator)
+FAIL: Compilation failed (Exit Code: 2)

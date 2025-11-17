@@ -57,7 +57,7 @@ void hashTableInitItems(HashTable *hashT) {
  * polem a hledá první volný index
  * @return Funkce vraci index v poli polozek
  */
-int hashTableInsertItem(HashTable *hashT, char *key, SemSymbol token)
+int hashTableInsertItem(HashTable **hashT, char *key, SemSymbol token)
 {
     if (key == NULL) // klic je prazdny
     {
@@ -65,34 +65,34 @@ int hashTableInsertItem(HashTable *hashT, char *key, SemSymbol token)
         return -1;
     }
 
-    if (hashT == NULL)
+    if ((*hashT) == NULL)
     {
         printError(INTERNAL_ERROR, "Tabulka neexistuje\n");
         return -1;
     }
     
-    if (hashT->tableSize + 1 >= (hashT->tableCapacity * 3) / 4)
+    if ((*hashT)->tableSize + 1 >= (*hashT)->tableCapacity)
     {
         HashTable *t = hashTableRealloc(hashT);
-        hashT = t;
+        (*hashT) = t;
     }
 
  
-    int foundIndex = hashTableSearchItem(hashT, key);
+    int foundIndex = hashTableSearchItem((*hashT), key);
     if (foundIndex == -1) // polozka s danym klicem neni v tabulce
     {
-        int keyHash = hashItem(key, hashT); // dostanu hash klice
+        int keyHash = hashItem(key, (*hashT)); // dostanu hash klice
 
         // pripad, kdy to trefim na prvni dobrou
-        if (hashT->items[keyHash].key == NULL) // na aktualnim indexu je hodnota klice NULL
+        if ((*hashT)->items[keyHash].key == NULL) // na aktualnim indexu je hodnota klice NULL
         {
-            if (hashT->items[keyHash].isEmpty == true) // zaroven je bunka prazdna
+            if ((*hashT)->items[keyHash].isEmpty == true) // zaroven je bunka prazdna
             {
-                hashT->items[keyHash].key = strdup(key); // nastaveni ukazatele na dany klic        
-                hashT->items[keyHash].isDeleted = false;
-                hashT->items[keyHash].isEmpty = false;
-                hashT->items[keyHash].symbol = token;
-                hashT->tableSize++;
+                (*hashT)->items[keyHash].key = strdup(key); // nastaveni ukazatele na dany klic        
+                (*hashT)->items[keyHash].isDeleted = false;
+                (*hashT)->items[keyHash].isEmpty = false;
+                (*hashT)->items[keyHash].symbol = token;
+                (*hashT)->tableSize++;
                 return keyHash;
             }
         }
@@ -100,18 +100,18 @@ int hashTableInsertItem(HashTable *hashT, char *key, SemSymbol token)
         int shift = 1;
         while (true)
         {
-            int indexStore = (keyHash + shift) % hashT->tableCapacity; // rounding
-            if (hashT->items[indexStore].key == NULL) // klic je prazdny
+            int indexStore = (keyHash + shift) % (*hashT)->tableCapacity; // rounding
+            if ((*hashT)->items[indexStore].key == NULL) // klic je prazdny
             {
-                if (hashT->items[indexStore].isEmpty == true) // polozka je prazdna
+                if ((*hashT)->items[indexStore].isEmpty == true) // polozka je prazdna
                 {
-                    if (hashT->items[indexStore].isDeleted == false) // a nebyla nikdy mazana
+                    if ((*hashT)->items[indexStore].isDeleted == false) // a nebyla nikdy mazana
                     {
-                        hashT->items[indexStore].key = strdup(key); // nastaveni ukazatele na dany klic
-                        hashT->items[indexStore].isDeleted = false;
-                        hashT->items[indexStore].isEmpty = false;
-                        hashT->items[indexStore].symbol = token;
-                        hashT->tableSize++;
+                        (*hashT)->items[indexStore].key = strdup(key); // nastaveni ukazatele na dany klic
+                        (*hashT)->items[indexStore].isDeleted = false;
+                        (*hashT)->items[indexStore].isEmpty = false;
+                        (*hashT)->items[indexStore].symbol = token;
+                        (*hashT)->tableSize++;
                         return indexStore;
                     }else{
                         shift++;
@@ -119,21 +119,21 @@ int hashTableInsertItem(HashTable *hashT, char *key, SemSymbol token)
                     }
                 }
             }
-            if (shift >= hashT->tableCapacity)
+            if (shift >= (*hashT)->tableCapacity)
             {
                 return -1;
             }
 
-            if (strcmp(hashT->items[indexStore].key, key) == 0) // klice se rovnaji, aktualizuji pouze hodnotu
+            if (strcmp((*hashT)->items[indexStore].key, key) == 0) // klice se rovnaji, aktualizuji pouze hodnotu
             {
-                hashT->items[indexStore].symbol = token;
+                (*hashT)->items[indexStore].symbol = token;
                 return indexStore;
             }
             shift++;         
         }
 
     }else{ // polozka s danym klicem uz v tabulce je
-        hashT->items[foundIndex].symbol = token; // zmenim jenom hodnotu
+        (*hashT)->items[foundIndex].symbol = token; // zmenim jenom hodnotu
         return foundIndex;  
     }
     
@@ -254,15 +254,15 @@ int hashItem(char *key, HashTable *hashT) {
  * @param hashT je ukazatel na tabulku, která bude alokována
  * @return nemá návratovou hodnotu
  */
-HashTable *hashTableRealloc(HashTable *hashT)
+HashTable *hashTableRealloc(HashTable **hashT)
 {
-    if (hashT == NULL || hashT->tableCapacity <= 0) {
+    if (hashT == NULL || (*hashT)->tableCapacity <= 0) {
         printError(INTERNAL_ERROR, "(%s) Tabulka je prazdna", __func__);
         return NULL;
     }
 
     // navýšení kapacity tabulky o 50%
-    int        newCapacity = hashT->tableCapacity + (hashT->tableCapacity / 2);
+    int        newCapacity = (*hashT)->tableCapacity + ((*hashT)->tableCapacity / 2);
     HashTable *newTable    = malloc(sizeof(HashTable) + sizeof(TableItem) * newCapacity);
     
     if (newTable == NULL) {
@@ -274,14 +274,17 @@ HashTable *hashTableRealloc(HashTable *hashT)
     hashTableInitItems(newTable);
 
 
-    for (int i = 0; i < hashT->tableCapacity; i++) // naplneni nove tabulky polozkami
+    for (int i = 0; i < (*hashT)->tableCapacity; i++) // naplneni nove tabulky polozkami
     {
-        if (hashT->items[i].key != NULL)
+        if ((*hashT)->items[i].key != NULL)
         {
-            hashTableInsertItem(newTable, hashT->items[i].key, hashT->items[i].symbol);
+            hashTableInsertItem(&newTable, (*hashT)->items[i].key, (*hashT)->items[i].symbol);
         }
     }
-    return newTable;
+
+    (*hashT) = newTable;
+    
+    return (*hashT);
 }
 
 bool hashTableIsEmpty(HashTable *hashT) { return hashT->tableSize == 0; }
