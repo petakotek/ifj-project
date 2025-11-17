@@ -1,0 +1,23 @@
+import "ifj25" for Ifj
+class Program {
+// Vestavěné funkce
+    static main() {
+        var x
+        var s1
+        var s2
+       s1 = "asdasd"
+       s2 = "asdasd"
+       x = Ifj.strcmp(s1, s2)
+       Ifj.write(x) // 0
+
+       s1 = "a"
+       s2 = "b"
+       x = Ifj.strcmp(s1, s2)
+       Ifj.write(x) // -1
+
+       s1 = "b"
+       s2 = "a"
+       x = Ifj.strcmp(s1, s2)
+       Ifj.write(x) // 1
+    }
+}
