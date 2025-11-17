@@ -2,19 +2,13 @@ import "ifj25" for Ifj
 
 class Program {
     static main() {
-        var t = true
-        var fa = false
-        if(fa){
-            Ifj.write("a" * 6)
+        if (false || true) {
+            Ifj.write("true_or")
         }
-        if(t){
-            Ifj.write("pravda")
+        if (false || false) {
+            Ifj.write("should_not_print")
+        } else {
+            Ifj.write("false_or")
         }
-        var x = false
-        while(x){
-            Ifj.write("nepravda")
-        }
-        Ifj.write(t && fa)    // AND: false (0)
-        Ifj.write(t || fa)    // OR: true (1)
     }
 }

@@ -1,0 +1,139 @@
+.IFJcode25
+JUMP main$0
+LABEL main$0
+CREATEFRAME
+PUSHFRAME
+DEFVAR LF@retval
+DEFVAR LF@main$0_ty_bool_0
+DEFVAR LF@main$0_val_bool_0
+DEFVAR LF@a$$1
+DEFVAR LF@main$0_ty_bool_1
+DEFVAR LF@main$0_val_bool_1
+DEFVAR LF@main$0_ty_bool_2
+DEFVAR LF@main$0_val_bool_2
+DEFVAR LF@b$$1
+DEFVAR LF@main$0_ty_bool_3
+DEFVAR LF@main$0_val_bool_3
+DEFVAR LF@main$0_ty_bool_4
+DEFVAR LF@main$0_val_bool_4
+DEFVAR LF@c$$1
+DEFVAR LF@main$0_ty_bool_5
+DEFVAR LF@main$0_val_bool_5
+DEFVAR LF@main$0_ty_bool_6
+DEFVAR LF@main$0_val_bool_6
+DEFVAR LF@main$0_ty_bool_7
+DEFVAR LF@main$0_val_bool_7
+DEFVAR LF@main$0_ty_bool_8
+DEFVAR LF@main$0_val_bool_8
+DEFVAR LF@main$0_ln_9
+DEFVAR LF@main$0_rn_9
+DEFVAR LF@main$0_ty_9
+DEFVAR LF@main$0_ty_bool_10
+DEFVAR LF@main$0_val_bool_10
+DEFVAR LF@main$0_ln_11
+DEFVAR LF@main$0_rn_11
+DEFVAR LF@main$0_ty_11
+MOVE LF@retval nil@nil
+PUSHS int@84
+INT2FLOATS
+POPS LF@a$$1
+PUSHS int@2
+INT2FLOATS
+POPS LF@b$$1
+PUSHS int@4
+INT2FLOATS
+POPS LF@c$$1
+PUSHS LF@a$$1
+PUSHS LF@b$$1
+POPS LF@main$0_rn_9
+POPS LF@main$0_ln_9
+PUSHS LF@main$0_ln_9
+PUSHS LF@main$0_rn_9
+TYPES
+POPS LF@main$0_ty_9
+TYPES
+PUSHS LF@main$0_ty_9
+JUMPIFEQS main$0$ok_div$9
+JUMP main$0$err_div$9
+LABEL main$0$ok_div$9
+PUSHS LF@main$0_ty_9
+PUSHS string@string
+JUMPIFEQS main$0$err_div$9
+PUSHS LF@main$0_ty_9
+PUSHS string@int
+JUMPIFEQS main$0$intdiv_div$9
+PUSHS LF@main$0_rn_9
+PUSHS float@0x0p+0
+JUMPIFEQS main$0$divzero_div$9
+PUSHS LF@main$0_ln_9
+PUSHS LF@main$0_rn_9
+DIVS
+JUMP main$0$end_div$9
+LABEL main$0$intdiv_div$9
+PUSHS LF@main$0_rn_9
+PUSHS int@0
+JUMPIFEQS main$0$divzero_div$9
+INT2FLOAT LF@main$0_ln_9 LF@main$0_ln_9
+INT2FLOAT LF@main$0_rn_9 LF@main$0_rn_9
+PUSHS LF@main$0_ln_9
+PUSHS LF@main$0_rn_9
+DIVS
+JUMP main$0$end_div$9
+LABEL main$0$divzero_div$9
+EXIT int@25
+LABEL main$0$err_div$9
+EXIT int@25
+LABEL main$0$end_div$9
+PUSHS LF@c$$1
+POPS LF@main$0_rn_11
+POPS LF@main$0_ln_11
+PUSHS LF@main$0_ln_11
+PUSHS LF@main$0_rn_11
+TYPES
+POPS LF@main$0_ty_11
+TYPES
+PUSHS LF@main$0_ty_11
+JUMPIFEQS main$0$ok_div$11
+JUMP main$0$err_div$11
+LABEL main$0$ok_div$11
+PUSHS LF@main$0_ty_11
+PUSHS string@string
+JUMPIFEQS main$0$err_div$11
+PUSHS LF@main$0_ty_11
+PUSHS string@int
+JUMPIFEQS main$0$intdiv_div$11
+PUSHS LF@main$0_rn_11
+PUSHS float@0x0p+0
+JUMPIFEQS main$0$divzero_div$11
+PUSHS LF@main$0_ln_11
+PUSHS LF@main$0_rn_11
+DIVS
+JUMP main$0$end_div$11
+LABEL main$0$intdiv_div$11
+PUSHS LF@main$0_rn_11
+PUSHS int@0
+JUMPIFEQS main$0$divzero_div$11
+INT2FLOAT LF@main$0_ln_11 LF@main$0_ln_11
+INT2FLOAT LF@main$0_rn_11 LF@main$0_rn_11
+PUSHS LF@main$0_ln_11
+PUSHS LF@main$0_rn_11
+DIVS
+JUMP main$0$end_div$11
+LABEL main$0$divzero_div$11
+EXIT int@25
+LABEL main$0$err_div$11
+EXIT int@25
+LABEL main$0$end_div$11
+DEFVAR LF@temp$var$write$0
+DEFVAR LF@temp$var$writeType$0
+POPS LF@temp$var$write$0
+TYPE LF@temp$var$writeType$0 LF@temp$var$write$0
+JUMPIFNEQ temp$label$write$write$0 LF@temp$var$writeType$0 string@float
+ISINT LF@temp$var$writeType$0  LF@temp$var$write$0
+JUMPIFNEQ temp$label$write$write$0 LF@temp$var$writeType$0  bool@true
+FLOAT2INT LF@temp$var$write$0 LF@temp$var$write$0
+LABEL temp$label$write$write$0
+WRITE LF@temp$var$write$0
+PUSHS nil@nil
+LABEL main$0$end$0
+EXIT int@0

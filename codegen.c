@@ -64,24 +64,24 @@ char *generatorLable(char *func_name,FuncContext *funcStruckt,bool pridaniDoStac
 
     // Získání existujícího prefixu ze zásobníku (pokud existuje)
     if (!stacklabelStackIsEmpty(funcStruckt->label_stack)) {
-        char  *prefix     = stacklabelStackRead(funcStruckt->label_stack);
-        size_t prefix_len = strlen(prefix);
+        char *prefix = stacklabelStackRead(funcStruckt->label_stack);
+        if (prefix != NULL) {
+            size_t prefix_len = strlen(prefix);
 
-        // ve chvili kdyby nas buffer byl uz na zacatku maly
-        if (prefix_len + 1 + 10 >= size_of_buffer) {
-            result_label = resize_label_name(result_label, &size_of_buffer);
-            if (result_label == NULL) {
-                printError(INTERNAL_ERROR, "Error resizing label buffer");
+            if (prefix_len + 1 + 10 >= size_of_buffer) {
+                result_label = resize_label_name(result_label, &size_of_buffer);
+                if (result_label == NULL) {
+                    printError(INTERNAL_ERROR, "Error resizing label buffer");
+                    memorySafeExit(INTERNAL_ERROR);
+                }
+            }
+
+            current_len = snprintf(result_label, size_of_buffer, "%s", prefix);
+            if (current_len < 0 || (size_t)current_len >= size_of_buffer) {
+                free(result_label);
+                printError(INTERNAL_ERROR, "Error during initial label copy");
                 memorySafeExit(INTERNAL_ERROR);
             }
-        }
-
-        // Zkopírování existujícího prefixu: "fun$1$while$1" to co jsme precetli ze stacku
-        current_len = snprintf(result_label, size_of_buffer, "%s", prefix);
-        if (current_len < 0 || (size_t)current_len >= size_of_buffer) {
-            free(result_label);
-            printError(INTERNAL_ERROR, "Error during initial label copy");
-            memorySafeExit(INTERNAL_ERROR);
         }
     }
 
@@ -393,9 +393,13 @@ void emitFuncDec(AstNode *root){
 		printN("EXIT int@0");
 	}
 	varListDescrution(local_vars);
-	stacklabelStackDestruct(label_stack);
+	while (!stacklabelStackIsEmpty(label_stack)) {
+    char *item = stacklabelStackRead(label_stack);
+    stacklabelStackPop(label_stack);
+    free(item);  // uvolnění paměti obsahu, ne jenom pointeru
+}
+stacklabelStackDestruct(label_stack);
 	DestructorFuncContext(context);
-	free(label);
 	free(label_end);
 	}
 void emit_call_func(AstNode *node,FuncContext *funcStruct){
@@ -1325,7 +1329,6 @@ void emitIfChain(AstNode *node, FuncContext *funcContext)
      * vytvorenie lablu na spode if chainu na ktory v pripade splnenia podmienky
      * budeme z jednotlivych podmienok skakat
     */
-    char *chain_prefix = generatorLable("ifchain", funcContext, false,if_counter);
     char *endLabel = generatorLable("ifchainend", funcContext, false,if_counter);
 
     for (int i = 0; i < node->arity; i++)
@@ -1347,7 +1350,6 @@ void emitIfChain(AstNode *node, FuncContext *funcContext)
         }
     }
     printN("LABEL %s", endLabel);
-    free(chain_prefix);
     free(endLabel);
 }
 void emitIf(AstNode *node, FuncContext *funcContext, char *endLabel)
@@ -1392,7 +1394,7 @@ void emitWhile(AstNode* node, FuncContext *funcContext)
 
     char* block_prefix = generatorLable("while", funcContext, true,while_counter);
     char* labelStart = generatorLable("start", funcContext, false,while_counter);
-    printN("LABEL %s", labelStart); // ! LABEL ZAČÁTEK
+    printN("LABEL %s", labelStart);
     char* endLabel = NULL;
     endLabel = generatorLable("end", funcContext, false,while_counter);
     if (node->child[0]->kind == AST_CONDITION)
@@ -1413,7 +1415,15 @@ void emitWhile(AstNode* node, FuncContext *funcContext)
     printN("LABEL %s", endLabel); // ! LABEL KONEC
     free(endLabel);
     free(labelStart);
-    free(block_prefix);
+    char *popped_prefix = stacklabelStackRead(funcContext->label_stack);
+        if (popped_prefix == block_prefix) {
+            stacklabelStackPop(funcContext->label_stack);
+            free(block_prefix);
+        } else {
+        	printError(INTERNAL_ERROR, "nepovedene uvolneni lablu na konci while loopu");
+         	memorySafeExit(INTERNAL_ERROR);
+        }
+   // free(block_prefix);
 }
 
 void emitBreak(FuncContext *funcContext)
@@ -1640,7 +1650,14 @@ void emitFor(AstNode* node, FuncContext *funcContext)
     free(errorLabel);
     free(endLabel);
     free(labelStart);
-    free(block_prefix);
+    char *popped_prefix = stacklabelStackRead(funcContext->label_stack);
+        if (popped_prefix == block_prefix) {
+            stacklabelStackPop(funcContext->label_stack);
+            free(block_prefix); // Tímto uvolňujeme alokovanou paměť
+        } else {
+        	printError(INTERNAL_ERROR, "nepovedene uvolneni lablu na konci while loopu");
+         	memorySafeExit(INTERNAL_ERROR);
+        }
 }
 
 void emitSetterCall(AstNode* node) {
