@@ -2,7 +2,7 @@
  * Fakulta informačních technologií VUT Brno 2025
  *
  * @brief Implementace precedeční analýzy pro překladač jazyka Wren pro projekt do předmětu IFJ 2025
- * 
+ *
  * @file        expr.c
  * @author      Petr Kotek (xkotekp00)
  * @date        12.10.2025
@@ -120,7 +120,7 @@ int operatorToPush(Token token)
         case TOKEN_DOUBLE_DOT:          return INDEX_DOTS;
         case TOKEN_TRIPLE_DOT:          return INDEX_DOTS;
         // ?
-        case TOKEN_QUESTION_MARK:       return INDEX_QUESTION_MARK; 
+        case TOKEN_QUESTION_MARK:       return INDEX_QUESTION_MARK;
         // :
         case TOKEN_COLON:               return INDEX_COLON;
 
@@ -149,7 +149,7 @@ int operatorToPush(Token token)
  * 13) E :: E < E
  * 14) E :: E <= E
  * 15) E :: E >= E
- * 16) E :: E ? E : E 
+ * 16) E :: E ? E : E
  *
  */
 
@@ -192,7 +192,7 @@ AstNodeType getAstNodeTypeFromTokenType(TokenType type)
     case TOKEN_KEYWORD_STRING:      return AST_KEYWORD_STRING;
     case TOKEN_KEYWORD_NULL_SMALL:  return AST_SMALL_NULL;
     case TOKEN_KEYWORD_NULL:        return AST_NULL;
-    case TOKEN_STRING_BLOCK:        return AST_STRING_BLOCK;
+  //  case TOKEN_STRING_BLOCK:        return AST_STRING_BLOCK;
     case TOKEN_HEXA:			    return AST_INT_LIT;
     case TOKEN_INTEGER_EXP:		    return AST_INT_LIT_EXP;
     case TOKEN_FLOAT_EXP:           return AST_FLOAT_LIT_EXP;
@@ -349,9 +349,9 @@ void findPrecedenceRule(DynamicPrecedenceStackPtr stack, DynamicAstNodeStackPtr 
                 AstNode *firstChild = stackAstNodeRead(stackA);
                 stackAstNodePop(stackA);
                 // Levý uzel (i když by u unárních bylo přesnější dát pravý)
-                kids[0] = firstChild; 
+                kids[0] = firstChild;
                 // vytvoření stromu s jedním dítětem, který bude ten výraz
-                AstNode *newRoot = ast_new(getAstNodeTypeFromTokenType(p2.type), 1, kids); 
+                AstNode *newRoot = ast_new(getAstNodeTypeFromTokenType(p2.type), 1, kids);
                 stackAstNodePush(stackA, newRoot);
                 free(kids);
                 p2.type = TOKEN_EXPRESSION; // vratim na klasicky zasobnik jenom expression
@@ -367,9 +367,9 @@ void findPrecedenceRule(DynamicPrecedenceStackPtr stack, DynamicAstNodeStackPtr 
                 AstNode *firstChild = stackAstNodeRead(stackA);
                 stackAstNodePop(stackA);
                 // Levý uzel (i když by u unárních bylo přesnější dát pravý)
-                kids[0] = firstChild; 
+                kids[0] = firstChild;
                 // vytvoření stromu s jedním dítětem, který bude ten výraz
-                AstNode *newRoot = ast_new(AST_MINUS, 1, kids); 
+                AstNode *newRoot = ast_new(AST_MINUS, 1, kids);
                 stackAstNodePush(stackA, newRoot);
                 free(kids);
                 p2.type = TOKEN_EXPRESSION; // vratim na klasicky zasobnik jenom expression
@@ -437,7 +437,7 @@ void findPrecedenceRule(DynamicPrecedenceStackPtr stack, DynamicAstNodeStackPtr 
 
             // projde pravidlo E ? E : E
             if (   p1.type == TOKEN_EXPRESSION
-                && p2.type == TOKEN_COLON 
+                && p2.type == TOKEN_COLON
                 && p3.type == TOKEN_EXPRESSION
                 && p4.type == TOKEN_QUESTION_MARK
                 && p5.type == TOKEN_EXPRESSION)
@@ -478,7 +478,7 @@ void findPrecedenceRule(DynamicPrecedenceStackPtr stack, DynamicAstNodeStackPtr 
 /**
  * @brief Funkce zkotroluje první přijatý token,
  *        pokud aktuální token nesmí být prvním, funkce ukončí program
- * 
+ *
  * @param actualToken Token, který se zkotroluje
  * @return Funkce vrací hodnotu true v případě povoleného token na vstupu, jinak ukončuje program
  */
@@ -547,7 +547,7 @@ void printStack(DynamicPrecedenceStackPtr stack)
 {
     DynamicPrecedenceStackPtr stackTmp;
     // zkopiruji si stack a spocitam si pocet prvku, ktere na zasobniku jsou
-    stackTmp = stackPrecedenceConstruct(DEFAULT_INIT_ELEMENT_COUNT); 
+    stackTmp = stackPrecedenceConstruct(DEFAULT_INIT_ELEMENT_COUNT);
     while (!stackPrecedenceIsEmpty(stack))
     {
         Token tokenRead = stackPrecedenceRead(stack);
@@ -585,7 +585,7 @@ void functionCalled(DynamicPrecedenceStackPtr stackP,
         paramKids = malloc(sizeof(AstNode*));
 
         // Přidání prázdného parametru jako poslední dítě uzlu parametrů
-        Token tokenEmpty = {.type = 0}; 
+        Token tokenEmpty = {.type = 0};
         AstNode* empty = NULL;
         empty = new_leaf(AST_EMPTY, tokenEmpty);
 
@@ -653,17 +653,17 @@ void functionCalled(DynamicPrecedenceStackPtr stackP,
         paramKids = malloc(sizeof(AstNode*) * (paramCount));
 
         // Přidání prázdného parametru jako poslední dítě uzlu parametrů
-        Token tokenEmpty = {.type = 0}; 
+        Token tokenEmpty = {.type = 0};
         AstNode* empty = NULL;
         empty = new_leaf(AST_EMPTY, tokenEmpty);
         stackAstNodePush(stackA, empty);
 
 
         // Cyklem ze zásobníku seberu napočítaná počet parametrů
-        for (int i = 0; i < paramCount; ++i) 
+        for (int i = 0; i < paramCount; ++i)
         {
             // kontrola, zda zásobník, ze kterého beru parametry funce není prázdný
-            if (stackAstNodeIsEmpty(stackA)) 
+            if (stackAstNodeIsEmpty(stackA))
             {
                 printError(SYNTAX_ERROR, "(PSA): málo detí na AST zásobníku pri redukcii\n");
                 memorySafeExit(SYNTAX_ERROR);
@@ -675,7 +675,7 @@ void functionCalled(DynamicPrecedenceStackPtr stackP,
         AstNode* paramNode = ast_new(AST_PARAM, paramCount, paramKids);
         free(paramKids);
         // na zasobniku by mela byt ted jen identif a paramNode
-        stackAstNodePush(stackA, paramNode); 
+        stackAstNodePush(stackA, paramNode);
 
         AstNode **functionKids = NULL;
         functionKids = malloc(sizeof(AstNode*) * 2);
@@ -766,26 +766,26 @@ AstNode* parseExpression(Token *token, int flag)
     Token StackTop;
 
     // Pomocná proměnná pro kontrolu povoleného prvního tokenu
-    bool firstOK = false; 
+    bool firstOK = false;
     // Pomocna proměnná pro kontrolu prázdnosti podmínky
-    bool checkEmptyIf = false; 
+    bool checkEmptyIf = false;
     // Kontrolní proměnná pro implementaci možnosti nového řádku za operátorem
     bool expectingNewLineAfterOperator = true;
     // Pomocná proměnná pro implementaci zajištění kontroly ukočení výrazu pravou závorkou
-    bool expectingRPAREN = false; 
+    bool expectingRPAREN = false;
     // Pomocná proměnná pro zpracování funkce ve výrazu
-    bool functionCall = false; 
+    bool functionCall = false;
     bool checkIs = false;
     // dokud neni na zasobniku jenom $E && nemam na vstupu token, ktery mi vsechno ukoncuje
     while (actualToken.type != TOKEN_PSA_END) //
     {
         StackTop = stackPrecedenceRead(stackP);
         // pokud je stacktop expression, presunu ukazatel na vrchol a pozici zpet
-        if (StackTop.type == TOKEN_EXPRESSION) 
+        if (StackTop.type == TOKEN_EXPRESSION)
         {
             Token tmpTop = stackPrecedenceRead(stackP);
             // potrebuji si prvne vyhodit prvek a potom jej vlozit zpet
-            stackPrecedencePop(stackP); 
+            stackPrecedencePop(stackP);
             StackTop = stackPrecedenceRead(stackP);
             stackPrecedencePush(stackP, tmpTop);
         }
@@ -804,7 +804,7 @@ AstNode* parseExpression(Token *token, int flag)
             if (operatorToPush(StackTop) == INDEX_IS)
             {
                 // Možné případy pravé strany u klíčového slova Is
-                if (actualToken.type != TOKEN_KEYWORD_STRING 
+                if (actualToken.type != TOKEN_KEYWORD_STRING
                     && actualToken.type != TOKEN_KEYWORD_NUM
                     && actualToken.type != TOKEN_KEYWORD_NULL
                     && actualToken.type != TOKEN_LPAREN) // Doplnit popripade
@@ -824,7 +824,7 @@ AstNode* parseExpression(Token *token, int flag)
         }
 
         // nastavení hodnoty pro kontrolu aktuálního tokenu v další iteraci programu
-        if (actualToken.type == TOKEN_KEYWORD_IS) 
+        if (actualToken.type == TOKEN_KEYWORD_IS)
         {
             checkIs = true;
         }
@@ -916,11 +916,11 @@ AstNode* parseExpression(Token *token, int flag)
             // ukonceni pouze na novy radek
             || (actualToken.type == TOKEN_NEW_LINE && StackTop.type == TOKEN_DOLLAR)
             // оddělení výrazů ve funkce čárkou
-            || (actualToken.type == TOKEN_COMMA && StackTop.type == TOKEN_DOLLAR) 
+            || (actualToken.type == TOKEN_COMMA && StackTop.type == TOKEN_DOLLAR)
             // ukončení funkce pravou závorkou
-            || (actualToken.type == TOKEN_RPAREN && StackTop.type == TOKEN_DOLLAR && flag == 1) 
+            || (actualToken.type == TOKEN_RPAREN && StackTop.type == TOKEN_DOLLAR && flag == 1)
             // ukonceni volani vyrazu v jednoradkove funkci
-            || (actualToken.type == TOKEN_BLOCK_END && flag == -2 && StackTop.type == TOKEN_DOLLAR) 
+            || (actualToken.type == TOKEN_BLOCK_END && flag == -2 && StackTop.type == TOKEN_DOLLAR)
              // volani funkce pouze s jednim parametrem
             || (actualToken.type == TOKEN_RPAREN && flag == 0
                 && StackTop.type == TOKEN_DOLLAR && expectingRPAREN == false))
@@ -949,10 +949,10 @@ AstNode* parseExpression(Token *token, int flag)
         if (endFlag == TOKEN_PSA_END)
         {
             // cyklus probíhá dokud není na zásobníku pouze dolar a výraz
-            while (!checkDollarExpression(stackP)) 
+            while (!checkDollarExpression(stackP))
             {
                 // upravuji výraz dokud nedostanu na zásobníku pouze dolar a výraz
-                findPrecedenceRule(stackP, stackA); 
+                findPrecedenceRule(stackP, stackA);
                 if (DEBUG)
                 {
                     printLog("Final etapa: ");
