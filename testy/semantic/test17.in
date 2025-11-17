@@ -3,12 +3,13 @@ class Program {
     // getter a setter
 
 
+
     static main() { 
         var z = x
        // var a = z + 1
         y = 1
-        var h = x()
-        var hh = y(4)
+        //var h = x()
+        //var hh = y(4)
         return
     }
 
@@ -16,16 +17,12 @@ class Program {
         return 1
     }
 
-    static y = (l) {
+        static y = (l) {
         return l + 1
     }
-
 
    static x() {
         return
     }
 
-    static y(v) {
-        return
-    }
 }
