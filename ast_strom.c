@@ -560,41 +560,6 @@ char *escapeString(char *tmp)
                 out[j++] = '\r';  
                 i += 2; 
             }
-            else if (c == '0')
-            {
-                out[j++] = '\0';  
-                i += 2; 
-            }
-            else if (c == '%')
-            {
-                out[j++] = '%';  
-                i += 2; 
-            }
-            else if (c == 'a')
-            {
-                out[j++] = '\a';  
-                i += 2; 
-            }
-            else if (c == 'e')
-            {
-                out[j++] = 27;  
-                i += 2; 
-            }
-            else if (c == 'f')
-            {
-                out[j++] = '\f';  
-                i += 2; 
-            }
-            else if (c == 'v')
-            {
-                out[j++] = '\v';  
-                i += 2; 
-            }
-            else if (c == 'b')
-            {
-                out[j++] = '\b';  
-                i += 2; 
-            }
             else 
             { 
                 // nechaj ako je (ak nie je escape)

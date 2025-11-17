@@ -945,30 +945,6 @@ Token lexer_token_next() {
                         append_char(&buf, &delak, &kapacity, '\\');
                         lexer->pos++;
                     } 
-                    else if (next == 'a') {
-                        append_char(&buf, &delak, &kapacity, '\a');
-                        lexer->pos++;
-                    } 
-                    else if (next == 'b') {
-                        append_char(&buf, &delak, &kapacity, '\b');
-                        lexer->pos++;
-                    } 
-                    else if (next == 'e') {
-                        append_char(&buf, &delak, &kapacity, 27);
-                        lexer->pos++;
-                    } 
-                    else if (next == 'f') {
-                        append_char(&buf, &delak, &kapacity, '\f');
-                        lexer->pos++;
-                    } 
-                    else if (next == 'v') {
-                        append_char(&buf, &delak, &kapacity, '\v');
-                        lexer->pos++;
-                    }
-                    else if (next == '%') {
-                        append_char(&buf, &delak, &kapacity, '%');
-                        lexer->pos++;
-                    }
 
                     else {
                         free(buf);
