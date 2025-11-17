@@ -1,14 +1,17 @@
 import "ifj25" for Ifj
-
 class Program {
-    static main() {
-        if (false || true) {
-            Ifj.write("true_or")
-        }
-        if (false || false) {
-            Ifj.write("should_not_print")
-        } else {
-            Ifj.write("false_or")
+    static main(){
+    var j
+    for (i in 0 .. 2) {
+        j = 0
+        while (j < 2) {
+            if (i < 2 && j < 2) {
+                j = j + 1
+            } else {
+                j = j + 1
+            }
         }
     }
+    Ifj.write(j)
+}
 }

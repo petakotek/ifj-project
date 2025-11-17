@@ -70,7 +70,7 @@ DEFVAR LF@retval
 DEFVAR LF@main$0_ty_bool_0
 DEFVAR LF@main$0_val_bool_0
 MOVE LF@retval nil@nil
-CALL unicorn
+CALL unicorn$g
 DEFVAR LF@temp$var$write$0
 DEFVAR LF@temp$var$writeType$0
 POPS LF@temp$var$write$0

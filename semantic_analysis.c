@@ -1206,7 +1206,7 @@ void insertSymbolGlobalScope(SemSymbol symbol) {
         return;
     }
 
-    int index = hashTableInsertItem(scopesStack->array[0], symbol.name, symbol);
+    int index = hashTableInsertItem(&scopesStack->array[0], symbol.name, symbol);
 
     if (index == -1) {
         EXEC_END(INTERNAL_ERROR, "Selhalo vlozeni prvku do globalniho ramce!\n");
@@ -1227,7 +1227,7 @@ void insertSymbolCurrentScope(SemSymbol symbol) {
 
     HashTable* currentScope = stackHashTablePtrRead(scopesStack);
 
-    int index = hashTableInsertItem(currentScope, symbol.name, symbol);
+    int index = hashTableInsertItem(&currentScope, symbol.name, symbol);
 
     if (index == -1) {
         EXEC_END(INTERNAL_ERROR, "Selhalo vlozeni prvku do ramce!\n");
@@ -1260,7 +1260,7 @@ void insertUndeclaredReference(char* referenceSymbolName, SemSymbol symbol) {
         return;
     }
 
-    if (hashTableInsertItem(undeclaredReferenceTable, referenceSymbolName, symbol) == -1) {
+    if (hashTableInsertItem(&undeclaredReferenceTable, referenceSymbolName, symbol) == -1) {
         EXEC_END(INTERNAL_ERROR, "Nepodarilo se vlozit prvek do tabulky!\n");
     }
 }

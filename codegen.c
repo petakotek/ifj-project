@@ -396,7 +396,7 @@ void emitFuncDec(AstNode *root){
 	while (!stacklabelStackIsEmpty(label_stack)) {
     char *item = stacklabelStackRead(label_stack);
     stacklabelStackPop(label_stack);
-    free(item);  // uvolnění paměti obsahu, ne jenom pointeru
+    free(item);
 }
 stacklabelStackDestruct(label_stack);
 	DestructorFuncContext(context);
@@ -845,10 +845,10 @@ void emit_equal(AstNode *node, FuncContext *funcStrukt) {
 }
 
 void emit_less(AstNode *node, FuncContext *funcStruct) {
-    for(int i = 0; i < 2; i++){
+
+	for(int i = 0;i< 2;i++){
         emit_command(node->child[i], funcStruct);
     }
-
     int id = node->tmp_id;
     char ln[128], rn[128], rty[128], lty[128];
     snprintf(ln,  sizeof ln,  "%s_ln_%d",  funcStruct->func_name, id);
@@ -856,42 +856,56 @@ void emit_less(AstNode *node, FuncContext *funcStruct) {
     snprintf(lty, sizeof lty, "%s_lty_%d", funcStruct->func_name, id);
     snprintf(rty, sizeof rty, "%s_rty_%d", funcStruct->func_name, id);
 
-    char label_ok[128], label_end[128], label_err[128];
-    snprintf(label_ok,  sizeof label_ok,  "%s$ltok$%d",  funcStruct->func_name, id);
-    snprintf(label_end, sizeof label_end, "%s$ltend$%d", funcStruct->func_name, id);
-    snprintf(label_err, sizeof label_err, "%s$lterr$%d", funcStruct->func_name, id);
+    char label_ok[128], label_end[128], label_err[128], label_l_float[128], label_r_float[128], label_r_check[128];
 
-    // Uložení operandů do dočasných proměnných
+    snprintf(label_ok,  sizeof label_ok,  "%s$le_ok$%d",  funcStruct->func_name, id);
+    snprintf(label_end, sizeof label_end, "%s$le_end$%d", funcStruct->func_name, id);
+    snprintf(label_err, sizeof label_err, "%s$le_err$%d", funcStruct->func_name, id);
+    snprintf(label_l_float, sizeof label_l_float, "%s$le_l_f$%d", funcStruct->func_name, id);
+    snprintf(label_r_float, sizeof label_r_float, "%s$le_r_f$%d", funcStruct->func_name, id);
+    snprintf(label_r_check, sizeof label_r_check, "%s$le_r_chk$%d", funcStruct->func_name, id);
+
+
     printN("POPS LF@%s", rn);
     printN("POPS LF@%s", ln);
 
-    // Zjistit typ pravého operandu
     printN("PUSHS LF@%s", rn);
     printN("TYPES");
     printN("POPS LF@%s", rty);
-
-    // Zjistit typ levého operandu
     printN("PUSHS LF@%s", ln);
     printN("TYPES");
     printN("POPS LF@%s", lty);
 
-    // Kontrola: žádný operand nesmí být nil
-    printN("PUSHS LF@%s", lty);
-    printN("PUSHS string@nil");
-    printN("JUMPIFEQS %s", label_err);
 
-    printN("PUSHS LF@%s", rty);
-    printN("PUSHS string@nil");
-    printN("JUMPIFEQS %s", label_err);
-
-    // Kontrola: typy musí být stejné
     printN("PUSHS LF@%s", lty);
-    printN("PUSHS LF@%s", rty);
-    printN("JUMPIFEQS %s", label_ok);
+    printN("PUSHS string@float");
+    printN("JUMPIFEQS %s", label_r_check);
+
+    printN("PUSHS LF@%s", lty);
+    printN("PUSHS string@int");
+    printN("JUMPIFEQS %s", label_l_float);
+
     printN("JUMP %s", label_err);
 
-    // Typy jsou stejné a nejsou nil → porovnáme hodnoty
+    printN("LABEL %s", label_l_float);
+    printN("INT2FLOAT LF@%s LF@%s", ln, ln);
+
+
+    printN("LABEL %s", label_r_check);
+    printN("PUSHS LF@%s", rty);
+    printN("PUSHS string@float");
+    printN("JUMPIFEQS %s", label_ok);
+    printN("PUSHS LF@%s", rty);
+    printN("PUSHS string@int");
+    printN("JUMPIFEQS %s", label_r_float);
+    printN("JUMP %s", label_err);
+
+    printN("LABEL %s", label_r_float);
+    printN("INT2FLOAT LF@%s LF@%s", rn, rn);
+
+
     printN("LABEL %s", label_ok);
+
     printN("PUSHS LF@%s", ln);
     printN("PUSHS LF@%s", rn);
     printN("LTS");
@@ -906,8 +920,8 @@ void emit_less(AstNode *node, FuncContext *funcStruct) {
 void emit_greater(AstNode *node,FuncContext *funcStruct) {
 
 	for(int i = 0;i< 2;i++){
-		emit_command(node->child[i], funcStruct);
-	}
+        emit_command(node->child[i], funcStruct);
+    }
     int id = node->tmp_id;
     char ln[128], rn[128], rty[128], lty[128];
     snprintf(ln,  sizeof ln,  "%s_ln_%d",  funcStruct->func_name, id);
@@ -915,44 +929,56 @@ void emit_greater(AstNode *node,FuncContext *funcStruct) {
     snprintf(lty, sizeof lty, "%s_lty_%d", funcStruct->func_name, id);
     snprintf(rty, sizeof rty, "%s_rty_%d", funcStruct->func_name, id);
 
-    char label_ok[128], label_end[128], label_err[128];
-    snprintf(label_ok,  sizeof label_ok,  "%s$ltok$%d",  funcStruct->func_name, id);
-    snprintf(label_end, sizeof label_end, "%s$ltend$%d", funcStruct->func_name, id);
-    snprintf(label_err, sizeof label_err, "%s$lterr$%d", funcStruct->func_name, id);
+    char label_ok[128], label_end[128], label_err[128], label_l_float[128], label_r_float[128], label_r_check[128];
 
-    // Uložení operandů do dočasných proměnných
+    snprintf(label_ok,  sizeof label_ok,  "%s$le_ok$%d",  funcStruct->func_name, id);
+    snprintf(label_end, sizeof label_end, "%s$le_end$%d", funcStruct->func_name, id);
+    snprintf(label_err, sizeof label_err, "%s$le_err$%d", funcStruct->func_name, id);
+    snprintf(label_l_float, sizeof label_l_float, "%s$le_l_f$%d", funcStruct->func_name, id);
+    snprintf(label_r_float, sizeof label_r_float, "%s$le_r_f$%d", funcStruct->func_name, id);
+    snprintf(label_r_check, sizeof label_r_check, "%s$le_r_chk$%d", funcStruct->func_name, id);
+
+
     printN("POPS LF@%s", rn);
     printN("POPS LF@%s", ln);
 
-    // Vrátíme operandy zpět na zásobník pro typovou kontrolu
-    printN("PUSHS LF@%s", ln);
     printN("PUSHS LF@%s", rn);
-
-    // Zjistíme typ pravého operandu (right)
     printN("TYPES");
     printN("POPS LF@%s", rty);
-
-    // Zjistíme typ levého operandu (left)
+    printN("PUSHS LF@%s", ln);
     printN("TYPES");
     printN("POPS LF@%s", lty);
 
-    // Kontrola: žádný operand nesmí být nil
-    printN("PUSHS LF@%s", lty);
-    printN("PUSHS string@nil");
-    printN("JUMPIFEQS %s", label_err);
 
-    printN("PUSHS LF@%s", rty);
-    printN("PUSHS string@nil");
-    printN("JUMPIFEQS %s", label_err);
-
-    // Kontrola: typy musí být stejné
     printN("PUSHS LF@%s", lty);
-    printN("PUSHS LF@%s", rty);
-    printN("JUMPIFEQS %s", label_ok);
+    printN("PUSHS string@float");
+    printN("JUMPIFEQS %s", label_r_check);
+
+    printN("PUSHS LF@%s", lty);
+    printN("PUSHS string@int");
+    printN("JUMPIFEQS %s", label_l_float);
+
     printN("JUMP %s", label_err);
 
-    // Typy jsou stejné a nenil → porovnáme hodnoty
+    printN("LABEL %s", label_l_float);
+    printN("INT2FLOAT LF@%s LF@%s", ln, ln);
+
+
+    printN("LABEL %s", label_r_check);
+    printN("PUSHS LF@%s", rty);
+    printN("PUSHS string@float");
+    printN("JUMPIFEQS %s", label_ok);
+    printN("PUSHS LF@%s", rty);
+    printN("PUSHS string@int");
+    printN("JUMPIFEQS %s", label_r_float);
+    printN("JUMP %s", label_err);
+
+    printN("LABEL %s", label_r_float);
+    printN("INT2FLOAT LF@%s LF@%s", rn, rn);
+
+
     printN("LABEL %s", label_ok);
+
     printN("PUSHS LF@%s", ln);
     printN("PUSHS LF@%s", rn);
     printN("GTS");
@@ -966,10 +992,9 @@ void emit_greater(AstNode *node,FuncContext *funcStruct) {
 }
 
 void emit_less_equal(AstNode *node, FuncContext *funcStruct) {
-
-	for(int i = 0;i< 2;i++){
-		emit_command(node->child[i], funcStruct);
-	}
+    for(int i = 0;i< 2;i++){
+        emit_command(node->child[i], funcStruct);
+    }
     int id = node->tmp_id;
     char ln[128], rn[128], rty[128], lty[128];
     snprintf(ln,  sizeof ln,  "%s_ln_%d",  funcStruct->func_name, id);
@@ -977,64 +1002,80 @@ void emit_less_equal(AstNode *node, FuncContext *funcStruct) {
     snprintf(lty, sizeof lty, "%s_lty_%d", funcStruct->func_name, id);
     snprintf(rty, sizeof rty, "%s_rty_%d", funcStruct->func_name, id);
 
-    char label_ok[128], label_end[128], label_err[128];
-    snprintf(label_ok,  sizeof label_ok,  "%s$ltok$%d",  funcStruct->func_name, id);
-    snprintf(label_end, sizeof label_end, "%s$ltend$%d", funcStruct->func_name, id);
-    snprintf(label_err, sizeof label_err, "%s$lterr$%d", funcStruct->func_name, id);
+    char label_ok[128], label_end[128], label_err[128], label_l_float[128], label_r_float[128], label_r_check[128];
 
-    // Uložení operandů do dočasných proměnných
+    snprintf(label_ok,  sizeof label_ok,  "%s$le_ok$%d",  funcStruct->func_name, id);
+    snprintf(label_end, sizeof label_end, "%s$le_end$%d", funcStruct->func_name, id);
+    snprintf(label_err, sizeof label_err, "%s$le_err$%d", funcStruct->func_name, id);
+    snprintf(label_l_float, sizeof label_l_float, "%s$le_l_f$%d", funcStruct->func_name, id);
+    snprintf(label_r_float, sizeof label_r_float, "%s$le_r_f$%d", funcStruct->func_name, id);
+    snprintf(label_r_check, sizeof label_r_check, "%s$le_r_chk$%d", funcStruct->func_name, id);
+
+
     printN("POPS LF@%s", rn);
     printN("POPS LF@%s", ln);
 
-    // Vrátíme operandy zpět na zásobník pro typovou kontrolu
-    printN("PUSHS LF@%s", ln);
     printN("PUSHS LF@%s", rn);
-
-    // Zjistíme typ pravého operandu (right)
     printN("TYPES");
     printN("POPS LF@%s", rty);
-
-    // Zjistíme typ levého operandu (left)
+    printN("PUSHS LF@%s", ln);
     printN("TYPES");
     printN("POPS LF@%s", lty);
 
-    // Kontrola: žádný operand nesmí být nil
-    printN("PUSHS LF@%s", lty);
-    printN("PUSHS string@nil");
-    printN("JUMPIFEQS %s", label_err);
 
-    printN("PUSHS LF@%s", rty);
-    printN("PUSHS string@nil");
-    printN("JUMPIFEQS %s", label_err);
-
-    // Kontrola: typy musí být stejné
     printN("PUSHS LF@%s", lty);
-    printN("PUSHS LF@%s", rty);
-    printN("JUMPIFEQS %s", label_ok);
+    printN("PUSHS string@float");
+    printN("JUMPIFEQS %s", label_r_check);
+
+    printN("PUSHS LF@%s", lty);
+    printN("PUSHS string@int");
+    printN("JUMPIFEQS %s", label_l_float);
+
     printN("JUMP %s", label_err);
 
-    // Typy jsou stejné a nenil → porovnáme hodnoty
+    printN("LABEL %s", label_l_float);
+    printN("INT2FLOAT LF@%s LF@%s", ln, ln);
+
+
+    printN("LABEL %s", label_r_check);
+    printN("PUSHS LF@%s", rty);
+    printN("PUSHS string@float");
+    printN("JUMPIFEQS %s", label_ok);
+    printN("PUSHS LF@%s", rty);
+    printN("PUSHS string@int");
+    printN("JUMPIFEQS %s", label_r_float);
+    printN("JUMP %s", label_err);
+
+    printN("LABEL %s", label_r_float);
+    printN("INT2FLOAT LF@%s LF@%s", rn, rn);
+
+
     printN("LABEL %s", label_ok);
+
+    // LTS
     printN("PUSHS LF@%s", ln);
     printN("PUSHS LF@%s", rn);
     printN("LTS");
 
+    // EQS
     printN("PUSHS LF@%s", ln);
     printN("PUSHS LF@%s", rn);
     printN("EQS");
+
+    // ORS
     printN("ORS");
     printN("JUMP %s", label_end);
 
-    // Chyba: nil nebo různé typy
     printN("LABEL %s", label_err);
-    printN("EXIT int@%i",RUNTIME_SEMANTICS_ERROR_BAD_TYPE);
+    printN("EXIT int@%i", RUNTIME_SEMANTICS_ERROR_BAD_TYPE);
 
     printN("LABEL %s", label_end);
 }
 void emit_greater_equal(AstNode *node, FuncContext *funcStruct) {
-	for(int i = 0;i < 2;i++){
-		emit_command(node->child[i], funcStruct);
-	}
+
+	for(int i = 0;i< 2;i++){
+        emit_command(node->child[i], funcStruct);
+    }
     int id = node->tmp_id;
     char ln[128], rn[128], rty[128], lty[128];
     snprintf(ln,  sizeof ln,  "%s_ln_%d",  funcStruct->func_name, id);
@@ -1042,43 +1083,54 @@ void emit_greater_equal(AstNode *node, FuncContext *funcStruct) {
     snprintf(lty, sizeof lty, "%s_lty_%d", funcStruct->func_name, id);
     snprintf(rty, sizeof rty, "%s_rty_%d", funcStruct->func_name, id);
 
-    char label_ok[128], label_end[128], label_err[128];
-    snprintf(label_ok,  sizeof label_ok,  "%s$ltok$%d",  funcStruct->func_name, id);
-    snprintf(label_end, sizeof label_end, "%s$ltend$%d", funcStruct->func_name, id);
-    snprintf(label_err, sizeof label_err, "%s$lterr$%d", funcStruct->func_name, id);
+    char label_ok[128], label_end[128], label_err[128], label_l_float[128], label_r_float[128], label_r_check[128];
 
-    // Uložení operandů do dočasných proměnných
+    snprintf(label_ok,  sizeof label_ok,  "%s$le_ok$%d",  funcStruct->func_name, id);
+    snprintf(label_end, sizeof label_end, "%s$le_end$%d", funcStruct->func_name, id);
+    snprintf(label_err, sizeof label_err, "%s$le_err$%d", funcStruct->func_name, id);
+    snprintf(label_l_float, sizeof label_l_float, "%s$le_l_f$%d", funcStruct->func_name, id);
+    snprintf(label_r_float, sizeof label_r_float, "%s$le_r_f$%d", funcStruct->func_name, id);
+    snprintf(label_r_check, sizeof label_r_check, "%s$le_r_chk$%d", funcStruct->func_name, id);
+
+
     printN("POPS LF@%s", rn);
     printN("POPS LF@%s", ln);
 
-    // Vrátíme operandy zpět na zásobník pro typovou kontrolu
-    printN("PUSHS LF@%s", ln);
     printN("PUSHS LF@%s", rn);
-
-    // Zjistíme typ pravého operandu (right)
     printN("TYPES");
     printN("POPS LF@%s", rty);
-
-    // Zjistíme typ levého operandu (left)
+    printN("PUSHS LF@%s", ln);
     printN("TYPES");
     printN("POPS LF@%s", lty);
 
-    // Kontrola: žádný operand nesmí být nil
-    printN("PUSHS LF@%s", lty);
-    printN("PUSHS string@nil");
-    printN("JUMPIFEQS %s", label_err);
 
-    printN("PUSHS LF@%s", rty);
-    printN("PUSHS string@nil");
-    printN("JUMPIFEQS %s", label_err);
-
-    // Kontrola: typy musí být stejné
     printN("PUSHS LF@%s", lty);
-    printN("PUSHS LF@%s", rty);
-    printN("JUMPIFEQS %s", label_ok);
+    printN("PUSHS string@float");
+    printN("JUMPIFEQS %s", label_r_check);
+
+    printN("PUSHS LF@%s", lty);
+    printN("PUSHS string@int");
+    printN("JUMPIFEQS %s", label_l_float);
+
     printN("JUMP %s", label_err);
 
-    // Typy jsou stejné a nenil → porovnáme hodnoty
+    printN("LABEL %s", label_l_float);
+    printN("INT2FLOAT LF@%s LF@%s", ln, ln);
+
+
+    printN("LABEL %s", label_r_check);
+    printN("PUSHS LF@%s", rty);
+    printN("PUSHS string@float");
+    printN("JUMPIFEQS %s", label_ok);
+    printN("PUSHS LF@%s", rty);
+    printN("PUSHS string@int");
+    printN("JUMPIFEQS %s", label_r_float);
+    printN("JUMP %s", label_err);
+
+    printN("LABEL %s", label_r_float);
+    printN("INT2FLOAT LF@%s LF@%s", rn, rn);
+
+
     printN("LABEL %s", label_ok);
     printN("PUSHS LF@%s", ln);
     printN("PUSHS LF@%s", rn);
@@ -1697,9 +1749,13 @@ void emitSetter(AstNode* node) {
 
 
     varListDescrution(localVariables);
-	stacklabelStackDestruct(labelStack);
+    while (!stacklabelStackIsEmpty(labelStack)) {
+        char *item = stacklabelStackRead(labelStack);
+        stacklabelStackPop(labelStack);
+        free(item);
+    }
+    stacklabelStackDestruct(labelStack);
 	DestructorFuncContext(context);
-	free(labelEnd);
 }
 
 void emitGetterCall(AstNode* node) {
@@ -1737,9 +1793,13 @@ void emitGetter(AstNode* node) {
 
 
     varListDescrution(localVariables);
-	stacklabelStackDestruct(labelStack);
+    while (!stacklabelStackIsEmpty(labelStack)) {
+        char *item = stacklabelStackRead(labelStack);
+        stacklabelStackPop(labelStack);
+        free(item);
+    }
+    stacklabelStackDestruct(labelStack);
 	DestructorFuncContext(context);
-	free(labelEnd);
 
 }
 void emit_ternarni(AstNode *node, FuncContext *funcStruct){

@@ -2,6 +2,23 @@
 Test: test_01_basic_output
 ========================================
 Spouštím: valgrind --leak-check=full ../.././ifj25 < ./tests/test_01.in
+LOG: 0 FLAG
+LOG: 1 Aktualni token INTEGER a stacktop: DOLLAR [9, 8]
+LOG: DOLLAR LOG: 
+LOG: 	Operace <
+LOG: 		2 budu hazet na stack klasicky
+LOG: 			3 < (9, 8) LOG: INTEGER LOG: STOP LOG: DOLLAR LOG: 
+LOG: 4 Aktualni token RPAREN a stacktop: INTEGER [8, 11]
+LOG: INTEGER LOG: STOP LOG: DOLLAR LOG: 
+LOG: 	Operace >
+LOG: 			param count 1
+LOG: 			5 > (8, 11) LOG: EXPRESSION LOG: DOLLAR LOG: 
+LOG: splnila se podminka
+LOG: EXPRESSION LOG: DOLLAR LOG: 
+LOG: 6 Aktualni token RPAREN a stacktop: EXPRESSION [9, 11]
+LOG: EXPRESSION LOG: DOLLAR LOG: 
+LOG: string INT_LIT
+LOG: Final stack: LOG: EXPRESSION LOG: DOLLAR LOG: 
 expr strom po skoncení funcke parseExpression
 ===== AST STROM =====
 [INT_LIT] (int=42)
@@ -47,32 +64,204 @@ RESULT: PASS
 Test: test_02_int_operations
 ========================================
 Spouštím: valgrind --leak-check=full ../.././ifj25 < ./tests/test_02.in
+LOG: 0 FLAG
+LOG: 1 Aktualni token INTEGER a stacktop: DOLLAR [9, 8]
+LOG: DOLLAR LOG: 
+LOG: 	Operace <
+LOG: 		2 budu hazet na stack klasicky
+LOG: 			3 < (9, 8) LOG: INTEGER LOG: STOP LOG: DOLLAR LOG: 
+LOG: 4 Aktualni token NEW_LINE a stacktop: INTEGER [8, 9]
+LOG: INTEGER LOG: STOP LOG: DOLLAR LOG: 
+LOG: 			param count 1
+LOG: Final etapa: LOG: EXPRESSION LOG: DOLLAR LOG: 
+LOG: string INT_LIT
+LOG: Final stack: LOG: EXPRESSION LOG: DOLLAR LOG: 
 expr strom po skoncení funcke parseExpression
 ===== AST STROM =====
 [INT_LIT] (int=10)
 LOG: precedencna odovzdala token jeho type je = 33
+LOG: 0 FLAG
+LOG: 1 Aktualni token INTEGER a stacktop: DOLLAR [9, 8]
+LOG: DOLLAR LOG: 
+LOG: 	Operace <
+LOG: 		2 budu hazet na stack klasicky
+LOG: 			3 < (9, 8) LOG: INTEGER LOG: STOP LOG: DOLLAR LOG: 
+LOG: 4 Aktualni token NEW_LINE a stacktop: INTEGER [8, 9]
+LOG: INTEGER LOG: STOP LOG: DOLLAR LOG: 
+LOG: 			param count 1
+LOG: Final etapa: LOG: EXPRESSION LOG: DOLLAR LOG: 
+LOG: string INT_LIT
+LOG: Final stack: LOG: EXPRESSION LOG: DOLLAR LOG: 
 expr strom po skoncení funcke parseExpression
 ===== AST STROM =====
 [INT_LIT] (int=5)
 LOG: precedencna odovzdala token jeho type je = 33
+LOG: 0 FLAG
+LOG: 1 Aktualni token IDENTIFIER a stacktop: DOLLAR [9, 8]
+LOG: DOLLAR LOG: 
+LOG: 	Operace <
+LOG: 		2 budu hazet na stack klasicky
+LOG: 			3 < (9, 8) LOG: IDENTIFIER LOG: STOP LOG: DOLLAR LOG: 
+LOG: 4 Aktualni token PLUS a stacktop: IDENTIFIER [8, 0]
+LOG: IDENTIFIER LOG: STOP LOG: DOLLAR LOG: 
+LOG: 	Operace >
+LOG: 			param count 1
+LOG: 			5 > (8, 0) LOG: EXPRESSION LOG: DOLLAR LOG: 
+LOG: 6 Aktualni token PLUS a stacktop: EXPRESSION [9, 0]
+LOG: EXPRESSION LOG: DOLLAR LOG: 
+LOG: 	Operace <
+LOG: 		7 budu hazet na stack slozite
+LOG: 			8 < (9, 0) LOG: PLUS LOG: EXPRESSION LOG: STOP LOG: DOLLAR LOG: 
+LOG: 9 Aktualni token IDENTIFIER a stacktop: PLUS [0, 8]
+LOG: PLUS LOG: EXPRESSION LOG: STOP LOG: DOLLAR LOG: 
+LOG: 	Operace <
+LOG: 		10 budu hazet na stack klasicky
+LOG: 			11 < (0, 8) LOG: IDENTIFIER LOG: STOP LOG: PLUS LOG: EXPRESSION LOG: STOP LOG: DOLLAR LOG: 
+LOG: 12 Aktualni token RPAREN a stacktop: IDENTIFIER [8, 11]
+LOG: IDENTIFIER LOG: STOP LOG: PLUS LOG: EXPRESSION LOG: STOP LOG: DOLLAR LOG: 
+LOG: 	Operace >
+LOG: 			param count 1
+LOG: 			13 > (8, 11) LOG: EXPRESSION LOG: PLUS LOG: EXPRESSION LOG: STOP LOG: DOLLAR LOG: 
+LOG: 14 Aktualni token RPAREN a stacktop: EXPRESSION [0, 11]
+LOG: EXPRESSION LOG: PLUS LOG: EXPRESSION LOG: STOP LOG: DOLLAR LOG: 
+LOG: 	Operace >
+LOG: 			param count 3
+LOG: 			15 > (0, 11) LOG: EXPRESSION LOG: DOLLAR LOG: 
+LOG: splnila se podminka
+LOG: EXPRESSION LOG: DOLLAR LOG: 
+LOG: 16 Aktualni token RPAREN a stacktop: EXPRESSION [9, 11]
+LOG: EXPRESSION LOG: DOLLAR LOG: 
+LOG: string STRING_PLUS
+LOG: Final stack: LOG: EXPRESSION LOG: DOLLAR LOG: 
 expr strom po skoncení funcke parseExpression
 ===== AST STROM =====
 [STRING_PLUS]
   [IDENTIFIER] (str=a)
   [IDENTIFIER] (str=b)
 LOG: precedencna odovzdala token jeho type je = 21
+LOG: 0 FLAG
+LOG: 1 Aktualni token IDENTIFIER a stacktop: DOLLAR [9, 8]
+LOG: DOLLAR LOG: 
+LOG: 	Operace <
+LOG: 		2 budu hazet na stack klasicky
+LOG: 			3 < (9, 8) LOG: IDENTIFIER LOG: STOP LOG: DOLLAR LOG: 
+LOG: 4 Aktualni token MINUS a stacktop: IDENTIFIER [8, 0]
+LOG: IDENTIFIER LOG: STOP LOG: DOLLAR LOG: 
+LOG: 	Operace >
+LOG: 			param count 1
+LOG: 			5 > (8, 0) LOG: EXPRESSION LOG: DOLLAR LOG: 
+LOG: 6 Aktualni token MINUS a stacktop: EXPRESSION [9, 0]
+LOG: EXPRESSION LOG: DOLLAR LOG: 
+LOG: 	Operace <
+LOG: 		7 budu hazet na stack slozite
+LOG: 			8 < (9, 0) LOG: MINUS LOG: EXPRESSION LOG: STOP LOG: DOLLAR LOG: 
+LOG: 9 Aktualni token IDENTIFIER a stacktop: MINUS [0, 8]
+LOG: MINUS LOG: EXPRESSION LOG: STOP LOG: DOLLAR LOG: 
+LOG: 	Operace <
+LOG: 		10 budu hazet na stack klasicky
+LOG: 			11 < (0, 8) LOG: IDENTIFIER LOG: STOP LOG: MINUS LOG: EXPRESSION LOG: STOP LOG: DOLLAR LOG: 
+LOG: 12 Aktualni token RPAREN a stacktop: IDENTIFIER [8, 11]
+LOG: IDENTIFIER LOG: STOP LOG: MINUS LOG: EXPRESSION LOG: STOP LOG: DOLLAR LOG: 
+LOG: 	Operace >
+LOG: 			param count 1
+LOG: 			13 > (8, 11) LOG: EXPRESSION LOG: MINUS LOG: EXPRESSION LOG: STOP LOG: DOLLAR LOG: 
+LOG: 14 Aktualni token RPAREN a stacktop: EXPRESSION [0, 11]
+LOG: EXPRESSION LOG: MINUS LOG: EXPRESSION LOG: STOP LOG: DOLLAR LOG: 
+LOG: 	Operace >
+LOG: 			param count 3
+LOG: 			15 > (0, 11) LOG: EXPRESSION LOG: DOLLAR LOG: 
+LOG: splnila se podminka
+LOG: EXPRESSION LOG: DOLLAR LOG: 
+LOG: 16 Aktualni token RPAREN a stacktop: EXPRESSION [9, 11]
+LOG: EXPRESSION LOG: DOLLAR LOG: 
+LOG: string STRING_MINUS
+LOG: Final stack: LOG: EXPRESSION LOG: DOLLAR LOG: 
 expr strom po skoncení funcke parseExpression
 ===== AST STROM =====
 [STRING_MINUS]
   [IDENTIFIER] (str=a)
   [IDENTIFIER] (str=b)
 LOG: precedencna odovzdala token jeho type je = 21
+LOG: 0 FLAG
+LOG: 1 Aktualni token IDENTIFIER a stacktop: DOLLAR [9, 8]
+LOG: DOLLAR LOG: 
+LOG: 	Operace <
+LOG: 		2 budu hazet na stack klasicky
+LOG: 			3 < (9, 8) LOG: IDENTIFIER LOG: STOP LOG: DOLLAR LOG: 
+LOG: 4 Aktualni token STAR a stacktop: IDENTIFIER [8, 1]
+LOG: IDENTIFIER LOG: STOP LOG: DOLLAR LOG: 
+LOG: 	Operace >
+LOG: 			param count 1
+LOG: 			5 > (8, 1) LOG: EXPRESSION LOG: DOLLAR LOG: 
+LOG: 6 Aktualni token STAR a stacktop: EXPRESSION [9, 1]
+LOG: EXPRESSION LOG: DOLLAR LOG: 
+LOG: 	Operace <
+LOG: 		7 budu hazet na stack slozite
+LOG: 			8 < (9, 1) LOG: STAR LOG: EXPRESSION LOG: STOP LOG: DOLLAR LOG: 
+LOG: 9 Aktualni token IDENTIFIER a stacktop: STAR [1, 8]
+LOG: STAR LOG: EXPRESSION LOG: STOP LOG: DOLLAR LOG: 
+LOG: 	Operace <
+LOG: 		10 budu hazet na stack klasicky
+LOG: 			11 < (1, 8) LOG: IDENTIFIER LOG: STOP LOG: STAR LOG: EXPRESSION LOG: STOP LOG: DOLLAR LOG: 
+LOG: 12 Aktualni token RPAREN a stacktop: IDENTIFIER [8, 11]
+LOG: IDENTIFIER LOG: STOP LOG: STAR LOG: EXPRESSION LOG: STOP LOG: DOLLAR LOG: 
+LOG: 	Operace >
+LOG: 			param count 1
+LOG: 			13 > (8, 11) LOG: EXPRESSION LOG: STAR LOG: EXPRESSION LOG: STOP LOG: DOLLAR LOG: 
+LOG: 14 Aktualni token RPAREN a stacktop: EXPRESSION [1, 11]
+LOG: EXPRESSION LOG: STAR LOG: EXPRESSION LOG: STOP LOG: DOLLAR LOG: 
+LOG: 	Operace >
+LOG: 			param count 3
+LOG: 			15 > (1, 11) LOG: EXPRESSION LOG: DOLLAR LOG: 
+LOG: splnila se podminka
+LOG: EXPRESSION LOG: DOLLAR LOG: 
+LOG: 16 Aktualni token RPAREN a stacktop: EXPRESSION [9, 11]
+LOG: EXPRESSION LOG: DOLLAR LOG: 
+LOG: string STRING_MUL
+LOG: Final stack: LOG: EXPRESSION LOG: DOLLAR LOG: 
 expr strom po skoncení funcke parseExpression
 ===== AST STROM =====
 [STRING_MUL]
   [IDENTIFIER] (str=a)
   [IDENTIFIER] (str=b)
 LOG: precedencna odovzdala token jeho type je = 21
+LOG: 0 FLAG
+LOG: 1 Aktualni token IDENTIFIER a stacktop: DOLLAR [9, 8]
+LOG: DOLLAR LOG: 
+LOG: 	Operace <
+LOG: 		2 budu hazet na stack klasicky
+LOG: 			3 < (9, 8) LOG: IDENTIFIER LOG: STOP LOG: DOLLAR LOG: 
+LOG: 4 Aktualni token SLASH a stacktop: IDENTIFIER [8, 1]
+LOG: IDENTIFIER LOG: STOP LOG: DOLLAR LOG: 
+LOG: 	Operace >
+LOG: 			param count 1
+LOG: 			5 > (8, 1) LOG: EXPRESSION LOG: DOLLAR LOG: 
+LOG: 6 Aktualni token SLASH a stacktop: EXPRESSION [9, 1]
+LOG: EXPRESSION LOG: DOLLAR LOG: 
+LOG: 	Operace <
+LOG: 		7 budu hazet na stack slozite
+LOG: 			8 < (9, 1) LOG: SLASH LOG: EXPRESSION LOG: STOP LOG: DOLLAR LOG: 
+LOG: 9 Aktualni token IDENTIFIER a stacktop: SLASH [1, 8]
+LOG: SLASH LOG: EXPRESSION LOG: STOP LOG: DOLLAR LOG: 
+LOG: 	Operace <
+LOG: 		10 budu hazet na stack klasicky
+LOG: 			11 < (1, 8) LOG: IDENTIFIER LOG: STOP LOG: SLASH LOG: EXPRESSION LOG: STOP LOG: DOLLAR LOG: 
+LOG: 12 Aktualni token RPAREN a stacktop: IDENTIFIER [8, 11]
+LOG: IDENTIFIER LOG: STOP LOG: SLASH LOG: EXPRESSION LOG: STOP LOG: DOLLAR LOG: 
+LOG: 	Operace >
+LOG: 			param count 1
+LOG: 			13 > (8, 11) LOG: EXPRESSION LOG: SLASH LOG: EXPRESSION LOG: STOP LOG: DOLLAR LOG: 
+LOG: 14 Aktualni token RPAREN a stacktop: EXPRESSION [1, 11]
+LOG: EXPRESSION LOG: SLASH LOG: EXPRESSION LOG: STOP LOG: DOLLAR LOG: 
+LOG: 	Operace >
+LOG: 			param count 3
+LOG: 			15 > (1, 11) LOG: EXPRESSION LOG: DOLLAR LOG: 
+LOG: splnila se podminka
+LOG: EXPRESSION LOG: DOLLAR LOG: 
+LOG: 16 Aktualni token RPAREN a stacktop: EXPRESSION [9, 11]
+LOG: EXPRESSION LOG: DOLLAR LOG: 
+LOG: string STRING_DIV
+LOG: Final stack: LOG: EXPRESSION LOG: DOLLAR LOG: 
 expr strom po skoncení funcke parseExpression
 ===== AST STROM =====
 [STRING_DIV]
@@ -186,14 +375,75 @@ RESULT: PASS
 Test: test_03_string_concat
 ========================================
 Spouštím: valgrind --leak-check=full ../.././ifj25 < ./tests/test_03.in
+LOG: 0 FLAG
+LOG: 1 Aktualni token STRING a stacktop: DOLLAR [9, 8]
+LOG: DOLLAR LOG: 
+LOG: 	Operace <
+LOG: 		2 budu hazet na stack klasicky
+LOG: 			3 < (9, 8) LOG: STRING LOG: STOP LOG: DOLLAR LOG: 
+LOG: 4 Aktualni token NEW_LINE a stacktop: STRING [8, 9]
+LOG: STRING LOG: STOP LOG: DOLLAR LOG: 
+LOG: 			param count 1
+LOG: Final etapa: LOG: EXPRESSION LOG: DOLLAR LOG: 
+LOG: string STRING_LIT
+LOG: Final stack: LOG: EXPRESSION LOG: DOLLAR LOG: 
 expr strom po skoncení funcke parseExpression
 ===== AST STROM =====
 [STRING_LIT] (str=Hello)
 LOG: precedencna odovzdala token jeho type je = 33
+LOG: 0 FLAG
+LOG: 1 Aktualni token STRING a stacktop: DOLLAR [9, 8]
+LOG: DOLLAR LOG: 
+LOG: 	Operace <
+LOG: 		2 budu hazet na stack klasicky
+LOG: 			3 < (9, 8) LOG: STRING LOG: STOP LOG: DOLLAR LOG: 
+LOG: 4 Aktualni token NEW_LINE a stacktop: STRING [8, 9]
+LOG: STRING LOG: STOP LOG: DOLLAR LOG: 
+LOG: 			param count 1
+LOG: Final etapa: LOG: EXPRESSION LOG: DOLLAR LOG: 
+LOG: string STRING_LIT
+LOG: Final stack: LOG: EXPRESSION LOG: DOLLAR LOG: 
 expr strom po skoncení funcke parseExpression
 ===== AST STROM =====
 [STRING_LIT] (str=\032World)
 LOG: precedencna odovzdala token jeho type je = 33
+LOG: 0 FLAG
+LOG: 1 Aktualni token IDENTIFIER a stacktop: DOLLAR [9, 8]
+LOG: DOLLAR LOG: 
+LOG: 	Operace <
+LOG: 		2 budu hazet na stack klasicky
+LOG: 			3 < (9, 8) LOG: IDENTIFIER LOG: STOP LOG: DOLLAR LOG: 
+LOG: 4 Aktualni token PLUS a stacktop: IDENTIFIER [8, 0]
+LOG: IDENTIFIER LOG: STOP LOG: DOLLAR LOG: 
+LOG: 	Operace >
+LOG: 			param count 1
+LOG: 			5 > (8, 0) LOG: EXPRESSION LOG: DOLLAR LOG: 
+LOG: 6 Aktualni token PLUS a stacktop: EXPRESSION [9, 0]
+LOG: EXPRESSION LOG: DOLLAR LOG: 
+LOG: 	Operace <
+LOG: 		7 budu hazet na stack slozite
+LOG: 			8 < (9, 0) LOG: PLUS LOG: EXPRESSION LOG: STOP LOG: DOLLAR LOG: 
+LOG: 9 Aktualni token IDENTIFIER a stacktop: PLUS [0, 8]
+LOG: PLUS LOG: EXPRESSION LOG: STOP LOG: DOLLAR LOG: 
+LOG: 	Operace <
+LOG: 		10 budu hazet na stack klasicky
+LOG: 			11 < (0, 8) LOG: IDENTIFIER LOG: STOP LOG: PLUS LOG: EXPRESSION LOG: STOP LOG: DOLLAR LOG: 
+LOG: 12 Aktualni token RPAREN a stacktop: IDENTIFIER [8, 11]
+LOG: IDENTIFIER LOG: STOP LOG: PLUS LOG: EXPRESSION LOG: STOP LOG: DOLLAR LOG: 
+LOG: 	Operace >
+LOG: 			param count 1
+LOG: 			13 > (8, 11) LOG: EXPRESSION LOG: PLUS LOG: EXPRESSION LOG: STOP LOG: DOLLAR LOG: 
+LOG: 14 Aktualni token RPAREN a stacktop: EXPRESSION [0, 11]
+LOG: EXPRESSION LOG: PLUS LOG: EXPRESSION LOG: STOP LOG: DOLLAR LOG: 
+LOG: 	Operace >
+LOG: 			param count 3
+LOG: 			15 > (0, 11) LOG: EXPRESSION LOG: DOLLAR LOG: 
+LOG: splnila se podminka
+LOG: EXPRESSION LOG: DOLLAR LOG: 
+LOG: 16 Aktualni token RPAREN a stacktop: EXPRESSION [9, 11]
+LOG: EXPRESSION LOG: DOLLAR LOG: 
+LOG: string STRING_PLUS
+LOG: Final stack: LOG: EXPRESSION LOG: DOLLAR LOG: 
 expr strom po skoncení funcke parseExpression
 ===== AST STROM =====
 [STRING_PLUS]
@@ -265,20 +515,103 @@ RESULT: PASS
 Test: test_04_if_condition
 ========================================
 Spouštím: valgrind --leak-check=full ../.././ifj25 < ./tests/test_04.in
+LOG: 0 FLAG
+LOG: 1 Aktualni token INTEGER a stacktop: DOLLAR [9, 8]
+LOG: DOLLAR LOG: 
+LOG: 	Operace <
+LOG: 		2 budu hazet na stack klasicky
+LOG: 			3 < (9, 8) LOG: INTEGER LOG: STOP LOG: DOLLAR LOG: 
+LOG: 4 Aktualni token NEW_LINE a stacktop: INTEGER [8, 9]
+LOG: INTEGER LOG: STOP LOG: DOLLAR LOG: 
+LOG: 			param count 1
+LOG: Final etapa: LOG: EXPRESSION LOG: DOLLAR LOG: 
+LOG: string INT_LIT
+LOG: Final stack: LOG: EXPRESSION LOG: DOLLAR LOG: 
 expr strom po skoncení funcke parseExpression
 ===== AST STROM =====
 [INT_LIT] (int=10)
 LOG: precedencna odovzdala token jeho type je = 33
+LOG: -1 FLAG
+LOG: 1 Aktualni token IDENTIFIER a stacktop: DOLLAR [9, 8]
+LOG: DOLLAR LOG: 
+LOG: 	Operace <
+LOG: 		2 budu hazet na stack klasicky
+LOG: 			3 < (9, 8) LOG: IDENTIFIER LOG: STOP LOG: DOLLAR LOG: 
+LOG: 4 Aktualni token GT a stacktop: IDENTIFIER [8, 2]
+LOG: IDENTIFIER LOG: STOP LOG: DOLLAR LOG: 
+LOG: 	Operace >
+LOG: 			param count 1
+LOG: 			5 > (8, 2) LOG: EXPRESSION LOG: DOLLAR LOG: 
+LOG: 6 Aktualni token GT a stacktop: EXPRESSION [9, 2]
+LOG: EXPRESSION LOG: DOLLAR LOG: 
+LOG: 	Operace <
+LOG: 		7 budu hazet na stack slozite
+LOG: 			8 < (9, 2) LOG: GT LOG: EXPRESSION LOG: STOP LOG: DOLLAR LOG: 
+LOG: 9 Aktualni token INTEGER a stacktop: GT [2, 8]
+LOG: GT LOG: EXPRESSION LOG: STOP LOG: DOLLAR LOG: 
+LOG: 	Operace <
+LOG: 		10 budu hazet na stack klasicky
+LOG: 			11 < (2, 8) LOG: INTEGER LOG: STOP LOG: GT LOG: EXPRESSION LOG: STOP LOG: DOLLAR LOG: 
+LOG: 12 Aktualni token RPAREN a stacktop: INTEGER [8, 11]
+LOG: INTEGER LOG: STOP LOG: GT LOG: EXPRESSION LOG: STOP LOG: DOLLAR LOG: 
+LOG: 	Operace >
+LOG: 			param count 1
+LOG: 			13 > (8, 11) LOG: EXPRESSION LOG: GT LOG: EXPRESSION LOG: STOP LOG: DOLLAR LOG: 
+LOG: 14 Aktualni token RPAREN a stacktop: EXPRESSION [2, 11]
+LOG: EXPRESSION LOG: GT LOG: EXPRESSION LOG: STOP LOG: DOLLAR LOG: 
+LOG: 	Operace >
+LOG: 			param count 3
+LOG: 			15 > (2, 11) LOG: EXPRESSION LOG: DOLLAR LOG: 
+LOG: splnila se podminka
+LOG: EXPRESSION LOG: DOLLAR LOG: 
+LOG: 16 Aktualni token RPAREN a stacktop: EXPRESSION [9, 11]
+LOG: EXPRESSION LOG: DOLLAR LOG: 
+LOG: string STRING_GT
+LOG: Final stack: LOG: EXPRESSION LOG: DOLLAR LOG: 
 expr strom po skoncení funcke parseExpression
 ===== AST STROM =====
 [STRING_GT]
   [IDENTIFIER] (str=x)
   [INT_LIT] (int=5)
 LOG: 1LOG: precedencna odovzdala token jeho type je = 21
+LOG: 0 FLAG
+LOG: 1 Aktualni token STRING a stacktop: DOLLAR [9, 8]
+LOG: DOLLAR LOG: 
+LOG: 	Operace <
+LOG: 		2 budu hazet na stack klasicky
+LOG: 			3 < (9, 8) LOG: STRING LOG: STOP LOG: DOLLAR LOG: 
+LOG: 4 Aktualni token RPAREN a stacktop: STRING [8, 11]
+LOG: STRING LOG: STOP LOG: DOLLAR LOG: 
+LOG: 	Operace >
+LOG: 			param count 1
+LOG: 			5 > (8, 11) LOG: EXPRESSION LOG: DOLLAR LOG: 
+LOG: splnila se podminka
+LOG: EXPRESSION LOG: DOLLAR LOG: 
+LOG: 6 Aktualni token RPAREN a stacktop: EXPRESSION [9, 11]
+LOG: EXPRESSION LOG: DOLLAR LOG: 
+LOG: string STRING_LIT
+LOG: Final stack: LOG: EXPRESSION LOG: DOLLAR LOG: 
 expr strom po skoncení funcke parseExpression
 ===== AST STROM =====
 [STRING_LIT] (str=greater)
 LOG: precedencna odovzdala token jeho type je = 21
+LOG: 0 FLAG
+LOG: 1 Aktualni token STRING a stacktop: DOLLAR [9, 8]
+LOG: DOLLAR LOG: 
+LOG: 	Operace <
+LOG: 		2 budu hazet na stack klasicky
+LOG: 			3 < (9, 8) LOG: STRING LOG: STOP LOG: DOLLAR LOG: 
+LOG: 4 Aktualni token RPAREN a stacktop: STRING [8, 11]
+LOG: STRING LOG: STOP LOG: DOLLAR LOG: 
+LOG: 	Operace >
+LOG: 			param count 1
+LOG: 			5 > (8, 11) LOG: EXPRESSION LOG: DOLLAR LOG: 
+LOG: splnila se podminka
+LOG: EXPRESSION LOG: DOLLAR LOG: 
+LOG: 6 Aktualni token RPAREN a stacktop: EXPRESSION [9, 11]
+LOG: EXPRESSION LOG: DOLLAR LOG: 
+LOG: string STRING_LIT
+LOG: Final stack: LOG: EXPRESSION LOG: DOLLAR LOG: 
 expr strom po skoncení funcke parseExpression
 ===== AST STROM =====
 [STRING_LIT] (str=lesser)
@@ -366,20 +699,115 @@ RESULT: PASS
 Test: test_05_while_loop
 ========================================
 Spouštím: valgrind --leak-check=full ../.././ifj25 < ./tests/test_05.in
+LOG: 0 FLAG
+LOG: 1 Aktualni token INTEGER a stacktop: DOLLAR [9, 8]
+LOG: DOLLAR LOG: 
+LOG: 	Operace <
+LOG: 		2 budu hazet na stack klasicky
+LOG: 			3 < (9, 8) LOG: INTEGER LOG: STOP LOG: DOLLAR LOG: 
+LOG: 4 Aktualni token NEW_LINE a stacktop: INTEGER [8, 9]
+LOG: INTEGER LOG: STOP LOG: DOLLAR LOG: 
+LOG: 			param count 1
+LOG: Final etapa: LOG: EXPRESSION LOG: DOLLAR LOG: 
+LOG: string INT_LIT
+LOG: Final stack: LOG: EXPRESSION LOG: DOLLAR LOG: 
 expr strom po skoncení funcke parseExpression
 ===== AST STROM =====
 [INT_LIT] (int=3)
 LOG: precedencna odovzdala token jeho type je = 33
+LOG: -1 FLAG
+LOG: 1 Aktualni token IDENTIFIER a stacktop: DOLLAR [9, 8]
+LOG: DOLLAR LOG: 
+LOG: 	Operace <
+LOG: 		2 budu hazet na stack klasicky
+LOG: 			3 < (9, 8) LOG: IDENTIFIER LOG: STOP LOG: DOLLAR LOG: 
+LOG: 4 Aktualni token GT a stacktop: IDENTIFIER [8, 2]
+LOG: IDENTIFIER LOG: STOP LOG: DOLLAR LOG: 
+LOG: 	Operace >
+LOG: 			param count 1
+LOG: 			5 > (8, 2) LOG: EXPRESSION LOG: DOLLAR LOG: 
+LOG: 6 Aktualni token GT a stacktop: EXPRESSION [9, 2]
+LOG: EXPRESSION LOG: DOLLAR LOG: 
+LOG: 	Operace <
+LOG: 		7 budu hazet na stack slozite
+LOG: 			8 < (9, 2) LOG: GT LOG: EXPRESSION LOG: STOP LOG: DOLLAR LOG: 
+LOG: 9 Aktualni token INTEGER a stacktop: GT [2, 8]
+LOG: GT LOG: EXPRESSION LOG: STOP LOG: DOLLAR LOG: 
+LOG: 	Operace <
+LOG: 		10 budu hazet na stack klasicky
+LOG: 			11 < (2, 8) LOG: INTEGER LOG: STOP LOG: GT LOG: EXPRESSION LOG: STOP LOG: DOLLAR LOG: 
+LOG: 12 Aktualni token RPAREN a stacktop: INTEGER [8, 11]
+LOG: INTEGER LOG: STOP LOG: GT LOG: EXPRESSION LOG: STOP LOG: DOLLAR LOG: 
+LOG: 	Operace >
+LOG: 			param count 1
+LOG: 			13 > (8, 11) LOG: EXPRESSION LOG: GT LOG: EXPRESSION LOG: STOP LOG: DOLLAR LOG: 
+LOG: 14 Aktualni token RPAREN a stacktop: EXPRESSION [2, 11]
+LOG: EXPRESSION LOG: GT LOG: EXPRESSION LOG: STOP LOG: DOLLAR LOG: 
+LOG: 	Operace >
+LOG: 			param count 3
+LOG: 			15 > (2, 11) LOG: EXPRESSION LOG: DOLLAR LOG: 
+LOG: splnila se podminka
+LOG: EXPRESSION LOG: DOLLAR LOG: 
+LOG: 16 Aktualni token RPAREN a stacktop: EXPRESSION [9, 11]
+LOG: EXPRESSION LOG: DOLLAR LOG: 
+LOG: string STRING_GT
+LOG: Final stack: LOG: EXPRESSION LOG: DOLLAR LOG: 
 expr strom po skoncení funcke parseExpression
 ===== AST STROM =====
 [STRING_GT]
   [IDENTIFIER] (str=i)
   [INT_LIT] (int=0)
 LOG: 1LOG: precedencna odovzdala token jeho type je = 21
+LOG: 0 FLAG
+LOG: 1 Aktualni token IDENTIFIER a stacktop: DOLLAR [9, 8]
+LOG: DOLLAR LOG: 
+LOG: 	Operace <
+LOG: 		2 budu hazet na stack klasicky
+LOG: 			3 < (9, 8) LOG: IDENTIFIER LOG: STOP LOG: DOLLAR LOG: 
+LOG: 4 Aktualni token RPAREN a stacktop: IDENTIFIER [8, 11]
+LOG: IDENTIFIER LOG: STOP LOG: DOLLAR LOG: 
+LOG: 	Operace >
+LOG: 			param count 1
+LOG: 			5 > (8, 11) LOG: EXPRESSION LOG: DOLLAR LOG: 
+LOG: splnila se podminka
+LOG: EXPRESSION LOG: DOLLAR LOG: 
+LOG: 6 Aktualni token RPAREN a stacktop: EXPRESSION [9, 11]
+LOG: EXPRESSION LOG: DOLLAR LOG: 
+LOG: string IDENTIFIER
+LOG: Final stack: LOG: EXPRESSION LOG: DOLLAR LOG: 
 expr strom po skoncení funcke parseExpression
 ===== AST STROM =====
 [IDENTIFIER] (str=i)
 LOG: precedencna odovzdala token jeho type je = 21
+LOG: 0 FLAG
+LOG: 1 Aktualni token IDENTIFIER a stacktop: DOLLAR [9, 8]
+LOG: DOLLAR LOG: 
+LOG: 	Operace <
+LOG: 		2 budu hazet na stack klasicky
+LOG: 			3 < (9, 8) LOG: IDENTIFIER LOG: STOP LOG: DOLLAR LOG: 
+LOG: 4 Aktualni token MINUS a stacktop: IDENTIFIER [8, 0]
+LOG: IDENTIFIER LOG: STOP LOG: DOLLAR LOG: 
+LOG: 	Operace >
+LOG: 			param count 1
+LOG: 			5 > (8, 0) LOG: EXPRESSION LOG: DOLLAR LOG: 
+LOG: 6 Aktualni token MINUS a stacktop: EXPRESSION [9, 0]
+LOG: EXPRESSION LOG: DOLLAR LOG: 
+LOG: 	Operace <
+LOG: 		7 budu hazet na stack slozite
+LOG: 			8 < (9, 0) LOG: MINUS LOG: EXPRESSION LOG: STOP LOG: DOLLAR LOG: 
+LOG: 9 Aktualni token INTEGER a stacktop: MINUS [0, 8]
+LOG: MINUS LOG: EXPRESSION LOG: STOP LOG: DOLLAR LOG: 
+LOG: 	Operace <
+LOG: 		10 budu hazet na stack klasicky
+LOG: 			11 < (0, 8) LOG: INTEGER LOG: STOP LOG: MINUS LOG: EXPRESSION LOG: STOP LOG: DOLLAR LOG: 
+LOG: 12 Aktualni token NEW_LINE a stacktop: INTEGER [8, 9]
+LOG: INTEGER LOG: STOP LOG: MINUS LOG: EXPRESSION LOG: STOP LOG: DOLLAR LOG: 
+LOG: 			param count 1
+LOG: Final etapa: LOG: EXPRESSION LOG: MINUS LOG: EXPRESSION LOG: STOP LOG: DOLLAR LOG: 
+LOG: 			param count 3
+LOG: Final etapa: LOG: EXPRESSION LOG: DOLLAR LOG: 
+LOG: string STRING_MINUS
+LOG: Final stack: LOG: EXPRESSION LOG: DOLLAR LOG: 
 expr strom po skoncení funcke parseExpression
 ===== AST STROM =====
 [STRING_MINUS]
@@ -459,8 +887,8 @@ Očekávaný výstup: 321
 Skutečný výstup: 3
 RESULT: FAIL (výstup se neshoduje)
 Diff:
---- /dev/fd/62	2025-11-17 13:39:55.647791428 +0100
-+++ /dev/fd/61	2025-11-17 13:39:55.648791429 +0100
+--- /dev/fd/62	2025-11-17 19:21:41.465967233 +0100
++++ /dev/fd/61	2025-11-17 19:21:41.465967233 +0100
 @@ -1 +1 @@
 -321
 +3
@@ -469,10 +897,35 @@ Diff:
 Test: test_06_function_no_params
 ========================================
 Spouštím: valgrind --leak-check=full ../.././ifj25 < ./tests/test_06.in
+LOG: 0 FLAG
+LOG: 1 Aktualni token INTEGER a stacktop: DOLLAR [9, 8]
+LOG: DOLLAR LOG: 
+LOG: 	Operace <
+LOG: 		2 budu hazet na stack klasicky
+LOG: 			3 < (9, 8) LOG: INTEGER LOG: STOP LOG: DOLLAR LOG: 
+LOG: 4 Aktualni token NEW_LINE a stacktop: INTEGER [8, 9]
+LOG: INTEGER LOG: STOP LOG: DOLLAR LOG: 
+LOG: 			param count 1
+LOG: Final etapa: LOG: EXPRESSION LOG: DOLLAR LOG: 
+LOG: string INT_LIT
+LOG: Final stack: LOG: EXPRESSION LOG: DOLLAR LOG: 
 expr strom po skoncení funcke parseExpression
 ===== AST STROM =====
 [INT_LIT] (int=99)
 LOG: precedencna odovzdala token jeho type je = 33
+LOG: 0 FLAG
+LOG: 1 Aktualni token IDENTIFIER a stacktop: DOLLAR [9, 8]
+LOG: DOLLAR LOG: 
+LOG: 	Operace <
+LOG: 		2 budu hazet na stack klasicky
+LOG: 			3 < (9, 8) LOG: IDENTIFIER LOG: STOP LOG: DOLLAR LOG: 
+LOG: 			param count 1
+LOG: splnila se podminka
+LOG: EXPRESSION LOG: DOLLAR LOG: 
+LOG: 4 Aktualni token NEW_LINE a stacktop: EXPRESSION [9, 9]
+LOG: EXPRESSION LOG: DOLLAR LOG: 
+LOG: string FUNC_CALL
+LOG: Final stack: LOG: EXPRESSION LOG: DOLLAR LOG: 
 expr strom po skoncení funcke parseExpression
 ===== AST STROM =====
 [FUNC_CALL]
@@ -480,6 +933,23 @@ expr strom po skoncení funcke parseExpression
   [PARAM]
     [EMPTY]
 LOG: precedencna odovzdala token jeho type je = 33
+LOG: 0 FLAG
+LOG: 1 Aktualni token IDENTIFIER a stacktop: DOLLAR [9, 8]
+LOG: DOLLAR LOG: 
+LOG: 	Operace <
+LOG: 		2 budu hazet na stack klasicky
+LOG: 			3 < (9, 8) LOG: IDENTIFIER LOG: STOP LOG: DOLLAR LOG: 
+LOG: 4 Aktualni token RPAREN a stacktop: IDENTIFIER [8, 11]
+LOG: IDENTIFIER LOG: STOP LOG: DOLLAR LOG: 
+LOG: 	Operace >
+LOG: 			param count 1
+LOG: 			5 > (8, 11) LOG: EXPRESSION LOG: DOLLAR LOG: 
+LOG: splnila se podminka
+LOG: EXPRESSION LOG: DOLLAR LOG: 
+LOG: 6 Aktualni token RPAREN a stacktop: EXPRESSION [9, 11]
+LOG: EXPRESSION LOG: DOLLAR LOG: 
+LOG: string IDENTIFIER
+LOG: Final stack: LOG: EXPRESSION LOG: DOLLAR LOG: 
 expr strom po skoncení funcke parseExpression
 ===== AST STROM =====
 [IDENTIFIER] (str=result)
@@ -555,12 +1025,91 @@ RESULT: PASS
 Test: test_07_function_with_params
 ========================================
 Spouštím: valgrind --leak-check=full ../.././ifj25 < ./tests/test_07.in
+LOG: 0 FLAG
+LOG: 1 Aktualni token IDENTIFIER a stacktop: DOLLAR [9, 8]
+LOG: DOLLAR LOG: 
+LOG: 	Operace <
+LOG: 		2 budu hazet na stack klasicky
+LOG: 			3 < (9, 8) LOG: IDENTIFIER LOG: STOP LOG: DOLLAR LOG: 
+LOG: 4 Aktualni token PLUS a stacktop: IDENTIFIER [8, 0]
+LOG: IDENTIFIER LOG: STOP LOG: DOLLAR LOG: 
+LOG: 	Operace >
+LOG: 			param count 1
+LOG: 			5 > (8, 0) LOG: EXPRESSION LOG: DOLLAR LOG: 
+LOG: 6 Aktualni token PLUS a stacktop: EXPRESSION [9, 0]
+LOG: EXPRESSION LOG: DOLLAR LOG: 
+LOG: 	Operace <
+LOG: 		7 budu hazet na stack slozite
+LOG: 			8 < (9, 0) LOG: PLUS LOG: EXPRESSION LOG: STOP LOG: DOLLAR LOG: 
+LOG: 9 Aktualni token IDENTIFIER a stacktop: PLUS [0, 8]
+LOG: PLUS LOG: EXPRESSION LOG: STOP LOG: DOLLAR LOG: 
+LOG: 	Operace <
+LOG: 		10 budu hazet na stack klasicky
+LOG: 			11 < (0, 8) LOG: IDENTIFIER LOG: STOP LOG: PLUS LOG: EXPRESSION LOG: STOP LOG: DOLLAR LOG: 
+LOG: 12 Aktualni token NEW_LINE a stacktop: IDENTIFIER [8, 9]
+LOG: IDENTIFIER LOG: STOP LOG: PLUS LOG: EXPRESSION LOG: STOP LOG: DOLLAR LOG: 
+LOG: 			param count 1
+LOG: Final etapa: LOG: EXPRESSION LOG: PLUS LOG: EXPRESSION LOG: STOP LOG: DOLLAR LOG: 
+LOG: 			param count 3
+LOG: Final etapa: LOG: EXPRESSION LOG: DOLLAR LOG: 
+LOG: string STRING_PLUS
+LOG: Final stack: LOG: EXPRESSION LOG: DOLLAR LOG: 
 expr strom po skoncení funcke parseExpression
 ===== AST STROM =====
 [STRING_PLUS]
   [IDENTIFIER] (str=a)
   [IDENTIFIER] (str=b)
 LOG: precedencna odovzdala token jeho type je = 33
+LOG: 0 FLAG
+LOG: 1 Aktualni token IDENTIFIER a stacktop: DOLLAR [9, 8]
+LOG: DOLLAR LOG: 
+LOG: 	Operace <
+LOG: 		2 budu hazet na stack klasicky
+LOG: 			3 < (9, 8) LOG: IDENTIFIER LOG: STOP LOG: DOLLAR LOG: 
+LOG: 			param count 1
+LOG: 0 FLAG
+LOG: 1 Aktualni token INTEGER a stacktop: DOLLAR [9, 8]
+LOG: DOLLAR LOG: 
+LOG: 	Operace <
+LOG: 		2 budu hazet na stack klasicky
+LOG: 			3 < (9, 8) LOG: INTEGER LOG: STOP LOG: DOLLAR LOG: 
+LOG: 4 Aktualni token COMMA a stacktop: INTEGER [8, 9]
+LOG: INTEGER LOG: STOP LOG: DOLLAR LOG: 
+LOG: 	Operace >
+LOG: 			param count 1
+LOG: 			5 > (8, 9) LOG: EXPRESSION LOG: DOLLAR LOG: 
+LOG: splnila se podminka
+LOG: EXPRESSION LOG: DOLLAR LOG: 
+LOG: 6 Aktualni token COMMA a stacktop: EXPRESSION [9, 9]
+LOG: EXPRESSION LOG: DOLLAR LOG: 
+LOG: string INT_LIT
+LOG: Final stack: LOG: EXPRESSION LOG: DOLLAR LOG: 
+LOG: 				returned
+LOG: 0 FLAG
+LOG: 1 Aktualni token INTEGER a stacktop: DOLLAR [9, 8]
+LOG: DOLLAR LOG: 
+LOG: 	Operace <
+LOG: 		2 budu hazet na stack klasicky
+LOG: 			3 < (9, 8) LOG: INTEGER LOG: STOP LOG: DOLLAR LOG: 
+LOG: 4 Aktualni token RPAREN a stacktop: INTEGER [8, 11]
+LOG: INTEGER LOG: STOP LOG: DOLLAR LOG: 
+LOG: 	Operace >
+LOG: 			param count 1
+LOG: 			5 > (8, 11) LOG: EXPRESSION LOG: DOLLAR LOG: 
+LOG: splnila se podminka
+LOG: EXPRESSION LOG: DOLLAR LOG: 
+LOG: 6 Aktualni token RPAREN a stacktop: EXPRESSION [9, 11]
+LOG: EXPRESSION LOG: DOLLAR LOG: 
+LOG: string INT_LIT
+LOG: Final stack: LOG: EXPRESSION LOG: DOLLAR LOG: 
+LOG: 				returned
+LOG: ZASOBNIK PO ZPRACOVANI FUNKCE: LOG: EXPRESSION LOG: DOLLAR LOG: 
+LOG: splnila se podminka
+LOG: EXPRESSION LOG: DOLLAR LOG: 
+LOG: 4 Aktualni token NEW_LINE a stacktop: EXPRESSION [9, 9]
+LOG: EXPRESSION LOG: DOLLAR LOG: 
+LOG: string FUNC_CALL
+LOG: Final stack: LOG: EXPRESSION LOG: DOLLAR LOG: 
 expr strom po skoncení funcke parseExpression
 ===== AST STROM =====
 [FUNC_CALL]
@@ -570,6 +1119,23 @@ expr strom po skoncení funcke parseExpression
     [INT_LIT] (int=7)
     [EMPTY]
 LOG: precedencna odovzdala token jeho type je = 33
+LOG: 0 FLAG
+LOG: 1 Aktualni token IDENTIFIER a stacktop: DOLLAR [9, 8]
+LOG: DOLLAR LOG: 
+LOG: 	Operace <
+LOG: 		2 budu hazet na stack klasicky
+LOG: 			3 < (9, 8) LOG: IDENTIFIER LOG: STOP LOG: DOLLAR LOG: 
+LOG: 4 Aktualni token RPAREN a stacktop: IDENTIFIER [8, 11]
+LOG: IDENTIFIER LOG: STOP LOG: DOLLAR LOG: 
+LOG: 	Operace >
+LOG: 			param count 1
+LOG: 			5 > (8, 11) LOG: EXPRESSION LOG: DOLLAR LOG: 
+LOG: splnila se podminka
+LOG: EXPRESSION LOG: DOLLAR LOG: 
+LOG: 6 Aktualni token RPAREN a stacktop: EXPRESSION [9, 11]
+LOG: EXPRESSION LOG: DOLLAR LOG: 
+LOG: string IDENTIFIER
+LOG: Final stack: LOG: EXPRESSION LOG: DOLLAR LOG: 
 expr strom po skoncení funcke parseExpression
 ===== AST STROM =====
 [IDENTIFIER] (str=sum)
@@ -657,36 +1223,210 @@ RESULT: PASS
 Test: test_08_comparisons
 ========================================
 Spouštím: valgrind --leak-check=full ../.././ifj25 < ./tests/test_08.in
+LOG: 0 FLAG
+LOG: 1 Aktualni token INTEGER a stacktop: DOLLAR [9, 8]
+LOG: DOLLAR LOG: 
+LOG: 	Operace <
+LOG: 		2 budu hazet na stack klasicky
+LOG: 			3 < (9, 8) LOG: INTEGER LOG: STOP LOG: DOLLAR LOG: 
+LOG: 4 Aktualni token NEW_LINE a stacktop: INTEGER [8, 9]
+LOG: INTEGER LOG: STOP LOG: DOLLAR LOG: 
+LOG: 			param count 1
+LOG: Final etapa: LOG: EXPRESSION LOG: DOLLAR LOG: 
+LOG: string INT_LIT
+LOG: Final stack: LOG: EXPRESSION LOG: DOLLAR LOG: 
 expr strom po skoncení funcke parseExpression
 ===== AST STROM =====
 [INT_LIT] (int=5)
 LOG: precedencna odovzdala token jeho type je = 33
+LOG: -1 FLAG
+LOG: 1 Aktualni token IDENTIFIER a stacktop: DOLLAR [9, 8]
+LOG: DOLLAR LOG: 
+LOG: 	Operace <
+LOG: 		2 budu hazet na stack klasicky
+LOG: 			3 < (9, 8) LOG: IDENTIFIER LOG: STOP LOG: DOLLAR LOG: 
+LOG: 4 Aktualni token EQ a stacktop: IDENTIFIER [8, 4]
+LOG: IDENTIFIER LOG: STOP LOG: DOLLAR LOG: 
+LOG: 	Operace >
+LOG: 			param count 1
+LOG: 			5 > (8, 4) LOG: EXPRESSION LOG: DOLLAR LOG: 
+LOG: 6 Aktualni token EQ a stacktop: EXPRESSION [9, 4]
+LOG: EXPRESSION LOG: DOLLAR LOG: 
+LOG: 	Operace <
+LOG: 		7 budu hazet na stack slozite
+LOG: 			8 < (9, 4) LOG: EQ LOG: EXPRESSION LOG: STOP LOG: DOLLAR LOG: 
+LOG: 9 Aktualni token INTEGER a stacktop: EQ [4, 8]
+LOG: EQ LOG: EXPRESSION LOG: STOP LOG: DOLLAR LOG: 
+LOG: 	Operace <
+LOG: 		10 budu hazet na stack klasicky
+LOG: 			11 < (4, 8) LOG: INTEGER LOG: STOP LOG: EQ LOG: EXPRESSION LOG: STOP LOG: DOLLAR LOG: 
+LOG: 12 Aktualni token RPAREN a stacktop: INTEGER [8, 11]
+LOG: INTEGER LOG: STOP LOG: EQ LOG: EXPRESSION LOG: STOP LOG: DOLLAR LOG: 
+LOG: 	Operace >
+LOG: 			param count 1
+LOG: 			13 > (8, 11) LOG: EXPRESSION LOG: EQ LOG: EXPRESSION LOG: STOP LOG: DOLLAR LOG: 
+LOG: 14 Aktualni token RPAREN a stacktop: EXPRESSION [4, 11]
+LOG: EXPRESSION LOG: EQ LOG: EXPRESSION LOG: STOP LOG: DOLLAR LOG: 
+LOG: 	Operace >
+LOG: 			param count 3
+LOG: 			15 > (4, 11) LOG: EXPRESSION LOG: DOLLAR LOG: 
+LOG: splnila se podminka
+LOG: EXPRESSION LOG: DOLLAR LOG: 
+LOG: 16 Aktualni token RPAREN a stacktop: EXPRESSION [9, 11]
+LOG: EXPRESSION LOG: DOLLAR LOG: 
+LOG: string STRING_EQ
+LOG: Final stack: LOG: EXPRESSION LOG: DOLLAR LOG: 
 expr strom po skoncení funcke parseExpression
 ===== AST STROM =====
 [STRING_EQ]
   [IDENTIFIER] (str=x)
   [INT_LIT] (int=5)
 LOG: 1LOG: precedencna odovzdala token jeho type je = 21
+LOG: 0 FLAG
+LOG: 1 Aktualni token STRING a stacktop: DOLLAR [9, 8]
+LOG: DOLLAR LOG: 
+LOG: 	Operace <
+LOG: 		2 budu hazet na stack klasicky
+LOG: 			3 < (9, 8) LOG: STRING LOG: STOP LOG: DOLLAR LOG: 
+LOG: 4 Aktualni token RPAREN a stacktop: STRING [8, 11]
+LOG: STRING LOG: STOP LOG: DOLLAR LOG: 
+LOG: 	Operace >
+LOG: 			param count 1
+LOG: 			5 > (8, 11) LOG: EXPRESSION LOG: DOLLAR LOG: 
+LOG: splnila se podminka
+LOG: EXPRESSION LOG: DOLLAR LOG: 
+LOG: 6 Aktualni token RPAREN a stacktop: EXPRESSION [9, 11]
+LOG: EXPRESSION LOG: DOLLAR LOG: 
+LOG: string STRING_LIT
+LOG: Final stack: LOG: EXPRESSION LOG: DOLLAR LOG: 
 expr strom po skoncení funcke parseExpression
 ===== AST STROM =====
 [STRING_LIT] (str=equal)
 LOG: precedencna odovzdala token jeho type je = 21
+LOG: -1 FLAG
+LOG: 1 Aktualni token IDENTIFIER a stacktop: DOLLAR [9, 8]
+LOG: DOLLAR LOG: 
+LOG: 	Operace <
+LOG: 		2 budu hazet na stack klasicky
+LOG: 			3 < (9, 8) LOG: IDENTIFIER LOG: STOP LOG: DOLLAR LOG: 
+LOG: 4 Aktualni token LT a stacktop: IDENTIFIER [8, 2]
+LOG: IDENTIFIER LOG: STOP LOG: DOLLAR LOG: 
+LOG: 	Operace >
+LOG: 			param count 1
+LOG: 			5 > (8, 2) LOG: EXPRESSION LOG: DOLLAR LOG: 
+LOG: 6 Aktualni token LT a stacktop: EXPRESSION [9, 2]
+LOG: EXPRESSION LOG: DOLLAR LOG: 
+LOG: 	Operace <
+LOG: 		7 budu hazet na stack slozite
+LOG: 			8 < (9, 2) LOG: LT LOG: EXPRESSION LOG: STOP LOG: DOLLAR LOG: 
+LOG: 9 Aktualni token INTEGER a stacktop: LT [2, 8]
+LOG: LT LOG: EXPRESSION LOG: STOP LOG: DOLLAR LOG: 
+LOG: 	Operace <
+LOG: 		10 budu hazet na stack klasicky
+LOG: 			11 < (2, 8) LOG: INTEGER LOG: STOP LOG: LT LOG: EXPRESSION LOG: STOP LOG: DOLLAR LOG: 
+LOG: 12 Aktualni token RPAREN a stacktop: INTEGER [8, 11]
+LOG: INTEGER LOG: STOP LOG: LT LOG: EXPRESSION LOG: STOP LOG: DOLLAR LOG: 
+LOG: 	Operace >
+LOG: 			param count 1
+LOG: 			13 > (8, 11) LOG: EXPRESSION LOG: LT LOG: EXPRESSION LOG: STOP LOG: DOLLAR LOG: 
+LOG: 14 Aktualni token RPAREN a stacktop: EXPRESSION [2, 11]
+LOG: EXPRESSION LOG: LT LOG: EXPRESSION LOG: STOP LOG: DOLLAR LOG: 
+LOG: 	Operace >
+LOG: 			param count 3
+LOG: 			15 > (2, 11) LOG: EXPRESSION LOG: DOLLAR LOG: 
+LOG: splnila se podminka
+LOG: EXPRESSION LOG: DOLLAR LOG: 
+LOG: 16 Aktualni token RPAREN a stacktop: EXPRESSION [9, 11]
+LOG: EXPRESSION LOG: DOLLAR LOG: 
+LOG: string STRING_LT
+LOG: Final stack: LOG: EXPRESSION LOG: DOLLAR LOG: 
 expr strom po skoncení funcke parseExpression
 ===== AST STROM =====
 [STRING_LT]
   [IDENTIFIER] (str=x)
   [INT_LIT] (int=10)
 LOG: 1LOG: precedencna odovzdala token jeho type je = 21
+LOG: 0 FLAG
+LOG: 1 Aktualni token STRING a stacktop: DOLLAR [9, 8]
+LOG: DOLLAR LOG: 
+LOG: 	Operace <
+LOG: 		2 budu hazet na stack klasicky
+LOG: 			3 < (9, 8) LOG: STRING LOG: STOP LOG: DOLLAR LOG: 
+LOG: 4 Aktualni token RPAREN a stacktop: STRING [8, 11]
+LOG: STRING LOG: STOP LOG: DOLLAR LOG: 
+LOG: 	Operace >
+LOG: 			param count 1
+LOG: 			5 > (8, 11) LOG: EXPRESSION LOG: DOLLAR LOG: 
+LOG: splnila se podminka
+LOG: EXPRESSION LOG: DOLLAR LOG: 
+LOG: 6 Aktualni token RPAREN a stacktop: EXPRESSION [9, 11]
+LOG: EXPRESSION LOG: DOLLAR LOG: 
+LOG: string STRING_LIT
+LOG: Final stack: LOG: EXPRESSION LOG: DOLLAR LOG: 
 expr strom po skoncení funcke parseExpression
 ===== AST STROM =====
 [STRING_LIT] (str=less)
 LOG: precedencna odovzdala token jeho type je = 21
+LOG: -1 FLAG
+LOG: 1 Aktualni token IDENTIFIER a stacktop: DOLLAR [9, 8]
+LOG: DOLLAR LOG: 
+LOG: 	Operace <
+LOG: 		2 budu hazet na stack klasicky
+LOG: 			3 < (9, 8) LOG: IDENTIFIER LOG: STOP LOG: DOLLAR LOG: 
+LOG: 4 Aktualni token GT a stacktop: IDENTIFIER [8, 2]
+LOG: IDENTIFIER LOG: STOP LOG: DOLLAR LOG: 
+LOG: 	Operace >
+LOG: 			param count 1
+LOG: 			5 > (8, 2) LOG: EXPRESSION LOG: DOLLAR LOG: 
+LOG: 6 Aktualni token GT a stacktop: EXPRESSION [9, 2]
+LOG: EXPRESSION LOG: DOLLAR LOG: 
+LOG: 	Operace <
+LOG: 		7 budu hazet na stack slozite
+LOG: 			8 < (9, 2) LOG: GT LOG: EXPRESSION LOG: STOP LOG: DOLLAR LOG: 
+LOG: 9 Aktualni token INTEGER a stacktop: GT [2, 8]
+LOG: GT LOG: EXPRESSION LOG: STOP LOG: DOLLAR LOG: 
+LOG: 	Operace <
+LOG: 		10 budu hazet na stack klasicky
+LOG: 			11 < (2, 8) LOG: INTEGER LOG: STOP LOG: GT LOG: EXPRESSION LOG: STOP LOG: DOLLAR LOG: 
+LOG: 12 Aktualni token RPAREN a stacktop: INTEGER [8, 11]
+LOG: INTEGER LOG: STOP LOG: GT LOG: EXPRESSION LOG: STOP LOG: DOLLAR LOG: 
+LOG: 	Operace >
+LOG: 			param count 1
+LOG: 			13 > (8, 11) LOG: EXPRESSION LOG: GT LOG: EXPRESSION LOG: STOP LOG: DOLLAR LOG: 
+LOG: 14 Aktualni token RPAREN a stacktop: EXPRESSION [2, 11]
+LOG: EXPRESSION LOG: GT LOG: EXPRESSION LOG: STOP LOG: DOLLAR LOG: 
+LOG: 	Operace >
+LOG: 			param count 3
+LOG: 			15 > (2, 11) LOG: EXPRESSION LOG: DOLLAR LOG: 
+LOG: splnila se podminka
+LOG: EXPRESSION LOG: DOLLAR LOG: 
+LOG: 16 Aktualni token RPAREN a stacktop: EXPRESSION [9, 11]
+LOG: EXPRESSION LOG: DOLLAR LOG: 
+LOG: string STRING_GT
+LOG: Final stack: LOG: EXPRESSION LOG: DOLLAR LOG: 
 expr strom po skoncení funcke parseExpression
 ===== AST STROM =====
 [STRING_GT]
   [IDENTIFIER] (str=x)
   [INT_LIT] (int=3)
 LOG: 1LOG: precedencna odovzdala token jeho type je = 21
+LOG: 0 FLAG
+LOG: 1 Aktualni token STRING a stacktop: DOLLAR [9, 8]
+LOG: DOLLAR LOG: 
+LOG: 	Operace <
+LOG: 		2 budu hazet na stack klasicky
+LOG: 			3 < (9, 8) LOG: STRING LOG: STOP LOG: DOLLAR LOG: 
+LOG: 4 Aktualni token RPAREN a stacktop: STRING [8, 11]
+LOG: STRING LOG: STOP LOG: DOLLAR LOG: 
+LOG: 	Operace >
+LOG: 			param count 1
+LOG: 			5 > (8, 11) LOG: EXPRESSION LOG: DOLLAR LOG: 
+LOG: splnila se podminka
+LOG: EXPRESSION LOG: DOLLAR LOG: 
+LOG: 6 Aktualni token RPAREN a stacktop: EXPRESSION [9, 11]
+LOG: EXPRESSION LOG: DOLLAR LOG: 
+LOG: string STRING_LIT
+LOG: Final stack: LOG: EXPRESSION LOG: DOLLAR LOG: 
 expr strom po skoncení funcke parseExpression
 ===== AST STROM =====
 [STRING_LIT] (str=greater)
@@ -810,10 +1550,39 @@ RESULT: PASS
 Test: test_09_global_vars
 ========================================
 Spouštím: valgrind --leak-check=full ../.././ifj25 < ./tests/test_09.in
+LOG: 0 FLAG
+LOG: 1 Aktualni token INTEGER a stacktop: DOLLAR [9, 8]
+LOG: DOLLAR LOG: 
+LOG: 	Operace <
+LOG: 		2 budu hazet na stack klasicky
+LOG: 			3 < (9, 8) LOG: INTEGER LOG: STOP LOG: DOLLAR LOG: 
+LOG: 4 Aktualni token NEW_LINE a stacktop: INTEGER [8, 9]
+LOG: INTEGER LOG: STOP LOG: DOLLAR LOG: 
+LOG: 			param count 1
+LOG: Final etapa: LOG: EXPRESSION LOG: DOLLAR LOG: 
+LOG: string INT_LIT
+LOG: Final stack: LOG: EXPRESSION LOG: DOLLAR LOG: 
 expr strom po skoncení funcke parseExpression
 ===== AST STROM =====
 [INT_LIT] (int=42)
 LOG: precedencna odovzdala token jeho type je = 33
+LOG: 0 FLAG
+LOG: 1 Aktualni token GLOBAL_ID a stacktop: DOLLAR [9, 8]
+LOG: DOLLAR LOG: 
+LOG: 	Operace <
+LOG: 		2 budu hazet na stack klasicky
+LOG: 			3 < (9, 8) LOG: GLOBAL_ID LOG: STOP LOG: DOLLAR LOG: 
+LOG: 4 Aktualni token RPAREN a stacktop: GLOBAL_ID [8, 11]
+LOG: GLOBAL_ID LOG: STOP LOG: DOLLAR LOG: 
+LOG: 	Operace >
+LOG: 			param count 1
+LOG: 			5 > (8, 11) LOG: EXPRESSION LOG: DOLLAR LOG: 
+LOG: splnila se podminka
+LOG: EXPRESSION LOG: DOLLAR LOG: 
+LOG: 6 Aktualni token RPAREN a stacktop: EXPRESSION [9, 11]
+LOG: EXPRESSION LOG: DOLLAR LOG: 
+LOG: string GLOBAL_ID
+LOG: Final stack: LOG: EXPRESSION LOG: DOLLAR LOG: 
 expr strom po skoncení funcke parseExpression
 ===== AST STROM =====
 [GLOBAL_ID] (str=__global)
@@ -866,14 +1635,75 @@ RESULT: PASS
 Test: test_10_float_operations
 ========================================
 Spouštím: valgrind --leak-check=full ../.././ifj25 < ./tests/test_10.in
+LOG: 0 FLAG
+LOG: 1 Aktualni token FLOAT a stacktop: DOLLAR [9, 8]
+LOG: DOLLAR LOG: 
+LOG: 	Operace <
+LOG: 		2 budu hazet na stack klasicky
+LOG: 			3 < (9, 8) LOG: FLOAT LOG: STOP LOG: DOLLAR LOG: 
+LOG: 4 Aktualni token NEW_LINE a stacktop: FLOAT [8, 9]
+LOG: FLOAT LOG: STOP LOG: DOLLAR LOG: 
+LOG: 			param count 1
+LOG: Final etapa: LOG: EXPRESSION LOG: DOLLAR LOG: 
+LOG: string FLOAT_LIT
+LOG: Final stack: LOG: EXPRESSION LOG: DOLLAR LOG: 
 expr strom po skoncení funcke parseExpression
 ===== AST STROM =====
 [FLOAT_LIT] (float=10.5)
 LOG: precedencna odovzdala token jeho type je = 33
+LOG: 0 FLAG
+LOG: 1 Aktualni token FLOAT a stacktop: DOLLAR [9, 8]
+LOG: DOLLAR LOG: 
+LOG: 	Operace <
+LOG: 		2 budu hazet na stack klasicky
+LOG: 			3 < (9, 8) LOG: FLOAT LOG: STOP LOG: DOLLAR LOG: 
+LOG: 4 Aktualni token NEW_LINE a stacktop: FLOAT [8, 9]
+LOG: FLOAT LOG: STOP LOG: DOLLAR LOG: 
+LOG: 			param count 1
+LOG: Final etapa: LOG: EXPRESSION LOG: DOLLAR LOG: 
+LOG: string FLOAT_LIT
+LOG: Final stack: LOG: EXPRESSION LOG: DOLLAR LOG: 
 expr strom po skoncení funcke parseExpression
 ===== AST STROM =====
 [FLOAT_LIT] (float=2.5)
 LOG: precedencna odovzdala token jeho type je = 33
+LOG: 0 FLAG
+LOG: 1 Aktualni token IDENTIFIER a stacktop: DOLLAR [9, 8]
+LOG: DOLLAR LOG: 
+LOG: 	Operace <
+LOG: 		2 budu hazet na stack klasicky
+LOG: 			3 < (9, 8) LOG: IDENTIFIER LOG: STOP LOG: DOLLAR LOG: 
+LOG: 4 Aktualni token PLUS a stacktop: IDENTIFIER [8, 0]
+LOG: IDENTIFIER LOG: STOP LOG: DOLLAR LOG: 
+LOG: 	Operace >
+LOG: 			param count 1
+LOG: 			5 > (8, 0) LOG: EXPRESSION LOG: DOLLAR LOG: 
+LOG: 6 Aktualni token PLUS a stacktop: EXPRESSION [9, 0]
+LOG: EXPRESSION LOG: DOLLAR LOG: 
+LOG: 	Operace <
+LOG: 		7 budu hazet na stack slozite
+LOG: 			8 < (9, 0) LOG: PLUS LOG: EXPRESSION LOG: STOP LOG: DOLLAR LOG: 
+LOG: 9 Aktualni token IDENTIFIER a stacktop: PLUS [0, 8]
+LOG: PLUS LOG: EXPRESSION LOG: STOP LOG: DOLLAR LOG: 
+LOG: 	Operace <
+LOG: 		10 budu hazet na stack klasicky
+LOG: 			11 < (0, 8) LOG: IDENTIFIER LOG: STOP LOG: PLUS LOG: EXPRESSION LOG: STOP LOG: DOLLAR LOG: 
+LOG: 12 Aktualni token RPAREN a stacktop: IDENTIFIER [8, 11]
+LOG: IDENTIFIER LOG: STOP LOG: PLUS LOG: EXPRESSION LOG: STOP LOG: DOLLAR LOG: 
+LOG: 	Operace >
+LOG: 			param count 1
+LOG: 			13 > (8, 11) LOG: EXPRESSION LOG: PLUS LOG: EXPRESSION LOG: STOP LOG: DOLLAR LOG: 
+LOG: 14 Aktualni token RPAREN a stacktop: EXPRESSION [0, 11]
+LOG: EXPRESSION LOG: PLUS LOG: EXPRESSION LOG: STOP LOG: DOLLAR LOG: 
+LOG: 	Operace >
+LOG: 			param count 3
+LOG: 			15 > (0, 11) LOG: EXPRESSION LOG: DOLLAR LOG: 
+LOG: splnila se podminka
+LOG: EXPRESSION LOG: DOLLAR LOG: 
+LOG: 16 Aktualni token RPAREN a stacktop: EXPRESSION [9, 11]
+LOG: EXPRESSION LOG: DOLLAR LOG: 
+LOG: string STRING_PLUS
+LOG: Final stack: LOG: EXPRESSION LOG: DOLLAR LOG: 
 expr strom po skoncení funcke parseExpression
 ===== AST STROM =====
 [STRING_PLUS]
@@ -941,8 +1771,8 @@ Očekávaný výstup: 0x1.8p+3
 Skutečný výstup: 13
 RESULT: FAIL (výstup se neshoduje)
 Diff:
---- /dev/fd/62	2025-11-17 13:39:59.543793435 +0100
-+++ /dev/fd/61	2025-11-17 13:39:59.543793435 +0100
+--- /dev/fd/62	2025-11-17 19:21:45.624970038 +0100
++++ /dev/fd/61	2025-11-17 19:21:45.625970038 +0100
 @@ -1 +1 @@
 -0x1.8p+3
 +13
@@ -951,18 +1781,76 @@ Diff:
 Test: test_11_scope_nesting
 ========================================
 Spouštím: valgrind --leak-check=full ../.././ifj25 < ./tests/test_11.in
+LOG: 0 FLAG
+LOG: 1 Aktualni token INTEGER a stacktop: DOLLAR [9, 8]
+LOG: DOLLAR LOG: 
+LOG: 	Operace <
+LOG: 		2 budu hazet na stack klasicky
+LOG: 			3 < (9, 8) LOG: INTEGER LOG: STOP LOG: DOLLAR LOG: 
+LOG: 4 Aktualni token NEW_LINE a stacktop: INTEGER [8, 9]
+LOG: INTEGER LOG: STOP LOG: DOLLAR LOG: 
+LOG: 			param count 1
+LOG: Final etapa: LOG: EXPRESSION LOG: DOLLAR LOG: 
+LOG: string INT_LIT
+LOG: Final stack: LOG: EXPRESSION LOG: DOLLAR LOG: 
 expr strom po skoncení funcke parseExpression
 ===== AST STROM =====
 [INT_LIT] (int=1)
 LOG: precedencna odovzdala token jeho type je = 33
+LOG: 0 FLAG
+LOG: 1 Aktualni token INTEGER a stacktop: DOLLAR [9, 8]
+LOG: DOLLAR LOG: 
+LOG: 	Operace <
+LOG: 		2 budu hazet na stack klasicky
+LOG: 			3 < (9, 8) LOG: INTEGER LOG: STOP LOG: DOLLAR LOG: 
+LOG: 4 Aktualni token NEW_LINE a stacktop: INTEGER [8, 9]
+LOG: INTEGER LOG: STOP LOG: DOLLAR LOG: 
+LOG: 			param count 1
+LOG: Final etapa: LOG: EXPRESSION LOG: DOLLAR LOG: 
+LOG: string INT_LIT
+LOG: Final stack: LOG: EXPRESSION LOG: DOLLAR LOG: 
 expr strom po skoncení funcke parseExpression
 ===== AST STROM =====
 [INT_LIT] (int=2)
 LOG: precedencna odovzdala token jeho type je = 33
+LOG: 0 FLAG
+LOG: 1 Aktualni token IDENTIFIER a stacktop: DOLLAR [9, 8]
+LOG: DOLLAR LOG: 
+LOG: 	Operace <
+LOG: 		2 budu hazet na stack klasicky
+LOG: 			3 < (9, 8) LOG: IDENTIFIER LOG: STOP LOG: DOLLAR LOG: 
+LOG: 4 Aktualni token RPAREN a stacktop: IDENTIFIER [8, 11]
+LOG: IDENTIFIER LOG: STOP LOG: DOLLAR LOG: 
+LOG: 	Operace >
+LOG: 			param count 1
+LOG: 			5 > (8, 11) LOG: EXPRESSION LOG: DOLLAR LOG: 
+LOG: splnila se podminka
+LOG: EXPRESSION LOG: DOLLAR LOG: 
+LOG: 6 Aktualni token RPAREN a stacktop: EXPRESSION [9, 11]
+LOG: EXPRESSION LOG: DOLLAR LOG: 
+LOG: string IDENTIFIER
+LOG: Final stack: LOG: EXPRESSION LOG: DOLLAR LOG: 
 expr strom po skoncení funcke parseExpression
 ===== AST STROM =====
 [IDENTIFIER] (str=x)
 LOG: precedencna odovzdala token jeho type je = 21
+LOG: 0 FLAG
+LOG: 1 Aktualni token IDENTIFIER a stacktop: DOLLAR [9, 8]
+LOG: DOLLAR LOG: 
+LOG: 	Operace <
+LOG: 		2 budu hazet na stack klasicky
+LOG: 			3 < (9, 8) LOG: IDENTIFIER LOG: STOP LOG: DOLLAR LOG: 
+LOG: 4 Aktualni token RPAREN a stacktop: IDENTIFIER [8, 11]
+LOG: IDENTIFIER LOG: STOP LOG: DOLLAR LOG: 
+LOG: 	Operace >
+LOG: 			param count 1
+LOG: 			5 > (8, 11) LOG: EXPRESSION LOG: DOLLAR LOG: 
+LOG: splnila se podminka
+LOG: EXPRESSION LOG: DOLLAR LOG: 
+LOG: 6 Aktualni token RPAREN a stacktop: EXPRESSION [9, 11]
+LOG: EXPRESSION LOG: DOLLAR LOG: 
+LOG: string IDENTIFIER
+LOG: Final stack: LOG: EXPRESSION LOG: DOLLAR LOG: 
 expr strom po skoncení funcke parseExpression
 ===== AST STROM =====
 [IDENTIFIER] (str=x)
@@ -1042,30 +1930,166 @@ RESULT: PASS
 Test: test_12_type_checking
 ========================================
 Spouštím: valgrind --leak-check=full ../.././ifj25 < ./tests/test_12.in
+LOG: 0 FLAG
+LOG: 1 Aktualni token INTEGER a stacktop: DOLLAR [9, 8]
+LOG: DOLLAR LOG: 
+LOG: 	Operace <
+LOG: 		2 budu hazet na stack klasicky
+LOG: 			3 < (9, 8) LOG: INTEGER LOG: STOP LOG: DOLLAR LOG: 
+LOG: 4 Aktualni token NEW_LINE a stacktop: INTEGER [8, 9]
+LOG: INTEGER LOG: STOP LOG: DOLLAR LOG: 
+LOG: 			param count 1
+LOG: Final etapa: LOG: EXPRESSION LOG: DOLLAR LOG: 
+LOG: string INT_LIT
+LOG: Final stack: LOG: EXPRESSION LOG: DOLLAR LOG: 
 expr strom po skoncení funcke parseExpression
 ===== AST STROM =====
 [INT_LIT] (int=42)
 LOG: precedencna odovzdala token jeho type je = 33
+LOG: -1 FLAG
+LOG: 1 Aktualni token IDENTIFIER a stacktop: DOLLAR [9, 8]
+LOG: DOLLAR LOG: 
+LOG: 	Operace <
+LOG: 		2 budu hazet na stack klasicky
+LOG: 			3 < (9, 8) LOG: IDENTIFIER LOG: STOP LOG: DOLLAR LOG: 
+LOG: 4 Aktualni token KEYWORD_IS a stacktop: IDENTIFIER [8, 3]
+LOG: IDENTIFIER LOG: STOP LOG: DOLLAR LOG: 
+LOG: 	Operace >
+LOG: 			param count 1
+LOG: 			5 > (8, 3) LOG: EXPRESSION LOG: DOLLAR LOG: 
+LOG: actualToken KEYWORD_IS
+LOG: 6 Aktualni token KEYWORD_IS a stacktop: EXPRESSION [9, 3]
+LOG: EXPRESSION LOG: DOLLAR LOG: 
+LOG: 	Operace <
+LOG: 		7 budu hazet na stack slozite
+LOG: 			8 < (9, 3) LOG: KEYWORD_IS LOG: EXPRESSION LOG: STOP LOG: DOLLAR LOG: 
+LOG: actualToken KEYWORD_NUM
+LOG: 9 Aktualni token KEYWORD_NUM a stacktop: KEYWORD_IS [3, 8]
+LOG: KEYWORD_IS LOG: EXPRESSION LOG: STOP LOG: DOLLAR LOG: 
+LOG: 	Operace <
+LOG: 		10 budu hazet na stack klasicky
+LOG: 			11 < (3, 8) LOG: KEYWORD_NUM LOG: STOP LOG: KEYWORD_IS LOG: EXPRESSION LOG: STOP LOG: DOLLAR LOG: 
+LOG: 12 Aktualni token RPAREN a stacktop: KEYWORD_NUM [8, 11]
+LOG: KEYWORD_NUM LOG: STOP LOG: KEYWORD_IS LOG: EXPRESSION LOG: STOP LOG: DOLLAR LOG: 
+LOG: 	Operace >
+LOG: 			param count 1
+LOG: 			13 > (8, 11) LOG: EXPRESSION LOG: KEYWORD_IS LOG: EXPRESSION LOG: STOP LOG: DOLLAR LOG: 
+LOG: 14 Aktualni token RPAREN a stacktop: EXPRESSION [3, 11]
+LOG: EXPRESSION LOG: KEYWORD_IS LOG: EXPRESSION LOG: STOP LOG: DOLLAR LOG: 
+LOG: 	Operace >
+LOG: 			param count 3
+LOG: 			15 > (3, 11) LOG: EXPRESSION LOG: DOLLAR LOG: 
+LOG: splnila se podminka
+LOG: EXPRESSION LOG: DOLLAR LOG: 
+LOG: 16 Aktualni token RPAREN a stacktop: EXPRESSION [9, 11]
+LOG: EXPRESSION LOG: DOLLAR LOG: 
+LOG: string STRING_IS
+LOG: Final stack: LOG: EXPRESSION LOG: DOLLAR LOG: 
 expr strom po skoncení funcke parseExpression
 ===== AST STROM =====
 [STRING_IS]
   [IDENTIFIER] (str=x)
   [KEYWORD_NUM]
 LOG: 1LOG: precedencna odovzdala token jeho type je = 21
+LOG: 0 FLAG
+LOG: 1 Aktualni token STRING a stacktop: DOLLAR [9, 8]
+LOG: DOLLAR LOG: 
+LOG: 	Operace <
+LOG: 		2 budu hazet na stack klasicky
+LOG: 			3 < (9, 8) LOG: STRING LOG: STOP LOG: DOLLAR LOG: 
+LOG: 4 Aktualni token RPAREN a stacktop: STRING [8, 11]
+LOG: STRING LOG: STOP LOG: DOLLAR LOG: 
+LOG: 	Operace >
+LOG: 			param count 1
+LOG: 			5 > (8, 11) LOG: EXPRESSION LOG: DOLLAR LOG: 
+LOG: splnila se podminka
+LOG: EXPRESSION LOG: DOLLAR LOG: 
+LOG: 6 Aktualni token RPAREN a stacktop: EXPRESSION [9, 11]
+LOG: EXPRESSION LOG: DOLLAR LOG: 
+LOG: string STRING_LIT
+LOG: Final stack: LOG: EXPRESSION LOG: DOLLAR LOG: 
 expr strom po skoncení funcke parseExpression
 ===== AST STROM =====
 [STRING_LIT] (str=number)
 LOG: precedencna odovzdala token jeho type je = 21
+LOG: 0 FLAG
+LOG: 1 Aktualni token STRING a stacktop: DOLLAR [9, 8]
+LOG: DOLLAR LOG: 
+LOG: 	Operace <
+LOG: 		2 budu hazet na stack klasicky
+LOG: 			3 < (9, 8) LOG: STRING LOG: STOP LOG: DOLLAR LOG: 
+LOG: 4 Aktualni token NEW_LINE a stacktop: STRING [8, 9]
+LOG: STRING LOG: STOP LOG: DOLLAR LOG: 
+LOG: 			param count 1
+LOG: Final etapa: LOG: EXPRESSION LOG: DOLLAR LOG: 
+LOG: string STRING_LIT
+LOG: Final stack: LOG: EXPRESSION LOG: DOLLAR LOG: 
 expr strom po skoncení funcke parseExpression
 ===== AST STROM =====
 [STRING_LIT] (str=text)
 LOG: precedencna odovzdala token jeho type je = 33
+LOG: -1 FLAG
+LOG: 1 Aktualni token IDENTIFIER a stacktop: DOLLAR [9, 8]
+LOG: DOLLAR LOG: 
+LOG: 	Operace <
+LOG: 		2 budu hazet na stack klasicky
+LOG: 			3 < (9, 8) LOG: IDENTIFIER LOG: STOP LOG: DOLLAR LOG: 
+LOG: 4 Aktualni token KEYWORD_IS a stacktop: IDENTIFIER [8, 3]
+LOG: IDENTIFIER LOG: STOP LOG: DOLLAR LOG: 
+LOG: 	Operace >
+LOG: 			param count 1
+LOG: 			5 > (8, 3) LOG: EXPRESSION LOG: DOLLAR LOG: 
+LOG: actualToken KEYWORD_IS
+LOG: 6 Aktualni token KEYWORD_IS a stacktop: EXPRESSION [9, 3]
+LOG: EXPRESSION LOG: DOLLAR LOG: 
+LOG: 	Operace <
+LOG: 		7 budu hazet na stack slozite
+LOG: 			8 < (9, 3) LOG: KEYWORD_IS LOG: EXPRESSION LOG: STOP LOG: DOLLAR LOG: 
+LOG: actualToken KEYWORD_STRING
+LOG: 9 Aktualni token KEYWORD_STRING a stacktop: KEYWORD_IS [3, 8]
+LOG: KEYWORD_IS LOG: EXPRESSION LOG: STOP LOG: DOLLAR LOG: 
+LOG: 	Operace <
+LOG: 		10 budu hazet na stack klasicky
+LOG: 			11 < (3, 8) LOG: KEYWORD_STRING LOG: STOP LOG: KEYWORD_IS LOG: EXPRESSION LOG: STOP LOG: DOLLAR LOG: 
+LOG: 12 Aktualni token RPAREN a stacktop: KEYWORD_STRING [8, 11]
+LOG: KEYWORD_STRING LOG: STOP LOG: KEYWORD_IS LOG: EXPRESSION LOG: STOP LOG: DOLLAR LOG: 
+LOG: 	Operace >
+LOG: 			param count 1
+LOG: 			13 > (8, 11) LOG: EXPRESSION LOG: KEYWORD_IS LOG: EXPRESSION LOG: STOP LOG: DOLLAR LOG: 
+LOG: 14 Aktualni token RPAREN a stacktop: EXPRESSION [3, 11]
+LOG: EXPRESSION LOG: KEYWORD_IS LOG: EXPRESSION LOG: STOP LOG: DOLLAR LOG: 
+LOG: 	Operace >
+LOG: 			param count 3
+LOG: 			15 > (3, 11) LOG: EXPRESSION LOG: DOLLAR LOG: 
+LOG: splnila se podminka
+LOG: EXPRESSION LOG: DOLLAR LOG: 
+LOG: 16 Aktualni token RPAREN a stacktop: EXPRESSION [9, 11]
+LOG: EXPRESSION LOG: DOLLAR LOG: 
+LOG: string STRING_IS
+LOG: Final stack: LOG: EXPRESSION LOG: DOLLAR LOG: 
 expr strom po skoncení funcke parseExpression
 ===== AST STROM =====
 [STRING_IS]
   [IDENTIFIER] (str=s)
   [KEYWORD_STRING]
 LOG: 1LOG: precedencna odovzdala token jeho type je = 21
+LOG: 0 FLAG
+LOG: 1 Aktualni token STRING a stacktop: DOLLAR [9, 8]
+LOG: DOLLAR LOG: 
+LOG: 	Operace <
+LOG: 		2 budu hazet na stack klasicky
+LOG: 			3 < (9, 8) LOG: STRING LOG: STOP LOG: DOLLAR LOG: 
+LOG: 4 Aktualni token RPAREN a stacktop: STRING [8, 11]
+LOG: STRING LOG: STOP LOG: DOLLAR LOG: 
+LOG: 	Operace >
+LOG: 			param count 1
+LOG: 			5 > (8, 11) LOG: EXPRESSION LOG: DOLLAR LOG: 
+LOG: splnila se podminka
+LOG: EXPRESSION LOG: DOLLAR LOG: 
+LOG: 6 Aktualni token RPAREN a stacktop: EXPRESSION [9, 11]
+LOG: EXPRESSION LOG: DOLLAR LOG: 
+LOG: string STRING_LIT
+LOG: Final stack: LOG: EXPRESSION LOG: DOLLAR LOG: 
 expr strom po skoncení funcke parseExpression
 ===== AST STROM =====
 [STRING_LIT] (str=string)
@@ -1173,31 +2197,183 @@ RESULT: PASS
 Test: test_13_logical_operators
 ========================================
 Spouštím: valgrind --leak-check=full ../.././ifj25 < ./tests/test_13.in
+LOG: -1 FLAG
+LOG: 1 Aktualni token TRUE a stacktop: DOLLAR [9, 8]
+LOG: DOLLAR LOG: 
+LOG: 	Operace <
+LOG: 		2 budu hazet na stack klasicky
+LOG: 			3 < (9, 8) LOG: TRUE LOG: STOP LOG: DOLLAR LOG: 
+LOG: 4 Aktualni token AND a stacktop: TRUE [8, 6]
+LOG: TRUE LOG: STOP LOG: DOLLAR LOG: 
+LOG: 	Operace >
+LOG: 			param count 1
+LOG: 			5 > (8, 6) LOG: EXPRESSION LOG: DOLLAR LOG: 
+LOG: 6 Aktualni token AND a stacktop: EXPRESSION [9, 6]
+LOG: EXPRESSION LOG: DOLLAR LOG: 
+LOG: 	Operace <
+LOG: 		7 budu hazet na stack slozite
+LOG: 			8 < (9, 6) LOG: AND LOG: EXPRESSION LOG: STOP LOG: DOLLAR LOG: 
+LOG: 9 Aktualni token TRUE a stacktop: AND [6, 8]
+LOG: AND LOG: EXPRESSION LOG: STOP LOG: DOLLAR LOG: 
+LOG: 	Operace <
+LOG: 		10 budu hazet na stack klasicky
+LOG: 			11 < (6, 8) LOG: TRUE LOG: STOP LOG: AND LOG: EXPRESSION LOG: STOP LOG: DOLLAR LOG: 
+LOG: 12 Aktualni token RPAREN a stacktop: TRUE [8, 11]
+LOG: TRUE LOG: STOP LOG: AND LOG: EXPRESSION LOG: STOP LOG: DOLLAR LOG: 
+LOG: 	Operace >
+LOG: 			param count 1
+LOG: 			13 > (8, 11) LOG: EXPRESSION LOG: AND LOG: EXPRESSION LOG: STOP LOG: DOLLAR LOG: 
+LOG: 14 Aktualni token RPAREN a stacktop: EXPRESSION [6, 11]
+LOG: EXPRESSION LOG: AND LOG: EXPRESSION LOG: STOP LOG: DOLLAR LOG: 
+LOG: 	Operace >
+LOG: 			param count 3
+LOG: 			15 > (6, 11) LOG: EXPRESSION LOG: DOLLAR LOG: 
+LOG: splnila se podminka
+LOG: EXPRESSION LOG: DOLLAR LOG: 
+LOG: 16 Aktualni token RPAREN a stacktop: EXPRESSION [9, 11]
+LOG: EXPRESSION LOG: DOLLAR LOG: 
+LOG: string STRING_AND
+LOG: Final stack: LOG: EXPRESSION LOG: DOLLAR LOG: 
 expr strom po skoncení funcke parseExpression
 ===== AST STROM =====
 [STRING_AND]
   [BOOL_LIT] (str=true)
   [BOOL_LIT] (str=true)
 LOG: 1LOG: precedencna odovzdala token jeho type je = 21
+LOG: 0 FLAG
+LOG: 1 Aktualni token STRING a stacktop: DOLLAR [9, 8]
+LOG: DOLLAR LOG: 
+LOG: 	Operace <
+LOG: 		2 budu hazet na stack klasicky
+LOG: 			3 < (9, 8) LOG: STRING LOG: STOP LOG: DOLLAR LOG: 
+LOG: 4 Aktualni token RPAREN a stacktop: STRING [8, 11]
+LOG: STRING LOG: STOP LOG: DOLLAR LOG: 
+LOG: 	Operace >
+LOG: 			param count 1
+LOG: 			5 > (8, 11) LOG: EXPRESSION LOG: DOLLAR LOG: 
+LOG: splnila se podminka
+LOG: EXPRESSION LOG: DOLLAR LOG: 
+LOG: 6 Aktualni token RPAREN a stacktop: EXPRESSION [9, 11]
+LOG: EXPRESSION LOG: DOLLAR LOG: 
+LOG: string STRING_LIT
+LOG: Final stack: LOG: EXPRESSION LOG: DOLLAR LOG: 
 expr strom po skoncení funcke parseExpression
 ===== AST STROM =====
 [STRING_LIT] (str=and_true)
 LOG: precedencna odovzdala token jeho type je = 21
+LOG: -1 FLAG
+LOG: 1 Aktualni token TRUE a stacktop: DOLLAR [9, 8]
+LOG: DOLLAR LOG: 
+LOG: 	Operace <
+LOG: 		2 budu hazet na stack klasicky
+LOG: 			3 < (9, 8) LOG: TRUE LOG: STOP LOG: DOLLAR LOG: 
+LOG: 4 Aktualni token OR a stacktop: TRUE [8, 7]
+LOG: TRUE LOG: STOP LOG: DOLLAR LOG: 
+LOG: 	Operace >
+LOG: 			param count 1
+LOG: 			5 > (8, 7) LOG: EXPRESSION LOG: DOLLAR LOG: 
+LOG: 6 Aktualni token OR a stacktop: EXPRESSION [9, 7]
+LOG: EXPRESSION LOG: DOLLAR LOG: 
+LOG: 	Operace <
+LOG: 		7 budu hazet na stack slozite
+LOG: 			8 < (9, 7) LOG: OR LOG: EXPRESSION LOG: STOP LOG: DOLLAR LOG: 
+LOG: 9 Aktualni token FALSE a stacktop: OR [7, 8]
+LOG: OR LOG: EXPRESSION LOG: STOP LOG: DOLLAR LOG: 
+LOG: 	Operace <
+LOG: 		10 budu hazet na stack klasicky
+LOG: 			11 < (7, 8) LOG: FALSE LOG: STOP LOG: OR LOG: EXPRESSION LOG: STOP LOG: DOLLAR LOG: 
+LOG: 12 Aktualni token RPAREN a stacktop: FALSE [8, 11]
+LOG: FALSE LOG: STOP LOG: OR LOG: EXPRESSION LOG: STOP LOG: DOLLAR LOG: 
+LOG: 	Operace >
+LOG: 			param count 1
+LOG: 			13 > (8, 11) LOG: EXPRESSION LOG: OR LOG: EXPRESSION LOG: STOP LOG: DOLLAR LOG: 
+LOG: 14 Aktualni token RPAREN a stacktop: EXPRESSION [7, 11]
+LOG: EXPRESSION LOG: OR LOG: EXPRESSION LOG: STOP LOG: DOLLAR LOG: 
+LOG: 	Operace >
+LOG: 			param count 3
+LOG: 			15 > (7, 11) LOG: EXPRESSION LOG: DOLLAR LOG: 
+LOG: splnila se podminka
+LOG: EXPRESSION LOG: DOLLAR LOG: 
+LOG: 16 Aktualni token RPAREN a stacktop: EXPRESSION [9, 11]
+LOG: EXPRESSION LOG: DOLLAR LOG: 
+LOG: string STRING_OR
+LOG: Final stack: LOG: EXPRESSION LOG: DOLLAR LOG: 
 expr strom po skoncení funcke parseExpression
 ===== AST STROM =====
 [STRING_OR]
   [BOOL_LIT] (str=true)
   [BOOL_LIT] (str=false)
 LOG: 1LOG: precedencna odovzdala token jeho type je = 21
+LOG: 0 FLAG
+LOG: 1 Aktualni token STRING a stacktop: DOLLAR [9, 8]
+LOG: DOLLAR LOG: 
+LOG: 	Operace <
+LOG: 		2 budu hazet na stack klasicky
+LOG: 			3 < (9, 8) LOG: STRING LOG: STOP LOG: DOLLAR LOG: 
+LOG: 4 Aktualni token RPAREN a stacktop: STRING [8, 11]
+LOG: STRING LOG: STOP LOG: DOLLAR LOG: 
+LOG: 	Operace >
+LOG: 			param count 1
+LOG: 			5 > (8, 11) LOG: EXPRESSION LOG: DOLLAR LOG: 
+LOG: splnila se podminka
+LOG: EXPRESSION LOG: DOLLAR LOG: 
+LOG: 6 Aktualni token RPAREN a stacktop: EXPRESSION [9, 11]
+LOG: EXPRESSION LOG: DOLLAR LOG: 
+LOG: string STRING_LIT
+LOG: Final stack: LOG: EXPRESSION LOG: DOLLAR LOG: 
 expr strom po skoncení funcke parseExpression
 ===== AST STROM =====
 [STRING_LIT] (str=or_true)
 LOG: precedencna odovzdala token jeho type je = 21
+LOG: -1 FLAG
+LOG: 1 Aktualni token NEGACE a stacktop: DOLLAR [9, 5]
+LOG: DOLLAR LOG: 
+LOG: 	Operace <
+LOG: 		2 budu hazet na stack klasicky
+LOG: 			3 < (9, 5) LOG: NEGACE LOG: STOP LOG: DOLLAR LOG: 
+LOG: 4 Aktualni token FALSE a stacktop: NEGACE [5, 8]
+LOG: NEGACE LOG: STOP LOG: DOLLAR LOG: 
+LOG: 	Operace <
+LOG: 		5 budu hazet na stack klasicky
+LOG: 			6 < (5, 8) LOG: FALSE LOG: STOP LOG: NEGACE LOG: STOP LOG: DOLLAR LOG: 
+LOG: 7 Aktualni token RPAREN a stacktop: FALSE [8, 11]
+LOG: FALSE LOG: STOP LOG: NEGACE LOG: STOP LOG: DOLLAR LOG: 
+LOG: 	Operace >
+LOG: 			param count 1
+LOG: 			8 > (8, 11) LOG: EXPRESSION LOG: NEGACE LOG: STOP LOG: DOLLAR LOG: 
+LOG: 9 Aktualni token RPAREN a stacktop: EXPRESSION [5, 11]
+LOG: EXPRESSION LOG: NEGACE LOG: STOP LOG: DOLLAR LOG: 
+LOG: 	Operace >
+LOG: 			param count 2
+LOG: 			10 > (5, 11) LOG: EXPRESSION LOG: DOLLAR LOG: 
+LOG: splnila se podminka
+LOG: EXPRESSION LOG: DOLLAR LOG: 
+LOG: 11 Aktualni token RPAREN a stacktop: EXPRESSION [9, 11]
+LOG: EXPRESSION LOG: DOLLAR LOG: 
+LOG: string STRING_NEGACE
+LOG: Final stack: LOG: EXPRESSION LOG: DOLLAR LOG: 
 expr strom po skoncení funcke parseExpression
 ===== AST STROM =====
 [STRING_NEGACE]
   [BOOL_LIT] (str=false)
 LOG: 1LOG: precedencna odovzdala token jeho type je = 21
+LOG: 0 FLAG
+LOG: 1 Aktualni token STRING a stacktop: DOLLAR [9, 8]
+LOG: DOLLAR LOG: 
+LOG: 	Operace <
+LOG: 		2 budu hazet na stack klasicky
+LOG: 			3 < (9, 8) LOG: STRING LOG: STOP LOG: DOLLAR LOG: 
+LOG: 4 Aktualni token RPAREN a stacktop: STRING [8, 11]
+LOG: STRING LOG: STOP LOG: DOLLAR LOG: 
+LOG: 	Operace >
+LOG: 			param count 1
+LOG: 			5 > (8, 11) LOG: EXPRESSION LOG: DOLLAR LOG: 
+LOG: splnila se podminka
+LOG: EXPRESSION LOG: DOLLAR LOG: 
+LOG: 6 Aktualni token RPAREN a stacktop: EXPRESSION [9, 11]
+LOG: EXPRESSION LOG: DOLLAR LOG: 
+LOG: string STRING_LIT
+LOG: Final stack: LOG: EXPRESSION LOG: DOLLAR LOG: 
 expr strom po skoncení funcke parseExpression
 ===== AST STROM =====
 [STRING_LIT] (str=not_true)
@@ -1309,30 +2485,126 @@ RESULT: PASS
 Test: test_14_overloaded_functions
 ========================================
 Spouštím: valgrind --leak-check=full ../.././ifj25 < ./tests/test_14.in
+LOG: 0 FLAG
+LOG: 1 Aktualni token INTEGER a stacktop: DOLLAR [9, 8]
+LOG: DOLLAR LOG: 
+LOG: 	Operace <
+LOG: 		2 budu hazet na stack klasicky
+LOG: 			3 < (9, 8) LOG: INTEGER LOG: STOP LOG: DOLLAR LOG: 
+LOG: 4 Aktualni token NEW_LINE a stacktop: INTEGER [8, 9]
+LOG: INTEGER LOG: STOP LOG: DOLLAR LOG: 
+LOG: 			param count 1
+LOG: Final etapa: LOG: EXPRESSION LOG: DOLLAR LOG: 
+LOG: string INT_LIT
+LOG: Final stack: LOG: EXPRESSION LOG: DOLLAR LOG: 
 expr strom po skoncení funcke parseExpression
 ===== AST STROM =====
 [INT_LIT] (int=10)
 LOG: precedencna odovzdala token jeho type je = 33
+LOG: 0 FLAG
+LOG: 1 Aktualni token IDENTIFIER a stacktop: DOLLAR [9, 8]
+LOG: DOLLAR LOG: 
+LOG: 	Operace <
+LOG: 		2 budu hazet na stack klasicky
+LOG: 			3 < (9, 8) LOG: IDENTIFIER LOG: STOP LOG: DOLLAR LOG: 
+LOG: 4 Aktualni token STAR a stacktop: IDENTIFIER [8, 1]
+LOG: IDENTIFIER LOG: STOP LOG: DOLLAR LOG: 
+LOG: 	Operace >
+LOG: 			param count 1
+LOG: 			5 > (8, 1) LOG: EXPRESSION LOG: DOLLAR LOG: 
+LOG: 6 Aktualni token STAR a stacktop: EXPRESSION [9, 1]
+LOG: EXPRESSION LOG: DOLLAR LOG: 
+LOG: 	Operace <
+LOG: 		7 budu hazet na stack slozite
+LOG: 			8 < (9, 1) LOG: STAR LOG: EXPRESSION LOG: STOP LOG: DOLLAR LOG: 
+LOG: 9 Aktualni token INTEGER a stacktop: STAR [1, 8]
+LOG: STAR LOG: EXPRESSION LOG: STOP LOG: DOLLAR LOG: 
+LOG: 	Operace <
+LOG: 		10 budu hazet na stack klasicky
+LOG: 			11 < (1, 8) LOG: INTEGER LOG: STOP LOG: STAR LOG: EXPRESSION LOG: STOP LOG: DOLLAR LOG: 
+LOG: 12 Aktualni token NEW_LINE a stacktop: INTEGER [8, 9]
+LOG: INTEGER LOG: STOP LOG: STAR LOG: EXPRESSION LOG: STOP LOG: DOLLAR LOG: 
+LOG: 			param count 1
+LOG: Final etapa: LOG: EXPRESSION LOG: STAR LOG: EXPRESSION LOG: STOP LOG: DOLLAR LOG: 
+LOG: 			param count 3
+LOG: Final etapa: LOG: EXPRESSION LOG: DOLLAR LOG: 
+LOG: string STRING_MUL
+LOG: Final stack: LOG: EXPRESSION LOG: DOLLAR LOG: 
 expr strom po skoncení funcke parseExpression
 ===== AST STROM =====
 [STRING_MUL]
   [IDENTIFIER] (str=x)
   [INT_LIT] (int=2)
 LOG: precedencna odovzdala token jeho type je = 33
+LOG: 0 FLAG
+LOG: 1 Aktualni token IDENTIFIER a stacktop: DOLLAR [9, 8]
+LOG: DOLLAR LOG: 
+LOG: 	Operace <
+LOG: 		2 budu hazet na stack klasicky
+LOG: 			3 < (9, 8) LOG: IDENTIFIER LOG: STOP LOG: DOLLAR LOG: 
+LOG: 			param count 1
+LOG: 4 Aktualni token RPAREN a stacktop: EXPRESSION [9, 11]
+LOG: EXPRESSION LOG: DOLLAR LOG: 
 ERROR (2) : (PSA) Zadany vyraz neni syntakticky spravny (neocekavany znak nebo samostatne stojici operator)
 RESULT: FAIL (kompilace)
 ========================================
 Test: test_15_str_builtin
 ========================================
 Spouštím: valgrind --leak-check=full ../.././ifj25 < ./tests/test_15.in
+LOG: 0 FLAG
+LOG: 1 Aktualni token INTEGER a stacktop: DOLLAR [9, 8]
+LOG: DOLLAR LOG: 
+LOG: 	Operace <
+LOG: 		2 budu hazet na stack klasicky
+LOG: 			3 < (9, 8) LOG: INTEGER LOG: STOP LOG: DOLLAR LOG: 
+LOG: 4 Aktualni token NEW_LINE a stacktop: INTEGER [8, 9]
+LOG: INTEGER LOG: STOP LOG: DOLLAR LOG: 
+LOG: 			param count 1
+LOG: Final etapa: LOG: EXPRESSION LOG: DOLLAR LOG: 
+LOG: string INT_LIT
+LOG: Final stack: LOG: EXPRESSION LOG: DOLLAR LOG: 
 expr strom po skoncení funcke parseExpression
 ===== AST STROM =====
 [INT_LIT] (int=42)
 LOG: precedencna odovzdala token jeho type je = 33
+LOG: 0 FLAG
+LOG: 1 Aktualni token IDENTIFIER a stacktop: DOLLAR [9, 8]
+LOG: DOLLAR LOG: 
+LOG: 	Operace <
+LOG: 		2 budu hazet na stack klasicky
+LOG: 			3 < (9, 8) LOG: IDENTIFIER LOG: STOP LOG: DOLLAR LOG: 
+LOG: 4 Aktualni token RPAREN a stacktop: IDENTIFIER [8, 11]
+LOG: IDENTIFIER LOG: STOP LOG: DOLLAR LOG: 
+LOG: 	Operace >
+LOG: 			param count 1
+LOG: 			5 > (8, 11) LOG: EXPRESSION LOG: DOLLAR LOG: 
+LOG: splnila se podminka
+LOG: EXPRESSION LOG: DOLLAR LOG: 
+LOG: 6 Aktualni token RPAREN a stacktop: EXPRESSION [9, 11]
+LOG: EXPRESSION LOG: DOLLAR LOG: 
+LOG: string IDENTIFIER
+LOG: Final stack: LOG: EXPRESSION LOG: DOLLAR LOG: 
 expr strom po skoncení funcke parseExpression
 ===== AST STROM =====
 [IDENTIFIER] (str=num)
 LOG: precedencna odovzdala token jeho type je = 21
+LOG: 0 FLAG
+LOG: 1 Aktualni token IDENTIFIER a stacktop: DOLLAR [9, 8]
+LOG: DOLLAR LOG: 
+LOG: 	Operace <
+LOG: 		2 budu hazet na stack klasicky
+LOG: 			3 < (9, 8) LOG: IDENTIFIER LOG: STOP LOG: DOLLAR LOG: 
+LOG: 4 Aktualni token RPAREN a stacktop: IDENTIFIER [8, 11]
+LOG: IDENTIFIER LOG: STOP LOG: DOLLAR LOG: 
+LOG: 	Operace >
+LOG: 			param count 1
+LOG: 			5 > (8, 11) LOG: EXPRESSION LOG: DOLLAR LOG: 
+LOG: splnila se podminka
+LOG: EXPRESSION LOG: DOLLAR LOG: 
+LOG: 6 Aktualni token RPAREN a stacktop: EXPRESSION [9, 11]
+LOG: EXPRESSION LOG: DOLLAR LOG: 
+LOG: string IDENTIFIER
+LOG: Final stack: LOG: EXPRESSION LOG: DOLLAR LOG: 
 expr strom po skoncení funcke parseExpression
 ===== AST STROM =====
 [IDENTIFIER] (str=str)
@@ -1402,8 +2674,8 @@ Očekávaný výstup: 42
 Skutečný výstup: 42.00
 RESULT: FAIL (výstup se neshoduje)
 Diff:
---- /dev/fd/62	2025-11-17 13:40:03.469795458 +0100
-+++ /dev/fd/61	2025-11-17 13:40:03.469795458 +0100
+--- /dev/fd/62	2025-11-17 19:21:49.613972729 +0100
++++ /dev/fd/61	2025-11-17 19:21:49.614972729 +0100
 @@ -1 +1 @@
 -42
 +42.00
@@ -1412,10 +2684,59 @@ Diff:
 Test: test_16_string_repetition
 ========================================
 Spouštím: valgrind --leak-check=full ../.././ifj25 < ./tests/test_16.in
+LOG: 0 FLAG
+LOG: 1 Aktualni token STRING a stacktop: DOLLAR [9, 8]
+LOG: DOLLAR LOG: 
+LOG: 	Operace <
+LOG: 		2 budu hazet na stack klasicky
+LOG: 			3 < (9, 8) LOG: STRING LOG: STOP LOG: DOLLAR LOG: 
+LOG: 4 Aktualni token NEW_LINE a stacktop: STRING [8, 9]
+LOG: STRING LOG: STOP LOG: DOLLAR LOG: 
+LOG: 			param count 1
+LOG: Final etapa: LOG: EXPRESSION LOG: DOLLAR LOG: 
+LOG: string STRING_LIT
+LOG: Final stack: LOG: EXPRESSION LOG: DOLLAR LOG: 
 expr strom po skoncení funcke parseExpression
 ===== AST STROM =====
 [STRING_LIT] (str=a)
 LOG: precedencna odovzdala token jeho type je = 33
+LOG: 0 FLAG
+LOG: 1 Aktualni token IDENTIFIER a stacktop: DOLLAR [9, 8]
+LOG: DOLLAR LOG: 
+LOG: 	Operace <
+LOG: 		2 budu hazet na stack klasicky
+LOG: 			3 < (9, 8) LOG: IDENTIFIER LOG: STOP LOG: DOLLAR LOG: 
+LOG: 4 Aktualni token STAR a stacktop: IDENTIFIER [8, 1]
+LOG: IDENTIFIER LOG: STOP LOG: DOLLAR LOG: 
+LOG: 	Operace >
+LOG: 			param count 1
+LOG: 			5 > (8, 1) LOG: EXPRESSION LOG: DOLLAR LOG: 
+LOG: 6 Aktualni token STAR a stacktop: EXPRESSION [9, 1]
+LOG: EXPRESSION LOG: DOLLAR LOG: 
+LOG: 	Operace <
+LOG: 		7 budu hazet na stack slozite
+LOG: 			8 < (9, 1) LOG: STAR LOG: EXPRESSION LOG: STOP LOG: DOLLAR LOG: 
+LOG: 9 Aktualni token INTEGER a stacktop: STAR [1, 8]
+LOG: STAR LOG: EXPRESSION LOG: STOP LOG: DOLLAR LOG: 
+LOG: 	Operace <
+LOG: 		10 budu hazet na stack klasicky
+LOG: 			11 < (1, 8) LOG: INTEGER LOG: STOP LOG: STAR LOG: EXPRESSION LOG: STOP LOG: DOLLAR LOG: 
+LOG: 12 Aktualni token RPAREN a stacktop: INTEGER [8, 11]
+LOG: INTEGER LOG: STOP LOG: STAR LOG: EXPRESSION LOG: STOP LOG: DOLLAR LOG: 
+LOG: 	Operace >
+LOG: 			param count 1
+LOG: 			13 > (8, 11) LOG: EXPRESSION LOG: STAR LOG: EXPRESSION LOG: STOP LOG: DOLLAR LOG: 
+LOG: 14 Aktualni token RPAREN a stacktop: EXPRESSION [1, 11]
+LOG: EXPRESSION LOG: STAR LOG: EXPRESSION LOG: STOP LOG: DOLLAR LOG: 
+LOG: 	Operace >
+LOG: 			param count 3
+LOG: 			15 > (1, 11) LOG: EXPRESSION LOG: DOLLAR LOG: 
+LOG: splnila se podminka
+LOG: EXPRESSION LOG: DOLLAR LOG: 
+LOG: 16 Aktualni token RPAREN a stacktop: EXPRESSION [9, 11]
+LOG: EXPRESSION LOG: DOLLAR LOG: 
+LOG: string STRING_MUL
+LOG: Final stack: LOG: EXPRESSION LOG: DOLLAR LOG: 
 expr strom po skoncení funcke parseExpression
 ===== AST STROM =====
 [STRING_MUL]
@@ -1477,10 +2798,35 @@ RESULT: PASS
 Test: test_17_null_handling
 ========================================
 Spouštím: valgrind --leak-check=full ../.././ifj25 < ./tests/test_17.in
+LOG: 0 FLAG
+LOG: 1 Aktualni token KEYWORD_NULL_SMALL a stacktop: DOLLAR [9, 8]
+LOG: DOLLAR LOG: 
+LOG: 	Operace <
+LOG: 		2 budu hazet na stack klasicky
+LOG: 			3 < (9, 8) LOG: KEYWORD_NULL_SMALL LOG: STOP LOG: DOLLAR LOG: 
+LOG: 4 Aktualni token NEW_LINE a stacktop: KEYWORD_NULL_SMALL [8, 9]
+LOG: KEYWORD_NULL_SMALL LOG: STOP LOG: DOLLAR LOG: 
+LOG: 			param count 1
+LOG: Final etapa: LOG: EXPRESSION LOG: DOLLAR LOG: 
+LOG: string SMALL_NULL
+LOG: Final stack: LOG: EXPRESSION LOG: DOLLAR LOG: 
 expr strom po skoncení funcke parseExpression
 ===== AST STROM =====
 [SMALL_NULL]
 LOG: precedencna odovzdala token jeho type je = 33
+LOG: 0 FLAG
+LOG: 1 Aktualni token IDENTIFIER a stacktop: DOLLAR [9, 8]
+LOG: DOLLAR LOG: 
+LOG: 	Operace <
+LOG: 		2 budu hazet na stack klasicky
+LOG: 			3 < (9, 8) LOG: IDENTIFIER LOG: STOP LOG: DOLLAR LOG: 
+LOG: 			param count 1
+LOG: splnila se podminka
+LOG: EXPRESSION LOG: DOLLAR LOG: 
+LOG: 4 Aktualni token NEW_LINE a stacktop: EXPRESSION [9, 9]
+LOG: EXPRESSION LOG: DOLLAR LOG: 
+LOG: string FUNC_CALL
+LOG: Final stack: LOG: EXPRESSION LOG: DOLLAR LOG: 
 expr strom po skoncení funcke parseExpression
 ===== AST STROM =====
 [FUNC_CALL]
@@ -1488,12 +2834,66 @@ expr strom po skoncení funcke parseExpression
   [PARAM]
     [EMPTY]
 LOG: precedencna odovzdala token jeho type je = 33
+LOG: -1 FLAG
+LOG: 1 Aktualni token IDENTIFIER a stacktop: DOLLAR [9, 8]
+LOG: DOLLAR LOG: 
+LOG: 	Operace <
+LOG: 		2 budu hazet na stack klasicky
+LOG: 			3 < (9, 8) LOG: IDENTIFIER LOG: STOP LOG: DOLLAR LOG: 
+LOG: 4 Aktualni token EQ a stacktop: IDENTIFIER [8, 4]
+LOG: IDENTIFIER LOG: STOP LOG: DOLLAR LOG: 
+LOG: 	Operace >
+LOG: 			param count 1
+LOG: 			5 > (8, 4) LOG: EXPRESSION LOG: DOLLAR LOG: 
+LOG: 6 Aktualni token EQ a stacktop: EXPRESSION [9, 4]
+LOG: EXPRESSION LOG: DOLLAR LOG: 
+LOG: 	Operace <
+LOG: 		7 budu hazet na stack slozite
+LOG: 			8 < (9, 4) LOG: EQ LOG: EXPRESSION LOG: STOP LOG: DOLLAR LOG: 
+LOG: 9 Aktualni token KEYWORD_NULL_SMALL a stacktop: EQ [4, 8]
+LOG: EQ LOG: EXPRESSION LOG: STOP LOG: DOLLAR LOG: 
+LOG: 	Operace <
+LOG: 		10 budu hazet na stack klasicky
+LOG: 			11 < (4, 8) LOG: KEYWORD_NULL_SMALL LOG: STOP LOG: EQ LOG: EXPRESSION LOG: STOP LOG: DOLLAR LOG: 
+LOG: 12 Aktualni token RPAREN a stacktop: KEYWORD_NULL_SMALL [8, 11]
+LOG: KEYWORD_NULL_SMALL LOG: STOP LOG: EQ LOG: EXPRESSION LOG: STOP LOG: DOLLAR LOG: 
+LOG: 	Operace >
+LOG: 			param count 1
+LOG: 			13 > (8, 11) LOG: EXPRESSION LOG: EQ LOG: EXPRESSION LOG: STOP LOG: DOLLAR LOG: 
+LOG: 14 Aktualni token RPAREN a stacktop: EXPRESSION [4, 11]
+LOG: EXPRESSION LOG: EQ LOG: EXPRESSION LOG: STOP LOG: DOLLAR LOG: 
+LOG: 	Operace >
+LOG: 			param count 3
+LOG: 			15 > (4, 11) LOG: EXPRESSION LOG: DOLLAR LOG: 
+LOG: splnila se podminka
+LOG: EXPRESSION LOG: DOLLAR LOG: 
+LOG: 16 Aktualni token RPAREN a stacktop: EXPRESSION [9, 11]
+LOG: EXPRESSION LOG: DOLLAR LOG: 
+LOG: string STRING_EQ
+LOG: Final stack: LOG: EXPRESSION LOG: DOLLAR LOG: 
 expr strom po skoncení funcke parseExpression
 ===== AST STROM =====
 [STRING_EQ]
   [IDENTIFIER] (str=x)
   [SMALL_NULL]
 LOG: 1LOG: precedencna odovzdala token jeho type je = 21
+LOG: 0 FLAG
+LOG: 1 Aktualni token STRING a stacktop: DOLLAR [9, 8]
+LOG: DOLLAR LOG: 
+LOG: 	Operace <
+LOG: 		2 budu hazet na stack klasicky
+LOG: 			3 < (9, 8) LOG: STRING LOG: STOP LOG: DOLLAR LOG: 
+LOG: 4 Aktualni token RPAREN a stacktop: STRING [8, 11]
+LOG: STRING LOG: STOP LOG: DOLLAR LOG: 
+LOG: 	Operace >
+LOG: 			param count 1
+LOG: 			5 > (8, 11) LOG: EXPRESSION LOG: DOLLAR LOG: 
+LOG: splnila se podminka
+LOG: EXPRESSION LOG: DOLLAR LOG: 
+LOG: 6 Aktualni token RPAREN a stacktop: EXPRESSION [9, 11]
+LOG: EXPRESSION LOG: DOLLAR LOG: 
+LOG: string STRING_LIT
+LOG: Final stack: LOG: EXPRESSION LOG: DOLLAR LOG: 
 expr strom po skoncení funcke parseExpression
 ===== AST STROM =====
 [STRING_LIT] (str=null_value)
@@ -1585,22 +2985,125 @@ RESULT: PASS
 Test: test_18_nested_conditions
 ========================================
 Spouštím: valgrind --leak-check=full ../.././ifj25 < ./tests/test_18.in
+LOG: 0 FLAG
+LOG: 1 Aktualni token INTEGER a stacktop: DOLLAR [9, 8]
+LOG: DOLLAR LOG: 
+LOG: 	Operace <
+LOG: 		2 budu hazet na stack klasicky
+LOG: 			3 < (9, 8) LOG: INTEGER LOG: STOP LOG: DOLLAR LOG: 
+LOG: 4 Aktualni token NEW_LINE a stacktop: INTEGER [8, 9]
+LOG: INTEGER LOG: STOP LOG: DOLLAR LOG: 
+LOG: 			param count 1
+LOG: Final etapa: LOG: EXPRESSION LOG: DOLLAR LOG: 
+LOG: string INT_LIT
+LOG: Final stack: LOG: EXPRESSION LOG: DOLLAR LOG: 
 expr strom po skoncení funcke parseExpression
 ===== AST STROM =====
 [INT_LIT] (int=15)
 LOG: precedencna odovzdala token jeho type je = 33
+LOG: -1 FLAG
+LOG: 1 Aktualni token IDENTIFIER a stacktop: DOLLAR [9, 8]
+LOG: DOLLAR LOG: 
+LOG: 	Operace <
+LOG: 		2 budu hazet na stack klasicky
+LOG: 			3 < (9, 8) LOG: IDENTIFIER LOG: STOP LOG: DOLLAR LOG: 
+LOG: 4 Aktualni token GT a stacktop: IDENTIFIER [8, 2]
+LOG: IDENTIFIER LOG: STOP LOG: DOLLAR LOG: 
+LOG: 	Operace >
+LOG: 			param count 1
+LOG: 			5 > (8, 2) LOG: EXPRESSION LOG: DOLLAR LOG: 
+LOG: 6 Aktualni token GT a stacktop: EXPRESSION [9, 2]
+LOG: EXPRESSION LOG: DOLLAR LOG: 
+LOG: 	Operace <
+LOG: 		7 budu hazet na stack slozite
+LOG: 			8 < (9, 2) LOG: GT LOG: EXPRESSION LOG: STOP LOG: DOLLAR LOG: 
+LOG: 9 Aktualni token INTEGER a stacktop: GT [2, 8]
+LOG: GT LOG: EXPRESSION LOG: STOP LOG: DOLLAR LOG: 
+LOG: 	Operace <
+LOG: 		10 budu hazet na stack klasicky
+LOG: 			11 < (2, 8) LOG: INTEGER LOG: STOP LOG: GT LOG: EXPRESSION LOG: STOP LOG: DOLLAR LOG: 
+LOG: 12 Aktualni token RPAREN a stacktop: INTEGER [8, 11]
+LOG: INTEGER LOG: STOP LOG: GT LOG: EXPRESSION LOG: STOP LOG: DOLLAR LOG: 
+LOG: 	Operace >
+LOG: 			param count 1
+LOG: 			13 > (8, 11) LOG: EXPRESSION LOG: GT LOG: EXPRESSION LOG: STOP LOG: DOLLAR LOG: 
+LOG: 14 Aktualni token RPAREN a stacktop: EXPRESSION [2, 11]
+LOG: EXPRESSION LOG: GT LOG: EXPRESSION LOG: STOP LOG: DOLLAR LOG: 
+LOG: 	Operace >
+LOG: 			param count 3
+LOG: 			15 > (2, 11) LOG: EXPRESSION LOG: DOLLAR LOG: 
+LOG: splnila se podminka
+LOG: EXPRESSION LOG: DOLLAR LOG: 
+LOG: 16 Aktualni token RPAREN a stacktop: EXPRESSION [9, 11]
+LOG: EXPRESSION LOG: DOLLAR LOG: 
+LOG: string STRING_GT
+LOG: Final stack: LOG: EXPRESSION LOG: DOLLAR LOG: 
 expr strom po skoncení funcke parseExpression
 ===== AST STROM =====
 [STRING_GT]
   [IDENTIFIER] (str=x)
   [INT_LIT] (int=10)
 LOG: 1LOG: precedencna odovzdala token jeho type je = 21
+LOG: -1 FLAG
+LOG: 1 Aktualni token IDENTIFIER a stacktop: DOLLAR [9, 8]
+LOG: DOLLAR LOG: 
+LOG: 	Operace <
+LOG: 		2 budu hazet na stack klasicky
+LOG: 			3 < (9, 8) LOG: IDENTIFIER LOG: STOP LOG: DOLLAR LOG: 
+LOG: 4 Aktualni token LT a stacktop: IDENTIFIER [8, 2]
+LOG: IDENTIFIER LOG: STOP LOG: DOLLAR LOG: 
+LOG: 	Operace >
+LOG: 			param count 1
+LOG: 			5 > (8, 2) LOG: EXPRESSION LOG: DOLLAR LOG: 
+LOG: 6 Aktualni token LT a stacktop: EXPRESSION [9, 2]
+LOG: EXPRESSION LOG: DOLLAR LOG: 
+LOG: 	Operace <
+LOG: 		7 budu hazet na stack slozite
+LOG: 			8 < (9, 2) LOG: LT LOG: EXPRESSION LOG: STOP LOG: DOLLAR LOG: 
+LOG: 9 Aktualni token INTEGER a stacktop: LT [2, 8]
+LOG: LT LOG: EXPRESSION LOG: STOP LOG: DOLLAR LOG: 
+LOG: 	Operace <
+LOG: 		10 budu hazet na stack klasicky
+LOG: 			11 < (2, 8) LOG: INTEGER LOG: STOP LOG: LT LOG: EXPRESSION LOG: STOP LOG: DOLLAR LOG: 
+LOG: 12 Aktualni token RPAREN a stacktop: INTEGER [8, 11]
+LOG: INTEGER LOG: STOP LOG: LT LOG: EXPRESSION LOG: STOP LOG: DOLLAR LOG: 
+LOG: 	Operace >
+LOG: 			param count 1
+LOG: 			13 > (8, 11) LOG: EXPRESSION LOG: LT LOG: EXPRESSION LOG: STOP LOG: DOLLAR LOG: 
+LOG: 14 Aktualni token RPAREN a stacktop: EXPRESSION [2, 11]
+LOG: EXPRESSION LOG: LT LOG: EXPRESSION LOG: STOP LOG: DOLLAR LOG: 
+LOG: 	Operace >
+LOG: 			param count 3
+LOG: 			15 > (2, 11) LOG: EXPRESSION LOG: DOLLAR LOG: 
+LOG: splnila se podminka
+LOG: EXPRESSION LOG: DOLLAR LOG: 
+LOG: 16 Aktualni token RPAREN a stacktop: EXPRESSION [9, 11]
+LOG: EXPRESSION LOG: DOLLAR LOG: 
+LOG: string STRING_LT
+LOG: Final stack: LOG: EXPRESSION LOG: DOLLAR LOG: 
 expr strom po skoncení funcke parseExpression
 ===== AST STROM =====
 [STRING_LT]
   [IDENTIFIER] (str=x)
   [INT_LIT] (int=20)
 LOG: 1LOG: precedencna odovzdala token jeho type je = 21
+LOG: 0 FLAG
+LOG: 1 Aktualni token STRING a stacktop: DOLLAR [9, 8]
+LOG: DOLLAR LOG: 
+LOG: 	Operace <
+LOG: 		2 budu hazet na stack klasicky
+LOG: 			3 < (9, 8) LOG: STRING LOG: STOP LOG: DOLLAR LOG: 
+LOG: 4 Aktualni token RPAREN a stacktop: STRING [8, 11]
+LOG: STRING LOG: STOP LOG: DOLLAR LOG: 
+LOG: 	Operace >
+LOG: 			param count 1
+LOG: 			5 > (8, 11) LOG: EXPRESSION LOG: DOLLAR LOG: 
+LOG: splnila se podminka
+LOG: EXPRESSION LOG: DOLLAR LOG: 
+LOG: 6 Aktualni token RPAREN a stacktop: EXPRESSION [9, 11]
+LOG: EXPRESSION LOG: DOLLAR LOG: 
+LOG: string STRING_LIT
+LOG: Final stack: LOG: EXPRESSION LOG: DOLLAR LOG: 
 expr strom po skoncení funcke parseExpression
 ===== AST STROM =====
 [STRING_LIT] (str=between)
@@ -1688,16 +3191,115 @@ RESULT: PASS
 Test: test_19_complex_arithmetic
 ========================================
 Spouštím: valgrind --leak-check=full ../.././ifj25 < ./tests/test_19.in
+LOG: 0 FLAG
+LOG: 1 Aktualni token LPAREN a stacktop: DOLLAR [9, 10]
+LOG: DOLLAR LOG: 
+LOG: 	Operace <
+LOG: 		2 budu hazet na stack klasicky
+LOG: 			3 < (9, 10) LOG: LPAREN LOG: STOP LOG: DOLLAR LOG: 
+LOG: 4 Aktualni token INTEGER a stacktop: LPAREN [10, 8]
+LOG: LPAREN LOG: STOP LOG: DOLLAR LOG: 
+LOG: 	Operace <
+LOG: 		5 budu hazet na stack klasicky
+LOG: 			6 < (10, 8) LOG: INTEGER LOG: STOP LOG: LPAREN LOG: STOP LOG: DOLLAR LOG: 
+LOG: 7 Aktualni token PLUS a stacktop: INTEGER [8, 0]
+LOG: INTEGER LOG: STOP LOG: LPAREN LOG: STOP LOG: DOLLAR LOG: 
+LOG: 	Operace >
+LOG: 			param count 1
+LOG: 			8 > (8, 0) LOG: EXPRESSION LOG: LPAREN LOG: STOP LOG: DOLLAR LOG: 
+LOG: 9 Aktualni token PLUS a stacktop: EXPRESSION [10, 0]
+LOG: EXPRESSION LOG: LPAREN LOG: STOP LOG: DOLLAR LOG: 
+LOG: 	Operace <
+LOG: 		10 budu hazet na stack slozite
+LOG: 			11 < (10, 0) LOG: PLUS LOG: EXPRESSION LOG: STOP LOG: LPAREN LOG: STOP LOG: DOLLAR LOG: 
+LOG: 12 Aktualni token INTEGER a stacktop: PLUS [0, 8]
+LOG: PLUS LOG: EXPRESSION LOG: STOP LOG: LPAREN LOG: STOP LOG: DOLLAR LOG: 
+LOG: 	Operace <
+LOG: 		13 budu hazet na stack klasicky
+LOG: 			14 < (0, 8) LOG: INTEGER LOG: STOP LOG: PLUS LOG: EXPRESSION LOG: STOP LOG: LPAREN LOG: STOP LOG: DOLLAR LOG: 
+LOG: 15 Aktualni token RPAREN a stacktop: INTEGER [8, 11]
+LOG: INTEGER LOG: STOP LOG: PLUS LOG: EXPRESSION LOG: STOP LOG: LPAREN LOG: STOP LOG: DOLLAR LOG: 
+LOG: 	Operace >
+LOG: 			param count 1
+LOG: 			16 > (8, 11) LOG: EXPRESSION LOG: PLUS LOG: EXPRESSION LOG: STOP LOG: LPAREN LOG: STOP LOG: DOLLAR LOG: 
+LOG: 17 Aktualni token RPAREN a stacktop: EXPRESSION [0, 11]
+LOG: EXPRESSION LOG: PLUS LOG: EXPRESSION LOG: STOP LOG: LPAREN LOG: STOP LOG: DOLLAR LOG: 
+LOG: 	Operace >
+LOG: 			param count 3
+LOG: 			18 > (0, 11) LOG: EXPRESSION LOG: LPAREN LOG: STOP LOG: DOLLAR LOG: 
+LOG: 19 Aktualni token RPAREN a stacktop: EXPRESSION [10, 11]
+LOG: EXPRESSION LOG: LPAREN LOG: STOP LOG: DOLLAR LOG: 
+LOG: 			20 = (10, 11) LOG: RPAREN LOG: EXPRESSION LOG: LPAREN LOG: STOP LOG: DOLLAR LOG: 
+LOG: 21 Aktualni token STAR a stacktop: RPAREN [11, 1]
+LOG: RPAREN LOG: EXPRESSION LOG: LPAREN LOG: STOP LOG: DOLLAR LOG: 
+LOG: 	Operace >
+LOG: 			param count 3
+LOG: 			22 > (11, 1) LOG: EXPRESSION LOG: DOLLAR LOG: 
+LOG: 23 Aktualni token STAR a stacktop: EXPRESSION [9, 1]
+LOG: EXPRESSION LOG: DOLLAR LOG: 
+LOG: 	Operace <
+LOG: 		24 budu hazet na stack slozite
+LOG: 			25 < (9, 1) LOG: STAR LOG: EXPRESSION LOG: STOP LOG: DOLLAR LOG: 
+LOG: 26 Aktualni token INTEGER a stacktop: STAR [1, 8]
+LOG: STAR LOG: EXPRESSION LOG: STOP LOG: DOLLAR LOG: 
+LOG: 	Operace <
+LOG: 		27 budu hazet na stack klasicky
+LOG: 			28 < (1, 8) LOG: INTEGER LOG: STOP LOG: STAR LOG: EXPRESSION LOG: STOP LOG: DOLLAR LOG: 
+LOG: 29 Aktualni token MINUS a stacktop: INTEGER [8, 0]
+LOG: INTEGER LOG: STOP LOG: STAR LOG: EXPRESSION LOG: STOP LOG: DOLLAR LOG: 
+LOG: 	Operace >
+LOG: 			param count 1
+LOG: 			30 > (8, 0) LOG: EXPRESSION LOG: STAR LOG: EXPRESSION LOG: STOP LOG: DOLLAR LOG: 
+LOG: 31 Aktualni token MINUS a stacktop: EXPRESSION [1, 0]
+LOG: EXPRESSION LOG: STAR LOG: EXPRESSION LOG: STOP LOG: DOLLAR LOG: 
+LOG: 	Operace >
+LOG: 			param count 3
+LOG: 			32 > (1, 0) LOG: EXPRESSION LOG: DOLLAR LOG: 
+LOG: 33 Aktualni token MINUS a stacktop: EXPRESSION [9, 0]
+LOG: EXPRESSION LOG: DOLLAR LOG: 
+LOG: 	Operace <
+LOG: 		34 budu hazet na stack slozite
+LOG: 			35 < (9, 0) LOG: MINUS LOG: EXPRESSION LOG: STOP LOG: DOLLAR LOG: 
+LOG: 36 Aktualni token INTEGER a stacktop: MINUS [0, 8]
+LOG: MINUS LOG: EXPRESSION LOG: STOP LOG: DOLLAR LOG: 
+LOG: 	Operace <
+LOG: 		37 budu hazet na stack klasicky
+LOG: 			38 < (0, 8) LOG: INTEGER LOG: STOP LOG: MINUS LOG: EXPRESSION LOG: STOP LOG: DOLLAR LOG: 
+LOG: 39 Aktualni token NEW_LINE a stacktop: INTEGER [8, 9]
+LOG: INTEGER LOG: STOP LOG: MINUS LOG: EXPRESSION LOG: STOP LOG: DOLLAR LOG: 
+LOG: 			param count 1
+LOG: Final etapa: LOG: EXPRESSION LOG: MINUS LOG: EXPRESSION LOG: STOP LOG: DOLLAR LOG: 
+LOG: 			param count 3
+LOG: Final etapa: LOG: EXPRESSION LOG: DOLLAR LOG: 
+LOG: string STRING_MINUS
+LOG: Final stack: LOG: EXPRESSION LOG: DOLLAR LOG: 
 expr strom po skoncení funcke parseExpression
 ===== AST STROM =====
-[STRING_MUL]
-  [STRING_PLUS]
-    [INT_LIT] (int=10)
-    [INT_LIT] (int=5)
-  [STRING_MINUS]
+[STRING_MINUS]
+  [STRING_MUL]
+    [STRING_PLUS]
+      [INT_LIT] (int=10)
+      [INT_LIT] (int=5)
     [INT_LIT] (int=2)
-    [INT_LIT] (int=10)
+  [INT_LIT] (int=10)
 LOG: precedencna odovzdala token jeho type je = 33
+LOG: 0 FLAG
+LOG: 1 Aktualni token IDENTIFIER a stacktop: DOLLAR [9, 8]
+LOG: DOLLAR LOG: 
+LOG: 	Operace <
+LOG: 		2 budu hazet na stack klasicky
+LOG: 			3 < (9, 8) LOG: IDENTIFIER LOG: STOP LOG: DOLLAR LOG: 
+LOG: 4 Aktualni token RPAREN a stacktop: IDENTIFIER [8, 11]
+LOG: IDENTIFIER LOG: STOP LOG: DOLLAR LOG: 
+LOG: 	Operace >
+LOG: 			param count 1
+LOG: 			5 > (8, 11) LOG: EXPRESSION LOG: DOLLAR LOG: 
+LOG: splnila se podminka
+LOG: EXPRESSION LOG: DOLLAR LOG: 
+LOG: 6 Aktualni token RPAREN a stacktop: EXPRESSION [9, 11]
+LOG: EXPRESSION LOG: DOLLAR LOG: 
+LOG: string IDENTIFIER
+LOG: Final stack: LOG: EXPRESSION LOG: DOLLAR LOG: 
 expr strom po skoncení funcke parseExpression
 ===== AST STROM =====
 [IDENTIFIER] (str=result)
@@ -1720,13 +3322,13 @@ PARSER IS DONE
               [EMPTY]
             [ASSIGN]
               [IDENTIFIER] (str=result)
-              [STRING_MUL]
-                [STRING_PLUS]
-                  [INT_LIT] (int=10)
-                  [INT_LIT] (int=5)
-                [STRING_MINUS]
+              [STRING_MINUS]
+                [STRING_MUL]
+                  [STRING_PLUS]
+                    [INT_LIT] (int=10)
+                    [INT_LIT] (int=5)
                   [INT_LIT] (int=2)
-                  [INT_LIT] (int=10)
+                [INT_LIT] (int=10)
             [IFJ_CALL]
               [IDENTIFIER] (str=write)
               [PARAM]
@@ -1743,11 +3345,11 @@ LOG: AST_STATEMENT_LIST
 LOG: AST_VAR
 LOG: AST_ASSIGN
 LOG: AST_IDENTIFIER
+LOG: AST_MINUS
 LOG: AST_MUL
 LOG: AST_PLUS
 LOG: AST_INT_LIT
 LOG: AST_INT_LIT
-LOG: AST_MINUS
 LOG: AST_INT_LIT
 LOG: AST_INT_LIT
 LOG: AST_IFJ_CALL
@@ -1758,25 +3360,65 @@ LOG: AST_EMPTY
 LOG: Vysledek sem_anal: 1
 Spouštím interpret: /home/tjoslef/Stažené/sys_package/ic25int-linux-x86_64 ./tests/test_19.in
 Očekávaný výstup: 20
-Skutečný výstup: -120
-RESULT: FAIL (výstup se neshoduje)
-Diff:
---- /dev/fd/62	2025-11-17 13:40:06.722797134 +0100
-+++ /dev/fd/61	2025-11-17 13:40:06.722797134 +0100
-@@ -1 +1 @@
--20
-+-120
+Skutečný výstup: 20
+RESULT: PASS
 
 ========================================
 Test: test_20_unary_minus
 ========================================
 Spouštím: valgrind --leak-check=full ../.././ifj25 < ./tests/test_20.in
+LOG: 0 FLAG
+LOG: 1 Aktualni token INTEGER a stacktop: DOLLAR [9, 8]
+LOG: DOLLAR LOG: 
+LOG: 	Operace <
+LOG: 		2 budu hazet na stack klasicky
+LOG: 			3 < (9, 8) LOG: INTEGER LOG: STOP LOG: DOLLAR LOG: 
+LOG: 4 Aktualni token MINUS a stacktop: INTEGER [8, 0]
+LOG: INTEGER LOG: STOP LOG: DOLLAR LOG: 
+LOG: 	Operace >
+LOG: 			param count 1
+LOG: 			5 > (8, 0) LOG: EXPRESSION LOG: DOLLAR LOG: 
+LOG: 6 Aktualni token MINUS a stacktop: EXPRESSION [9, 0]
+LOG: EXPRESSION LOG: DOLLAR LOG: 
+LOG: 	Operace <
+LOG: 		7 budu hazet na stack slozite
+LOG: 			8 < (9, 0) LOG: MINUS LOG: EXPRESSION LOG: STOP LOG: DOLLAR LOG: 
+LOG: 9 Aktualni token INTEGER a stacktop: MINUS [0, 8]
+LOG: MINUS LOG: EXPRESSION LOG: STOP LOG: DOLLAR LOG: 
+LOG: 	Operace <
+LOG: 		10 budu hazet na stack klasicky
+LOG: 			11 < (0, 8) LOG: INTEGER LOG: STOP LOG: MINUS LOG: EXPRESSION LOG: STOP LOG: DOLLAR LOG: 
+LOG: 12 Aktualni token NEW_LINE a stacktop: INTEGER [8, 9]
+LOG: INTEGER LOG: STOP LOG: MINUS LOG: EXPRESSION LOG: STOP LOG: DOLLAR LOG: 
+LOG: 			param count 1
+LOG: Final etapa: LOG: EXPRESSION LOG: MINUS LOG: EXPRESSION LOG: STOP LOG: DOLLAR LOG: 
+LOG: 			param count 3
+LOG: Final etapa: LOG: EXPRESSION LOG: DOLLAR LOG: 
+LOG: string STRING_MINUS
+LOG: Final stack: LOG: EXPRESSION LOG: DOLLAR LOG: 
 expr strom po skoncení funcke parseExpression
 ===== AST STROM =====
 [STRING_MINUS]
   [INT_LIT] (int=0)
   [INT_LIT] (int=5)
 LOG: precedencna odovzdala token jeho type je = 33
+LOG: 0 FLAG
+LOG: 1 Aktualni token IDENTIFIER a stacktop: DOLLAR [9, 8]
+LOG: DOLLAR LOG: 
+LOG: 	Operace <
+LOG: 		2 budu hazet na stack klasicky
+LOG: 			3 < (9, 8) LOG: IDENTIFIER LOG: STOP LOG: DOLLAR LOG: 
+LOG: 4 Aktualni token RPAREN a stacktop: IDENTIFIER [8, 11]
+LOG: IDENTIFIER LOG: STOP LOG: DOLLAR LOG: 
+LOG: 	Operace >
+LOG: 			param count 1
+LOG: 			5 > (8, 11) LOG: EXPRESSION LOG: DOLLAR LOG: 
+LOG: splnila se podminka
+LOG: EXPRESSION LOG: DOLLAR LOG: 
+LOG: 6 Aktualni token RPAREN a stacktop: EXPRESSION [9, 11]
+LOG: EXPRESSION LOG: DOLLAR LOG: 
+LOG: string IDENTIFIER
+LOG: Final stack: LOG: EXPRESSION LOG: DOLLAR LOG: 
 expr strom po skoncení funcke parseExpression
 ===== AST STROM =====
 [IDENTIFIER] (str=x)
