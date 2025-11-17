@@ -16,7 +16,7 @@
 #include <stdio.h>
 
 
-#define TABLE_CAPACITY 8  // nastavení počtu položek tabulky
+#define TABLE_CAPACITY 200  // nastavení počtu položek tabulky
 
 /**
  * @brief Inicializace tabulky, alokace pole prvků
@@ -71,7 +71,7 @@ int hashTableInsertItem(HashTable **hashT, char *key, SemSymbol token)
         return -1;
     }
     
-    if ((*hashT)->tableSize + 1 >= ((*hashT)->tableCapacity * 3) / 4)
+    if ((*hashT)->tableSize + 1 >= (*hashT)->tableCapacity)
     {
         HashTable *t = hashTableRealloc(hashT);
         (*hashT) = t;
