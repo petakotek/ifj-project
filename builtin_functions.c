@@ -149,7 +149,20 @@ void emitWrite(AstNode* functionCallNode, FuncContext* context) {
 
     emit_command(functionCallNode->child[1]->child[0], context);
     printN("DEFVAR LF@temp$var$write$%u", writeCounter);
+    printN("DEFVAR LF@temp$var$writeType$%u", writeCounter);
     printN("POPS LF@temp$var$write$%u", writeCounter);
+
+    printN("TYPE LF@temp$var$writeType$%u LF@temp$var$write$%u", writeCounter, writeCounter);
+    printN("JUMPIFNEQ temp$label$write$write$%u LF@temp$var$writeType$%u string@float", writeCounter,
+           writeCounter);
+
+    // Výstup je desetinné číslo, ale možná celočíselné
+    printN("ISINT LF@temp$var$writeType$%u  LF@temp$var$write$%u", writeCounter, writeCounter);
+    printN("JUMPIFNEQ temp$label$write$write$%u LF@temp$var$writeType$%u  bool@true", writeCounter,
+           writeCounter);
+    printN("FLOAT2INT LF@temp$var$write$%u LF@temp$var$write$%u", writeCounter, writeCounter);
+
+    printN("LABEL temp$label$write$write$%u", writeCounter);
     printN("WRITE LF@temp$var$write$%u", writeCounter);
     printN("PUSHS nil@nil");
 
