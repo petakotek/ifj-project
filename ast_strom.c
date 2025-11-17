@@ -218,6 +218,8 @@ AstNode *new_leaf(AstNodeType kind, Token token) {
     {
         newLeaf->kind = AST_FLOAT_LIT;
     }
+    else if (kind == AST_STRING_BLOCK)
+        newLeaf->kind = AST_STRING_LIT;
     else 
     {
         newLeaf->kind = kind;
@@ -280,7 +282,13 @@ void ast_value_from_token(AstValue *out, AstNodeType kind, Token *token) {
             break;
         case AST_STRING_LIT:
             out->has_str = true;
-            out->str = dup_cstr(token->value.identifier);
+            char *tmp = stringChangingLit(token->value.identifier);
+            out->str = tmp;
+            break;
+        case AST_STRING_BLOCK:
+            out->has_str = true;
+            char *temp = stringChanging(token->value.identifier);
+            out->str = temp;
             break;
         case AST_IDENTIFIER:
         case AST_GLOBAL_ID:
@@ -438,7 +446,7 @@ static void ast_dump_rec(const AstNode *n, int depth, const AstNode *parent) {
 
     if (n->is_leaf) {
         if ((n->value.has_str || n->value.is_bool) && n->value.str)
-            fprintf(stderr, " (str=\"%s\")", n->value.str);
+            fprintf(stderr, " (str=%s)", n->value.str);
         else if (n->value.is_int)
             fprintf(stderr, " (int=%lld)", n->value.int_val);
         else if (n->value.is_float)
@@ -456,3 +464,114 @@ void ast_dump(const AstNode *root) {
     fprintf(stderr, "===== AST STROM =====\n");
     ast_dump_rec(root, 0, NULL);
 }
+
+char *stringChanging(char * tmp)
+{
+    if (!tmp)
+    {
+        return NULL;
+    }
+    size_t len = strlen(tmp);
+
+    //uplne najhorsi pripad napr ak "\n\n\n\n\n\n\n\n\n\n\n\n" 
+    //vsetky znaky bude treba previes na "\xyz"
+    char *out = malloc(len * 4 + 1);
+    if (!out) 
+    {   
+        printError(INTERNAL_ERROR, "chyba v alokacii");
+        memorySafeExit(INTERNAL_ERROR);
+    }
+    
+
+    size_t j = 0;  // index do out
+    for(size_t i = 0; i < len; i++)
+    {
+        
+        if (tmp[i] <= 32 || tmp[i] == 35 || tmp[i] == 92)
+        {
+            j +=  sprintf(out + j, "\\%03u", tmp[i]);
+            
+        }
+        else
+        {
+            out[j] = tmp[i];
+            j++;
+        }
+    }
+
+    out[j] = '\0';
+
+    return out; 
+}
+
+char *stringChangingLit(char *tmp)
+{
+    if (!tmp) 
+    {
+        return NULL;
+    }
+
+    //prevedenie escape sekvencie do podoby z "\n" do '\n'
+    char *unesc = escapeString(tmp);
+
+    //prevedenie do \xyz
+    char *out = stringChanging(unesc);
+
+    free(unesc);
+    return out;
+}
+
+char *escapeString(char *tmp)
+{
+    size_t len = strlen(tmp);
+    char *out = malloc(len + 1); 
+    if (!out) {
+        printError(INTERNAL_ERROR, "chyba v alokacii");
+        memorySafeExit(INTERNAL_ERROR);
+    }
+
+    size_t i = 0, j = 0;
+     while (i < len) {
+        if (tmp[i] == '\\' && i + 1 < len) {
+            char c = tmp[i+2];
+
+            if (c == 'n')      
+            { 
+                out[j++] = '\n';  
+                i += 2; 
+            }
+            else if (c == 't') 
+            { 
+                out[j++] = '\t';  
+                i += 2; 
+            }
+            else if (c == '\\')
+            { 
+                out[j++] = '\\';  
+                i += 2; 
+            }
+            else if (c == '"') 
+            { 
+                out[j++] = '\"';  
+                i += 2; 
+            }
+            else if (c == 'r')
+            {
+                out[j++] = '\r';  
+                i += 2; 
+            }
+            else 
+            { 
+                // nechaj ako je (ak nie je escape)
+                out[j++] = tmp[i++];
+            }
+        }
+        else {
+            out[j++] = tmp[i++];
+        }
+    }
+
+    out[j] = '\0';
+    return out;
+}
+

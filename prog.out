@@ -1,21 +1,234 @@
+==76897== Memcheck, a memory error detector
+==76897== Copyright (C) 2002-2024, and GNU GPL'd, by Julian Seward et al.
+==76897== Using Valgrind-3.25.1 and LibVEX; rerun with -h for copyright info
+==76897== Command: ./ifj25
+==76897== 
 expr strom po skoncení funcke parseExpression
 ===== AST STROM =====
-[INT_LIT] (int=10)
+[INT_LIT] (int=42)
+expr strom po skoncení funcke parseExpression
+===== AST STROM =====
+[STRING_IS]
+  [IDENTIFIER] (str="arg")
+  [KEYWORD_NUM]
 expr strom po skoncení funcke parseExpression
 ===== AST STROM =====
 [STRING_GT]
-  [IDENTIFIER] (str="x")
-  [INT_LIT] (int=0)
+  [STRING_MINUS]
+    [IDENTIFIER] (str="arg")
+    [INT_LIT] (int=1)
+  [STRING_DIV]
+    [STRING_MUL]
+      [INT_LIT] (int=32)
+      [FLOAT_LIT] (float=84.1)
+    [FLOAT_LIT] (float=2.4)
 expr strom po skoncení funcke parseExpression
 ===== AST STROM =====
-[STRING_MINUS]
-  [IDENTIFIER] (str="x")
-  [INT_LIT] (int=1)
+[STRING_LIT] (str="Celkem velke cislo!\
+")
+expr strom po skoncení funcke parseExpression
+===== AST STROM =====
+[STRING_MUL]
+  [IDENTIFIER] (str="arg")
+  [INT_LIT] (int=42)
+expr strom po skoncení funcke parseExpression
+===== AST STROM =====
+[IDENTIFIER] (str="arg")
 expr strom po skoncení funcke parseExpression
 ===== AST STROM =====
 [STRING_PLUS]
-  [IDENTIFIER] (str="x")
+  [STRING_LIT] (str="Odpoved je ")
+  [IDENTIFIER] (str="ansStr")
+expr strom po skoncení funcke parseExpression
+===== AST STROM =====
+[STRING_LIT] (str="Neplatny argument\
+")
+expr strom po skoncení funcke parseExpression
+===== AST STROM =====
+[SMALL_NULL]
+expr strom po skoncení funcke parseExpression
+===== AST STROM =====
+[GLOBAL_ID] (str="__a")
+expr strom po skoncení funcke parseExpression
+===== AST STROM =====
+[STRING_PLUS]
+  [GLOBAL_ID] (str="__a")
+  [INT_LIT] (int=10)
+expr strom po skoncení funcke parseExpression
+===== AST STROM =====
+[SMALL_NULL]
+==76897== Conditional jump or move depends on uninitialised value(s)
+==76897==    at 0x4851AF8: strlen (vg_replace_strmem.c:506)
+==76897==    by 0x40D850: dup_cstr (ast_strom.c:327)
+==76897==    by 0x40D96C: ast_value_from_token (ast_strom.c:288)
+==76897==    by 0x40DA79: new_leaf (ast_strom.c:227)
+==76897==    by 0x40E18D: findPrecedenceRule (expr.c:329)
+==76897==    by 0x40EB27: parseExpression (expr.c:987)
+==76897==    by 0x4097E6: Expr_func (parser.c:1005)
+==76897==    by 0x40A917: parser (parser.c:277)
+==76897==    by 0x401218: main (main.c:44)
+==76897== 
+expr strom po skoncení funcke parseExpression
+===== AST STROM =====
+[STRING_LIT]==76897== Conditional jump or move depends on uninitialised value(s)
+==76897==    at 0x4851AF8: strlen (vg_replace_strmem.c:506)
+==76897==    by 0x49E5E2F: __printf_buffer (vfprintf-process-arg.c:443)
+==76897==    by 0x49E6B00: __vfprintf_internal (vfprintf-internal.c:1543)
+==76897==    by 0x49DA1F9: fprintf (fprintf.c:32)
+==76897==    by 0x40CDF2: ast_dump_rec (ast_strom.c:441)
+==76897==    by 0x409815: Expr_func (parser.c:1012)
+==76897==    by 0x40A917: parser (parser.c:277)
+==76897==    by 0x401218: main (main.c:44)
+==76897== 
+ (str="Jsem jednorozci setter, ziskal jsem ")
+expr strom po skoncení funcke parseExpression
+===== AST STROM =====
+[IDENTIFIER] (str="val")
+expr strom po skoncení funcke parseExpression
+===== AST STROM =====
+[STRING_LIT] (str="\
+")
+expr strom po skoncení funcke parseExpression
+===== AST STROM =====
+[IDENTIFIER] (str="val")
+expr strom po skoncení funcke parseExpression
+===== AST STROM =====
+[STRING_LIT] (str="Jsem ve funkci unicorn, ne v getteru\
+")
+expr strom po skoncení funcke parseExpression
+===== AST STROM =====
+[IDENTIFIER] (str="unicorn")
+expr strom po skoncení funcke parseExpression
+===== AST STROM =====
+[STRING_LIT] (str="\
+")
+expr strom po skoncení funcke parseExpression
+===== AST STROM =====
+[INT_LIT] (int=5)
+expr strom po skoncení funcke parseExpression
+===== AST STROM =====
+[IDENTIFIER] (str="unicorn")
+expr strom po skoncení funcke parseExpression
+===== AST STROM =====
+[IDENTIFIER] (str="myValue")
+expr strom po skoncení funcke parseExpression
+===== AST STROM =====
+[STRING_LIT] (str="\
+")
+expr strom po skoncení funcke parseExpression
+===== AST STROM =====
+[FUNC_CALL]
+  [IDENTIFIER] (str="unicorn")
+  [PARAM]
+    [EMPTY]
+expr strom po skoncení funcke parseExpression
+===== AST STROM =====
+[IDENTIFIER] (str="myValue")
+expr strom po skoncení funcke parseExpression
+===== AST STROM =====
+[STRING_LIT] (str="\
+")
+expr strom po skoncení funcke parseExpression
+===== AST STROM =====
+[STRING_LIT] (str="Napis cislo:\
+")
+expr strom po skoncení funcke parseExpression
+===== AST STROM =====
+[FUNC_CALL]
+  [IDENTIFIER] (str="getAnswer")
+  [PARAM]
+    [IDENTIFIER] (str="valueFromUser")
+    [EMPTY]
+expr strom po skoncení funcke parseExpression
+===== AST STROM =====
+[STRING_EQ]
+  [IDENTIFIER] (str="myValue")
+  [SMALL_NULL]
+expr strom po skoncení funcke parseExpression
+===== AST STROM =====
+[STRING_LIT] (str="ODPOVED NENI!\
+")
+expr strom po skoncení funcke parseExpression
+===== AST STROM =====
+[STRING_IS]
+  [IDENTIFIER] (str="myValue")
+  [NULL]
+expr strom po skoncení funcke parseExpression
+===== AST STROM =====
+[IDENTIFIER] (str="myValue")
+expr strom po skoncení funcke parseExpression
+===== AST STROM =====
+[STRING_LIT] (str="\
+")
+expr strom po skoncení funcke parseExpression
+===== AST STROM =====
+[STRING_GT]
+  [IDENTIFIER] (str="valueFromUser")
+  [STRING_MINUS]
+    [INT_LIT] (int=0)
+    [INT_LIT] (int=2)
+expr strom po skoncení funcke parseExpression
+===== AST STROM =====
+[STRING_LIT] (str="Jedeme dolu! ")
+expr strom po skoncení funcke parseExpression
+===== AST STROM =====
+[IDENTIFIER] (str="valueFromUser")
+expr strom po skoncení funcke parseExpression
+===== AST STROM =====
+[STRING_LIT] (str=" -> ")
+expr strom po skoncení funcke parseExpression
+===== AST STROM =====
+[STRING_MINUS]
+  [IDENTIFIER] (str="valueFromUser")
   [INT_LIT] (int=1)
+expr strom po skoncení funcke parseExpression
+===== AST STROM =====
+[IDENTIFIER] (str="valueFromUser")
+expr strom po skoncení funcke parseExpression
+===== AST STROM =====
+[IDENTIFIER] (str="valStr")
+expr strom po skoncení funcke parseExpression
+===== AST STROM =====
+[STRING_LIT] (str="\
+")
+expr strom po skoncení funcke parseExpression
+===== AST STROM =====
+[INT_LIT] (int=1)
+expr strom po skoncení funcke parseExpression
+===== AST STROM =====
+[STRING_LIT] (str="cervena panda + ")
+expr strom po skoncení funcke parseExpression
+===== AST STROM =====
+[STRING_LIT] (str="(")
+expr strom po skoncení funcke parseExpression
+===== AST STROM =====
+[STRING_EQ]
+  [INT_LIT] (int=1)
+  [INT_LIT] (int=1)
+expr strom po skoncení funcke parseExpression
+===== AST STROM =====
+[STRING_MUL]
+  [IDENTIFIER] (str="x")
+  [INT_LIT] (int=3)
+expr strom po skoncení funcke parseExpression
+===== AST STROM =====
+[IDENTIFIER] (str="y")
+expr strom po skoncení funcke parseExpression
+===== AST STROM =====
+[IDENTIFIER] (str="x")
+expr strom po skoncení funcke parseExpression
+===== AST STROM =====
+[STRING_LIT] (str="konec) ")
+expr strom po skoncení funcke parseExpression
+===== AST STROM =====
+[IDENTIFIER] (str="x")
+expr strom po skoncení funcke parseExpression
+===== AST STROM =====
+[IDENTIFIER] (str="x")
+expr strom po skoncení funcke parseExpression
+===== AST STROM =====
+[STRING_LIT] (str="\
+")
 PARSER IS DONE
 ===== AST STROM =====
 [PROGRAM]
@@ -24,126 +237,472 @@ PARSER IS DONE
     [IDENTIFIER] (str="Program")
     [MAIN_CLASS_BLOCK]
       [FUNC_DEC]
+        [IDENTIFIER] (str="getAnswer")
+        [PARAM]
+          [EMPTY]
+        [BLOCK]
+          [STATEMENT_LIST]
+            [RETURN]
+              [INT_LIT] (int=42)
+      [FUNC_DEC]
+        [IDENTIFIER] (str="getAnswer")
+        [PARAM]
+          [IDENTIFIER] (str="arg")
+          [EMPTY]
+        [BLOCK]
+          [STATEMENT_LIST]
+            [IF CHAIN]
+              [IF]
+                [CONDITION]
+                  [STRING_IS]
+                    [IDENTIFIER] (str="arg")
+                    [KEYWORD_NUM]
+                [BLOCK]
+                  [STATEMENT_LIST]
+                    [IF CHAIN]
+                      [IF]
+                        [CONDITION]
+                          [STRING_GT]
+                            [STRING_MINUS]
+                              [IDENTIFIER] (str="arg")
+                              [INT_LIT] (int=1)
+                            [STRING_DIV]
+                              [STRING_MUL]
+                                [INT_LIT] (int=32)
+                                [FLOAT_LIT] (float=84.1)
+                              [FLOAT_LIT] (float=2.4)
+                        [BLOCK]
+                          [STATEMENT_LIST]
+                            [GLOBAL_ID]
+                              [GLOBAL_ID] (str="__d")
+                              [ASSIGN]
+                                [IFJ_CALL]
+                                  [IDENTIFIER] (str="write")
+                                  [PARAM]
+                                    [STRING_LIT] (str="Celkem velke cislo!\
+")
+                                    [EMPTY]
+                    [ASSIGN]
+                      [IDENTIFIER] (str="arg")
+                      [STRING_MUL]
+                        [IDENTIFIER] (str="arg")
+                        [INT_LIT] (int=42)
+                    [VAR]
+                      [IDENTIFIER] (str="ansStr")
+                      [EMPTY]
+                    [ASSIGN]
+                      [IDENTIFIER] (str="ansStr")
+                      [IFJ_CALL]
+                        [IDENTIFIER] (str="str")
+                        [PARAM]
+                          [IDENTIFIER] (str="arg")
+                          [EMPTY]
+                    [RETURN]
+                      [STRING_PLUS]
+                        [STRING_LIT] (str="Odpoved je ")
+                        [IDENTIFIER] (str="ansStr")
+              [ELSE]
+                [BLOCK]
+                  [STATEMENT_LIST]
+                    [GLOBAL_ID]
+                      [GLOBAL_ID] (str="__d")
+                      [ASSIGN]
+                        [IFJ_CALL]
+                          [IDENTIFIER] (str="write")
+                          [PARAM]
+                            [STRING_LIT] (str="Neplatny argument\
+")
+                            [EMPTY]
+                    [RETURN]
+                      [SMALL_NULL]
+      [GETTER]
+        [IDENTIFIER] (str="unicorn")
+        [PARAM]
+          [EMPTY]
+        [BLOCK]
+          [STATEMENT_LIST]
+            [IF CHAIN]
+              [IF]
+                [CONDITION]
+                  [GLOBAL_ID] (str="__a")
+                [BLOCK]
+                  [STATEMENT_LIST]
+                    [RETURN]
+                      [STRING_PLUS]
+                        [GLOBAL_ID] (str="__a")
+                        [INT_LIT] (int=10)
+              [ELSE]
+                [BLOCK]
+                  [STATEMENT_LIST]
+                    [RETURN]
+                      [SMALL_NULL]
+      [SETTER]
+        [IDENTIFIER] (str="unicorn")
+        [PARAM]
+          [IDENTIFIER] (str="val")
+          [EMPTY]
+        [BLOCK]
+          [STATEMENT_LIST]
+            [GLOBAL_ID]
+              [GLOBAL_ID] (str="__d")
+              [ASSIGN]
+                [IFJ_CALL]
+                  [IDENTIFIER] (str="write")
+                  [PARAM]
+                    [STRING_LIT] (str="Jsem jednorozci setter, ziskal jsem ")
+                    [EMPTY]
+            [GLOBAL_ID]
+              [GLOBAL_ID] (str="__d")
+              [ASSIGN]
+                [IFJ_CALL]
+                  [IDENTIFIER] (str="write")
+                  [PARAM]
+                    [IDENTIFIER] (str="val")
+                    [EMPTY]
+            [GLOBAL_ID]
+              [GLOBAL_ID] (str="__d")
+              [ASSIGN]
+                [IFJ_CALL]
+                  [IDENTIFIER] (str="write")
+                  [PARAM]
+                    [STRING_LIT] (str="\
+")
+                    [EMPTY]
+            [GLOBAL_ID]
+              [GLOBAL_ID] (str="__a")
+              [ASSIGN]
+                [IDENTIFIER] (str="val")
+      [FUNC_DEC]
+        [IDENTIFIER] (str="unicorn")
+        [PARAM]
+          [EMPTY]
+        [BLOCK]
+          [STATEMENT_LIST]
+            [GLOBAL_ID]
+              [GLOBAL_ID] (str="__d")
+              [ASSIGN]
+                [IFJ_CALL]
+                  [IDENTIFIER] (str="write")
+                  [PARAM]
+                    [STRING_LIT] (str="Jsem ve funkci unicorn, ne v getteru\
+")
+                    [EMPTY]
+      [FUNC_DEC]
         [IDENTIFIER] (str="main")
         [PARAM]
           [EMPTY]
         [BLOCK]
           [STATEMENT_LIST]
-            [VAR]
-              [IDENTIFIER] (str="x")
+            [GLOBAL_ID]
+              [GLOBAL_ID] (str="__d")
               [ASSIGN]
-                [INT_LIT] (int=10)
+                [IFJ_CALL]
+                  [IDENTIFIER] (str="write")
+                  [PARAM]
+                    [IDENTIFIER] (str="unicorn")
+                    [EMPTY]
+            [GLOBAL_ID]
+              [GLOBAL_ID] (str="__d")
+              [ASSIGN]
+                [IFJ_CALL]
+                  [IDENTIFIER] (str="write")
+                  [PARAM]
+                    [STRING_LIT] (str="\
+")
+                    [EMPTY]
+            [ASSIGN]
+              [IDENTIFIER] (str="unicorn")
+              [INT_LIT] (int=5)
+            [VAR]
+              [IDENTIFIER] (str="myValue")
+              [EMPTY]
+            [ASSIGN]
+              [IDENTIFIER] (str="myValue")
+              [IDENTIFIER] (str="unicorn")
+            [GLOBAL_ID]
+              [GLOBAL_ID] (str="__d")
+              [ASSIGN]
+                [IFJ_CALL]
+                  [IDENTIFIER] (str="write")
+                  [PARAM]
+                    [IDENTIFIER] (str="myValue")
+                    [EMPTY]
+            [GLOBAL_ID]
+              [GLOBAL_ID] (str="__d")
+              [ASSIGN]
+                [IFJ_CALL]
+                  [IDENTIFIER] (str="write")
+                  [PARAM]
+                    [STRING_LIT] (str="\
+")
+                    [EMPTY]
+            [ASSIGN]
+              [IDENTIFIER] (str="myValue")
+              [FUNC_CALL]
+                [IDENTIFIER] (str="unicorn")
+                [PARAM]
+                  [EMPTY]
+            [GLOBAL_ID]
+              [GLOBAL_ID] (str="__d")
+              [ASSIGN]
+                [IFJ_CALL]
+                  [IDENTIFIER] (str="write")
+                  [PARAM]
+                    [IDENTIFIER] (str="myValue")
+                    [EMPTY]
+            [GLOBAL_ID]
+              [GLOBAL_ID] (str="__d")
+              [ASSIGN]
+                [IFJ_CALL]
+                  [IDENTIFIER] (str="write")
+                  [PARAM]
+                    [STRING_LIT] (str="\
+")
+                    [EMPTY]
+            [GLOBAL_ID]
+              [GLOBAL_ID] (str="__d")
+              [ASSIGN]
+                [IFJ_CALL]
+                  [IDENTIFIER] (str="write")
+                  [PARAM]
+                    [STRING_LIT] (str="Napis cislo:\
+")
+                    [EMPTY]
+            [VAR]
+              [IDENTIFIER] (str="valueFromUser")
+              [EMPTY]
+            [ASSIGN]
+              [IDENTIFIER] (str="valueFromUser")
+              [IFJ_CALL]
+                [IDENTIFIER] (str="read_num")
+                [PARAM]
+                  [EMPTY]
+            [ASSIGN]
+              [IDENTIFIER] (str="myValue")
+              [FUNC_CALL]
+                [IDENTIFIER] (str="getAnswer")
+                [PARAM]
+                  [IDENTIFIER] (str="valueFromUser")
+                  [EMPTY]
             [IF CHAIN]
               [IF]
                 [CONDITION]
-                  [STRING_GT]
-                    [IDENTIFIER] (str="x")
-                    [INT_LIT] (int=0)
+                  [STRING_EQ]
+                    [IDENTIFIER] (str="myValue")
+                    [SMALL_NULL]
                 [BLOCK]
                   [STATEMENT_LIST]
-                    [ASSIGN]
-                      [IDENTIFIER] (str="x")
-                      [STRING_MINUS]
-                        [IDENTIFIER] (str="x")
-                        [INT_LIT] (int=1)
+                    [GLOBAL_ID]
+                      [GLOBAL_ID] (str="__d")
+                      [ASSIGN]
+                        [IFJ_CALL]
+                          [IDENTIFIER] (str="write")
+                          [PARAM]
+                            [STRING_LIT] (str="ODPOVED NENI!\
+")
+                            [EMPTY]
+                    [RETURN]
+                      [EMPTY]
               [ELSE]
                 [BLOCK]
                   [STATEMENT_LIST]
+                    [IF CHAIN]
+                      [IF]
+                        [CONDITION]
+                          [STRING_IS]
+                            [IDENTIFIER] (str="myValue")
+                            [NULL]
+                        [BLOCK]
+                          [STATEMENT_LIST]
+                      [ELSE]
+                        [BLOCK]
+                          [STATEMENT_LIST]
+            [GLOBAL_ID]
+              [GLOBAL_ID] (str="__d")
+              [ASSIGN]
+                [IFJ_CALL]
+                  [IDENTIFIER] (str="write")
+                  [PARAM]
+                    [IDENTIFIER] (str="myValue")
+                    [EMPTY]
+            [GLOBAL_ID]
+              [GLOBAL_ID] (str="__d")
+              [ASSIGN]
+                [IFJ_CALL]
+                  [IDENTIFIER] (str="write")
+                  [PARAM]
+                    [STRING_LIT] (str="\
+")
+                    [EMPTY]
+            [WHILE]
+              [CONDITION]
+                [STRING_GT]
+                  [IDENTIFIER] (str="valueFromUser")
+                  [STRING_MINUS]
+                    [INT_LIT] (int=0)
+                    [INT_LIT] (int=2)
+              [BLOCK]
+                [STATEMENT_LIST]
+                  [GLOBAL_ID]
+                    [GLOBAL_ID] (str="__d")
+                    [ASSIGN]
+                      [IFJ_CALL]
+                        [IDENTIFIER] (str="write")
+                        [PARAM]
+                          [STRING_LIT] (str="Jedeme dolu! ")
+                          [EMPTY]
+                  [GLOBAL_ID]
+                    [GLOBAL_ID] (str="__d")
+                    [ASSIGN]
+                      [IFJ_CALL]
+                        [IDENTIFIER] (str="write")
+                        [PARAM]
+                          [IDENTIFIER] (str="valueFromUser")
+                          [EMPTY]
+                  [GLOBAL_ID]
+                    [GLOBAL_ID] (str="__d")
+                    [ASSIGN]
+                      [IFJ_CALL]
+                        [IDENTIFIER] (str="write")
+                        [PARAM]
+                          [STRING_LIT] (str=" -> ")
+                          [EMPTY]
+                  [ASSIGN]
+                    [IDENTIFIER] (str="valueFromUser")
+                    [STRING_MINUS]
+                      [IDENTIFIER] (str="valueFromUser")
+                      [INT_LIT] (int=1)
+                  [VAR]
+                    [IDENTIFIER] (str="valStr")
+                    [EMPTY]
+                  [ASSIGN]
+                    [IDENTIFIER] (str="valStr")
+                    [IFJ_CALL]
+                      [IDENTIFIER] (str="str")
+                      [PARAM]
+                        [IDENTIFIER] (str="valueFromUser")
+                        [EMPTY]
+                  [GLOBAL_ID]
+                    [GLOBAL_ID] (str="__d")
+                    [ASSIGN]
+                      [IFJ_CALL]
+                        [IDENTIFIER] (str="write")
+                        [PARAM]
+                          [IDENTIFIER] (str="valStr")
+                          [EMPTY]
+                  [GLOBAL_ID]
+                    [GLOBAL_ID] (str="__d")
+                    [ASSIGN]
+                      [IFJ_CALL]
+                        [IDENTIFIER] (str="write")
+                        [PARAM]
+                          [STRING_LIT] (str="\
+")
+                          [EMPTY]
+            [BLOCK]
+              [STATEMENT_LIST]
+                [VAR]
+                  [IDENTIFIER] (str="x")
+                  [EMPTY]
+                [ASSIGN]
+                  [IDENTIFIER] (str="x")
+                  [INT_LIT] (int=1)
+                [BLOCK]
+                  [STATEMENT_LIST]
+                    [VAR]
+                      [IDENTIFIER] (str="x")
+                      [EMPTY]
                     [ASSIGN]
                       [IDENTIFIER] (str="x")
-                      [STRING_PLUS]
+                      [STRING_LIT] (str="cervena panda + ")
+                    [GLOBAL_ID]
+                      [GLOBAL_ID] (str="__d")
+                      [ASSIGN]
+                        [IFJ_CALL]
+                          [IDENTIFIER] (str="write")
+                          [PARAM]
+                            [STRING_LIT] (str="(")
+                            [EMPTY]
+                    [IF CHAIN]
+                      [IF]
+                        [CONDITION]
+                          [STRING_EQ]
+                            [INT_LIT] (int=1)
+                            [INT_LIT] (int=1)
+                        [BLOCK]
+                          [STATEMENT_LIST]
+                            [VAR]
+                              [IDENTIFIER] (str="y")
+                              [EMPTY]
+                            [ASSIGN]
+                              [IDENTIFIER] (str="y")
+                              [STRING_MUL]
+                                [IDENTIFIER] (str="x")
+                                [INT_LIT] (int=3)
+                            [VAR]
+                              [IDENTIFIER] (str="x")
+                              [EMPTY]
+                            [ASSIGN]
+                              [IDENTIFIER] (str="x")
+                              [IDENTIFIER] (str="y")
+                            [GLOBAL_ID]
+                              [GLOBAL_ID] (str="__d")
+                              [ASSIGN]
+                                [IFJ_CALL]
+                                  [IDENTIFIER] (str="write")
+                                  [PARAM]
+                                    [IDENTIFIER] (str="x")
+                                    [EMPTY]
+                      [ELSE]
+                        [BLOCK]
+                          [STATEMENT_LIST]
+                    [GLOBAL_ID]
+                      [GLOBAL_ID] (str="__d")
+                      [ASSIGN]
+                        [IFJ_CALL]
+                          [IDENTIFIER] (str="write")
+                          [PARAM]
+                            [STRING_LIT] (str="konec) ")
+                            [EMPTY]
+                    [GLOBAL_ID]
+                      [GLOBAL_ID] (str="__d")
+                      [ASSIGN]
+                        [IFJ_CALL]
+                          [IDENTIFIER] (str="write")
+                          [PARAM]
+                            [IDENTIFIER] (str="x")
+                            [EMPTY]
+                [GLOBAL_ID]
+                  [GLOBAL_ID] (str="__d")
+                  [ASSIGN]
+                    [IFJ_CALL]
+                      [IDENTIFIER] (str="write")
+                      [PARAM]
                         [IDENTIFIER] (str="x")
-                        [INT_LIT] (int=1)
-precedencna odovzdala token jeho type je = 33
-1precedencna odovzdala token jeho type je = 21
-precedencna odovzdala token jeho type je = 33
-precedencna odovzdala token jeho type je = 33
-.IFJcode25
-JUMP $$main
-LABEL $$main
-CREATEFRAME
-PUSHFRAME
-DEFVAR LF@retval
-DEFVAR LF@x
-DEFVAR LF@main_ln_0
-DEFVAR LF@main_rn_0
-DEFVAR LF@main_ty_0
-DEFVAR LF@main_ln_1
-DEFVAR LF@main_rn_1
-DEFVAR LF@main_ty_1
-DEFVAR LF@main_ln_2
-DEFVAR LF@main_rn_2
-DEFVAR LF@main_ty_2
-DEFVAR LF@main_rs_2
-MOVE LF@retval nil@nil
-PUSHS int@10
-POPS LF@x
-PUSHS bool@false
-JUMPIFEQS $main$2
-PUSHS LF@x
-PUSHS int@1
-POPS LF@main_rn_1
-POPS LF@main_ln_1
-PUSHS LF@main_ln_1
-PUSHS LF@main_rn_1
-TYPES
-POPS LF@main_ty_1
-TYPES
-PUSHS LF@main_ty_1
-JUMPIFEQS main$ok$1
-JUMP main$err$1
-LABEL main$ok$1
-PUSHS LF@main_ty_1
-PUSHS string@string
-JUMPIFEQS main$err$1
-PUSHS LF@main_ln_1
-PUSHS LF@main_rn_1
-SUBS
-JUMP main$end$1
-LABEL main$err$1
-EXIT int@4
-LABEL main$end$1
-
-POPS LF@x
-JUMP $main$1
-LABEL $main$2
-PUSHS LF@x
-PUSHS int@1
-POPS LF@main_rn_2
-POPS LF@main_ln_2
-PUSHS LF@main_ln_2
-PUSHS LF@main_rn_2
-TYPES
-POPS LF@main_ty_2
-TYPES
-PUSHS LF@main_ty_2
-JUMPIFEQS main$ok$2
-JUMP main$err$2
-LABEL main$ok$2
-PUSHS LF@main_ty_2
-PUSHS string@string
-JUMPIFEQS main$concat$2
-PUSHS LF@main_ty_2
-PUSHS string@int
-JUMPIFEQS main$add$2
-PUSHS LF@main_ty_2
-PUSHS string@float
-JUMPIFEQS main$add$2
-JUMP main$err$2
-LABEL main$add$2
-PUSHS LF@main_ln_2
-PUSHS LF@main_rn_2
-ADDS
-JUMP main$end$2
-LABEL main$concat$2
-CONCAT LF@main_ln_2 LF@main_rn_2 LF@main_rs_2
-PUSHS LF@main_rs_2
-JUMP main$end$2
-LABEL main$err$2
-EXIT int@4
-LABEL main$end$2
-
-POPS LF@x
-JUMP $main$1
-LABEL $main$1
-EXIT int@0
+                        [EMPTY]
+            [GLOBAL_ID]
+              [GLOBAL_ID] (str="__d")
+              [ASSIGN]
+                [IFJ_CALL]
+                  [IDENTIFIER] (str="write")
+                  [PARAM]
+                    [STRING_LIT] (str="\
+")
+                    [EMPTY]
+==76897== 
+==76897== HEAP SUMMARY:
+==76897==     in use at exit: 44,802 bytes in 823 blocks
+==76897==   total heap usage: 2,639 allocs, 1,816 frees, 495,143 bytes allocated
+==76897== 
+==76897== LEAK SUMMARY:
+==76897==    definitely lost: 0 bytes in 0 blocks
+==76897==    indirectly lost: 0 bytes in 0 blocks
+==76897==      possibly lost: 0 bytes in 0 blocks
+==76897==    still reachable: 44,802 bytes in 823 blocks
+==76897==         suppressed: 0 bytes in 0 blocks
+==76897== Reachable blocks (those to which a pointer was found) are not shown.
+==76897== To see them, rerun with: --leak-check=full --show-leak-kinds=all
+==76897== 
+==76897== Use --track-origins=yes to see where uninitialised values come from
+==76897== For lists of detected and suppressed errors, rerun with: -s
+==76897== ERROR SUMMARY: 6 errors from 2 contexts (suppressed: 0 from 0)

@@ -1,10 +1,10 @@
 #pouziti clang-format -i *.c
 BasedOnStyle: Google
-IndentWidth: 4           # počet mezer pro odsazení
-TabWidth: 4              # šířka tabulátoru
-UseTab: Never            # vždy používat mezery, ne taby
-ContinuationIndentWidth: 4  # odsazení pokračujících řádků (např. u dlouhých funkcí)
-ColumnLimit: 120         # maximální délka řádku (Použita hodnota ze zadání)
+IndentWidth: 4
+TabWidth: 4
+UseTab: Never
+ContinuationIndentWidth: 4
+ColumnLimit: 100
 SpacesBeforeTrailingComments: 2
 AlignConsecutiveAssignments: true
 AlignConsecutiveDeclarations: true

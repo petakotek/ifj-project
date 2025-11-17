@@ -1,0 +1,16 @@
+import "ifj25" for Ifj
+class Program {
+// Vestavěné funkce
+    static main() {
+        var start
+        var end
+        var sIn
+        var sOut
+
+        start = 0
+        end = 4
+        sIn = "ahoj"
+        sOut = Ifj.substring(sIn, start, end)
+        Ifj.write(sOut)
+    }
+}

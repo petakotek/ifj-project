@@ -18,7 +18,7 @@
 #include "lexer.h"
 #include "support_functions.h"
 
-#define DEBUG false // přepínač pro povolení debugovacích výpisů
+#define DEBUG true // přepínač pro povolení debugovacích výpisů
 
 typedef enum {
     R, // >
@@ -30,8 +30,8 @@ typedef enum {
 
 int PSA_TABLE[15][15] = {
 //   0  1  2  3  4  5  6  7  8  9  10 11 12 13 14
-    {R, R, R, R, R, L, R, R, L, R, L, R, N, R, R}, // + -       0
-    {L, R, R, R, R, L, R, R, L, R, L, R, N, N, R}, // * /       1
+    {R, L, R, R, R, L, R, R, L, R, L, R, N, R, R}, // + -       0
+    {R, R, R, R, R, L, R, R, L, R, L, R, N, N, R}, // * /       1
     {L, L, R, R, R, L, R, R, L, R, L, R, N, R, R}, // < > >= <= 2
     {L, L, L, R, R, L, R, R, L, R, L, R, N, N, N}, // is        3
     {L, L, L, L, R, L, R, R, L, R, L, R, N, R, N}, // == !=     4
@@ -192,7 +192,7 @@ AstNodeType getAstNodeTypeFromTokenType(TokenType type)
     case TOKEN_KEYWORD_STRING:      return AST_KEYWORD_STRING;
     case TOKEN_KEYWORD_NULL_SMALL:  return AST_SMALL_NULL;
     case TOKEN_KEYWORD_NULL:        return AST_NULL;
-    case TOKEN_STRING_BLOCK:        return AST_STRING_LIT;
+    case TOKEN_STRING_BLOCK:        return AST_STRING_BLOCK;
     case TOKEN_HEXA:			    return AST_INT_LIT;
     case TOKEN_INTEGER_EXP:		    return AST_INT_LIT_EXP;
     case TOKEN_FLOAT_EXP:           return AST_FLOAT_LIT_EXP;

@@ -1,0 +1,28 @@
+import "ifj25" for Ifj
+class Program {
+// Vestavěné funkce
+    static main() {
+       var x = Ifj.str(1)
+       Ifj.write(x)
+
+       x = Ifj.str(1.5)
+       Ifj.write(x)
+    
+       x = Ifj.str("aa")
+       Ifj.write(x)
+
+
+       x = Ifj.str(true)
+       Ifj.write(x)
+
+              x = Ifj.str(false)
+       Ifj.write(x)
+
+       x = Ifj.str(null)
+       Ifj.write(x)
+
+        var y = 1 + 2
+       x = Ifj.str(y)
+       Ifj.write(x)
+    }
+}
