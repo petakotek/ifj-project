@@ -1683,7 +1683,7 @@ SemSymbDataType convSemValStatesToSemSymbDType(SemValidationStates returnedValue
         }
         default: {
             printWarning("Nevhodna navratova hodnota %i\n", returnedValue);
-            return NULL_VAL;
+            return UNKNOWN_VAL;
         }
     }
 }
@@ -1710,7 +1710,7 @@ SemValidationStates convSemSymbDTypeToSemValStates(SemSymbDataType dataType) {
         }
         default: {
             printWarning("Nevhodny datovy typ %i\n", dataType);
-            return NULL_DATA;
+            return UNKNOWN_DATA;
         }
     }
 }
