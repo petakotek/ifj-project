@@ -343,15 +343,13 @@ SemValidationStates recursiveNodeWalker(AstNode* currentNode, AstNodeType parent
 
             if (parentNodeType == AST_IFJ_CALL) {
                 fakeParentType = AST_IFJ_CALL;
-            } else {
+            } else if (parentNodeType == AST_FUNC_CALL) {
+                    fakeParentType = AST_FUNC_CALL;
+         } else {
                 createNewScope();
             }
             for (size_t i = 0; i < currentNode->arity; i++) {
                 recursiveNodeWalker(currentNode->child[i], fakeParentType, i);
-            }
-
-            if (parentNodeType == AST_FUNC_CALL) {
-                deleteScope();
             }
 
             return OK;
@@ -668,8 +666,29 @@ SemValidationStates recursiveNodeWalker(AstNode* currentNode, AstNodeType parent
                     return IDENTIFIER;
                 }
                 return OK;
+            } else if (parentNodeType == AST_FUNC_CALL || parentNodeType == AST_IFJ_CALL) {
+                 SemSymbol newSymbol = {
+                    .symbolType = FUNCTION_PARAMETER, .returnValue = NULL_VAL, .scope = NEWEST_SCOPE};
 
-            } else {
+                SemSymbDataType identifierDataType = UNKNOWN_VAL;
+                SemSymbol tempSymbol;
+                SemSymbol* foundSymbol = findSymbolAndModifyAST(currentNode, &tempSymbol, parentNodeType, childNum);
+
+                if (foundSymbol == NULL) {
+                    EXEC_END(SEMANTICS_ERROR_UNDEF, "Promena v danem ramci neexistuje a nemuze byt parametr promenne!\n");
+                }
+                
+                identifierDataType = foundSymbol->dataType;
+
+                newSymbol.dataType = identifierDataType;
+
+                if(parentNodeType == AST_IFJ_CALL) {
+                    return convSemSymbDTypeToSemValStates(identifierDataType);
+                }
+
+                return OK;
+            }
+            else {
                 SemSymbol tempSymbol;
 
                 SemSymbol* foundSymbol = findSymbolCurrentScope(currentNode->value.str);
@@ -1063,13 +1082,13 @@ void deleteScope() {
         return;
     }
 
-    HashTable* newScope = stackHashTablePtrRead(scopesStack);
-    if (newScope == NULL) {
+    HashTable* scopeToDelete = stackHashTablePtrRead(scopesStack);
+    if (scopeToDelete == NULL) {
         EXEC_END(INTERNAL_ERROR, "Na zasobniku byl prazdny ukazatel!\n");
         return;
     }
 
-    hashTableDealloc(newScope);
+    hashTableDealloc(scopeToDelete);
 
     stackHashTablePtrPop(scopesStack);
 }
