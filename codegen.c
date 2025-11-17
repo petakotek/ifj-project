@@ -1415,6 +1415,14 @@ void emitWhile(AstNode* node, FuncContext *funcContext)
     printN("LABEL %s", endLabel); // ! LABEL KONEC
     free(endLabel);
     free(labelStart);
+    char *popped_prefix = stacklabelStackRead(funcContext->label_stack);
+        if (popped_prefix == block_prefix) {
+            stacklabelStackPop(funcContext->label_stack);
+            free(block_prefix); // Tímto uvolňujeme alokovanou paměť
+        } else {
+        	printError(INTERNAL_ERROR, "nepovedene uvolneni lablu na konci while loopu");
+         	memorySafeExit(INTERNAL_ERROR);
+        }
    // free(block_prefix);
 }
 
@@ -1642,7 +1650,15 @@ void emitFor(AstNode* node, FuncContext *funcContext)
     free(errorLabel);
     free(endLabel);
     free(labelStart);
-    free(block_prefix);
+    char *popped_prefix = stacklabelStackRead(funcContext->label_stack);
+        if (popped_prefix == block_prefix) {
+            stacklabelStackPop(funcContext->label_stack);
+            free(block_prefix); // Tímto uvolňujeme alokovanou paměť
+        } else {
+        	printError(INTERNAL_ERROR, "nepovedene uvolneni lablu na konci while loopu");
+         	memorySafeExit(INTERNAL_ERROR);
+        }
+  //  free(block_prefix);
 }
 
 void emitSetterCall(AstNode* node) {

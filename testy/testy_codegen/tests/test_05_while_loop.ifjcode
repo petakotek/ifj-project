@@ -1,0 +1,106 @@
+.IFJcode25
+JUMP main$0
+LABEL main$0
+CREATEFRAME
+PUSHFRAME
+DEFVAR LF@retval
+DEFVAR LF@main$0_ty_bool_0
+DEFVAR LF@main$0_val_bool_0
+DEFVAR LF@i$$1
+DEFVAR LF@main$0_ty_bool_1
+DEFVAR LF@main$0_val_bool_1
+DEFVAR LF@main$0_ty_bool_2
+DEFVAR LF@main$0_val_bool_2
+DEFVAR LF@main$0_ln_3
+DEFVAR LF@main$0_rn_3
+DEFVAR LF@main$0_rty_3
+DEFVAR LF@main$0_lty_3
+DEFVAR LF@main$0_ty_bool_4
+DEFVAR LF@main$0_val_bool_4
+DEFVAR LF@main$0_ty_bool_5
+DEFVAR LF@main$0_val_bool_5
+DEFVAR LF@main$0_ty_bool_6
+DEFVAR LF@main$0_val_bool_6
+DEFVAR LF@main$0_ty_bool_7
+DEFVAR LF@main$0_val_bool_7
+DEFVAR LF@main$0_ln_8
+DEFVAR LF@main$0_rn_8
+DEFVAR LF@main$0_ty_8
+MOVE LF@retval nil@nil
+PUSHS int@3
+INT2FLOATS
+POPS LF@i$$1
+LABEL main$0$while$1$start$1
+PUSHS LF@i$$1
+PUSHS int@0
+INT2FLOATS
+POPS LF@main$0_rn_3
+POPS LF@main$0_ln_3
+PUSHS LF@main$0_ln_3
+PUSHS LF@main$0_rn_3
+TYPES
+POPS LF@main$0_rty_3
+TYPES
+POPS LF@main$0_lty_3
+PUSHS LF@main$0_lty_3
+PUSHS string@nil
+JUMPIFEQS main$0$lterr$3
+PUSHS LF@main$0_rty_3
+PUSHS string@nil
+JUMPIFEQS main$0$lterr$3
+PUSHS LF@main$0_lty_3
+PUSHS LF@main$0_rty_3
+JUMPIFEQS main$0$ltok$3
+JUMP main$0$lterr$3
+LABEL main$0$ltok$3
+PUSHS LF@main$0_ln_3
+PUSHS LF@main$0_rn_3
+GTS
+JUMP main$0$ltend$3
+LABEL main$0$lterr$3
+EXIT int@25
+LABEL main$0$ltend$3
+PUSHS bool@false
+JUMPIFEQS main$0$while$1$end$1
+PUSHS LF@i$$1
+DEFVAR LF@temp$var$write$0
+DEFVAR LF@temp$var$writeType$0
+POPS LF@temp$var$write$0
+TYPE LF@temp$var$writeType$0 LF@temp$var$write$0
+JUMPIFNEQ temp$label$write$write$0 LF@temp$var$writeType$0 string@float
+ISINT LF@temp$var$writeType$0  LF@temp$var$write$0
+JUMPIFNEQ temp$label$write$write$0 LF@temp$var$writeType$0  bool@true
+FLOAT2INT LF@temp$var$write$0 LF@temp$var$write$0
+LABEL temp$label$write$write$0
+WRITE LF@temp$var$write$0
+PUSHS nil@nil
+PUSHS LF@i$$1
+PUSHS int@1
+INT2FLOATS
+POPS LF@main$0_rn_8
+POPS LF@main$0_ln_8
+PUSHS LF@main$0_ln_8
+PUSHS LF@main$0_rn_8
+TYPES
+POPS LF@main$0_ty_8
+TYPES
+PUSHS LF@main$0_ty_8
+JUMPIFEQS main$0$ok_minus$8
+JUMP main$0$err_minus$8
+LABEL main$0$ok_minus$8
+PUSHS LF@main$0_ty_8
+PUSHS string@string
+JUMPIFEQS main$0$err_minus$8
+PUSHS LF@main$0_ln_8
+PUSHS LF@main$0_rn_8
+SUBS
+JUMP main$0$end_minus$8
+LABEL main$0$err_minus$8
+EXIT int@25
+LABEL main$0$end_minus$8
+
+POPS LF@i$$1
+JUMP main$0$while$1$start$1
+LABEL main$0$while$1$end$1
+LABEL main$0$end$0
+EXIT int@0

@@ -1,0 +1,17 @@
+import "ifj25" for Ifj
+
+class Program {
+    static main() {
+        var x
+        x = 5
+        if (x == 5) {
+            Ifj.write("equal")
+        }
+        if (x < 10) {
+            Ifj.write("less")
+        }
+        if (x > 3) {
+            Ifj.write("greater")
+        }
+    }
+}

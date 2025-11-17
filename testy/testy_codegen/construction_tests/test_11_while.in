@@ -1,0 +1,13 @@
+import "ifj25" for Ifj
+
+class Program {
+    static main() {
+        var i
+        i = 3
+        while (i > 0) {
+            Ifj.write(i)
+            i = i - 1
+        }
+        Ifj.write("done")
+    }
+}

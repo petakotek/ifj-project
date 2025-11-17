@@ -1,0 +1,15 @@
+import "ifj25" for Ifj
+
+class Program {
+    static unicorn {
+        if (__a) {
+            return __a + 10
+        } else {
+            return null
+        }
+    }
+
+    static main() {
+        Ifj.write(unicorn)
+    }
+}
