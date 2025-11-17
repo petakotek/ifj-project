@@ -1,17 +1,8 @@
 import "ifj25" for Ifj
 class Program {
-    static main(){
-    var j
-    for (i in 0 .. 2) {
-        j = 0
-        while (j < 2) {
-            if (i < 2 && j < 2) {
-                j = j + 1
-            } else {
-                j = j + 1
-            }
-        }
+    static inc(x) { x + 1 }
+    static main() {
+        var y = inc(5)
+        Ifj.write(y)
     }
-    Ifj.write(j)
-}
 }
