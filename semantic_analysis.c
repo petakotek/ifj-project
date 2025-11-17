@@ -775,6 +775,10 @@ SemValidationStates recursiveNodeWalker(AstNode* currentNode, AstNodeType parent
             printLog("AST_STRING_LIT\n");
             return STRING_DATA;
         }
+        case (AST_STRING_BLOCK): {
+            printLog("AST_STRING_BLOCK\n");
+            return STRING_DATA;
+        }
         case (AST_SMALL_NULL): {
             printLog("AST_SMALL_NULL\n");
             // return NULL_DATA;
