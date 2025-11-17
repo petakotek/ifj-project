@@ -520,7 +520,7 @@ SemValidationStates recursiveNodeWalker(AstNode* currentNode, AstNodeType parent
             printLog("AST_ASSIGN\n");
 
             if (parentNodeType == AST_VAR || parentNodeType == AST_GLOBAL_ID) {
-                return recursiveNodeWalker(currentNode->child[0], AST_ASSIGN, 0);
+                return recursiveNodeWalker(currentNode->child[0], AST_ASSIGN, 1);
             }
 
             SemValidationStates leftChild  = recursiveNodeWalker(currentNode->child[0], AST_ASSIGN, 0);
