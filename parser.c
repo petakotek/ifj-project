@@ -454,6 +454,7 @@ void Block_content_func_check(DynamicSymbolStackPtr Stack, Token token)
         return;
     }
 
+    pushCheck(stackSymbolPush(Stack,makeReduce(AST_RETURN,1)));
     // One-liner VO FUNKCII: presne jeden VÝRAZ (napr. { 5+5 })
     switch (token.type) {
         case TOKEN_IDENTIFIER:
