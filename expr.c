@@ -18,7 +18,7 @@
 #include "lexer.h"
 #include "support_functions.h"
 
-#define DEBUG false // přepínač pro povolení debugovacích výpisů
+#define DEBUG true // přepínač pro povolení debugovacích výpisů
 
 typedef enum {
     R, // >
@@ -30,8 +30,8 @@ typedef enum {
 
 int PSA_TABLE[15][15] = {
 //   0  1  2  3  4  5  6  7  8  9  10 11 12 13 14
-    {R, R, R, R, R, L, R, R, L, R, L, R, N, R, R}, // + -       0
-    {L, R, R, R, R, L, R, R, L, R, L, R, N, N, R}, // * /       1
+    {R, L, R, R, R, L, R, R, L, R, L, R, N, R, R}, // + -       0
+    {R, R, R, R, R, L, R, R, L, R, L, R, N, N, R}, // * /       1
     {L, L, R, R, R, L, R, R, L, R, L, R, N, R, R}, // < > >= <= 2
     {L, L, L, R, R, L, R, R, L, R, L, R, N, N, N}, // is        3
     {L, L, L, L, R, L, R, R, L, R, L, R, N, R, N}, // == !=     4
