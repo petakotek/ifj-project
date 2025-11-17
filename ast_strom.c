@@ -218,6 +218,8 @@ AstNode *new_leaf(AstNodeType kind, Token token) {
     {
         newLeaf->kind = AST_FLOAT_LIT;
     }
+    else if (kind == AST_STRING_BLOCK)
+        newLeaf->kind = AST_STRING_LIT;
     else 
     {
         newLeaf->kind = kind;
@@ -280,8 +282,12 @@ void ast_value_from_token(AstValue *out, AstNodeType kind, Token *token) {
             break;
         case AST_STRING_LIT:
             out->has_str = true;
-            char *temp = dup_cstr(token->value.identifier);
-            temp = stringChanging(temp);
+            char *tmp = stringChangingLit(token->value.identifier);
+            out->str = tmp;
+            break;
+        case AST_STRING_BLOCK:
+            out->has_str = true;
+            char *temp = stringChanging(token->value.identifier);
             out->str = temp;
             break;
         case AST_IDENTIFIER:
@@ -497,3 +503,110 @@ char *stringChanging(char * tmp)
 
     return out; 
 }
+
+char *stringChangingLit(char *tmp)
+{
+    if (!tmp) 
+    {
+        return NULL;
+    }
+
+    //prevedenie escape sekvencie do podoby z "\n" do '\n'
+    char *unesc = escapeString(tmp);
+
+    //prevedenie do \xyz
+    char *out = stringChanging(unesc);
+
+    free(unesc);
+    return out;
+}
+
+char *escapeString(char *tmp)
+{
+    size_t len = strlen(tmp);
+    char *out = malloc(len + 1); 
+    if (!out) {
+        printError(INTERNAL_ERROR, "chyba v alokacii");
+        memorySafeExit(INTERNAL_ERROR);
+    }
+
+    size_t i = 0, j = 0;
+     while (i < len) {
+        if (tmp[i] == '\\' && i + 1 < len) {
+            char c = tmp[i+2];
+
+            if (c == 'n')      
+            { 
+                out[j++] = '\n';  
+                i += 2; 
+            }
+            else if (c == 't') 
+            { 
+                out[j++] = '\t';  
+                i += 2; 
+            }
+            else if (c == '\\')
+            { 
+                out[j++] = '\\';  
+                i += 2; 
+            }
+            else if (c == '"') 
+            { 
+                out[j++] = '\"';  
+                i += 2; 
+            }
+            else if (c == 'r')
+            {
+                out[j++] = '\r';  
+                i += 2; 
+            }
+            else if (c == '0')
+            {
+                out[j++] = '\0';  
+                i += 2; 
+            }
+            else if (c == '%')
+            {
+                out[j++] = '%';  
+                i += 2; 
+            }
+            else if (c == 'a')
+            {
+                out[j++] = '\a';  
+                i += 2; 
+            }
+            else if (c == 'e')
+            {
+                out[j++] = 27;  
+                i += 2; 
+            }
+            else if (c == 'f')
+            {
+                out[j++] = '\f';  
+                i += 2; 
+            }
+            else if (c == 'v')
+            {
+                out[j++] = '\v';  
+                i += 2; 
+            }
+            else if (c == 'b')
+            {
+                out[j++] = '\b';  
+                i += 2; 
+            }
+            else 
+            { 
+                // nechaj ako je (ak nie je escape)
+                out[j++] = tmp[i++];
+            }
+        }
+        else {
+            out[j++] = tmp[i++];
+        }
+    }
+
+    out[j] = '\0';
+    return out;
+}
+
