@@ -61,9 +61,11 @@ SemSymbol* findGlobalSymbol(char* key);
  * @attention V případě nalezení symbolu upraví AST uzel
  * @param sourceNode Zdrojový AST uzel
  * @param destSymbol Ukazatel na symbol pro upravení, pokud je klíč nalezený v rámcích
+ * @param parentNodeType Typ otcovského uzlu
+ * @param childNum Kolikáté dítě je daný zdrojový AST uzel
  * @return SemSymbol* Ukazatel na nalezený symbol
  */
-SemSymbol* findSymbolAndModifyAST(AstNode* sourceNode, SemSymbol* destSymbol);
+SemSymbol* findSymbolAndModifyAST(AstNode* sourceNode, SemSymbol* destSymbol, AstNodeType parent, size_t childNum);
 
 /**
  * @brief Prohledá všechny rámce, vrací ukazatel na první nalezený odpovídající symbol
@@ -341,15 +343,13 @@ SemValidationStates recursiveNodeWalker(AstNode* currentNode, AstNodeType parent
 
             if (parentNodeType == AST_IFJ_CALL) {
                 fakeParentType = AST_IFJ_CALL;
-            } else {
+            } else if (parentNodeType == AST_FUNC_CALL) {
+                    fakeParentType = AST_FUNC_CALL;
+         } else {
                 createNewScope();
             }
             for (size_t i = 0; i < currentNode->arity; i++) {
                 recursiveNodeWalker(currentNode->child[i], fakeParentType, i);
-            }
-
-            if(parentNodeType == AST_FUNC_CALL) {
-                deleteScope();
             }
 
             return OK;
@@ -520,7 +520,7 @@ SemValidationStates recursiveNodeWalker(AstNode* currentNode, AstNodeType parent
             printLog("AST_ASSIGN\n");
 
             if (parentNodeType == AST_VAR || parentNodeType == AST_GLOBAL_ID) {
-                return recursiveNodeWalker(currentNode->child[0], AST_ASSIGN, 0);
+                return recursiveNodeWalker(currentNode->child[0], AST_ASSIGN, 1);
             }
 
             SemValidationStates leftChild  = recursiveNodeWalker(currentNode->child[0], AST_ASSIGN, 0);
@@ -529,7 +529,6 @@ SemValidationStates recursiveNodeWalker(AstNode* currentNode, AstNodeType parent
             if (leftChild != IDENTIFIER) {
                 EXEC_END(SEMANTICS_ERROR_OTHERS, "(=) Levy operand prirazeni musi byt promenna!\n");
             }
-
             SemSymbol* leftSymbol = findSymbol(currentNode->child[0]->value.str);
 
             if (rightChild == IDENTIFIER) {
@@ -667,14 +666,34 @@ SemValidationStates recursiveNodeWalker(AstNode* currentNode, AstNodeType parent
                     return IDENTIFIER;
                 }
                 return OK;
+            } else if (parentNodeType == AST_FUNC_CALL || parentNodeType == AST_IFJ_CALL) {
+                 SemSymbol newSymbol = {
+                    .symbolType = FUNCTION_PARAMETER, .returnValue = NULL_VAL, .scope = NEWEST_SCOPE};
 
-            } else {
+                SemSymbDataType identifierDataType = UNKNOWN_VAL;
+                SemSymbol tempSymbol;
+                SemSymbol* foundSymbol = findSymbolAndModifyAST(currentNode, &tempSymbol, parentNodeType, childNum);
+
+                if (foundSymbol == NULL) {
+                    EXEC_END(SEMANTICS_ERROR_UNDEF, "Promena v danem ramci neexistuje a nemuze byt parametr promenne!\n");
+                }
+                
+                identifierDataType = foundSymbol->dataType;
+
+                newSymbol.dataType = identifierDataType;
+
+                if(parentNodeType == AST_IFJ_CALL) {
+                    return convSemSymbDTypeToSemValStates(identifierDataType);
+                }
+
+                return OK;
+            }
+            else {
                 SemSymbol tempSymbol;
 
                 SemSymbol* foundSymbol = findSymbolCurrentScope(currentNode->value.str);
-
                 if (foundSymbol == NULL) {
-                    foundSymbol = findSymbolAndModifyAST(currentNode, &tempSymbol);
+                    foundSymbol = findSymbolAndModifyAST(currentNode, &tempSymbol, parentNodeType, childNum);
                 }
 
                 if (foundSymbol == NULL) {
@@ -725,7 +744,7 @@ SemValidationStates recursiveNodeWalker(AstNode* currentNode, AstNodeType parent
             printLog("AST_GLOBAL_ID\n");
 
             if (parentNodeType == AST_STATEMENT_LIST) {
-                SemSymbol newSymbol = {.symbolType = GLOBAL, .returnValue = NULL_VAL, .scope = NEWEST_SCOPE};
+                SemSymbol newSymbol = {.symbolType = GLOBAL, .returnValue = NULL_VAL, .scope = 0};
 
                 SemValidationStates childValue = recursiveNodeWalker(currentNode->child[1], AST_GLOBAL_ID, 1);
 
@@ -775,6 +794,10 @@ SemValidationStates recursiveNodeWalker(AstNode* currentNode, AstNodeType parent
             printLog("AST_STRING_LIT\n");
             return STRING_DATA;
         }
+        case (AST_STRING_BLOCK): {
+            printLog("AST_STRING_BLOCK\n");
+            return STRING_DATA;
+        }
         case (AST_SMALL_NULL): {
             printLog("AST_SMALL_NULL\n");
             // return NULL_DATA;
@@ -806,7 +829,7 @@ SemValidationStates recursiveNodeWalker(AstNode* currentNode, AstNodeType parent
                     return UNKNOWN_DATA;
                 EXEC_END(SEMANTICS_ERROR_UNCOMPATIBLE, "(unarni -)  Nekompatibilni datovy typ!\n");
                 break;
-            } else // Binární mínus
+            } else  // Binární mínus
                 return handleMathOperators(currentNode, AST_MINUS, "-");
         }
         case (AST_MUL): {
@@ -1059,18 +1082,18 @@ void deleteScope() {
         return;
     }
 
-    HashTable* newScope = stackHashTablePtrRead(scopesStack);
-    if (newScope == NULL) {
+    HashTable* scopeToDelete = stackHashTablePtrRead(scopesStack);
+    if (scopeToDelete == NULL) {
         EXEC_END(INTERNAL_ERROR, "Na zasobniku byl prazdny ukazatel!\n");
         return;
     }
 
-    hashTableDealloc(newScope);
+    hashTableDealloc(scopeToDelete);
 
     stackHashTablePtrPop(scopesStack);
 }
 
-SemSymbol* findSymbolAndModifyAST(AstNode* sourceNode, SemSymbol* destSymbol) {
+SemSymbol* findSymbolAndModifyAST(AstNode* sourceNode, SemSymbol* destSymbol, AstNodeType parent, size_t childNum) {
     unsigned toSearchScopeIndex = scopesStack->nextTopElement;
     int      index              = -1;
     char*    key                = sourceNode->value.str;
@@ -1096,19 +1119,38 @@ SemSymbol* findSymbolAndModifyAST(AstNode* sourceNode, SemSymbol* destSymbol) {
         // Může to být i získávač nebo nastavovač
         unsigned symbolNameLength = strlen(key) + 3;  // prostor pro '$_'
 
-        char getterName[symbolNameLength];
-        snprintf(getterName, symbolNameLength, "%s$%s", key, "g");
-        SemSymbol* foundGetter = findGlobalSymbol(getterName);
-        if (foundGetter != NULL) {
-            sourceNode->kind = AST_GETTER_CALL;
-            return foundGetter;
-        }
-
-        char setterName[symbolNameLength];
-        snprintf(setterName, symbolNameLength, "%s$%s", key, "s");
-        SemSymbol* foundSetter = findGlobalSymbol(setterName);
-        if (foundSetter != NULL) {
-            sourceNode->kind = AST_SETTER_CALL;
+        if (parent == AST_ASSIGN && childNum == 0) {
+            char setterName[symbolNameLength];
+            snprintf(setterName, symbolNameLength, "%s$%s", key, "s");
+            SemSymbol* foundSetter = findGlobalSymbol(setterName);
+            if (foundSetter != NULL) {
+                if (destSymbol != NULL) {
+                    // Potřeba přejmenovat symbol v AST stromě
+                    destSymbol->symbolType  = SETTER;
+                    destSymbol->dataType    = foundSetter->dataType;
+                    destSymbol->returnValue = foundSetter->returnValue;
+                    destSymbol->scope       = toSearchScopeIndex;
+                    initNewSymbol(sourceNode, destSymbol);
+                }
+                sourceNode->kind = AST_SETTER_CALL;
+                return foundSetter;
+            }
+        } else {
+            char getterName[symbolNameLength];
+            snprintf(getterName, symbolNameLength, "%s$%s", key, "g");
+            SemSymbol* foundGetter = findGlobalSymbol(getterName);
+            if (foundGetter != NULL) {
+                if (destSymbol != NULL) {
+                    // Potřeba přejmenovat symbol v AST stromě
+                    destSymbol->symbolType  = GETTER;
+                    destSymbol->dataType    = foundGetter->dataType;
+                    destSymbol->returnValue = foundGetter->returnValue;
+                    destSymbol->scope       = toSearchScopeIndex;
+                    initNewSymbol(sourceNode, destSymbol);
+                }
+                sourceNode->kind = AST_GETTER_CALL;
+                return foundGetter;
+            }
         }
 
         return NULL;
@@ -1183,7 +1225,7 @@ void insertSymbolGlobalScope(SemSymbol symbol) {
         return;
     }
 
-    int index = hashTableInsertItem(scopesStack->array[0], symbol.name, symbol);
+    int index = hashTableInsertItem(&scopesStack->array[0], symbol.name, symbol);
 
     if (index == -1) {
         EXEC_END(INTERNAL_ERROR, "Selhalo vlozeni prvku do globalniho ramce!\n");
@@ -1204,7 +1246,7 @@ void insertSymbolCurrentScope(SemSymbol symbol) {
 
     HashTable* currentScope = stackHashTablePtrRead(scopesStack);
 
-    int index = hashTableInsertItem(currentScope, symbol.name, symbol);
+    int index = hashTableInsertItem(&currentScope, symbol.name, symbol);
 
     if (index == -1) {
         EXEC_END(INTERNAL_ERROR, "Selhalo vlozeni prvku do ramce!\n");
@@ -1237,7 +1279,7 @@ void insertUndeclaredReference(char* referenceSymbolName, SemSymbol symbol) {
         return;
     }
 
-    if (hashTableInsertItem(undeclaredReferenceTable, referenceSymbolName, symbol) == -1) {
+    if (hashTableInsertItem(&undeclaredReferenceTable, referenceSymbolName, symbol) == -1) {
         EXEC_END(INTERNAL_ERROR, "Nepodarilo se vlozit prvek do tabulky!\n");
     }
 }
@@ -1683,7 +1725,7 @@ SemSymbDataType convSemValStatesToSemSymbDType(SemValidationStates returnedValue
         }
         default: {
             printWarning("Nevhodna navratova hodnota %i\n", returnedValue);
-            return NULL_VAL;
+            return UNKNOWN_VAL;
         }
     }
 }
@@ -1710,7 +1752,7 @@ SemValidationStates convSemSymbDTypeToSemValStates(SemSymbDataType dataType) {
         }
         default: {
             printWarning("Nevhodny datovy typ %i\n", dataType);
-            return NULL_DATA;
+            return UNKNOWN_DATA;
         }
     }
 }

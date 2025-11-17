@@ -1,0 +1,16 @@
+import "ifj25" for Ifj
+
+class Program {
+    static getValue() {
+        return 10
+    }
+
+    static getValue(x) {
+        return x * 2
+    }
+
+    static main() {
+        Ifj.write(getValue())
+        Ifj.write(getValue(5))
+    }
+}
