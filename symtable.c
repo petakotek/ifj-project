@@ -274,11 +274,11 @@ HashTable *hashTableRealloc(HashTable *hashT)
     hashTableInitItems(newTable);
 
 
-    for (int i = 0; i < hashT->tableCapacity; i++)
+    for (int i = 0; i < hashT->tableCapacity; i++) // naplneni nove tabulky polozkami
     {
         if (hashT->items[i].key != NULL)
         {
-            int result = hashTableInsertItem(newTable, hashT->items[i].key, hashT->items[i].symbol);
+            hashTableInsertItem(newTable, hashT->items[i].key, hashT->items[i].symbol);
         }
     }
     return newTable;
