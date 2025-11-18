@@ -87,6 +87,7 @@ char *generatorLable(char *func_name,FuncContext *funcStruckt,bool pridaniDoStac
                 free(result_label);
                 printError(INTERNAL_ERROR, "Error during initial label copy");
                 memorySafeExit(INTERNAL_ERROR);
+                return NULL;
             }
         }
     }

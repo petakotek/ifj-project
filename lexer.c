@@ -776,13 +776,14 @@ Token lexer_token_next() {
              */
             case ZERO: {
                 if (c == 'x') {
-               	if(!isxdigit(lexer->input[lexer->pos++])){
+                char current_char = lexer->input[lexer->pos+2];
+               	if(!isxdigit(current_char)){
                 free(buf);
                 buf = NULL;
                 printError(LEX_ERROR,
-                           "neznamy charakter v lexer_token_next"
-                           "%c on line : %lu",
-                           c, lexer->pos);
+                               "neznamy charakter v lexer_token_next"
+                               "%c on line : %lu",
+                               current_char, lexer->pos + 1);
                 memorySafeExit(LEX_ERROR);
                 }
                     stav = HEXA_NUM;
