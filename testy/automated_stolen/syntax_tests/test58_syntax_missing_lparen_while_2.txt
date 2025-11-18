@@ -2,12 +2,13 @@
 import "ifj25" for Ifj
 class Program {
     static main() {
-        var i 
+        var i
         i = 0
         while i < 5) {  // ERROR: missing (
             Ifj.write(i)
             Ifj.write("\n")
             i = i + 1
+            return
         }
     }
 }
