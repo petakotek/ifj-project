@@ -75,6 +75,13 @@ char *generatorLable(char *func_name,FuncContext *funcStruckt,bool pridaniDoStac
                     memorySafeExit(INTERNAL_ERROR);
                 }
             }
+            if (prefix_len + 1 + 10 >= size_of_buffer) {
+                result_label = resize_label_name(result_label, &size_of_buffer);
+                if (result_label == NULL) {
+                    printError(INTERNAL_ERROR, "Error resizing label buffer");
+                    memorySafeExit(INTERNAL_ERROR);
+                }
+            }
 
             current_len = snprintf(result_label, size_of_buffer, "%s", prefix);
             if (current_len < 0 || (size_t)current_len >= size_of_buffer) {
@@ -393,12 +400,7 @@ void emitFuncDec(AstNode *root){
 		printN("EXIT int@0");
 	}
 	varListDescrution(local_vars);
-	while (!stacklabelStackIsEmpty(label_stack)) {
-    char *item = stacklabelStackRead(label_stack);
-    stacklabelStackPop(label_stack);
-    free(item);
-}
-stacklabelStackDestruct(label_stack);
+	stacklabelStackDestruct(label_stack);
 	DestructorFuncContext(context);
 	free(label_end);
 	}

@@ -1,0 +1,125 @@
+
+[0;34m[TEST][0m test_01_return_value
+========================================
+valgrind: ./ifj25: No such file or directory
+FAIL: Compilation failed
+
+[0;34m[TEST][0m test_02_function_param
+========================================
+valgrind: ./ifj25: No such file or directory
+FAIL: Compilation failed
+
+[0;34m[TEST][0m test_03_type_checking
+========================================
+valgrind: ./ifj25: No such file or directory
+FAIL: Compilation failed
+
+[0;34m[TEST][0m test_04_arithmetic
+========================================
+valgrind: ./ifj25: No such file or directory
+FAIL: Compilation failed
+
+[0;34m[TEST][0m test_05_assignment
+========================================
+valgrind: ./ifj25: No such file or directory
+FAIL: Compilation failed
+
+[0;34m[TEST][0m test_06_str_builtin
+========================================
+valgrind: ./ifj25: No such file or directory
+FAIL: Compilation failed
+
+[0;34m[TEST][0m test_07_string_concat
+========================================
+valgrind: ./ifj25: No such file or directory
+FAIL: Compilation failed
+
+[0;34m[TEST][0m test_08_getter
+========================================
+valgrind: ./ifj25: No such file or directory
+FAIL: Compilation failed
+
+[0;34m[TEST][0m test_09_setter
+========================================
+valgrind: ./ifj25: No such file or directory
+FAIL: Compilation failed
+
+[0;34m[TEST][0m test_10_if_else
+========================================
+valgrind: ./ifj25: No such file or directory
+FAIL: Compilation failed
+
+[0;34m[TEST][0m test_11_while
+========================================
+valgrind: ./ifj25: No such file or directory
+FAIL: Compilation failed
+
+[0;34m[TEST][0m test_12_global_var
+========================================
+valgrind: ./ifj25: No such file or directory
+FAIL: Compilation failed
+
+[0;34m[TEST][0m test_13_null_check
+========================================
+valgrind: ./ifj25: No such file or directory
+FAIL: Compilation failed
+
+[0;34m[TEST][0m test_14_null_type_check
+========================================
+valgrind: ./ifj25: No such file or directory
+FAIL: Compilation failed
+
+[0;34m[TEST][0m test_15_block_scope
+========================================
+valgrind: ./ifj25: No such file or directory
+FAIL: Compilation failed
+
+[0;34m[TEST][0m test_16_nested_if
+========================================
+valgrind: ./ifj25: No such file or directory
+FAIL: Compilation failed
+
+[0;34m[TEST][0m test_17_string_repeat
+========================================
+valgrind: ./ifj25: No such file or directory
+FAIL: Compilation failed
+
+[0;34m[TEST][0m test_18_division
+========================================
+valgrind: ./ifj25: No such file or directory
+FAIL: Compilation failed
+
+[0;34m[TEST][0m test_19_logical_and
+========================================
+valgrind: ./ifj25: No such file or directory
+FAIL: Compilation failed
+
+[0;34m[TEST][0m test_20_logical_or
+========================================
+valgrind: ./ifj25: No such file or directory
+FAIL: Compilation failed
+
+[0;34m[TEST][0m test_21_logical_not
+========================================
+valgrind: ./ifj25: No such file or directory
+FAIL: Compilation failed
+
+[0;34m[TEST][0m test_22_less_than
+========================================
+valgrind: ./ifj25: No such file or directory
+FAIL: Compilation failed
+
+[0;34m[TEST][0m test_23_greater_than
+========================================
+valgrind: ./ifj25: No such file or directory
+FAIL: Compilation failed
+
+[0;34m[TEST][0m test_24_overload_no_params
+========================================
+valgrind: ./ifj25: No such file or directory
+FAIL: Compilation failed
+
+[0;34m[TEST][0m test_25_overload_with_param
+========================================
+valgrind: ./ifj25: No such file or directory
+FAIL: Compilation failed

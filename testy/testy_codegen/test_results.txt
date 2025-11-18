@@ -2,23 +2,6 @@
 Test: test_01_basic_output
 ========================================
 Spouštím: valgrind --leak-check=full ../.././ifj25 < ./tests/test_01.in
-LOG: 0 FLAG
-LOG: 1 Aktualni token INTEGER a stacktop: DOLLAR [9, 8]
-LOG: DOLLAR LOG: 
-LOG: 	Operace <
-LOG: 		2 budu hazet na stack klasicky
-LOG: 			3 < (9, 8) LOG: INTEGER LOG: STOP LOG: DOLLAR LOG: 
-LOG: 4 Aktualni token RPAREN a stacktop: INTEGER [8, 11]
-LOG: INTEGER LOG: STOP LOG: DOLLAR LOG: 
-LOG: 	Operace >
-LOG: 			param count 1
-LOG: 			5 > (8, 11) LOG: EXPRESSION LOG: DOLLAR LOG: 
-LOG: splnila se podminka
-LOG: EXPRESSION LOG: DOLLAR LOG: 
-LOG: 6 Aktualni token RPAREN a stacktop: EXPRESSION [9, 11]
-LOG: EXPRESSION LOG: DOLLAR LOG: 
-LOG: string INT_LIT
-LOG: Final stack: LOG: EXPRESSION LOG: DOLLAR LOG: 
 expr strom po skoncení funcke parseExpression
 ===== AST STROM =====
 [INT_LIT] (int=42)
@@ -64,6 +47,7 @@ RESULT: PASS
 Test: test_02_int_operations
 ========================================
 Spouštím: valgrind --leak-check=full ../.././ifj25 < ./tests/test_02.in
+<<<<<<< HEAD
 LOG: 0 FLAG
 LOG: 1 Aktualni token INTEGER a stacktop: DOLLAR [9, 8]
 LOG: DOLLAR LOG: 
@@ -76,10 +60,13 @@ LOG: 			param count 1
 LOG: Final etapa: LOG: EXPRESSION LOG: DOLLAR LOG: 
 LOG: string INT_LIT
 LOG: Final stack: LOG: EXPRESSION LOG: DOLLAR LOG: 
+=======
+>>>>>>> c7b277d04778e2d2ab2d75c7d6b12b520a7b1a2c
 expr strom po skoncení funcke parseExpression
 ===== AST STROM =====
 [INT_LIT] (int=10)
 LOG: precedencna odovzdala token jeho type je = 33
+<<<<<<< HEAD
 LOG: 0 FLAG
 LOG: 1 Aktualni token INTEGER a stacktop: DOLLAR [9, 8]
 LOG: DOLLAR LOG: 
@@ -92,10 +79,13 @@ LOG: 			param count 1
 LOG: Final etapa: LOG: EXPRESSION LOG: DOLLAR LOG: 
 LOG: string INT_LIT
 LOG: Final stack: LOG: EXPRESSION LOG: DOLLAR LOG: 
+=======
+>>>>>>> c7b277d04778e2d2ab2d75c7d6b12b520a7b1a2c
 expr strom po skoncení funcke parseExpression
 ===== AST STROM =====
 [INT_LIT] (int=5)
 LOG: precedencna odovzdala token jeho type je = 33
+<<<<<<< HEAD
 LOG: 0 FLAG
 LOG: 1 Aktualni token IDENTIFIER a stacktop: DOLLAR [9, 8]
 LOG: DOLLAR LOG: 
@@ -133,12 +123,15 @@ LOG: 16 Aktualni token RPAREN a stacktop: EXPRESSION [9, 11]
 LOG: EXPRESSION LOG: DOLLAR LOG: 
 LOG: string STRING_PLUS
 LOG: Final stack: LOG: EXPRESSION LOG: DOLLAR LOG: 
+=======
+>>>>>>> c7b277d04778e2d2ab2d75c7d6b12b520a7b1a2c
 expr strom po skoncení funcke parseExpression
 ===== AST STROM =====
 [STRING_PLUS]
   [IDENTIFIER] (str=a)
   [IDENTIFIER] (str=b)
 LOG: precedencna odovzdala token jeho type je = 21
+<<<<<<< HEAD
 LOG: 0 FLAG
 LOG: 1 Aktualni token IDENTIFIER a stacktop: DOLLAR [9, 8]
 LOG: DOLLAR LOG: 
@@ -176,12 +169,15 @@ LOG: 16 Aktualni token RPAREN a stacktop: EXPRESSION [9, 11]
 LOG: EXPRESSION LOG: DOLLAR LOG: 
 LOG: string STRING_MINUS
 LOG: Final stack: LOG: EXPRESSION LOG: DOLLAR LOG: 
+=======
+>>>>>>> c7b277d04778e2d2ab2d75c7d6b12b520a7b1a2c
 expr strom po skoncení funcke parseExpression
 ===== AST STROM =====
 [STRING_MINUS]
   [IDENTIFIER] (str=a)
   [IDENTIFIER] (str=b)
 LOG: precedencna odovzdala token jeho type je = 21
+<<<<<<< HEAD
 LOG: 0 FLAG
 LOG: 1 Aktualni token IDENTIFIER a stacktop: DOLLAR [9, 8]
 LOG: DOLLAR LOG: 
@@ -219,12 +215,15 @@ LOG: 16 Aktualni token RPAREN a stacktop: EXPRESSION [9, 11]
 LOG: EXPRESSION LOG: DOLLAR LOG: 
 LOG: string STRING_MUL
 LOG: Final stack: LOG: EXPRESSION LOG: DOLLAR LOG: 
+=======
+>>>>>>> c7b277d04778e2d2ab2d75c7d6b12b520a7b1a2c
 expr strom po skoncení funcke parseExpression
 ===== AST STROM =====
 [STRING_MUL]
   [IDENTIFIER] (str=a)
   [IDENTIFIER] (str=b)
 LOG: precedencna odovzdala token jeho type je = 21
+<<<<<<< HEAD
 LOG: 0 FLAG
 LOG: 1 Aktualni token IDENTIFIER a stacktop: DOLLAR [9, 8]
 LOG: DOLLAR LOG: 
@@ -262,6 +261,8 @@ LOG: 16 Aktualni token RPAREN a stacktop: EXPRESSION [9, 11]
 LOG: EXPRESSION LOG: DOLLAR LOG: 
 LOG: string STRING_DIV
 LOG: Final stack: LOG: EXPRESSION LOG: DOLLAR LOG: 
+=======
+>>>>>>> c7b277d04778e2d2ab2d75c7d6b12b520a7b1a2c
 expr strom po skoncení funcke parseExpression
 ===== AST STROM =====
 [STRING_DIV]
@@ -375,6 +376,7 @@ RESULT: PASS
 Test: test_03_string_concat
 ========================================
 Spouštím: valgrind --leak-check=full ../.././ifj25 < ./tests/test_03.in
+<<<<<<< HEAD
 LOG: 0 FLAG
 LOG: 1 Aktualni token STRING a stacktop: DOLLAR [9, 8]
 LOG: DOLLAR LOG: 
@@ -387,10 +389,13 @@ LOG: 			param count 1
 LOG: Final etapa: LOG: EXPRESSION LOG: DOLLAR LOG: 
 LOG: string STRING_LIT
 LOG: Final stack: LOG: EXPRESSION LOG: DOLLAR LOG: 
+=======
+>>>>>>> c7b277d04778e2d2ab2d75c7d6b12b520a7b1a2c
 expr strom po skoncení funcke parseExpression
 ===== AST STROM =====
 [STRING_LIT] (str=Hello)
 LOG: precedencna odovzdala token jeho type je = 33
+<<<<<<< HEAD
 LOG: 0 FLAG
 LOG: 1 Aktualni token STRING a stacktop: DOLLAR [9, 8]
 LOG: DOLLAR LOG: 
@@ -403,10 +408,13 @@ LOG: 			param count 1
 LOG: Final etapa: LOG: EXPRESSION LOG: DOLLAR LOG: 
 LOG: string STRING_LIT
 LOG: Final stack: LOG: EXPRESSION LOG: DOLLAR LOG: 
+=======
+>>>>>>> c7b277d04778e2d2ab2d75c7d6b12b520a7b1a2c
 expr strom po skoncení funcke parseExpression
 ===== AST STROM =====
 [STRING_LIT] (str=\032World)
 LOG: precedencna odovzdala token jeho type je = 33
+<<<<<<< HEAD
 LOG: 0 FLAG
 LOG: 1 Aktualni token IDENTIFIER a stacktop: DOLLAR [9, 8]
 LOG: DOLLAR LOG: 
@@ -444,6 +452,8 @@ LOG: 16 Aktualni token RPAREN a stacktop: EXPRESSION [9, 11]
 LOG: EXPRESSION LOG: DOLLAR LOG: 
 LOG: string STRING_PLUS
 LOG: Final stack: LOG: EXPRESSION LOG: DOLLAR LOG: 
+=======
+>>>>>>> c7b277d04778e2d2ab2d75c7d6b12b520a7b1a2c
 expr strom po skoncení funcke parseExpression
 ===== AST STROM =====
 [STRING_PLUS]
@@ -515,6 +525,7 @@ RESULT: PASS
 Test: test_04_if_condition
 ========================================
 Spouštím: valgrind --leak-check=full ../.././ifj25 < ./tests/test_04.in
+<<<<<<< HEAD
 LOG: 0 FLAG
 LOG: 1 Aktualni token INTEGER a stacktop: DOLLAR [9, 8]
 LOG: DOLLAR LOG: 
@@ -527,10 +538,13 @@ LOG: 			param count 1
 LOG: Final etapa: LOG: EXPRESSION LOG: DOLLAR LOG: 
 LOG: string INT_LIT
 LOG: Final stack: LOG: EXPRESSION LOG: DOLLAR LOG: 
+=======
+>>>>>>> c7b277d04778e2d2ab2d75c7d6b12b520a7b1a2c
 expr strom po skoncení funcke parseExpression
 ===== AST STROM =====
 [INT_LIT] (int=10)
 LOG: precedencna odovzdala token jeho type je = 33
+<<<<<<< HEAD
 LOG: -1 FLAG
 LOG: 1 Aktualni token IDENTIFIER a stacktop: DOLLAR [9, 8]
 LOG: DOLLAR LOG: 
@@ -568,12 +582,15 @@ LOG: 16 Aktualni token RPAREN a stacktop: EXPRESSION [9, 11]
 LOG: EXPRESSION LOG: DOLLAR LOG: 
 LOG: string STRING_GT
 LOG: Final stack: LOG: EXPRESSION LOG: DOLLAR LOG: 
+=======
+>>>>>>> c7b277d04778e2d2ab2d75c7d6b12b520a7b1a2c
 expr strom po skoncení funcke parseExpression
 ===== AST STROM =====
 [STRING_GT]
   [IDENTIFIER] (str=x)
   [INT_LIT] (int=5)
 LOG: 1LOG: precedencna odovzdala token jeho type je = 21
+<<<<<<< HEAD
 LOG: 0 FLAG
 LOG: 1 Aktualni token STRING a stacktop: DOLLAR [9, 8]
 LOG: DOLLAR LOG: 
@@ -591,10 +608,13 @@ LOG: 6 Aktualni token RPAREN a stacktop: EXPRESSION [9, 11]
 LOG: EXPRESSION LOG: DOLLAR LOG: 
 LOG: string STRING_LIT
 LOG: Final stack: LOG: EXPRESSION LOG: DOLLAR LOG: 
+=======
+>>>>>>> c7b277d04778e2d2ab2d75c7d6b12b520a7b1a2c
 expr strom po skoncení funcke parseExpression
 ===== AST STROM =====
 [STRING_LIT] (str=greater)
 LOG: precedencna odovzdala token jeho type je = 21
+<<<<<<< HEAD
 LOG: 0 FLAG
 LOG: 1 Aktualni token STRING a stacktop: DOLLAR [9, 8]
 LOG: DOLLAR LOG: 
@@ -612,6 +632,8 @@ LOG: 6 Aktualni token RPAREN a stacktop: EXPRESSION [9, 11]
 LOG: EXPRESSION LOG: DOLLAR LOG: 
 LOG: string STRING_LIT
 LOG: Final stack: LOG: EXPRESSION LOG: DOLLAR LOG: 
+=======
+>>>>>>> c7b277d04778e2d2ab2d75c7d6b12b520a7b1a2c
 expr strom po skoncení funcke parseExpression
 ===== AST STROM =====
 [STRING_LIT] (str=lesser)
@@ -699,6 +721,7 @@ RESULT: PASS
 Test: test_05_while_loop
 ========================================
 Spouštím: valgrind --leak-check=full ../.././ifj25 < ./tests/test_05.in
+<<<<<<< HEAD
 LOG: 0 FLAG
 LOG: 1 Aktualni token INTEGER a stacktop: DOLLAR [9, 8]
 LOG: DOLLAR LOG: 
@@ -711,10 +734,13 @@ LOG: 			param count 1
 LOG: Final etapa: LOG: EXPRESSION LOG: DOLLAR LOG: 
 LOG: string INT_LIT
 LOG: Final stack: LOG: EXPRESSION LOG: DOLLAR LOG: 
+=======
+>>>>>>> c7b277d04778e2d2ab2d75c7d6b12b520a7b1a2c
 expr strom po skoncení funcke parseExpression
 ===== AST STROM =====
 [INT_LIT] (int=3)
 LOG: precedencna odovzdala token jeho type je = 33
+<<<<<<< HEAD
 LOG: -1 FLAG
 LOG: 1 Aktualni token IDENTIFIER a stacktop: DOLLAR [9, 8]
 LOG: DOLLAR LOG: 
@@ -752,12 +778,15 @@ LOG: 16 Aktualni token RPAREN a stacktop: EXPRESSION [9, 11]
 LOG: EXPRESSION LOG: DOLLAR LOG: 
 LOG: string STRING_GT
 LOG: Final stack: LOG: EXPRESSION LOG: DOLLAR LOG: 
+=======
+>>>>>>> c7b277d04778e2d2ab2d75c7d6b12b520a7b1a2c
 expr strom po skoncení funcke parseExpression
 ===== AST STROM =====
 [STRING_GT]
   [IDENTIFIER] (str=i)
   [INT_LIT] (int=0)
 LOG: 1LOG: precedencna odovzdala token jeho type je = 21
+<<<<<<< HEAD
 LOG: 0 FLAG
 LOG: 1 Aktualni token IDENTIFIER a stacktop: DOLLAR [9, 8]
 LOG: DOLLAR LOG: 
@@ -775,10 +804,13 @@ LOG: 6 Aktualni token RPAREN a stacktop: EXPRESSION [9, 11]
 LOG: EXPRESSION LOG: DOLLAR LOG: 
 LOG: string IDENTIFIER
 LOG: Final stack: LOG: EXPRESSION LOG: DOLLAR LOG: 
+=======
+>>>>>>> c7b277d04778e2d2ab2d75c7d6b12b520a7b1a2c
 expr strom po skoncení funcke parseExpression
 ===== AST STROM =====
 [IDENTIFIER] (str=i)
 LOG: precedencna odovzdala token jeho type je = 21
+<<<<<<< HEAD
 LOG: 0 FLAG
 LOG: 1 Aktualni token IDENTIFIER a stacktop: DOLLAR [9, 8]
 LOG: DOLLAR LOG: 
@@ -808,6 +840,8 @@ LOG: 			param count 3
 LOG: Final etapa: LOG: EXPRESSION LOG: DOLLAR LOG: 
 LOG: string STRING_MINUS
 LOG: Final stack: LOG: EXPRESSION LOG: DOLLAR LOG: 
+=======
+>>>>>>> c7b277d04778e2d2ab2d75c7d6b12b520a7b1a2c
 expr strom po skoncení funcke parseExpression
 ===== AST STROM =====
 [STRING_MINUS]
@@ -887,8 +921,13 @@ Očekávaný výstup: 321
 Skutečný výstup: 3
 RESULT: FAIL (výstup se neshoduje)
 Diff:
+<<<<<<< HEAD
 --- /dev/fd/62	2025-11-17 19:21:41.465967233 +0100
 +++ /dev/fd/61	2025-11-17 19:21:41.465967233 +0100
+=======
+--- /dev/fd/62	2025-11-17 13:39:55.647791428 +0100
++++ /dev/fd/61	2025-11-17 13:39:55.648791429 +0100
+>>>>>>> c7b277d04778e2d2ab2d75c7d6b12b520a7b1a2c
 @@ -1 +1 @@
 -321
 +3
@@ -897,6 +936,7 @@ Diff:
 Test: test_06_function_no_params
 ========================================
 Spouštím: valgrind --leak-check=full ../.././ifj25 < ./tests/test_06.in
+<<<<<<< HEAD
 LOG: 0 FLAG
 LOG: 1 Aktualni token INTEGER a stacktop: DOLLAR [9, 8]
 LOG: DOLLAR LOG: 
@@ -909,10 +949,13 @@ LOG: 			param count 1
 LOG: Final etapa: LOG: EXPRESSION LOG: DOLLAR LOG: 
 LOG: string INT_LIT
 LOG: Final stack: LOG: EXPRESSION LOG: DOLLAR LOG: 
+=======
+>>>>>>> c7b277d04778e2d2ab2d75c7d6b12b520a7b1a2c
 expr strom po skoncení funcke parseExpression
 ===== AST STROM =====
 [INT_LIT] (int=99)
 LOG: precedencna odovzdala token jeho type je = 33
+<<<<<<< HEAD
 LOG: 0 FLAG
 LOG: 1 Aktualni token IDENTIFIER a stacktop: DOLLAR [9, 8]
 LOG: DOLLAR LOG: 
@@ -926,6 +969,8 @@ LOG: 4 Aktualni token NEW_LINE a stacktop: EXPRESSION [9, 9]
 LOG: EXPRESSION LOG: DOLLAR LOG: 
 LOG: string FUNC_CALL
 LOG: Final stack: LOG: EXPRESSION LOG: DOLLAR LOG: 
+=======
+>>>>>>> c7b277d04778e2d2ab2d75c7d6b12b520a7b1a2c
 expr strom po skoncení funcke parseExpression
 ===== AST STROM =====
 [FUNC_CALL]
@@ -933,6 +978,7 @@ expr strom po skoncení funcke parseExpression
   [PARAM]
     [EMPTY]
 LOG: precedencna odovzdala token jeho type je = 33
+<<<<<<< HEAD
 LOG: 0 FLAG
 LOG: 1 Aktualni token IDENTIFIER a stacktop: DOLLAR [9, 8]
 LOG: DOLLAR LOG: 
@@ -950,6 +996,8 @@ LOG: 6 Aktualni token RPAREN a stacktop: EXPRESSION [9, 11]
 LOG: EXPRESSION LOG: DOLLAR LOG: 
 LOG: string IDENTIFIER
 LOG: Final stack: LOG: EXPRESSION LOG: DOLLAR LOG: 
+=======
+>>>>>>> c7b277d04778e2d2ab2d75c7d6b12b520a7b1a2c
 expr strom po skoncení funcke parseExpression
 ===== AST STROM =====
 [IDENTIFIER] (str=result)
@@ -1025,6 +1073,7 @@ RESULT: PASS
 Test: test_07_function_with_params
 ========================================
 Spouštím: valgrind --leak-check=full ../.././ifj25 < ./tests/test_07.in
+<<<<<<< HEAD
 LOG: 0 FLAG
 LOG: 1 Aktualni token IDENTIFIER a stacktop: DOLLAR [9, 8]
 LOG: DOLLAR LOG: 
@@ -1054,12 +1103,15 @@ LOG: 			param count 3
 LOG: Final etapa: LOG: EXPRESSION LOG: DOLLAR LOG: 
 LOG: string STRING_PLUS
 LOG: Final stack: LOG: EXPRESSION LOG: DOLLAR LOG: 
+=======
+>>>>>>> c7b277d04778e2d2ab2d75c7d6b12b520a7b1a2c
 expr strom po skoncení funcke parseExpression
 ===== AST STROM =====
 [STRING_PLUS]
   [IDENTIFIER] (str=a)
   [IDENTIFIER] (str=b)
 LOG: precedencna odovzdala token jeho type je = 33
+<<<<<<< HEAD
 LOG: 0 FLAG
 LOG: 1 Aktualni token IDENTIFIER a stacktop: DOLLAR [9, 8]
 LOG: DOLLAR LOG: 
@@ -1110,6 +1162,8 @@ LOG: 4 Aktualni token NEW_LINE a stacktop: EXPRESSION [9, 9]
 LOG: EXPRESSION LOG: DOLLAR LOG: 
 LOG: string FUNC_CALL
 LOG: Final stack: LOG: EXPRESSION LOG: DOLLAR LOG: 
+=======
+>>>>>>> c7b277d04778e2d2ab2d75c7d6b12b520a7b1a2c
 expr strom po skoncení funcke parseExpression
 ===== AST STROM =====
 [FUNC_CALL]
@@ -1119,6 +1173,7 @@ expr strom po skoncení funcke parseExpression
     [INT_LIT] (int=7)
     [EMPTY]
 LOG: precedencna odovzdala token jeho type je = 33
+<<<<<<< HEAD
 LOG: 0 FLAG
 LOG: 1 Aktualni token IDENTIFIER a stacktop: DOLLAR [9, 8]
 LOG: DOLLAR LOG: 
@@ -1136,6 +1191,8 @@ LOG: 6 Aktualni token RPAREN a stacktop: EXPRESSION [9, 11]
 LOG: EXPRESSION LOG: DOLLAR LOG: 
 LOG: string IDENTIFIER
 LOG: Final stack: LOG: EXPRESSION LOG: DOLLAR LOG: 
+=======
+>>>>>>> c7b277d04778e2d2ab2d75c7d6b12b520a7b1a2c
 expr strom po skoncení funcke parseExpression
 ===== AST STROM =====
 [IDENTIFIER] (str=sum)
@@ -1223,6 +1280,7 @@ RESULT: PASS
 Test: test_08_comparisons
 ========================================
 Spouštím: valgrind --leak-check=full ../.././ifj25 < ./tests/test_08.in
+<<<<<<< HEAD
 LOG: 0 FLAG
 LOG: 1 Aktualni token INTEGER a stacktop: DOLLAR [9, 8]
 LOG: DOLLAR LOG: 
@@ -1235,10 +1293,13 @@ LOG: 			param count 1
 LOG: Final etapa: LOG: EXPRESSION LOG: DOLLAR LOG: 
 LOG: string INT_LIT
 LOG: Final stack: LOG: EXPRESSION LOG: DOLLAR LOG: 
+=======
+>>>>>>> c7b277d04778e2d2ab2d75c7d6b12b520a7b1a2c
 expr strom po skoncení funcke parseExpression
 ===== AST STROM =====
 [INT_LIT] (int=5)
 LOG: precedencna odovzdala token jeho type je = 33
+<<<<<<< HEAD
 LOG: -1 FLAG
 LOG: 1 Aktualni token IDENTIFIER a stacktop: DOLLAR [9, 8]
 LOG: DOLLAR LOG: 
@@ -1276,12 +1337,15 @@ LOG: 16 Aktualni token RPAREN a stacktop: EXPRESSION [9, 11]
 LOG: EXPRESSION LOG: DOLLAR LOG: 
 LOG: string STRING_EQ
 LOG: Final stack: LOG: EXPRESSION LOG: DOLLAR LOG: 
+=======
+>>>>>>> c7b277d04778e2d2ab2d75c7d6b12b520a7b1a2c
 expr strom po skoncení funcke parseExpression
 ===== AST STROM =====
 [STRING_EQ]
   [IDENTIFIER] (str=x)
   [INT_LIT] (int=5)
 LOG: 1LOG: precedencna odovzdala token jeho type je = 21
+<<<<<<< HEAD
 LOG: 0 FLAG
 LOG: 1 Aktualni token STRING a stacktop: DOLLAR [9, 8]
 LOG: DOLLAR LOG: 
@@ -1299,10 +1363,13 @@ LOG: 6 Aktualni token RPAREN a stacktop: EXPRESSION [9, 11]
 LOG: EXPRESSION LOG: DOLLAR LOG: 
 LOG: string STRING_LIT
 LOG: Final stack: LOG: EXPRESSION LOG: DOLLAR LOG: 
+=======
+>>>>>>> c7b277d04778e2d2ab2d75c7d6b12b520a7b1a2c
 expr strom po skoncení funcke parseExpression
 ===== AST STROM =====
 [STRING_LIT] (str=equal)
 LOG: precedencna odovzdala token jeho type je = 21
+<<<<<<< HEAD
 LOG: -1 FLAG
 LOG: 1 Aktualni token IDENTIFIER a stacktop: DOLLAR [9, 8]
 LOG: DOLLAR LOG: 
@@ -1340,12 +1407,15 @@ LOG: 16 Aktualni token RPAREN a stacktop: EXPRESSION [9, 11]
 LOG: EXPRESSION LOG: DOLLAR LOG: 
 LOG: string STRING_LT
 LOG: Final stack: LOG: EXPRESSION LOG: DOLLAR LOG: 
+=======
+>>>>>>> c7b277d04778e2d2ab2d75c7d6b12b520a7b1a2c
 expr strom po skoncení funcke parseExpression
 ===== AST STROM =====
 [STRING_LT]
   [IDENTIFIER] (str=x)
   [INT_LIT] (int=10)
 LOG: 1LOG: precedencna odovzdala token jeho type je = 21
+<<<<<<< HEAD
 LOG: 0 FLAG
 LOG: 1 Aktualni token STRING a stacktop: DOLLAR [9, 8]
 LOG: DOLLAR LOG: 
@@ -1363,10 +1433,13 @@ LOG: 6 Aktualni token RPAREN a stacktop: EXPRESSION [9, 11]
 LOG: EXPRESSION LOG: DOLLAR LOG: 
 LOG: string STRING_LIT
 LOG: Final stack: LOG: EXPRESSION LOG: DOLLAR LOG: 
+=======
+>>>>>>> c7b277d04778e2d2ab2d75c7d6b12b520a7b1a2c
 expr strom po skoncení funcke parseExpression
 ===== AST STROM =====
 [STRING_LIT] (str=less)
 LOG: precedencna odovzdala token jeho type je = 21
+<<<<<<< HEAD
 LOG: -1 FLAG
 LOG: 1 Aktualni token IDENTIFIER a stacktop: DOLLAR [9, 8]
 LOG: DOLLAR LOG: 
@@ -1404,12 +1477,15 @@ LOG: 16 Aktualni token RPAREN a stacktop: EXPRESSION [9, 11]
 LOG: EXPRESSION LOG: DOLLAR LOG: 
 LOG: string STRING_GT
 LOG: Final stack: LOG: EXPRESSION LOG: DOLLAR LOG: 
+=======
+>>>>>>> c7b277d04778e2d2ab2d75c7d6b12b520a7b1a2c
 expr strom po skoncení funcke parseExpression
 ===== AST STROM =====
 [STRING_GT]
   [IDENTIFIER] (str=x)
   [INT_LIT] (int=3)
 LOG: 1LOG: precedencna odovzdala token jeho type je = 21
+<<<<<<< HEAD
 LOG: 0 FLAG
 LOG: 1 Aktualni token STRING a stacktop: DOLLAR [9, 8]
 LOG: DOLLAR LOG: 
@@ -1427,6 +1503,8 @@ LOG: 6 Aktualni token RPAREN a stacktop: EXPRESSION [9, 11]
 LOG: EXPRESSION LOG: DOLLAR LOG: 
 LOG: string STRING_LIT
 LOG: Final stack: LOG: EXPRESSION LOG: DOLLAR LOG: 
+=======
+>>>>>>> c7b277d04778e2d2ab2d75c7d6b12b520a7b1a2c
 expr strom po skoncení funcke parseExpression
 ===== AST STROM =====
 [STRING_LIT] (str=greater)
@@ -1550,6 +1628,7 @@ RESULT: PASS
 Test: test_09_global_vars
 ========================================
 Spouštím: valgrind --leak-check=full ../.././ifj25 < ./tests/test_09.in
+<<<<<<< HEAD
 LOG: 0 FLAG
 LOG: 1 Aktualni token INTEGER a stacktop: DOLLAR [9, 8]
 LOG: DOLLAR LOG: 
@@ -1562,10 +1641,13 @@ LOG: 			param count 1
 LOG: Final etapa: LOG: EXPRESSION LOG: DOLLAR LOG: 
 LOG: string INT_LIT
 LOG: Final stack: LOG: EXPRESSION LOG: DOLLAR LOG: 
+=======
+>>>>>>> c7b277d04778e2d2ab2d75c7d6b12b520a7b1a2c
 expr strom po skoncení funcke parseExpression
 ===== AST STROM =====
 [INT_LIT] (int=42)
 LOG: precedencna odovzdala token jeho type je = 33
+<<<<<<< HEAD
 LOG: 0 FLAG
 LOG: 1 Aktualni token GLOBAL_ID a stacktop: DOLLAR [9, 8]
 LOG: DOLLAR LOG: 
@@ -1583,6 +1665,8 @@ LOG: 6 Aktualni token RPAREN a stacktop: EXPRESSION [9, 11]
 LOG: EXPRESSION LOG: DOLLAR LOG: 
 LOG: string GLOBAL_ID
 LOG: Final stack: LOG: EXPRESSION LOG: DOLLAR LOG: 
+=======
+>>>>>>> c7b277d04778e2d2ab2d75c7d6b12b520a7b1a2c
 expr strom po skoncení funcke parseExpression
 ===== AST STROM =====
 [GLOBAL_ID] (str=__global)
@@ -1635,6 +1719,7 @@ RESULT: PASS
 Test: test_10_float_operations
 ========================================
 Spouštím: valgrind --leak-check=full ../.././ifj25 < ./tests/test_10.in
+<<<<<<< HEAD
 LOG: 0 FLAG
 LOG: 1 Aktualni token FLOAT a stacktop: DOLLAR [9, 8]
 LOG: DOLLAR LOG: 
@@ -1647,10 +1732,13 @@ LOG: 			param count 1
 LOG: Final etapa: LOG: EXPRESSION LOG: DOLLAR LOG: 
 LOG: string FLOAT_LIT
 LOG: Final stack: LOG: EXPRESSION LOG: DOLLAR LOG: 
+=======
+>>>>>>> c7b277d04778e2d2ab2d75c7d6b12b520a7b1a2c
 expr strom po skoncení funcke parseExpression
 ===== AST STROM =====
 [FLOAT_LIT] (float=10.5)
 LOG: precedencna odovzdala token jeho type je = 33
+<<<<<<< HEAD
 LOG: 0 FLAG
 LOG: 1 Aktualni token FLOAT a stacktop: DOLLAR [9, 8]
 LOG: DOLLAR LOG: 
@@ -1663,10 +1751,13 @@ LOG: 			param count 1
 LOG: Final etapa: LOG: EXPRESSION LOG: DOLLAR LOG: 
 LOG: string FLOAT_LIT
 LOG: Final stack: LOG: EXPRESSION LOG: DOLLAR LOG: 
+=======
+>>>>>>> c7b277d04778e2d2ab2d75c7d6b12b520a7b1a2c
 expr strom po skoncení funcke parseExpression
 ===== AST STROM =====
 [FLOAT_LIT] (float=2.5)
 LOG: precedencna odovzdala token jeho type je = 33
+<<<<<<< HEAD
 LOG: 0 FLAG
 LOG: 1 Aktualni token IDENTIFIER a stacktop: DOLLAR [9, 8]
 LOG: DOLLAR LOG: 
@@ -1704,6 +1795,8 @@ LOG: 16 Aktualni token RPAREN a stacktop: EXPRESSION [9, 11]
 LOG: EXPRESSION LOG: DOLLAR LOG: 
 LOG: string STRING_PLUS
 LOG: Final stack: LOG: EXPRESSION LOG: DOLLAR LOG: 
+=======
+>>>>>>> c7b277d04778e2d2ab2d75c7d6b12b520a7b1a2c
 expr strom po skoncení funcke parseExpression
 ===== AST STROM =====
 [STRING_PLUS]
@@ -1771,8 +1864,13 @@ Očekávaný výstup: 0x1.8p+3
 Skutečný výstup: 13
 RESULT: FAIL (výstup se neshoduje)
 Diff:
+<<<<<<< HEAD
 --- /dev/fd/62	2025-11-17 19:21:45.624970038 +0100
 +++ /dev/fd/61	2025-11-17 19:21:45.625970038 +0100
+=======
+--- /dev/fd/62	2025-11-17 13:39:59.543793435 +0100
++++ /dev/fd/61	2025-11-17 13:39:59.543793435 +0100
+>>>>>>> c7b277d04778e2d2ab2d75c7d6b12b520a7b1a2c
 @@ -1 +1 @@
 -0x1.8p+3
 +13
@@ -1781,6 +1879,7 @@ Diff:
 Test: test_11_scope_nesting
 ========================================
 Spouštím: valgrind --leak-check=full ../.././ifj25 < ./tests/test_11.in
+<<<<<<< HEAD
 LOG: 0 FLAG
 LOG: 1 Aktualni token INTEGER a stacktop: DOLLAR [9, 8]
 LOG: DOLLAR LOG: 
@@ -1793,10 +1892,13 @@ LOG: 			param count 1
 LOG: Final etapa: LOG: EXPRESSION LOG: DOLLAR LOG: 
 LOG: string INT_LIT
 LOG: Final stack: LOG: EXPRESSION LOG: DOLLAR LOG: 
+=======
+>>>>>>> c7b277d04778e2d2ab2d75c7d6b12b520a7b1a2c
 expr strom po skoncení funcke parseExpression
 ===== AST STROM =====
 [INT_LIT] (int=1)
 LOG: precedencna odovzdala token jeho type je = 33
+<<<<<<< HEAD
 LOG: 0 FLAG
 LOG: 1 Aktualni token INTEGER a stacktop: DOLLAR [9, 8]
 LOG: DOLLAR LOG: 
@@ -1809,10 +1911,13 @@ LOG: 			param count 1
 LOG: Final etapa: LOG: EXPRESSION LOG: DOLLAR LOG: 
 LOG: string INT_LIT
 LOG: Final stack: LOG: EXPRESSION LOG: DOLLAR LOG: 
+=======
+>>>>>>> c7b277d04778e2d2ab2d75c7d6b12b520a7b1a2c
 expr strom po skoncení funcke parseExpression
 ===== AST STROM =====
 [INT_LIT] (int=2)
 LOG: precedencna odovzdala token jeho type je = 33
+<<<<<<< HEAD
 LOG: 0 FLAG
 LOG: 1 Aktualni token IDENTIFIER a stacktop: DOLLAR [9, 8]
 LOG: DOLLAR LOG: 
@@ -1830,10 +1935,13 @@ LOG: 6 Aktualni token RPAREN a stacktop: EXPRESSION [9, 11]
 LOG: EXPRESSION LOG: DOLLAR LOG: 
 LOG: string IDENTIFIER
 LOG: Final stack: LOG: EXPRESSION LOG: DOLLAR LOG: 
+=======
+>>>>>>> c7b277d04778e2d2ab2d75c7d6b12b520a7b1a2c
 expr strom po skoncení funcke parseExpression
 ===== AST STROM =====
 [IDENTIFIER] (str=x)
 LOG: precedencna odovzdala token jeho type je = 21
+<<<<<<< HEAD
 LOG: 0 FLAG
 LOG: 1 Aktualni token IDENTIFIER a stacktop: DOLLAR [9, 8]
 LOG: DOLLAR LOG: 
@@ -1851,6 +1959,8 @@ LOG: 6 Aktualni token RPAREN a stacktop: EXPRESSION [9, 11]
 LOG: EXPRESSION LOG: DOLLAR LOG: 
 LOG: string IDENTIFIER
 LOG: Final stack: LOG: EXPRESSION LOG: DOLLAR LOG: 
+=======
+>>>>>>> c7b277d04778e2d2ab2d75c7d6b12b520a7b1a2c
 expr strom po skoncení funcke parseExpression
 ===== AST STROM =====
 [IDENTIFIER] (str=x)
@@ -1930,6 +2040,7 @@ RESULT: PASS
 Test: test_12_type_checking
 ========================================
 Spouštím: valgrind --leak-check=full ../.././ifj25 < ./tests/test_12.in
+<<<<<<< HEAD
 LOG: 0 FLAG
 LOG: 1 Aktualni token INTEGER a stacktop: DOLLAR [9, 8]
 LOG: DOLLAR LOG: 
@@ -1942,10 +2053,13 @@ LOG: 			param count 1
 LOG: Final etapa: LOG: EXPRESSION LOG: DOLLAR LOG: 
 LOG: string INT_LIT
 LOG: Final stack: LOG: EXPRESSION LOG: DOLLAR LOG: 
+=======
+>>>>>>> c7b277d04778e2d2ab2d75c7d6b12b520a7b1a2c
 expr strom po skoncení funcke parseExpression
 ===== AST STROM =====
 [INT_LIT] (int=42)
 LOG: precedencna odovzdala token jeho type je = 33
+<<<<<<< HEAD
 LOG: -1 FLAG
 LOG: 1 Aktualni token IDENTIFIER a stacktop: DOLLAR [9, 8]
 LOG: DOLLAR LOG: 
@@ -1985,12 +2099,15 @@ LOG: 16 Aktualni token RPAREN a stacktop: EXPRESSION [9, 11]
 LOG: EXPRESSION LOG: DOLLAR LOG: 
 LOG: string STRING_IS
 LOG: Final stack: LOG: EXPRESSION LOG: DOLLAR LOG: 
+=======
+>>>>>>> c7b277d04778e2d2ab2d75c7d6b12b520a7b1a2c
 expr strom po skoncení funcke parseExpression
 ===== AST STROM =====
 [STRING_IS]
   [IDENTIFIER] (str=x)
   [KEYWORD_NUM]
 LOG: 1LOG: precedencna odovzdala token jeho type je = 21
+<<<<<<< HEAD
 LOG: 0 FLAG
 LOG: 1 Aktualni token STRING a stacktop: DOLLAR [9, 8]
 LOG: DOLLAR LOG: 
@@ -2008,10 +2125,13 @@ LOG: 6 Aktualni token RPAREN a stacktop: EXPRESSION [9, 11]
 LOG: EXPRESSION LOG: DOLLAR LOG: 
 LOG: string STRING_LIT
 LOG: Final stack: LOG: EXPRESSION LOG: DOLLAR LOG: 
+=======
+>>>>>>> c7b277d04778e2d2ab2d75c7d6b12b520a7b1a2c
 expr strom po skoncení funcke parseExpression
 ===== AST STROM =====
 [STRING_LIT] (str=number)
 LOG: precedencna odovzdala token jeho type je = 21
+<<<<<<< HEAD
 LOG: 0 FLAG
 LOG: 1 Aktualni token STRING a stacktop: DOLLAR [9, 8]
 LOG: DOLLAR LOG: 
@@ -2024,10 +2144,13 @@ LOG: 			param count 1
 LOG: Final etapa: LOG: EXPRESSION LOG: DOLLAR LOG: 
 LOG: string STRING_LIT
 LOG: Final stack: LOG: EXPRESSION LOG: DOLLAR LOG: 
+=======
+>>>>>>> c7b277d04778e2d2ab2d75c7d6b12b520a7b1a2c
 expr strom po skoncení funcke parseExpression
 ===== AST STROM =====
 [STRING_LIT] (str=text)
 LOG: precedencna odovzdala token jeho type je = 33
+<<<<<<< HEAD
 LOG: -1 FLAG
 LOG: 1 Aktualni token IDENTIFIER a stacktop: DOLLAR [9, 8]
 LOG: DOLLAR LOG: 
@@ -2067,12 +2190,15 @@ LOG: 16 Aktualni token RPAREN a stacktop: EXPRESSION [9, 11]
 LOG: EXPRESSION LOG: DOLLAR LOG: 
 LOG: string STRING_IS
 LOG: Final stack: LOG: EXPRESSION LOG: DOLLAR LOG: 
+=======
+>>>>>>> c7b277d04778e2d2ab2d75c7d6b12b520a7b1a2c
 expr strom po skoncení funcke parseExpression
 ===== AST STROM =====
 [STRING_IS]
   [IDENTIFIER] (str=s)
   [KEYWORD_STRING]
 LOG: 1LOG: precedencna odovzdala token jeho type je = 21
+<<<<<<< HEAD
 LOG: 0 FLAG
 LOG: 1 Aktualni token STRING a stacktop: DOLLAR [9, 8]
 LOG: DOLLAR LOG: 
@@ -2090,6 +2216,8 @@ LOG: 6 Aktualni token RPAREN a stacktop: EXPRESSION [9, 11]
 LOG: EXPRESSION LOG: DOLLAR LOG: 
 LOG: string STRING_LIT
 LOG: Final stack: LOG: EXPRESSION LOG: DOLLAR LOG: 
+=======
+>>>>>>> c7b277d04778e2d2ab2d75c7d6b12b520a7b1a2c
 expr strom po skoncení funcke parseExpression
 ===== AST STROM =====
 [STRING_LIT] (str=string)
@@ -2197,6 +2325,7 @@ RESULT: PASS
 Test: test_13_logical_operators
 ========================================
 Spouštím: valgrind --leak-check=full ../.././ifj25 < ./tests/test_13.in
+<<<<<<< HEAD
 LOG: -1 FLAG
 LOG: 1 Aktualni token TRUE a stacktop: DOLLAR [9, 8]
 LOG: DOLLAR LOG: 
@@ -2234,12 +2363,15 @@ LOG: 16 Aktualni token RPAREN a stacktop: EXPRESSION [9, 11]
 LOG: EXPRESSION LOG: DOLLAR LOG: 
 LOG: string STRING_AND
 LOG: Final stack: LOG: EXPRESSION LOG: DOLLAR LOG: 
+=======
+>>>>>>> c7b277d04778e2d2ab2d75c7d6b12b520a7b1a2c
 expr strom po skoncení funcke parseExpression
 ===== AST STROM =====
 [STRING_AND]
   [BOOL_LIT] (str=true)
   [BOOL_LIT] (str=true)
 LOG: 1LOG: precedencna odovzdala token jeho type je = 21
+<<<<<<< HEAD
 LOG: 0 FLAG
 LOG: 1 Aktualni token STRING a stacktop: DOLLAR [9, 8]
 LOG: DOLLAR LOG: 
@@ -2257,10 +2389,13 @@ LOG: 6 Aktualni token RPAREN a stacktop: EXPRESSION [9, 11]
 LOG: EXPRESSION LOG: DOLLAR LOG: 
 LOG: string STRING_LIT
 LOG: Final stack: LOG: EXPRESSION LOG: DOLLAR LOG: 
+=======
+>>>>>>> c7b277d04778e2d2ab2d75c7d6b12b520a7b1a2c
 expr strom po skoncení funcke parseExpression
 ===== AST STROM =====
 [STRING_LIT] (str=and_true)
 LOG: precedencna odovzdala token jeho type je = 21
+<<<<<<< HEAD
 LOG: -1 FLAG
 LOG: 1 Aktualni token TRUE a stacktop: DOLLAR [9, 8]
 LOG: DOLLAR LOG: 
@@ -2298,12 +2433,15 @@ LOG: 16 Aktualni token RPAREN a stacktop: EXPRESSION [9, 11]
 LOG: EXPRESSION LOG: DOLLAR LOG: 
 LOG: string STRING_OR
 LOG: Final stack: LOG: EXPRESSION LOG: DOLLAR LOG: 
+=======
+>>>>>>> c7b277d04778e2d2ab2d75c7d6b12b520a7b1a2c
 expr strom po skoncení funcke parseExpression
 ===== AST STROM =====
 [STRING_OR]
   [BOOL_LIT] (str=true)
   [BOOL_LIT] (str=false)
 LOG: 1LOG: precedencna odovzdala token jeho type je = 21
+<<<<<<< HEAD
 LOG: 0 FLAG
 LOG: 1 Aktualni token STRING a stacktop: DOLLAR [9, 8]
 LOG: DOLLAR LOG: 
@@ -2321,10 +2459,13 @@ LOG: 6 Aktualni token RPAREN a stacktop: EXPRESSION [9, 11]
 LOG: EXPRESSION LOG: DOLLAR LOG: 
 LOG: string STRING_LIT
 LOG: Final stack: LOG: EXPRESSION LOG: DOLLAR LOG: 
+=======
+>>>>>>> c7b277d04778e2d2ab2d75c7d6b12b520a7b1a2c
 expr strom po skoncení funcke parseExpression
 ===== AST STROM =====
 [STRING_LIT] (str=or_true)
 LOG: precedencna odovzdala token jeho type je = 21
+<<<<<<< HEAD
 LOG: -1 FLAG
 LOG: 1 Aktualni token NEGACE a stacktop: DOLLAR [9, 5]
 LOG: DOLLAR LOG: 
@@ -2352,11 +2493,14 @@ LOG: 11 Aktualni token RPAREN a stacktop: EXPRESSION [9, 11]
 LOG: EXPRESSION LOG: DOLLAR LOG: 
 LOG: string STRING_NEGACE
 LOG: Final stack: LOG: EXPRESSION LOG: DOLLAR LOG: 
+=======
+>>>>>>> c7b277d04778e2d2ab2d75c7d6b12b520a7b1a2c
 expr strom po skoncení funcke parseExpression
 ===== AST STROM =====
 [STRING_NEGACE]
   [BOOL_LIT] (str=false)
 LOG: 1LOG: precedencna odovzdala token jeho type je = 21
+<<<<<<< HEAD
 LOG: 0 FLAG
 LOG: 1 Aktualni token STRING a stacktop: DOLLAR [9, 8]
 LOG: DOLLAR LOG: 
@@ -2374,6 +2518,8 @@ LOG: 6 Aktualni token RPAREN a stacktop: EXPRESSION [9, 11]
 LOG: EXPRESSION LOG: DOLLAR LOG: 
 LOG: string STRING_LIT
 LOG: Final stack: LOG: EXPRESSION LOG: DOLLAR LOG: 
+=======
+>>>>>>> c7b277d04778e2d2ab2d75c7d6b12b520a7b1a2c
 expr strom po skoncení funcke parseExpression
 ===== AST STROM =====
 [STRING_LIT] (str=not_true)
@@ -2485,6 +2631,7 @@ RESULT: PASS
 Test: test_14_overloaded_functions
 ========================================
 Spouštím: valgrind --leak-check=full ../.././ifj25 < ./tests/test_14.in
+<<<<<<< HEAD
 LOG: 0 FLAG
 LOG: 1 Aktualni token INTEGER a stacktop: DOLLAR [9, 8]
 LOG: DOLLAR LOG: 
@@ -2497,10 +2644,13 @@ LOG: 			param count 1
 LOG: Final etapa: LOG: EXPRESSION LOG: DOLLAR LOG: 
 LOG: string INT_LIT
 LOG: Final stack: LOG: EXPRESSION LOG: DOLLAR LOG: 
+=======
+>>>>>>> c7b277d04778e2d2ab2d75c7d6b12b520a7b1a2c
 expr strom po skoncení funcke parseExpression
 ===== AST STROM =====
 [INT_LIT] (int=10)
 LOG: precedencna odovzdala token jeho type je = 33
+<<<<<<< HEAD
 LOG: 0 FLAG
 LOG: 1 Aktualni token IDENTIFIER a stacktop: DOLLAR [9, 8]
 LOG: DOLLAR LOG: 
@@ -2530,12 +2680,15 @@ LOG: 			param count 3
 LOG: Final etapa: LOG: EXPRESSION LOG: DOLLAR LOG: 
 LOG: string STRING_MUL
 LOG: Final stack: LOG: EXPRESSION LOG: DOLLAR LOG: 
+=======
+>>>>>>> c7b277d04778e2d2ab2d75c7d6b12b520a7b1a2c
 expr strom po skoncení funcke parseExpression
 ===== AST STROM =====
 [STRING_MUL]
   [IDENTIFIER] (str=x)
   [INT_LIT] (int=2)
 LOG: precedencna odovzdala token jeho type je = 33
+<<<<<<< HEAD
 LOG: 0 FLAG
 LOG: 1 Aktualni token IDENTIFIER a stacktop: DOLLAR [9, 8]
 LOG: DOLLAR LOG: 
@@ -2545,12 +2698,15 @@ LOG: 			3 < (9, 8) LOG: IDENTIFIER LOG: STOP LOG: DOLLAR LOG:
 LOG: 			param count 1
 LOG: 4 Aktualni token RPAREN a stacktop: EXPRESSION [9, 11]
 LOG: EXPRESSION LOG: DOLLAR LOG: 
+=======
+>>>>>>> c7b277d04778e2d2ab2d75c7d6b12b520a7b1a2c
 ERROR (2) : (PSA) Zadany vyraz neni syntakticky spravny (neocekavany znak nebo samostatne stojici operator)
 RESULT: FAIL (kompilace)
 ========================================
 Test: test_15_str_builtin
 ========================================
 Spouštím: valgrind --leak-check=full ../.././ifj25 < ./tests/test_15.in
+<<<<<<< HEAD
 LOG: 0 FLAG
 LOG: 1 Aktualni token INTEGER a stacktop: DOLLAR [9, 8]
 LOG: DOLLAR LOG: 
@@ -2563,10 +2719,13 @@ LOG: 			param count 1
 LOG: Final etapa: LOG: EXPRESSION LOG: DOLLAR LOG: 
 LOG: string INT_LIT
 LOG: Final stack: LOG: EXPRESSION LOG: DOLLAR LOG: 
+=======
+>>>>>>> c7b277d04778e2d2ab2d75c7d6b12b520a7b1a2c
 expr strom po skoncení funcke parseExpression
 ===== AST STROM =====
 [INT_LIT] (int=42)
 LOG: precedencna odovzdala token jeho type je = 33
+<<<<<<< HEAD
 LOG: 0 FLAG
 LOG: 1 Aktualni token IDENTIFIER a stacktop: DOLLAR [9, 8]
 LOG: DOLLAR LOG: 
@@ -2584,10 +2743,13 @@ LOG: 6 Aktualni token RPAREN a stacktop: EXPRESSION [9, 11]
 LOG: EXPRESSION LOG: DOLLAR LOG: 
 LOG: string IDENTIFIER
 LOG: Final stack: LOG: EXPRESSION LOG: DOLLAR LOG: 
+=======
+>>>>>>> c7b277d04778e2d2ab2d75c7d6b12b520a7b1a2c
 expr strom po skoncení funcke parseExpression
 ===== AST STROM =====
 [IDENTIFIER] (str=num)
 LOG: precedencna odovzdala token jeho type je = 21
+<<<<<<< HEAD
 LOG: 0 FLAG
 LOG: 1 Aktualni token IDENTIFIER a stacktop: DOLLAR [9, 8]
 LOG: DOLLAR LOG: 
@@ -2605,6 +2767,8 @@ LOG: 6 Aktualni token RPAREN a stacktop: EXPRESSION [9, 11]
 LOG: EXPRESSION LOG: DOLLAR LOG: 
 LOG: string IDENTIFIER
 LOG: Final stack: LOG: EXPRESSION LOG: DOLLAR LOG: 
+=======
+>>>>>>> c7b277d04778e2d2ab2d75c7d6b12b520a7b1a2c
 expr strom po skoncení funcke parseExpression
 ===== AST STROM =====
 [IDENTIFIER] (str=str)
@@ -2674,8 +2838,13 @@ Očekávaný výstup: 42
 Skutečný výstup: 42.00
 RESULT: FAIL (výstup se neshoduje)
 Diff:
+<<<<<<< HEAD
 --- /dev/fd/62	2025-11-17 19:21:49.613972729 +0100
 +++ /dev/fd/61	2025-11-17 19:21:49.614972729 +0100
+=======
+--- /dev/fd/62	2025-11-17 13:40:03.469795458 +0100
++++ /dev/fd/61	2025-11-17 13:40:03.469795458 +0100
+>>>>>>> c7b277d04778e2d2ab2d75c7d6b12b520a7b1a2c
 @@ -1 +1 @@
 -42
 +42.00
@@ -2684,6 +2853,7 @@ Diff:
 Test: test_16_string_repetition
 ========================================
 Spouštím: valgrind --leak-check=full ../.././ifj25 < ./tests/test_16.in
+<<<<<<< HEAD
 LOG: 0 FLAG
 LOG: 1 Aktualni token STRING a stacktop: DOLLAR [9, 8]
 LOG: DOLLAR LOG: 
@@ -2696,10 +2866,13 @@ LOG: 			param count 1
 LOG: Final etapa: LOG: EXPRESSION LOG: DOLLAR LOG: 
 LOG: string STRING_LIT
 LOG: Final stack: LOG: EXPRESSION LOG: DOLLAR LOG: 
+=======
+>>>>>>> c7b277d04778e2d2ab2d75c7d6b12b520a7b1a2c
 expr strom po skoncení funcke parseExpression
 ===== AST STROM =====
 [STRING_LIT] (str=a)
 LOG: precedencna odovzdala token jeho type je = 33
+<<<<<<< HEAD
 LOG: 0 FLAG
 LOG: 1 Aktualni token IDENTIFIER a stacktop: DOLLAR [9, 8]
 LOG: DOLLAR LOG: 
@@ -2737,6 +2910,8 @@ LOG: 16 Aktualni token RPAREN a stacktop: EXPRESSION [9, 11]
 LOG: EXPRESSION LOG: DOLLAR LOG: 
 LOG: string STRING_MUL
 LOG: Final stack: LOG: EXPRESSION LOG: DOLLAR LOG: 
+=======
+>>>>>>> c7b277d04778e2d2ab2d75c7d6b12b520a7b1a2c
 expr strom po skoncení funcke parseExpression
 ===== AST STROM =====
 [STRING_MUL]
@@ -2798,6 +2973,7 @@ RESULT: PASS
 Test: test_17_null_handling
 ========================================
 Spouštím: valgrind --leak-check=full ../.././ifj25 < ./tests/test_17.in
+<<<<<<< HEAD
 LOG: 0 FLAG
 LOG: 1 Aktualni token KEYWORD_NULL_SMALL a stacktop: DOLLAR [9, 8]
 LOG: DOLLAR LOG: 
@@ -2810,10 +2986,13 @@ LOG: 			param count 1
 LOG: Final etapa: LOG: EXPRESSION LOG: DOLLAR LOG: 
 LOG: string SMALL_NULL
 LOG: Final stack: LOG: EXPRESSION LOG: DOLLAR LOG: 
+=======
+>>>>>>> c7b277d04778e2d2ab2d75c7d6b12b520a7b1a2c
 expr strom po skoncení funcke parseExpression
 ===== AST STROM =====
 [SMALL_NULL]
 LOG: precedencna odovzdala token jeho type je = 33
+<<<<<<< HEAD
 LOG: 0 FLAG
 LOG: 1 Aktualni token IDENTIFIER a stacktop: DOLLAR [9, 8]
 LOG: DOLLAR LOG: 
@@ -2827,6 +3006,8 @@ LOG: 4 Aktualni token NEW_LINE a stacktop: EXPRESSION [9, 9]
 LOG: EXPRESSION LOG: DOLLAR LOG: 
 LOG: string FUNC_CALL
 LOG: Final stack: LOG: EXPRESSION LOG: DOLLAR LOG: 
+=======
+>>>>>>> c7b277d04778e2d2ab2d75c7d6b12b520a7b1a2c
 expr strom po skoncení funcke parseExpression
 ===== AST STROM =====
 [FUNC_CALL]
@@ -2834,6 +3015,7 @@ expr strom po skoncení funcke parseExpression
   [PARAM]
     [EMPTY]
 LOG: precedencna odovzdala token jeho type je = 33
+<<<<<<< HEAD
 LOG: -1 FLAG
 LOG: 1 Aktualni token IDENTIFIER a stacktop: DOLLAR [9, 8]
 LOG: DOLLAR LOG: 
@@ -2871,12 +3053,15 @@ LOG: 16 Aktualni token RPAREN a stacktop: EXPRESSION [9, 11]
 LOG: EXPRESSION LOG: DOLLAR LOG: 
 LOG: string STRING_EQ
 LOG: Final stack: LOG: EXPRESSION LOG: DOLLAR LOG: 
+=======
+>>>>>>> c7b277d04778e2d2ab2d75c7d6b12b520a7b1a2c
 expr strom po skoncení funcke parseExpression
 ===== AST STROM =====
 [STRING_EQ]
   [IDENTIFIER] (str=x)
   [SMALL_NULL]
 LOG: 1LOG: precedencna odovzdala token jeho type je = 21
+<<<<<<< HEAD
 LOG: 0 FLAG
 LOG: 1 Aktualni token STRING a stacktop: DOLLAR [9, 8]
 LOG: DOLLAR LOG: 
@@ -2894,6 +3079,8 @@ LOG: 6 Aktualni token RPAREN a stacktop: EXPRESSION [9, 11]
 LOG: EXPRESSION LOG: DOLLAR LOG: 
 LOG: string STRING_LIT
 LOG: Final stack: LOG: EXPRESSION LOG: DOLLAR LOG: 
+=======
+>>>>>>> c7b277d04778e2d2ab2d75c7d6b12b520a7b1a2c
 expr strom po skoncení funcke parseExpression
 ===== AST STROM =====
 [STRING_LIT] (str=null_value)
@@ -2985,6 +3172,7 @@ RESULT: PASS
 Test: test_18_nested_conditions
 ========================================
 Spouštím: valgrind --leak-check=full ../.././ifj25 < ./tests/test_18.in
+<<<<<<< HEAD
 LOG: 0 FLAG
 LOG: 1 Aktualni token INTEGER a stacktop: DOLLAR [9, 8]
 LOG: DOLLAR LOG: 
@@ -2997,10 +3185,13 @@ LOG: 			param count 1
 LOG: Final etapa: LOG: EXPRESSION LOG: DOLLAR LOG: 
 LOG: string INT_LIT
 LOG: Final stack: LOG: EXPRESSION LOG: DOLLAR LOG: 
+=======
+>>>>>>> c7b277d04778e2d2ab2d75c7d6b12b520a7b1a2c
 expr strom po skoncení funcke parseExpression
 ===== AST STROM =====
 [INT_LIT] (int=15)
 LOG: precedencna odovzdala token jeho type je = 33
+<<<<<<< HEAD
 LOG: -1 FLAG
 LOG: 1 Aktualni token IDENTIFIER a stacktop: DOLLAR [9, 8]
 LOG: DOLLAR LOG: 
@@ -3038,12 +3229,15 @@ LOG: 16 Aktualni token RPAREN a stacktop: EXPRESSION [9, 11]
 LOG: EXPRESSION LOG: DOLLAR LOG: 
 LOG: string STRING_GT
 LOG: Final stack: LOG: EXPRESSION LOG: DOLLAR LOG: 
+=======
+>>>>>>> c7b277d04778e2d2ab2d75c7d6b12b520a7b1a2c
 expr strom po skoncení funcke parseExpression
 ===== AST STROM =====
 [STRING_GT]
   [IDENTIFIER] (str=x)
   [INT_LIT] (int=10)
 LOG: 1LOG: precedencna odovzdala token jeho type je = 21
+<<<<<<< HEAD
 LOG: -1 FLAG
 LOG: 1 Aktualni token IDENTIFIER a stacktop: DOLLAR [9, 8]
 LOG: DOLLAR LOG: 
@@ -3081,12 +3275,15 @@ LOG: 16 Aktualni token RPAREN a stacktop: EXPRESSION [9, 11]
 LOG: EXPRESSION LOG: DOLLAR LOG: 
 LOG: string STRING_LT
 LOG: Final stack: LOG: EXPRESSION LOG: DOLLAR LOG: 
+=======
+>>>>>>> c7b277d04778e2d2ab2d75c7d6b12b520a7b1a2c
 expr strom po skoncení funcke parseExpression
 ===== AST STROM =====
 [STRING_LT]
   [IDENTIFIER] (str=x)
   [INT_LIT] (int=20)
 LOG: 1LOG: precedencna odovzdala token jeho type je = 21
+<<<<<<< HEAD
 LOG: 0 FLAG
 LOG: 1 Aktualni token STRING a stacktop: DOLLAR [9, 8]
 LOG: DOLLAR LOG: 
@@ -3104,6 +3301,8 @@ LOG: 6 Aktualni token RPAREN a stacktop: EXPRESSION [9, 11]
 LOG: EXPRESSION LOG: DOLLAR LOG: 
 LOG: string STRING_LIT
 LOG: Final stack: LOG: EXPRESSION LOG: DOLLAR LOG: 
+=======
+>>>>>>> c7b277d04778e2d2ab2d75c7d6b12b520a7b1a2c
 expr strom po skoncení funcke parseExpression
 ===== AST STROM =====
 [STRING_LIT] (str=between)
@@ -3191,6 +3390,7 @@ RESULT: PASS
 Test: test_19_complex_arithmetic
 ========================================
 Spouštím: valgrind --leak-check=full ../.././ifj25 < ./tests/test_19.in
+<<<<<<< HEAD
 LOG: 0 FLAG
 LOG: 1 Aktualni token LPAREN a stacktop: DOLLAR [9, 10]
 LOG: DOLLAR LOG: 
@@ -3300,6 +3500,18 @@ LOG: 6 Aktualni token RPAREN a stacktop: EXPRESSION [9, 11]
 LOG: EXPRESSION LOG: DOLLAR LOG: 
 LOG: string IDENTIFIER
 LOG: Final stack: LOG: EXPRESSION LOG: DOLLAR LOG: 
+=======
+expr strom po skoncení funcke parseExpression
+===== AST STROM =====
+[STRING_MUL]
+  [STRING_PLUS]
+    [INT_LIT] (int=10)
+    [INT_LIT] (int=5)
+  [STRING_MINUS]
+    [INT_LIT] (int=2)
+    [INT_LIT] (int=10)
+LOG: precedencna odovzdala token jeho type je = 33
+>>>>>>> c7b277d04778e2d2ab2d75c7d6b12b520a7b1a2c
 expr strom po skoncení funcke parseExpression
 ===== AST STROM =====
 [IDENTIFIER] (str=result)
@@ -3322,6 +3534,7 @@ PARSER IS DONE
               [EMPTY]
             [ASSIGN]
               [IDENTIFIER] (str=result)
+<<<<<<< HEAD
               [STRING_MINUS]
                 [STRING_MUL]
                   [STRING_PLUS]
@@ -3329,6 +3542,15 @@ PARSER IS DONE
                     [INT_LIT] (int=5)
                   [INT_LIT] (int=2)
                 [INT_LIT] (int=10)
+=======
+              [STRING_MUL]
+                [STRING_PLUS]
+                  [INT_LIT] (int=10)
+                  [INT_LIT] (int=5)
+                [STRING_MINUS]
+                  [INT_LIT] (int=2)
+                  [INT_LIT] (int=10)
+>>>>>>> c7b277d04778e2d2ab2d75c7d6b12b520a7b1a2c
             [IFJ_CALL]
               [IDENTIFIER] (str=write)
               [PARAM]
@@ -3345,11 +3567,18 @@ LOG: AST_STATEMENT_LIST
 LOG: AST_VAR
 LOG: AST_ASSIGN
 LOG: AST_IDENTIFIER
+<<<<<<< HEAD
 LOG: AST_MINUS
+=======
+>>>>>>> c7b277d04778e2d2ab2d75c7d6b12b520a7b1a2c
 LOG: AST_MUL
 LOG: AST_PLUS
 LOG: AST_INT_LIT
 LOG: AST_INT_LIT
+<<<<<<< HEAD
+=======
+LOG: AST_MINUS
+>>>>>>> c7b277d04778e2d2ab2d75c7d6b12b520a7b1a2c
 LOG: AST_INT_LIT
 LOG: AST_INT_LIT
 LOG: AST_IFJ_CALL
@@ -3360,13 +3589,25 @@ LOG: AST_EMPTY
 LOG: Vysledek sem_anal: 1
 Spouštím interpret: /home/tjoslef/Stažené/sys_package/ic25int-linux-x86_64 ./tests/test_19.in
 Očekávaný výstup: 20
+<<<<<<< HEAD
 Skutečný výstup: 20
 RESULT: PASS
+=======
+Skutečný výstup: -120
+RESULT: FAIL (výstup se neshoduje)
+Diff:
+--- /dev/fd/62	2025-11-17 13:40:06.722797134 +0100
++++ /dev/fd/61	2025-11-17 13:40:06.722797134 +0100
+@@ -1 +1 @@
+-20
++-120
+>>>>>>> c7b277d04778e2d2ab2d75c7d6b12b520a7b1a2c
 
 ========================================
 Test: test_20_unary_minus
 ========================================
 Spouštím: valgrind --leak-check=full ../.././ifj25 < ./tests/test_20.in
+<<<<<<< HEAD
 LOG: 0 FLAG
 LOG: 1 Aktualni token INTEGER a stacktop: DOLLAR [9, 8]
 LOG: DOLLAR LOG: 
@@ -3396,12 +3637,15 @@ LOG: 			param count 3
 LOG: Final etapa: LOG: EXPRESSION LOG: DOLLAR LOG: 
 LOG: string STRING_MINUS
 LOG: Final stack: LOG: EXPRESSION LOG: DOLLAR LOG: 
+=======
+>>>>>>> c7b277d04778e2d2ab2d75c7d6b12b520a7b1a2c
 expr strom po skoncení funcke parseExpression
 ===== AST STROM =====
 [STRING_MINUS]
   [INT_LIT] (int=0)
   [INT_LIT] (int=5)
 LOG: precedencna odovzdala token jeho type je = 33
+<<<<<<< HEAD
 LOG: 0 FLAG
 LOG: 1 Aktualni token IDENTIFIER a stacktop: DOLLAR [9, 8]
 LOG: DOLLAR LOG: 
@@ -3419,6 +3663,8 @@ LOG: 6 Aktualni token RPAREN a stacktop: EXPRESSION [9, 11]
 LOG: EXPRESSION LOG: DOLLAR LOG: 
 LOG: string IDENTIFIER
 LOG: Final stack: LOG: EXPRESSION LOG: DOLLAR LOG: 
+=======
+>>>>>>> c7b277d04778e2d2ab2d75c7d6b12b520a7b1a2c
 expr strom po skoncení funcke parseExpression
 ===== AST STROM =====
 [IDENTIFIER] (str=x)
