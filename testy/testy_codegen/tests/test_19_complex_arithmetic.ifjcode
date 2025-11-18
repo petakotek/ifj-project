@@ -15,13 +15,32 @@ DEFVAR LF@main$0_ty_2
 DEFVAR LF@main$0_rs_2
 DEFVAR LF@main$0_ln_3
 DEFVAR LF@main$0_rn_3
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+>>>>>>> semanticka_analyza2
 DEFVAR LF@main$0_rty_3
 DEFVAR LF@main$0_lty_3
 DEFVAR LF@main$0_rs_3
 DEFVAR LF@main$0_counter_3
+<<<<<<< HEAD
 DEFVAR LF@main$0_ln_4
 DEFVAR LF@main$0_rn_4
 DEFVAR LF@main$0_ty_4
+=======
+DEFVAR LF@main$0_ln_4
+DEFVAR LF@main$0_rn_4
+DEFVAR LF@main$0_ty_4
+=======
+DEFVAR LF@main$0_ty_3
+DEFVAR LF@main$0_ln_4
+DEFVAR LF@main$0_rn_4
+DEFVAR LF@main$0_rty_4
+DEFVAR LF@main$0_lty_4
+DEFVAR LF@main$0_rs_4
+DEFVAR LF@main$0_counter_4
+>>>>>>> c7b277d04778e2d2ab2d75c7d6b12b520a7b1a2c
+>>>>>>> semanticka_analyza2
 DEFVAR LF@main$0_ty_bool_5
 DEFVAR LF@main$0_val_bool_5
 DEFVAR LF@main$0_ty_bool_6
@@ -68,6 +87,9 @@ LABEL main$0$end_add$2
 
 PUSHS int@2
 INT2FLOATS
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
 POPS LF@main$0_rn_3
 POPS LF@main$0_ln_3
 PUSHS LF@main$0_ln_3
@@ -141,6 +163,88 @@ LABEL main$0$err_minus$4
 EXIT int@25
 LABEL main$0$end_minus$4
 
+=======
+PUSHS int@10
+INT2FLOATS
+>>>>>>> semanticka_analyza2
+POPS LF@main$0_rn_3
+POPS LF@main$0_ln_3
+PUSHS LF@main$0_ln_3
+TYPES
+POPS LF@main$0_lty_3
+PUSHS LF@main$0_rn_3
+TYPES
+POPS LF@main$0_rty_3
+PUSHS LF@main$0_lty_3
+PUSHS string@string
+JUMPIFEQS main$0$concat$3
+PUSHS LF@main$0_rty_3
+PUSHS string@string
+JUMPIFEQS main$0$concat$3
+LABEL main$0$mul$3
+PUSHS LF@main$0_ln_3
+PUSHS LF@main$0_rn_3
+MULS
+JUMP main$0$end_mul$3
+LABEL main$0$concat$3
+MOVE LF@main$0_counter_3 int@0
+PUSHS LF@main$0_rn_3
+FLOAT2INTS
+POPS LF@main$0_counter_3
+MOVE LF@main$0_rs_3 string@""
+PUSHS LF@main$0_counter_3
+PUSHS int@0
+JUMPIFEQS main$0$loop_end$3
+MOVE LF@main$0_rs_3 LF@main$0_ln_3
+PUSHS LF@main$0_counter_3
+PUSHS int@1
+SUBS
+POPS LF@main$0_counter_3
+LABEL main$0$start$3
+PUSHS LF@main$0_counter_3
+PUSHS int@0
+JUMPIFEQS main$0$loop_end$3
+CONCAT LF@main$0_rs_3 LF@main$0_rs_3 LF@main$0_ln_3
+PUSHS LF@main$0_counter_3
+PUSHS int@1
+SUBS
+POPS LF@main$0_counter_3
+JUMP main$0$start$3
+LABEL main$0$loop_end$3
+PUSHS LF@main$0_rs_3
+JUMP main$0$end_mul$3
+LABEL main$0$err$3
+EXIT int@25
+LABEL main$0$end_mul$3
+PUSHS int@10
+INT2FLOATS
+POPS LF@main$0_rn_4
+POPS LF@main$0_ln_4
+PUSHS LF@main$0_ln_4
+PUSHS LF@main$0_rn_4
+TYPES
+POPS LF@main$0_ty_4
+TYPES
+PUSHS LF@main$0_ty_4
+JUMPIFEQS main$0$ok_minus$4
+JUMP main$0$err_minus$4
+LABEL main$0$ok_minus$4
+PUSHS LF@main$0_ty_4
+PUSHS string@string
+JUMPIFEQS main$0$err_minus$4
+PUSHS LF@main$0_ln_4
+PUSHS LF@main$0_rn_4
+SUBS
+JUMP main$0$end_minus$4
+LABEL main$0$err_minus$4
+EXIT int@25
+<<<<<<< HEAD
+LABEL main$0$end_minus$4
+
+=======
+LABEL main$0$end_mul$4
+>>>>>>> c7b277d04778e2d2ab2d75c7d6b12b520a7b1a2c
+>>>>>>> semanticka_analyza2
 POPS LF@result$$1
 PUSHS LF@result$$1
 DEFVAR LF@temp$var$write$0
