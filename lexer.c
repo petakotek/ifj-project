@@ -30,7 +30,8 @@ char *source_file = NULL;
 int lexer_init(const char *source) {
     lexer = malloc(sizeof(LexerState));
     if (lexer == NULL) {
-        return -1;
+    printError(INTERNAL_ERROR, "nepovedeny malloc v substringu v lexeru\n");
+    memorySafeExit(INTERNAL_ERROR);
     }
     lexer->length = strlen(source);
     lexer->input  = source;
@@ -290,7 +291,7 @@ void append_char(char **buf, int *delka, int *kapacita, char c) {
     }
     (*buf)[(*delka)++] = c;  // zapisovani znaku do bufferu
     (*buf)[*delka] = '\0';
-    
+
 }
 Token lexer_token_next() {
     // inicializace bufferu na string
@@ -379,7 +380,15 @@ Token lexer_token_next() {
                     token.type             = TOKEN_FLOAT_EXP;
                     token.line             = radek;
                     goto token_found;
-
+                case BLOCK_COMMENT:
+	                free(buf);
+	                buf = NULL;
+	                printError(LEX_ERROR,
+	                           "Nedokonceny string"
+	                           "%c on line : %lu",
+	                           c, lexer->pos);
+	                memorySafeExit(LEX_ERROR);
+					break;
                 case STRING:
                     free(buf);
                     buf = NULL;
@@ -767,6 +776,15 @@ Token lexer_token_next() {
              */
             case ZERO: {
                 if (c == 'x') {
+               	if(!isxdigit(lexer->input[lexer->pos++])){
+                free(buf);
+                buf = NULL;
+                printError(LEX_ERROR,
+                           "neznamy charakter v lexer_token_next"
+                           "%c on line : %lu",
+                           c, lexer->pos);
+                memorySafeExit(LEX_ERROR);
+                }
                     stav = HEXA_NUM;
                     lexer->pos++;
                 } else if (c == '.') {
@@ -940,11 +958,11 @@ Token lexer_token_next() {
                     } else if (next == '"') {
                         append_char(&buf, &delak, &kapacity, '\"');
                         lexer->pos++;
-                    } 
+                    }
                     else if (next == '\\') {
                         append_char(&buf, &delak, &kapacity, '\\');
                         lexer->pos++;
-                    } 
+                    }
 
                     else {
                         free(buf);

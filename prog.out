@@ -1,708 +1,1439 @@
-==76897== Memcheck, a memory error detector
-==76897== Copyright (C) 2002-2024, and GNU GPL'd, by Julian Seward et al.
-==76897== Using Valgrind-3.25.1 and LibVEX; rerun with -h for copyright info
-==76897== Command: ./ifj25
-==76897== 
-expr strom po skoncení funcke parseExpression
-===== AST STROM =====
-[INT_LIT] (int=42)
-expr strom po skoncení funcke parseExpression
-===== AST STROM =====
-[STRING_IS]
-  [IDENTIFIER] (str="arg")
-  [KEYWORD_NUM]
-expr strom po skoncení funcke parseExpression
-===== AST STROM =====
-[STRING_GT]
-  [STRING_MINUS]
-    [IDENTIFIER] (str="arg")
-    [INT_LIT] (int=1)
-  [STRING_DIV]
-    [STRING_MUL]
-      [INT_LIT] (int=32)
-      [FLOAT_LIT] (float=84.1)
-    [FLOAT_LIT] (float=2.4)
-expr strom po skoncení funcke parseExpression
-===== AST STROM =====
-[STRING_LIT] (str="Celkem velke cislo!\
-")
-expr strom po skoncení funcke parseExpression
-===== AST STROM =====
-[STRING_MUL]
-  [IDENTIFIER] (str="arg")
-  [INT_LIT] (int=42)
-expr strom po skoncení funcke parseExpression
-===== AST STROM =====
-[IDENTIFIER] (str="arg")
-expr strom po skoncení funcke parseExpression
-===== AST STROM =====
-[STRING_PLUS]
-  [STRING_LIT] (str="Odpoved je ")
-  [IDENTIFIER] (str="ansStr")
-expr strom po skoncení funcke parseExpression
-===== AST STROM =====
-[STRING_LIT] (str="Neplatny argument\
-")
-expr strom po skoncení funcke parseExpression
-===== AST STROM =====
-[SMALL_NULL]
-expr strom po skoncení funcke parseExpression
-===== AST STROM =====
-[GLOBAL_ID] (str="__a")
-expr strom po skoncení funcke parseExpression
-===== AST STROM =====
-[STRING_PLUS]
-  [GLOBAL_ID] (str="__a")
-  [INT_LIT] (int=10)
-expr strom po skoncení funcke parseExpression
-===== AST STROM =====
-[SMALL_NULL]
-==76897== Conditional jump or move depends on uninitialised value(s)
-==76897==    at 0x4851AF8: strlen (vg_replace_strmem.c:506)
-==76897==    by 0x40D850: dup_cstr (ast_strom.c:327)
-==76897==    by 0x40D96C: ast_value_from_token (ast_strom.c:288)
-==76897==    by 0x40DA79: new_leaf (ast_strom.c:227)
-==76897==    by 0x40E18D: findPrecedenceRule (expr.c:329)
-==76897==    by 0x40EB27: parseExpression (expr.c:987)
-==76897==    by 0x4097E6: Expr_func (parser.c:1005)
-==76897==    by 0x40A917: parser (parser.c:277)
-==76897==    by 0x401218: main (main.c:44)
-==76897== 
-expr strom po skoncení funcke parseExpression
-===== AST STROM =====
-[STRING_LIT]==76897== Conditional jump or move depends on uninitialised value(s)
-==76897==    at 0x4851AF8: strlen (vg_replace_strmem.c:506)
-==76897==    by 0x49E5E2F: __printf_buffer (vfprintf-process-arg.c:443)
-==76897==    by 0x49E6B00: __vfprintf_internal (vfprintf-internal.c:1543)
-==76897==    by 0x49DA1F9: fprintf (fprintf.c:32)
-==76897==    by 0x40CDF2: ast_dump_rec (ast_strom.c:441)
-==76897==    by 0x409815: Expr_func (parser.c:1012)
-==76897==    by 0x40A917: parser (parser.c:277)
-==76897==    by 0x401218: main (main.c:44)
-==76897== 
- (str="Jsem jednorozci setter, ziskal jsem ")
-expr strom po skoncení funcke parseExpression
-===== AST STROM =====
-[IDENTIFIER] (str="val")
-expr strom po skoncení funcke parseExpression
-===== AST STROM =====
-[STRING_LIT] (str="\
-")
-expr strom po skoncení funcke parseExpression
-===== AST STROM =====
-[IDENTIFIER] (str="val")
-expr strom po skoncení funcke parseExpression
-===== AST STROM =====
-[STRING_LIT] (str="Jsem ve funkci unicorn, ne v getteru\
-")
-expr strom po skoncení funcke parseExpression
-===== AST STROM =====
-[IDENTIFIER] (str="unicorn")
-expr strom po skoncení funcke parseExpression
-===== AST STROM =====
-[STRING_LIT] (str="\
-")
-expr strom po skoncení funcke parseExpression
-===== AST STROM =====
-[INT_LIT] (int=5)
-expr strom po skoncení funcke parseExpression
-===== AST STROM =====
-[IDENTIFIER] (str="unicorn")
-expr strom po skoncení funcke parseExpression
-===== AST STROM =====
-[IDENTIFIER] (str="myValue")
-expr strom po skoncení funcke parseExpression
-===== AST STROM =====
-[STRING_LIT] (str="\
-")
-expr strom po skoncení funcke parseExpression
-===== AST STROM =====
-[FUNC_CALL]
-  [IDENTIFIER] (str="unicorn")
-  [PARAM]
-    [EMPTY]
-expr strom po skoncení funcke parseExpression
-===== AST STROM =====
-[IDENTIFIER] (str="myValue")
-expr strom po skoncení funcke parseExpression
-===== AST STROM =====
-[STRING_LIT] (str="\
-")
-expr strom po skoncení funcke parseExpression
-===== AST STROM =====
-[STRING_LIT] (str="Napis cislo:\
-")
-expr strom po skoncení funcke parseExpression
-===== AST STROM =====
-[FUNC_CALL]
-  [IDENTIFIER] (str="getAnswer")
-  [PARAM]
-    [IDENTIFIER] (str="valueFromUser")
-    [EMPTY]
-expr strom po skoncení funcke parseExpression
-===== AST STROM =====
-[STRING_EQ]
-  [IDENTIFIER] (str="myValue")
-  [SMALL_NULL]
-expr strom po skoncení funcke parseExpression
-===== AST STROM =====
-[STRING_LIT] (str="ODPOVED NENI!\
-")
-expr strom po skoncení funcke parseExpression
-===== AST STROM =====
-[STRING_IS]
-  [IDENTIFIER] (str="myValue")
-  [NULL]
-expr strom po skoncení funcke parseExpression
-===== AST STROM =====
-[IDENTIFIER] (str="myValue")
-expr strom po skoncení funcke parseExpression
-===== AST STROM =====
-[STRING_LIT] (str="\
-")
-expr strom po skoncení funcke parseExpression
-===== AST STROM =====
-[STRING_GT]
-  [IDENTIFIER] (str="valueFromUser")
-  [STRING_MINUS]
-    [INT_LIT] (int=0)
-    [INT_LIT] (int=2)
-expr strom po skoncení funcke parseExpression
-===== AST STROM =====
-[STRING_LIT] (str="Jedeme dolu! ")
-expr strom po skoncení funcke parseExpression
-===== AST STROM =====
-[IDENTIFIER] (str="valueFromUser")
-expr strom po skoncení funcke parseExpression
-===== AST STROM =====
-[STRING_LIT] (str=" -> ")
-expr strom po skoncení funcke parseExpression
-===== AST STROM =====
-[STRING_MINUS]
-  [IDENTIFIER] (str="valueFromUser")
-  [INT_LIT] (int=1)
-expr strom po skoncení funcke parseExpression
-===== AST STROM =====
-[IDENTIFIER] (str="valueFromUser")
-expr strom po skoncení funcke parseExpression
-===== AST STROM =====
-[IDENTIFIER] (str="valStr")
-expr strom po skoncení funcke parseExpression
-===== AST STROM =====
-[STRING_LIT] (str="\
-")
-expr strom po skoncení funcke parseExpression
-===== AST STROM =====
-[INT_LIT] (int=1)
-expr strom po skoncení funcke parseExpression
-===== AST STROM =====
-[STRING_LIT] (str="cervena panda + ")
-expr strom po skoncení funcke parseExpression
-===== AST STROM =====
-[STRING_LIT] (str="(")
-expr strom po skoncení funcke parseExpression
-===== AST STROM =====
-[STRING_EQ]
-  [INT_LIT] (int=1)
-  [INT_LIT] (int=1)
-expr strom po skoncení funcke parseExpression
-===== AST STROM =====
-[STRING_MUL]
-  [IDENTIFIER] (str="x")
-  [INT_LIT] (int=3)
-expr strom po skoncení funcke parseExpression
-===== AST STROM =====
-[IDENTIFIER] (str="y")
-expr strom po skoncení funcke parseExpression
-===== AST STROM =====
-[IDENTIFIER] (str="x")
-expr strom po skoncení funcke parseExpression
-===== AST STROM =====
-[STRING_LIT] (str="konec) ")
-expr strom po skoncení funcke parseExpression
-===== AST STROM =====
-[IDENTIFIER] (str="x")
-expr strom po skoncení funcke parseExpression
-===== AST STROM =====
-[IDENTIFIER] (str="x")
-expr strom po skoncení funcke parseExpression
-===== AST STROM =====
-[STRING_LIT] (str="\
-")
-PARSER IS DONE
-===== AST STROM =====
-[PROGRAM]
-  [PROLOG]
-  [MAIN_CLASS]
-    [IDENTIFIER] (str="Program")
-    [MAIN_CLASS_BLOCK]
-      [FUNC_DEC]
-        [IDENTIFIER] (str="getAnswer")
-        [PARAM]
-          [EMPTY]
-        [BLOCK]
-          [STATEMENT_LIST]
-            [RETURN]
-              [INT_LIT] (int=42)
-      [FUNC_DEC]
-        [IDENTIFIER] (str="getAnswer")
-        [PARAM]
-          [IDENTIFIER] (str="arg")
-          [EMPTY]
-        [BLOCK]
-          [STATEMENT_LIST]
-            [IF CHAIN]
-              [IF]
-                [CONDITION]
-                  [STRING_IS]
-                    [IDENTIFIER] (str="arg")
-                    [KEYWORD_NUM]
-                [BLOCK]
-                  [STATEMENT_LIST]
-                    [IF CHAIN]
-                      [IF]
-                        [CONDITION]
-                          [STRING_GT]
-                            [STRING_MINUS]
-                              [IDENTIFIER] (str="arg")
-                              [INT_LIT] (int=1)
-                            [STRING_DIV]
-                              [STRING_MUL]
-                                [INT_LIT] (int=32)
-                                [FLOAT_LIT] (float=84.1)
-                              [FLOAT_LIT] (float=2.4)
-                        [BLOCK]
-                          [STATEMENT_LIST]
-                            [GLOBAL_ID]
-                              [GLOBAL_ID] (str="__d")
-                              [ASSIGN]
-                                [IFJ_CALL]
-                                  [IDENTIFIER] (str="write")
-                                  [PARAM]
-                                    [STRING_LIT] (str="Celkem velke cislo!\
-")
-                                    [EMPTY]
-                    [ASSIGN]
-                      [IDENTIFIER] (str="arg")
-                      [STRING_MUL]
-                        [IDENTIFIER] (str="arg")
-                        [INT_LIT] (int=42)
-                    [VAR]
-                      [IDENTIFIER] (str="ansStr")
-                      [EMPTY]
-                    [ASSIGN]
-                      [IDENTIFIER] (str="ansStr")
-                      [IFJ_CALL]
-                        [IDENTIFIER] (str="str")
-                        [PARAM]
-                          [IDENTIFIER] (str="arg")
-                          [EMPTY]
-                    [RETURN]
-                      [STRING_PLUS]
-                        [STRING_LIT] (str="Odpoved je ")
-                        [IDENTIFIER] (str="ansStr")
-              [ELSE]
-                [BLOCK]
-                  [STATEMENT_LIST]
-                    [GLOBAL_ID]
-                      [GLOBAL_ID] (str="__d")
-                      [ASSIGN]
-                        [IFJ_CALL]
-                          [IDENTIFIER] (str="write")
-                          [PARAM]
-                            [STRING_LIT] (str="Neplatny argument\
-")
-                            [EMPTY]
-                    [RETURN]
-                      [SMALL_NULL]
-      [GETTER]
-        [IDENTIFIER] (str="unicorn")
-        [PARAM]
-          [EMPTY]
-        [BLOCK]
-          [STATEMENT_LIST]
-            [IF CHAIN]
-              [IF]
-                [CONDITION]
-                  [GLOBAL_ID] (str="__a")
-                [BLOCK]
-                  [STATEMENT_LIST]
-                    [RETURN]
-                      [STRING_PLUS]
-                        [GLOBAL_ID] (str="__a")
-                        [INT_LIT] (int=10)
-              [ELSE]
-                [BLOCK]
-                  [STATEMENT_LIST]
-                    [RETURN]
-                      [SMALL_NULL]
-      [SETTER]
-        [IDENTIFIER] (str="unicorn")
-        [PARAM]
-          [IDENTIFIER] (str="val")
-          [EMPTY]
-        [BLOCK]
-          [STATEMENT_LIST]
-            [GLOBAL_ID]
-              [GLOBAL_ID] (str="__d")
-              [ASSIGN]
-                [IFJ_CALL]
-                  [IDENTIFIER] (str="write")
-                  [PARAM]
-                    [STRING_LIT] (str="Jsem jednorozci setter, ziskal jsem ")
-                    [EMPTY]
-            [GLOBAL_ID]
-              [GLOBAL_ID] (str="__d")
-              [ASSIGN]
-                [IFJ_CALL]
-                  [IDENTIFIER] (str="write")
-                  [PARAM]
-                    [IDENTIFIER] (str="val")
-                    [EMPTY]
-            [GLOBAL_ID]
-              [GLOBAL_ID] (str="__d")
-              [ASSIGN]
-                [IFJ_CALL]
-                  [IDENTIFIER] (str="write")
-                  [PARAM]
-                    [STRING_LIT] (str="\
-")
-                    [EMPTY]
-            [GLOBAL_ID]
-              [GLOBAL_ID] (str="__a")
-              [ASSIGN]
-                [IDENTIFIER] (str="val")
-      [FUNC_DEC]
-        [IDENTIFIER] (str="unicorn")
-        [PARAM]
-          [EMPTY]
-        [BLOCK]
-          [STATEMENT_LIST]
-            [GLOBAL_ID]
-              [GLOBAL_ID] (str="__d")
-              [ASSIGN]
-                [IFJ_CALL]
-                  [IDENTIFIER] (str="write")
-                  [PARAM]
-                    [STRING_LIT] (str="Jsem ve funkci unicorn, ne v getteru\
-")
-                    [EMPTY]
-      [FUNC_DEC]
-        [IDENTIFIER] (str="main")
-        [PARAM]
-          [EMPTY]
-        [BLOCK]
-          [STATEMENT_LIST]
-            [GLOBAL_ID]
-              [GLOBAL_ID] (str="__d")
-              [ASSIGN]
-                [IFJ_CALL]
-                  [IDENTIFIER] (str="write")
-                  [PARAM]
-                    [IDENTIFIER] (str="unicorn")
-                    [EMPTY]
-            [GLOBAL_ID]
-              [GLOBAL_ID] (str="__d")
-              [ASSIGN]
-                [IFJ_CALL]
-                  [IDENTIFIER] (str="write")
-                  [PARAM]
-                    [STRING_LIT] (str="\
-")
-                    [EMPTY]
-            [ASSIGN]
-              [IDENTIFIER] (str="unicorn")
-              [INT_LIT] (int=5)
-            [VAR]
-              [IDENTIFIER] (str="myValue")
-              [EMPTY]
-            [ASSIGN]
-              [IDENTIFIER] (str="myValue")
-              [IDENTIFIER] (str="unicorn")
-            [GLOBAL_ID]
-              [GLOBAL_ID] (str="__d")
-              [ASSIGN]
-                [IFJ_CALL]
-                  [IDENTIFIER] (str="write")
-                  [PARAM]
-                    [IDENTIFIER] (str="myValue")
-                    [EMPTY]
-            [GLOBAL_ID]
-              [GLOBAL_ID] (str="__d")
-              [ASSIGN]
-                [IFJ_CALL]
-                  [IDENTIFIER] (str="write")
-                  [PARAM]
-                    [STRING_LIT] (str="\
-")
-                    [EMPTY]
-            [ASSIGN]
-              [IDENTIFIER] (str="myValue")
-              [FUNC_CALL]
-                [IDENTIFIER] (str="unicorn")
-                [PARAM]
-                  [EMPTY]
-            [GLOBAL_ID]
-              [GLOBAL_ID] (str="__d")
-              [ASSIGN]
-                [IFJ_CALL]
-                  [IDENTIFIER] (str="write")
-                  [PARAM]
-                    [IDENTIFIER] (str="myValue")
-                    [EMPTY]
-            [GLOBAL_ID]
-              [GLOBAL_ID] (str="__d")
-              [ASSIGN]
-                [IFJ_CALL]
-                  [IDENTIFIER] (str="write")
-                  [PARAM]
-                    [STRING_LIT] (str="\
-")
-                    [EMPTY]
-            [GLOBAL_ID]
-              [GLOBAL_ID] (str="__d")
-              [ASSIGN]
-                [IFJ_CALL]
-                  [IDENTIFIER] (str="write")
-                  [PARAM]
-                    [STRING_LIT] (str="Napis cislo:\
-")
-                    [EMPTY]
-            [VAR]
-              [IDENTIFIER] (str="valueFromUser")
-              [EMPTY]
-            [ASSIGN]
-              [IDENTIFIER] (str="valueFromUser")
-              [IFJ_CALL]
-                [IDENTIFIER] (str="read_num")
-                [PARAM]
-                  [EMPTY]
-            [ASSIGN]
-              [IDENTIFIER] (str="myValue")
-              [FUNC_CALL]
-                [IDENTIFIER] (str="getAnswer")
-                [PARAM]
-                  [IDENTIFIER] (str="valueFromUser")
-                  [EMPTY]
-            [IF CHAIN]
-              [IF]
-                [CONDITION]
-                  [STRING_EQ]
-                    [IDENTIFIER] (str="myValue")
-                    [SMALL_NULL]
-                [BLOCK]
-                  [STATEMENT_LIST]
-                    [GLOBAL_ID]
-                      [GLOBAL_ID] (str="__d")
-                      [ASSIGN]
-                        [IFJ_CALL]
-                          [IDENTIFIER] (str="write")
-                          [PARAM]
-                            [STRING_LIT] (str="ODPOVED NENI!\
-")
-                            [EMPTY]
-                    [RETURN]
-                      [EMPTY]
-              [ELSE]
-                [BLOCK]
-                  [STATEMENT_LIST]
-                    [IF CHAIN]
-                      [IF]
-                        [CONDITION]
-                          [STRING_IS]
-                            [IDENTIFIER] (str="myValue")
-                            [NULL]
-                        [BLOCK]
-                          [STATEMENT_LIST]
-                      [ELSE]
-                        [BLOCK]
-                          [STATEMENT_LIST]
-            [GLOBAL_ID]
-              [GLOBAL_ID] (str="__d")
-              [ASSIGN]
-                [IFJ_CALL]
-                  [IDENTIFIER] (str="write")
-                  [PARAM]
-                    [IDENTIFIER] (str="myValue")
-                    [EMPTY]
-            [GLOBAL_ID]
-              [GLOBAL_ID] (str="__d")
-              [ASSIGN]
-                [IFJ_CALL]
-                  [IDENTIFIER] (str="write")
-                  [PARAM]
-                    [STRING_LIT] (str="\
-")
-                    [EMPTY]
-            [WHILE]
-              [CONDITION]
-                [STRING_GT]
-                  [IDENTIFIER] (str="valueFromUser")
-                  [STRING_MINUS]
-                    [INT_LIT] (int=0)
-                    [INT_LIT] (int=2)
-              [BLOCK]
-                [STATEMENT_LIST]
-                  [GLOBAL_ID]
-                    [GLOBAL_ID] (str="__d")
-                    [ASSIGN]
-                      [IFJ_CALL]
-                        [IDENTIFIER] (str="write")
-                        [PARAM]
-                          [STRING_LIT] (str="Jedeme dolu! ")
-                          [EMPTY]
-                  [GLOBAL_ID]
-                    [GLOBAL_ID] (str="__d")
-                    [ASSIGN]
-                      [IFJ_CALL]
-                        [IDENTIFIER] (str="write")
-                        [PARAM]
-                          [IDENTIFIER] (str="valueFromUser")
-                          [EMPTY]
-                  [GLOBAL_ID]
-                    [GLOBAL_ID] (str="__d")
-                    [ASSIGN]
-                      [IFJ_CALL]
-                        [IDENTIFIER] (str="write")
-                        [PARAM]
-                          [STRING_LIT] (str=" -> ")
-                          [EMPTY]
-                  [ASSIGN]
-                    [IDENTIFIER] (str="valueFromUser")
-                    [STRING_MINUS]
-                      [IDENTIFIER] (str="valueFromUser")
-                      [INT_LIT] (int=1)
-                  [VAR]
-                    [IDENTIFIER] (str="valStr")
-                    [EMPTY]
-                  [ASSIGN]
-                    [IDENTIFIER] (str="valStr")
-                    [IFJ_CALL]
-                      [IDENTIFIER] (str="str")
-                      [PARAM]
-                        [IDENTIFIER] (str="valueFromUser")
-                        [EMPTY]
-                  [GLOBAL_ID]
-                    [GLOBAL_ID] (str="__d")
-                    [ASSIGN]
-                      [IFJ_CALL]
-                        [IDENTIFIER] (str="write")
-                        [PARAM]
-                          [IDENTIFIER] (str="valStr")
-                          [EMPTY]
-                  [GLOBAL_ID]
-                    [GLOBAL_ID] (str="__d")
-                    [ASSIGN]
-                      [IFJ_CALL]
-                        [IDENTIFIER] (str="write")
-                        [PARAM]
-                          [STRING_LIT] (str="\
-")
-                          [EMPTY]
-            [BLOCK]
-              [STATEMENT_LIST]
-                [VAR]
-                  [IDENTIFIER] (str="x")
-                  [EMPTY]
-                [ASSIGN]
-                  [IDENTIFIER] (str="x")
-                  [INT_LIT] (int=1)
-                [BLOCK]
-                  [STATEMENT_LIST]
-                    [VAR]
-                      [IDENTIFIER] (str="x")
-                      [EMPTY]
-                    [ASSIGN]
-                      [IDENTIFIER] (str="x")
-                      [STRING_LIT] (str="cervena panda + ")
-                    [GLOBAL_ID]
-                      [GLOBAL_ID] (str="__d")
-                      [ASSIGN]
-                        [IFJ_CALL]
-                          [IDENTIFIER] (str="write")
-                          [PARAM]
-                            [STRING_LIT] (str="(")
-                            [EMPTY]
-                    [IF CHAIN]
-                      [IF]
-                        [CONDITION]
-                          [STRING_EQ]
-                            [INT_LIT] (int=1)
-                            [INT_LIT] (int=1)
-                        [BLOCK]
-                          [STATEMENT_LIST]
-                            [VAR]
-                              [IDENTIFIER] (str="y")
-                              [EMPTY]
-                            [ASSIGN]
-                              [IDENTIFIER] (str="y")
-                              [STRING_MUL]
-                                [IDENTIFIER] (str="x")
-                                [INT_LIT] (int=3)
-                            [VAR]
-                              [IDENTIFIER] (str="x")
-                              [EMPTY]
-                            [ASSIGN]
-                              [IDENTIFIER] (str="x")
-                              [IDENTIFIER] (str="y")
-                            [GLOBAL_ID]
-                              [GLOBAL_ID] (str="__d")
-                              [ASSIGN]
-                                [IFJ_CALL]
-                                  [IDENTIFIER] (str="write")
-                                  [PARAM]
-                                    [IDENTIFIER] (str="x")
-                                    [EMPTY]
-                      [ELSE]
-                        [BLOCK]
-                          [STATEMENT_LIST]
-                    [GLOBAL_ID]
-                      [GLOBAL_ID] (str="__d")
-                      [ASSIGN]
-                        [IFJ_CALL]
-                          [IDENTIFIER] (str="write")
-                          [PARAM]
-                            [STRING_LIT] (str="konec) ")
-                            [EMPTY]
-                    [GLOBAL_ID]
-                      [GLOBAL_ID] (str="__d")
-                      [ASSIGN]
-                        [IFJ_CALL]
-                          [IDENTIFIER] (str="write")
-                          [PARAM]
-                            [IDENTIFIER] (str="x")
-                            [EMPTY]
-                [GLOBAL_ID]
-                  [GLOBAL_ID] (str="__d")
-                  [ASSIGN]
-                    [IFJ_CALL]
-                      [IDENTIFIER] (str="write")
-                      [PARAM]
-                        [IDENTIFIER] (str="x")
-                        [EMPTY]
-            [GLOBAL_ID]
-              [GLOBAL_ID] (str="__d")
-              [ASSIGN]
-                [IFJ_CALL]
-                  [IDENTIFIER] (str="write")
-                  [PARAM]
-                    [STRING_LIT] (str="\
-")
-                    [EMPTY]
-==76897== 
-==76897== HEAP SUMMARY:
-==76897==     in use at exit: 44,802 bytes in 823 blocks
-==76897==   total heap usage: 2,639 allocs, 1,816 frees, 495,143 bytes allocated
-==76897== 
-==76897== LEAK SUMMARY:
-==76897==    definitely lost: 0 bytes in 0 blocks
-==76897==    indirectly lost: 0 bytes in 0 blocks
-==76897==      possibly lost: 0 bytes in 0 blocks
-==76897==    still reachable: 44,802 bytes in 823 blocks
-==76897==         suppressed: 0 bytes in 0 blocks
-==76897== Reachable blocks (those to which a pointer was found) are not shown.
-==76897== To see them, rerun with: --leak-check=full --show-leak-kinds=all
-==76897== 
-==76897== Use --track-origins=yes to see where uninitialised values come from
-==76897== For lists of detected and suppressed errors, rerun with: -s
-==76897== ERROR SUMMARY: 6 errors from 2 contexts (suppressed: 0 from 0)
+.IFJcode25
+DEFVAR GF@__d
+MOVE GF@__d nil@nil
+DEFVAR GF@__a
+MOVE GF@__a nil@nil
+JUMP main$0
+LABEL $getAnswer$0$0
+CREATEFRAME
+PUSHFRAME
+DEFVAR LF@retval
+MOVE LF@retval nil@nil
+PUSHS int@42
+INT2FLOATS
+POPS LF@retval
+JUMP $getAnswer$0$0$end$0
+LABEL $getAnswer$0$0$end$0
+PUSHS LF@retval
+POPFRAME
+RETURN
+LABEL $getAnswer$1$0
+CREATEFRAME
+PUSHFRAME
+DEFVAR LF@retval
+DEFVAR LF@getAnswer$1_ty_bool_0
+DEFVAR LF@getAnswer$1_val_bool_0
+DEFVAR LF@getAnswer$1_ln_1
+DEFVAR LF@getAnswer$1_rn_1
+DEFVAR LF@getAnswer$1_rty_1
+DEFVAR LF@getAnswer$1_lty_1
+DEFVAR LF@getAnswer$1_ty_bool_2
+DEFVAR LF@getAnswer$1_val_bool_2
+DEFVAR LF@getAnswer$1_ln_3
+DEFVAR LF@getAnswer$1_rn_3
+DEFVAR LF@getAnswer$1_ty_3
+DEFVAR LF@getAnswer$1_ln_4
+DEFVAR LF@getAnswer$1_rn_4
+DEFVAR LF@getAnswer$1_rty_4
+DEFVAR LF@getAnswer$1_lty_4
+DEFVAR LF@getAnswer$1_rs_4
+DEFVAR LF@getAnswer$1_counter_4
+DEFVAR LF@getAnswer$1_ln_5
+DEFVAR LF@getAnswer$1_rn_5
+DEFVAR LF@getAnswer$1_ty_5
+DEFVAR LF@getAnswer$1_ln_6
+DEFVAR LF@getAnswer$1_rn_6
+DEFVAR LF@getAnswer$1_rty_6
+DEFVAR LF@getAnswer$1_lty_6
+DEFVAR LF@getAnswer$1_ty_bool_7
+DEFVAR LF@getAnswer$1_val_bool_7
+DEFVAR LF@getAnswer$1_ty_bool_8
+DEFVAR LF@getAnswer$1_val_bool_8
+DEFVAR LF@getAnswer$1_ty_bool_9
+DEFVAR LF@getAnswer$1_val_bool_9
+DEFVAR LF@getAnswer$1_ty_bool_10
+DEFVAR LF@getAnswer$1_val_bool_10
+DEFVAR LF@getAnswer$1_ty_bool_11
+DEFVAR LF@getAnswer$1_val_bool_11
+DEFVAR LF@getAnswer$1_ln_12
+DEFVAR LF@getAnswer$1_rn_12
+DEFVAR LF@getAnswer$1_rty_12
+DEFVAR LF@getAnswer$1_lty_12
+DEFVAR LF@getAnswer$1_rs_12
+DEFVAR LF@getAnswer$1_counter_12
+DEFVAR LF@getAnswer$1_ty_bool_13
+DEFVAR LF@getAnswer$1_val_bool_13
+DEFVAR LF@ansStr$$2
+DEFVAR LF@getAnswer$1_ty_bool_14
+DEFVAR LF@getAnswer$1_val_bool_14
+DEFVAR LF@getAnswer$1_ty_bool_15
+DEFVAR LF@getAnswer$1_val_bool_15
+DEFVAR LF@getAnswer$1_ty_bool_16
+DEFVAR LF@getAnswer$1_val_bool_16
+DEFVAR LF@getAnswer$1_ty_bool_17
+DEFVAR LF@getAnswer$1_val_bool_17
+DEFVAR LF@getAnswer$1_ln_18
+DEFVAR LF@getAnswer$1_rn_18
+DEFVAR LF@getAnswer$1_ty_18
+DEFVAR LF@getAnswer$1_rs_18
+DEFVAR LF@getAnswer$1_ty_bool_19
+DEFVAR LF@getAnswer$1_val_bool_19
+DEFVAR LF@getAnswer$1_ty_bool_20
+DEFVAR LF@getAnswer$1_val_bool_20
+DEFVAR LF@getAnswer$1_ty_bool_21
+DEFVAR LF@getAnswer$1_val_bool_21
+DEFVAR LF@arg$$1
+POPS LF@arg$$1
+MOVE LF@retval nil@nil
+PUSHS LF@arg$$1
+POPS LF@getAnswer$1_ln_1
+PUSHS LF@getAnswer$1_ln_1
+TYPES
+POPS LF@getAnswer$1_lty_1
+JUMP getAnswer$1$Num$1
+LABEL getAnswer$1$Num$1
+PUSHS LF@getAnswer$1_lty_1
+PUSHS string@int
+JUMPIFEQS getAnswer$1$ok$1
+PUSHS LF@getAnswer$1_lty_1
+PUSHS string@float
+JUMPIFEQS getAnswer$1$ok$1
+JUMP getAnswer$1$err$1
+LABEL getAnswer$1$String$1
+PUSHS LF@getAnswer$1_lty_1
+PUSHS string@string
+JUMPIFEQS getAnswer$1$ok$1
+JUMP getAnswer$1$err$1
+LABEL getAnswer$1$Null$1
+PUSHS LF@getAnswer$1_lty_1
+PUSHS string@nil
+JUMPIFEQS getAnswer$1$ok$1
+JUMP getAnswer$1$err$1
+LABEL getAnswer$1$ok$1
+PUSHS bool@true
+JUMP getAnswer$1$end_is$1
+LABEL getAnswer$1$err$1
+PUSHS bool@false
+LABEL getAnswer$1$end_is$1
+PUSHS bool@false
+JUMPIFEQS $getAnswer$1$0$ifEnd$1
+PUSHS LF@arg$$1
+PUSHS int@1
+INT2FLOATS
+POPS LF@getAnswer$1_rn_3
+POPS LF@getAnswer$1_ln_3
+PUSHS LF@getAnswer$1_ln_3
+PUSHS LF@getAnswer$1_rn_3
+TYPES
+POPS LF@getAnswer$1_ty_3
+TYPES
+PUSHS LF@getAnswer$1_ty_3
+JUMPIFEQS getAnswer$1$ok_minus$3
+JUMP getAnswer$1$err_minus$3
+LABEL getAnswer$1$ok_minus$3
+PUSHS LF@getAnswer$1_ty_3
+PUSHS string@string
+JUMPIFEQS getAnswer$1$err_minus$3
+PUSHS LF@getAnswer$1_ln_3
+PUSHS LF@getAnswer$1_rn_3
+SUBS
+JUMP getAnswer$1$end_minus$3
+LABEL getAnswer$1$err_minus$3
+EXIT int@25
+LABEL getAnswer$1$end_minus$3
+
+PUSHS int@32
+INT2FLOATS
+PUSHS float@0x1.5066666666666p+6
+POPS LF@getAnswer$1_rn_4
+POPS LF@getAnswer$1_ln_4
+PUSHS LF@getAnswer$1_ln_4
+TYPES
+POPS LF@getAnswer$1_lty_4
+PUSHS LF@getAnswer$1_rn_4
+TYPES
+POPS LF@getAnswer$1_rty_4
+PUSHS LF@getAnswer$1_lty_4
+PUSHS string@string
+JUMPIFEQS getAnswer$1$concat$4
+PUSHS LF@getAnswer$1_rty_4
+PUSHS string@string
+JUMPIFEQS getAnswer$1$concat$4
+LABEL getAnswer$1$mul$4
+PUSHS LF@getAnswer$1_ln_4
+PUSHS LF@getAnswer$1_rn_4
+MULS
+JUMP getAnswer$1$end_mul$4
+LABEL getAnswer$1$concat$4
+MOVE LF@getAnswer$1_counter_4 int@0
+PUSHS LF@getAnswer$1_rn_4
+FLOAT2INTS
+POPS LF@getAnswer$1_counter_4
+MOVE LF@getAnswer$1_rs_4 string@""
+PUSHS LF@getAnswer$1_counter_4
+PUSHS int@0
+JUMPIFEQS getAnswer$1$loop_end$4
+MOVE LF@getAnswer$1_rs_4 LF@getAnswer$1_ln_4
+PUSHS LF@getAnswer$1_counter_4
+PUSHS int@1
+SUBS
+POPS LF@getAnswer$1_counter_4
+LABEL getAnswer$1$start$4
+PUSHS LF@getAnswer$1_counter_4
+PUSHS int@0
+JUMPIFEQS getAnswer$1$loop_end$4
+CONCAT LF@getAnswer$1_rs_4 LF@getAnswer$1_rs_4 LF@getAnswer$1_ln_4
+PUSHS LF@getAnswer$1_counter_4
+PUSHS int@1
+SUBS
+POPS LF@getAnswer$1_counter_4
+JUMP getAnswer$1$start$4
+LABEL getAnswer$1$loop_end$4
+PUSHS LF@getAnswer$1_rs_4
+JUMP getAnswer$1$end_mul$4
+LABEL getAnswer$1$err$4
+EXIT int@25
+LABEL getAnswer$1$end_mul$4
+PUSHS float@0x1.3333333333333p+1
+POPS LF@getAnswer$1_rn_5
+POPS LF@getAnswer$1_ln_5
+PUSHS LF@getAnswer$1_ln_5
+PUSHS LF@getAnswer$1_rn_5
+TYPES
+POPS LF@getAnswer$1_ty_5
+TYPES
+PUSHS LF@getAnswer$1_ty_5
+JUMPIFEQS getAnswer$1$ok_div$5
+JUMP getAnswer$1$err_div$5
+LABEL getAnswer$1$ok_div$5
+PUSHS LF@getAnswer$1_ty_5
+PUSHS string@string
+JUMPIFEQS getAnswer$1$err_div$5
+PUSHS LF@getAnswer$1_ty_5
+PUSHS string@int
+JUMPIFEQS getAnswer$1$intdiv_div$5
+PUSHS LF@getAnswer$1_rn_5
+PUSHS float@0x0p+0
+JUMPIFEQS getAnswer$1$divzero_div$5
+PUSHS LF@getAnswer$1_ln_5
+PUSHS LF@getAnswer$1_rn_5
+DIVS
+JUMP getAnswer$1$end_div$5
+LABEL getAnswer$1$intdiv_div$5
+PUSHS LF@getAnswer$1_rn_5
+PUSHS int@0
+JUMPIFEQS getAnswer$1$divzero_div$5
+INT2FLOAT LF@getAnswer$1_ln_5 LF@getAnswer$1_ln_5
+INT2FLOAT LF@getAnswer$1_rn_5 LF@getAnswer$1_rn_5
+PUSHS LF@getAnswer$1_ln_5
+PUSHS LF@getAnswer$1_rn_5
+DIVS
+JUMP getAnswer$1$end_div$5
+LABEL getAnswer$1$divzero_div$5
+EXIT int@25
+LABEL getAnswer$1$err_div$5
+EXIT int@25
+LABEL getAnswer$1$end_div$5
+POPS LF@getAnswer$1_rn_6
+POPS LF@getAnswer$1_ln_6
+PUSHS LF@getAnswer$1_rn_6
+TYPES
+POPS LF@getAnswer$1_rty_6
+PUSHS LF@getAnswer$1_ln_6
+TYPES
+POPS LF@getAnswer$1_lty_6
+PUSHS LF@getAnswer$1_lty_6
+PUSHS string@float
+JUMPIFEQS getAnswer$1$le_r_chk$6
+PUSHS LF@getAnswer$1_lty_6
+PUSHS string@int
+JUMPIFEQS getAnswer$1$le_l_f$6
+JUMP getAnswer$1$le_err$6
+LABEL getAnswer$1$le_l_f$6
+INT2FLOAT LF@getAnswer$1_ln_6 LF@getAnswer$1_ln_6
+LABEL getAnswer$1$le_r_chk$6
+PUSHS LF@getAnswer$1_rty_6
+PUSHS string@float
+JUMPIFEQS getAnswer$1$le_ok$6
+PUSHS LF@getAnswer$1_rty_6
+PUSHS string@int
+JUMPIFEQS getAnswer$1$le_r_f$6
+JUMP getAnswer$1$le_err$6
+LABEL getAnswer$1$le_r_f$6
+INT2FLOAT LF@getAnswer$1_rn_6 LF@getAnswer$1_rn_6
+LABEL getAnswer$1$le_ok$6
+PUSHS LF@getAnswer$1_ln_6
+PUSHS LF@getAnswer$1_rn_6
+GTS
+JUMP getAnswer$1$le_end$6
+LABEL getAnswer$1$le_err$6
+EXIT int@25
+LABEL getAnswer$1$le_end$6
+PUSHS bool@false
+JUMPIFEQS $getAnswer$1$0$ifEnd$2
+PUSHS string@Celkem\032velke\032cislo!\010
+DEFVAR LF@temp$var$write$0
+DEFVAR LF@temp$var$writeType$0
+POPS LF@temp$var$write$0
+TYPE LF@temp$var$writeType$0 LF@temp$var$write$0
+JUMPIFNEQ temp$label$write$write$0 LF@temp$var$writeType$0 string@float
+ISINT LF@temp$var$writeType$0  LF@temp$var$write$0
+JUMPIFNEQ temp$label$write$write$0 LF@temp$var$writeType$0  bool@true
+FLOAT2INT LF@temp$var$write$0 LF@temp$var$write$0
+LABEL temp$label$write$write$0
+WRITE LF@temp$var$write$0
+PUSHS nil@nil
+POPS GF@__d
+JUMP $getAnswer$1$0$ifchainend$1
+LABEL $getAnswer$1$0$ifEnd$2
+LABEL $getAnswer$1$0$ifchainend$1
+PUSHS LF@arg$$1
+PUSHS int@42
+INT2FLOATS
+POPS LF@getAnswer$1_rn_12
+POPS LF@getAnswer$1_ln_12
+PUSHS LF@getAnswer$1_ln_12
+TYPES
+POPS LF@getAnswer$1_lty_12
+PUSHS LF@getAnswer$1_rn_12
+TYPES
+POPS LF@getAnswer$1_rty_12
+PUSHS LF@getAnswer$1_lty_12
+PUSHS string@string
+JUMPIFEQS getAnswer$1$concat$12
+PUSHS LF@getAnswer$1_rty_12
+PUSHS string@string
+JUMPIFEQS getAnswer$1$concat$12
+LABEL getAnswer$1$mul$12
+PUSHS LF@getAnswer$1_ln_12
+PUSHS LF@getAnswer$1_rn_12
+MULS
+JUMP getAnswer$1$end_mul$12
+LABEL getAnswer$1$concat$12
+MOVE LF@getAnswer$1_counter_12 int@0
+PUSHS LF@getAnswer$1_rn_12
+FLOAT2INTS
+POPS LF@getAnswer$1_counter_12
+MOVE LF@getAnswer$1_rs_12 string@""
+PUSHS LF@getAnswer$1_counter_12
+PUSHS int@0
+JUMPIFEQS getAnswer$1$loop_end$12
+MOVE LF@getAnswer$1_rs_12 LF@getAnswer$1_ln_12
+PUSHS LF@getAnswer$1_counter_12
+PUSHS int@1
+SUBS
+POPS LF@getAnswer$1_counter_12
+LABEL getAnswer$1$start$12
+PUSHS LF@getAnswer$1_counter_12
+PUSHS int@0
+JUMPIFEQS getAnswer$1$loop_end$12
+CONCAT LF@getAnswer$1_rs_12 LF@getAnswer$1_rs_12 LF@getAnswer$1_ln_12
+PUSHS LF@getAnswer$1_counter_12
+PUSHS int@1
+SUBS
+POPS LF@getAnswer$1_counter_12
+JUMP getAnswer$1$start$12
+LABEL getAnswer$1$loop_end$12
+PUSHS LF@getAnswer$1_rs_12
+JUMP getAnswer$1$end_mul$12
+LABEL getAnswer$1$err$12
+EXIT int@25
+LABEL getAnswer$1$end_mul$12
+POPS LF@arg$$1
+PUSHS LF@arg$$1
+DEFVAR LF@temp$var$strVal$0
+DEFVAR LF@temp$var$strType$0
+POPS LF@temp$var$strVal$0
+TYPE LF@temp$var$strType$0 LF@temp$var$strVal$0
+JUMPIFEQ temp$label$str$float$0 LF@temp$var$strType$0 string@float
+JUMPIFEQ temp$label$str$int$0 LF@temp$var$strType$0 string@int
+JUMPIFEQ temp$label$str$string$0 LF@temp$var$strType$0 string@string
+JUMPIFEQ temp$label$str$bool$0 LF@temp$var$strType$0 string@bool
+JUMPIFEQ temp$label$str$null$0 LF@temp$var$strType$0 string@nil
+EXIT int@25
+LABEL temp$label$str$float$0
+PUSHS LF@temp$var$strVal$0
+FLOAT2STRS
+JUMP temp$label$str$end$0
+LABEL temp$label$str$int$0
+PUSHS LF@temp$var$strVal$0
+INT2STRS
+JUMP temp$label$str$end$0
+LABEL temp$label$str$string$0
+PUSHS LF@temp$var$strVal$0
+JUMP temp$label$str$end$0
+LABEL temp$label$str$bool$0
+JUMPIFEQ  temp$label$str$bool$true$0 LF@temp$var$strType$0 string@bool
+PUSHS string@false
+JUMP temp$label$str$end$0
+LABEL temp$label$str$bool$true$0
+PUSHS string@true
+JUMP temp$label$str$end$0
+LABEL temp$label$str$null$0
+PUSHS string@nil
+JUMP temp$label$str$end$0
+LABEL temp$label$str$end$0
+POPS LF@ansStr$$2
+PUSHS string@Odpoved\032je\032
+PUSHS LF@ansStr$$2
+POPS LF@getAnswer$1_rn_18
+POPS LF@getAnswer$1_ln_18
+PUSHS LF@getAnswer$1_ln_18
+PUSHS LF@getAnswer$1_rn_18
+TYPES
+POPS LF@getAnswer$1_ty_18
+TYPES
+PUSHS LF@getAnswer$1_ty_18
+JUMPIFEQS getAnswer$1$ok_add$18
+JUMP getAnswer$1$err$18
+LABEL getAnswer$1$ok_add$18
+PUSHS LF@getAnswer$1_ty_18
+PUSHS string@string
+JUMPIFEQS getAnswer$1$concat$18
+PUSHS LF@getAnswer$1_ty_18
+PUSHS string@int
+JUMPIFEQS getAnswer$1$add$18
+PUSHS LF@getAnswer$1_ty_18
+PUSHS string@float
+JUMPIFEQS getAnswer$1$add$18
+JUMP getAnswer$1$err$18
+LABEL getAnswer$1$add$18
+PUSHS LF@getAnswer$1_ln_18
+PUSHS LF@getAnswer$1_rn_18
+ADDS
+JUMP getAnswer$1$end_add$18
+LABEL getAnswer$1$concat$18
+MOVE LF@getAnswer$1_rs_18 string@""
+CONCAT LF@getAnswer$1_rs_18 LF@getAnswer$1_ln_18 LF@getAnswer$1_rn_18
+PUSHS LF@getAnswer$1_rs_18
+JUMP getAnswer$1$end_add$18
+LABEL getAnswer$1$err$18
+EXIT int@25
+LABEL getAnswer$1$end_add$18
+
+POPS LF@retval
+JUMP $getAnswer$1$0$end$0
+JUMP $getAnswer$1$0$ifchainend$0
+LABEL $getAnswer$1$0$ifEnd$1
+PUSHS string@Neplatny\032argument\010
+DEFVAR LF@temp$var$write$1
+DEFVAR LF@temp$var$writeType$1
+POPS LF@temp$var$write$1
+TYPE LF@temp$var$writeType$1 LF@temp$var$write$1
+JUMPIFNEQ temp$label$write$write$1 LF@temp$var$writeType$1 string@float
+ISINT LF@temp$var$writeType$1  LF@temp$var$write$1
+JUMPIFNEQ temp$label$write$write$1 LF@temp$var$writeType$1  bool@true
+FLOAT2INT LF@temp$var$write$1 LF@temp$var$write$1
+LABEL temp$label$write$write$1
+WRITE LF@temp$var$write$1
+PUSHS nil@nil
+POPS GF@__d
+PUSHS nil@nil
+POPS LF@retval
+JUMP $getAnswer$1$0$end$0
+JUMP $getAnswer$1$0$ifchainend$0
+LABEL $getAnswer$1$0$ifchainend$0
+LABEL $getAnswer$1$0$end$0
+PUSHS LF@retval
+POPFRAME
+RETURN
+LABEL unicorn$g
+CREATEFRAME
+PUSHFRAME
+DEFVAR LF@retval
+DEFVAR LF@unicorn$g_ty_bool_0
+DEFVAR LF@unicorn$g_val_bool_0
+DEFVAR LF@unicorn$g_ty_bool_1
+DEFVAR LF@unicorn$g_val_bool_1
+DEFVAR LF@unicorn$g_ln_2
+DEFVAR LF@unicorn$g_rn_2
+DEFVAR LF@unicorn$g_ty_2
+DEFVAR LF@unicorn$g_rs_2
+MOVE LF@retval nil@nil
+PUSHS GF@__a
+POPS LF@unicorn$g_val_bool_0
+PUSHS LF@unicorn$g_val_bool_0
+TYPES
+POPS LF@unicorn$g_ty_bool_0
+PUSHS LF@unicorn$g_ty_bool_0
+PUSHS string@nil
+JUMPIFEQS unicorn$g$bool_is_false$0
+PUSHS LF@unicorn$g_ty_bool_0
+PUSHS string@bool
+JUMPIFEQS unicorn$g$bool_type_ok$0
+PUSHS bool@true
+JUMP unicorn$g$bool_end$0
+LABEL unicorn$g$bool_type_ok$0
+PUSHS LF@unicorn$g_val_bool_0
+PUSHS bool@false
+JUMPIFEQS unicorn$g$bool_is_false$0
+PUSHS bool@true
+JUMP unicorn$g$bool_end$0
+LABEL unicorn$g$bool_is_false$0
+PUSHS bool@false
+LABEL unicorn$g$bool_end$0
+PUSHS bool@false
+JUMPIFEQS $getterEnd$0$ifEnd$3
+PUSHS GF@__a
+PUSHS int@10
+INT2FLOATS
+POPS LF@unicorn$g_rn_2
+POPS LF@unicorn$g_ln_2
+PUSHS LF@unicorn$g_ln_2
+PUSHS LF@unicorn$g_rn_2
+TYPES
+POPS LF@unicorn$g_ty_2
+TYPES
+PUSHS LF@unicorn$g_ty_2
+JUMPIFEQS unicorn$g$ok_add$2
+JUMP unicorn$g$err$2
+LABEL unicorn$g$ok_add$2
+PUSHS LF@unicorn$g_ty_2
+PUSHS string@string
+JUMPIFEQS unicorn$g$concat$2
+PUSHS LF@unicorn$g_ty_2
+PUSHS string@int
+JUMPIFEQS unicorn$g$add$2
+PUSHS LF@unicorn$g_ty_2
+PUSHS string@float
+JUMPIFEQS unicorn$g$add$2
+JUMP unicorn$g$err$2
+LABEL unicorn$g$add$2
+PUSHS LF@unicorn$g_ln_2
+PUSHS LF@unicorn$g_rn_2
+ADDS
+JUMP unicorn$g$end_add$2
+LABEL unicorn$g$concat$2
+MOVE LF@unicorn$g_rs_2 string@""
+CONCAT LF@unicorn$g_rs_2 LF@unicorn$g_ln_2 LF@unicorn$g_rn_2
+PUSHS LF@unicorn$g_rs_2
+JUMP unicorn$g$end_add$2
+LABEL unicorn$g$err$2
+EXIT int@25
+LABEL unicorn$g$end_add$2
+
+POPS LF@retval
+JUMP $getterEnd$0
+JUMP $getterEnd$0$ifchainend$2
+LABEL $getterEnd$0$ifEnd$3
+PUSHS nil@nil
+POPS LF@retval
+JUMP $getterEnd$0
+JUMP $getterEnd$0$ifchainend$2
+LABEL $getterEnd$0$ifchainend$2
+LABEL $getterEnd$0
+PUSHS LF@retval
+POPFRAME
+RETURN
+LABEL unicorn$s
+CREATEFRAME
+PUSHFRAME
+DEFVAR LF@val$$1
+POPS LF@val$$1
+DEFVAR LF@unicorn$s_ty_bool_0
+DEFVAR LF@unicorn$s_val_bool_0
+DEFVAR LF@unicorn$s_ty_bool_1
+DEFVAR LF@unicorn$s_val_bool_1
+DEFVAR LF@unicorn$s_ty_bool_2
+DEFVAR LF@unicorn$s_val_bool_2
+DEFVAR LF@unicorn$s_ty_bool_3
+DEFVAR LF@unicorn$s_val_bool_3
+DEFVAR LF@unicorn$s_ty_bool_4
+DEFVAR LF@unicorn$s_val_bool_4
+DEFVAR LF@unicorn$s_ty_bool_5
+DEFVAR LF@unicorn$s_val_bool_5
+DEFVAR LF@unicorn$s_ty_bool_6
+DEFVAR LF@unicorn$s_val_bool_6
+DEFVAR LF@unicorn$s_ty_bool_7
+DEFVAR LF@unicorn$s_val_bool_7
+DEFVAR LF@unicorn$s_ty_bool_8
+DEFVAR LF@unicorn$s_val_bool_8
+DEFVAR LF@unicorn$s_ty_bool_9
+DEFVAR LF@unicorn$s_val_bool_9
+DEFVAR LF@unicorn$s_ty_bool_10
+DEFVAR LF@unicorn$s_val_bool_10
+DEFVAR LF@unicorn$s_ty_bool_11
+DEFVAR LF@unicorn$s_val_bool_11
+DEFVAR LF@unicorn$s_ty_bool_12
+DEFVAR LF@unicorn$s_val_bool_12
+PUSHS string@Jsem\032jednorozci\032setter,\032ziskal\032jsem\032
+DEFVAR LF@temp$var$write$2
+DEFVAR LF@temp$var$writeType$2
+POPS LF@temp$var$write$2
+TYPE LF@temp$var$writeType$2 LF@temp$var$write$2
+JUMPIFNEQ temp$label$write$write$2 LF@temp$var$writeType$2 string@float
+ISINT LF@temp$var$writeType$2  LF@temp$var$write$2
+JUMPIFNEQ temp$label$write$write$2 LF@temp$var$writeType$2  bool@true
+FLOAT2INT LF@temp$var$write$2 LF@temp$var$write$2
+LABEL temp$label$write$write$2
+WRITE LF@temp$var$write$2
+PUSHS nil@nil
+POPS GF@__d
+PUSHS LF@val$$1
+DEFVAR LF@temp$var$write$3
+DEFVAR LF@temp$var$writeType$3
+POPS LF@temp$var$write$3
+TYPE LF@temp$var$writeType$3 LF@temp$var$write$3
+JUMPIFNEQ temp$label$write$write$3 LF@temp$var$writeType$3 string@float
+ISINT LF@temp$var$writeType$3  LF@temp$var$write$3
+JUMPIFNEQ temp$label$write$write$3 LF@temp$var$writeType$3  bool@true
+FLOAT2INT LF@temp$var$write$3 LF@temp$var$write$3
+LABEL temp$label$write$write$3
+WRITE LF@temp$var$write$3
+PUSHS nil@nil
+POPS GF@__d
+PUSHS string@\010
+DEFVAR LF@temp$var$write$4
+DEFVAR LF@temp$var$writeType$4
+POPS LF@temp$var$write$4
+TYPE LF@temp$var$writeType$4 LF@temp$var$write$4
+JUMPIFNEQ temp$label$write$write$4 LF@temp$var$writeType$4 string@float
+ISINT LF@temp$var$writeType$4  LF@temp$var$write$4
+JUMPIFNEQ temp$label$write$write$4 LF@temp$var$writeType$4  bool@true
+FLOAT2INT LF@temp$var$write$4 LF@temp$var$write$4
+LABEL temp$label$write$write$4
+WRITE LF@temp$var$write$4
+PUSHS nil@nil
+POPS GF@__d
+PUSHS LF@val$$1
+POPS GF@__a
+LABEL $setterEnd$0
+POPFRAME
+RETURN
+LABEL $unicorn$0$0
+CREATEFRAME
+PUSHFRAME
+DEFVAR LF@retval
+DEFVAR LF@unicorn$0_ty_bool_0
+DEFVAR LF@unicorn$0_val_bool_0
+DEFVAR LF@unicorn$0_ty_bool_1
+DEFVAR LF@unicorn$0_val_bool_1
+DEFVAR LF@unicorn$0_ty_bool_2
+DEFVAR LF@unicorn$0_val_bool_2
+MOVE LF@retval nil@nil
+PUSHS string@Jsem\032ve\032funkci\032unicorn,\032ne\032v\032getteru\010
+DEFVAR LF@temp$var$write$5
+DEFVAR LF@temp$var$writeType$5
+POPS LF@temp$var$write$5
+TYPE LF@temp$var$writeType$5 LF@temp$var$write$5
+JUMPIFNEQ temp$label$write$write$5 LF@temp$var$writeType$5 string@float
+ISINT LF@temp$var$writeType$5  LF@temp$var$write$5
+JUMPIFNEQ temp$label$write$write$5 LF@temp$var$writeType$5  bool@true
+FLOAT2INT LF@temp$var$write$5 LF@temp$var$write$5
+LABEL temp$label$write$write$5
+WRITE LF@temp$var$write$5
+PUSHS nil@nil
+POPS GF@__d
+LABEL $unicorn$0$0$end$0
+PUSHS LF@retval
+POPFRAME
+RETURN
+LABEL main$0
+CREATEFRAME
+PUSHFRAME
+DEFVAR LF@retval
+DEFVAR LF@main$0_ty_bool_0
+DEFVAR LF@main$0_val_bool_0
+DEFVAR LF@main$0_ty_bool_1
+DEFVAR LF@main$0_val_bool_1
+DEFVAR LF@main$0_ty_bool_2
+DEFVAR LF@main$0_val_bool_2
+DEFVAR LF@main$0_ty_bool_3
+DEFVAR LF@main$0_val_bool_3
+DEFVAR LF@main$0_ty_bool_4
+DEFVAR LF@main$0_val_bool_4
+DEFVAR LF@main$0_ty_bool_5
+DEFVAR LF@main$0_val_bool_5
+DEFVAR LF@main$0_ty_bool_6
+DEFVAR LF@main$0_val_bool_6
+DEFVAR LF@myValue$$1
+DEFVAR LF@main$0_ty_bool_7
+DEFVAR LF@main$0_val_bool_7
+DEFVAR LF@main$0_ty_bool_8
+DEFVAR LF@main$0_val_bool_8
+DEFVAR LF@main$0_ty_bool_9
+DEFVAR LF@main$0_val_bool_9
+DEFVAR LF@main$0_ty_bool_10
+DEFVAR LF@main$0_val_bool_10
+DEFVAR LF@main$0_ty_bool_11
+DEFVAR LF@main$0_val_bool_11
+DEFVAR LF@main$0_ty_bool_12
+DEFVAR LF@main$0_val_bool_12
+DEFVAR LF@main$0_ty_bool_13
+DEFVAR LF@main$0_val_bool_13
+DEFVAR LF@main$0_ty_bool_14
+DEFVAR LF@main$0_val_bool_14
+DEFVAR LF@main$0_ty_bool_15
+DEFVAR LF@main$0_val_bool_15
+DEFVAR LF@main$0_ty_bool_16
+DEFVAR LF@main$0_val_bool_16
+DEFVAR LF@main$0_ty_bool_17
+DEFVAR LF@main$0_val_bool_17
+DEFVAR LF@main$0_ty_bool_18
+DEFVAR LF@main$0_val_bool_18
+DEFVAR LF@main$0_ty_bool_19
+DEFVAR LF@main$0_val_bool_19
+DEFVAR LF@main$0_ty_bool_20
+DEFVAR LF@main$0_val_bool_20
+DEFVAR LF@main$0_ty_bool_21
+DEFVAR LF@main$0_val_bool_21
+DEFVAR LF@main$0_ty_bool_22
+DEFVAR LF@main$0_val_bool_22
+DEFVAR LF@main$0_ty_bool_23
+DEFVAR LF@main$0_val_bool_23
+DEFVAR LF@main$0_ty_bool_24
+DEFVAR LF@main$0_val_bool_24
+DEFVAR LF@main$0_ty_bool_25
+DEFVAR LF@main$0_val_bool_25
+DEFVAR LF@main$0_ty_bool_26
+DEFVAR LF@main$0_val_bool_26
+DEFVAR LF@main$0_ty_bool_27
+DEFVAR LF@main$0_val_bool_27
+DEFVAR LF@valueFromUser$$1
+DEFVAR LF@main$0_ty_bool_28
+DEFVAR LF@main$0_val_bool_28
+DEFVAR LF@main$0_ty_bool_29
+DEFVAR LF@main$0_val_bool_29
+DEFVAR LF@main$0_ty_bool_30
+DEFVAR LF@main$0_val_bool_30
+DEFVAR LF@main$0_ty_bool_31
+DEFVAR LF@main$0_val_bool_31
+DEFVAR LF@main$0_ty_bool_32
+DEFVAR LF@main$0_val_bool_32
+DEFVAR LF@main$0_ty_bool_33
+DEFVAR LF@main$0_val_bool_33
+DEFVAR LF@main$0_ln_34
+DEFVAR LF@main$0_rn_34
+DEFVAR LF@main$0_ty_34
+DEFVAR LF@main$0_ty_bool_35
+DEFVAR LF@main$0_val_bool_35
+DEFVAR LF@main$0_ty_bool_36
+DEFVAR LF@main$0_val_bool_36
+DEFVAR LF@main$0_ty_bool_37
+DEFVAR LF@main$0_val_bool_37
+DEFVAR LF@main$0_ty_bool_38
+DEFVAR LF@main$0_val_bool_38
+DEFVAR LF@main$0_ln_39
+DEFVAR LF@main$0_rn_39
+DEFVAR LF@main$0_rty_39
+DEFVAR LF@main$0_lty_39
+DEFVAR LF@main$0_ty_bool_40
+DEFVAR LF@main$0_val_bool_40
+DEFVAR LF@main$0_ty_bool_41
+DEFVAR LF@main$0_val_bool_41
+DEFVAR LF@main$0_ty_bool_42
+DEFVAR LF@main$0_val_bool_42
+DEFVAR LF@main$0_ty_bool_43
+DEFVAR LF@main$0_val_bool_43
+DEFVAR LF@main$0_ty_bool_44
+DEFVAR LF@main$0_val_bool_44
+DEFVAR LF@main$0_ty_bool_45
+DEFVAR LF@main$0_val_bool_45
+DEFVAR LF@main$0_ty_bool_46
+DEFVAR LF@main$0_val_bool_46
+DEFVAR LF@main$0_ty_bool_47
+DEFVAR LF@main$0_val_bool_47
+DEFVAR LF@main$0_ln_48
+DEFVAR LF@main$0_rn_48
+DEFVAR LF@main$0_ty_48
+DEFVAR LF@main$0_ln_49
+DEFVAR LF@main$0_rn_49
+DEFVAR LF@main$0_rty_49
+DEFVAR LF@main$0_lty_49
+DEFVAR LF@main$0_ty_bool_50
+DEFVAR LF@main$0_val_bool_50
+DEFVAR LF@main$0_ty_bool_51
+DEFVAR LF@main$0_val_bool_51
+DEFVAR LF@main$0_ty_bool_52
+DEFVAR LF@main$0_val_bool_52
+DEFVAR LF@main$0_ty_bool_53
+DEFVAR LF@main$0_val_bool_53
+DEFVAR LF@main$0_ty_bool_54
+DEFVAR LF@main$0_val_bool_54
+DEFVAR LF@main$0_ty_bool_55
+DEFVAR LF@main$0_val_bool_55
+DEFVAR LF@main$0_ty_bool_56
+DEFVAR LF@main$0_val_bool_56
+DEFVAR LF@main$0_ty_bool_57
+DEFVAR LF@main$0_val_bool_57
+DEFVAR LF@main$0_ty_bool_58
+DEFVAR LF@main$0_val_bool_58
+DEFVAR LF@main$0_ty_bool_59
+DEFVAR LF@main$0_val_bool_59
+DEFVAR LF@main$0_ty_bool_60
+DEFVAR LF@main$0_val_bool_60
+DEFVAR LF@main$0_ty_bool_61
+DEFVAR LF@main$0_val_bool_61
+DEFVAR LF@main$0_ln_62
+DEFVAR LF@main$0_rn_62
+DEFVAR LF@main$0_ty_62
+DEFVAR LF@main$0_ty_bool_63
+DEFVAR LF@main$0_val_bool_63
+DEFVAR LF@valStr$$2
+DEFVAR LF@main$0_ty_bool_64
+DEFVAR LF@main$0_val_bool_64
+DEFVAR LF@main$0_ty_bool_65
+DEFVAR LF@main$0_val_bool_65
+DEFVAR LF@main$0_ty_bool_66
+DEFVAR LF@main$0_val_bool_66
+DEFVAR LF@main$0_ty_bool_67
+DEFVAR LF@main$0_val_bool_67
+DEFVAR LF@main$0_ty_bool_68
+DEFVAR LF@main$0_val_bool_68
+DEFVAR LF@main$0_ty_bool_69
+DEFVAR LF@main$0_val_bool_69
+DEFVAR LF@main$0_ty_bool_70
+DEFVAR LF@main$0_val_bool_70
+DEFVAR LF@main$0_ty_bool_71
+DEFVAR LF@main$0_val_bool_71
+DEFVAR LF@main$0_ty_bool_72
+DEFVAR LF@main$0_val_bool_72
+DEFVAR LF@main$0_ty_bool_73
+DEFVAR LF@main$0_val_bool_73
+DEFVAR LF@main$0_ty_bool_74
+DEFVAR LF@main$0_val_bool_74
+DEFVAR LF@x$$2
+DEFVAR LF@main$0_ty_bool_75
+DEFVAR LF@main$0_val_bool_75
+DEFVAR LF@main$0_ty_bool_76
+DEFVAR LF@main$0_val_bool_76
+DEFVAR LF@x$$3
+DEFVAR LF@main$0_ty_bool_77
+DEFVAR LF@main$0_val_bool_77
+DEFVAR LF@main$0_ty_bool_78
+DEFVAR LF@main$0_val_bool_78
+DEFVAR LF@main$0_ty_bool_79
+DEFVAR LF@main$0_val_bool_79
+DEFVAR LF@main$0_ty_bool_80
+DEFVAR LF@main$0_val_bool_80
+DEFVAR LF@main$0_ln_81
+DEFVAR LF@main$0_rn_81
+DEFVAR LF@main$0_ty_81
+DEFVAR LF@main$0_ty_bool_82
+DEFVAR LF@main$0_val_bool_82
+DEFVAR LF@y$$4
+DEFVAR LF@main$0_ty_bool_83
+DEFVAR LF@main$0_val_bool_83
+DEFVAR LF@main$0_ty_bool_84
+DEFVAR LF@main$0_val_bool_84
+DEFVAR LF@main$0_ln_85
+DEFVAR LF@main$0_rn_85
+DEFVAR LF@main$0_rty_85
+DEFVAR LF@main$0_lty_85
+DEFVAR LF@main$0_rs_85
+DEFVAR LF@main$0_counter_85
+DEFVAR LF@main$0_ty_bool_86
+DEFVAR LF@main$0_val_bool_86
+DEFVAR LF@x$$4
+DEFVAR LF@main$0_ty_bool_87
+DEFVAR LF@main$0_val_bool_87
+DEFVAR LF@main$0_ty_bool_88
+DEFVAR LF@main$0_val_bool_88
+DEFVAR LF@main$0_ty_bool_89
+DEFVAR LF@main$0_val_bool_89
+DEFVAR LF@main$0_ty_bool_90
+DEFVAR LF@main$0_val_bool_90
+DEFVAR LF@main$0_ty_bool_91
+DEFVAR LF@main$0_val_bool_91
+DEFVAR LF@main$0_ty_bool_92
+DEFVAR LF@main$0_val_bool_92
+DEFVAR LF@main$0_ty_bool_93
+DEFVAR LF@main$0_val_bool_93
+DEFVAR LF@main$0_ty_bool_94
+DEFVAR LF@main$0_val_bool_94
+DEFVAR LF@main$0_ty_bool_95
+DEFVAR LF@main$0_val_bool_95
+DEFVAR LF@main$0_ty_bool_96
+DEFVAR LF@main$0_val_bool_96
+DEFVAR LF@main$0_ty_bool_97
+DEFVAR LF@main$0_val_bool_97
+DEFVAR LF@main$0_ty_bool_98
+DEFVAR LF@main$0_val_bool_98
+DEFVAR LF@main$0_ty_bool_99
+DEFVAR LF@main$0_val_bool_99
+DEFVAR LF@main$0_ty_bool_100
+DEFVAR LF@main$0_val_bool_100
+DEFVAR LF@main$0_ty_bool_101
+DEFVAR LF@main$0_val_bool_101
+DEFVAR LF@main$0_ty_bool_102
+DEFVAR LF@main$0_val_bool_102
+DEFVAR LF@main$0_ty_bool_103
+DEFVAR LF@main$0_val_bool_103
+DEFVAR LF@main$0_ty_bool_104
+DEFVAR LF@main$0_val_bool_104
+DEFVAR LF@main$0_ty_bool_105
+DEFVAR LF@main$0_val_bool_105
+DEFVAR LF@main$0_ty_bool_106
+DEFVAR LF@main$0_val_bool_106
+MOVE LF@retval nil@nil
+CALL unicorn$g
+DEFVAR LF@temp$var$write$6
+DEFVAR LF@temp$var$writeType$6
+POPS LF@temp$var$write$6
+TYPE LF@temp$var$writeType$6 LF@temp$var$write$6
+JUMPIFNEQ temp$label$write$write$6 LF@temp$var$writeType$6 string@float
+ISINT LF@temp$var$writeType$6  LF@temp$var$write$6
+JUMPIFNEQ temp$label$write$write$6 LF@temp$var$writeType$6  bool@true
+FLOAT2INT LF@temp$var$write$6 LF@temp$var$write$6
+LABEL temp$label$write$write$6
+WRITE LF@temp$var$write$6
+PUSHS nil@nil
+POPS GF@__d
+PUSHS string@\010
+DEFVAR LF@temp$var$write$7
+DEFVAR LF@temp$var$writeType$7
+POPS LF@temp$var$write$7
+TYPE LF@temp$var$writeType$7 LF@temp$var$write$7
+JUMPIFNEQ temp$label$write$write$7 LF@temp$var$writeType$7 string@float
+ISINT LF@temp$var$writeType$7  LF@temp$var$write$7
+JUMPIFNEQ temp$label$write$write$7 LF@temp$var$writeType$7  bool@true
+FLOAT2INT LF@temp$var$write$7 LF@temp$var$write$7
+LABEL temp$label$write$write$7
+WRITE LF@temp$var$write$7
+PUSHS nil@nil
+POPS GF@__d
+PUSHS int@5
+INT2FLOATS
+CALL unicorn$s
+CALL unicorn$g
+POPS LF@myValue$$1
+PUSHS LF@myValue$$1
+DEFVAR LF@temp$var$write$8
+DEFVAR LF@temp$var$writeType$8
+POPS LF@temp$var$write$8
+TYPE LF@temp$var$writeType$8 LF@temp$var$write$8
+JUMPIFNEQ temp$label$write$write$8 LF@temp$var$writeType$8 string@float
+ISINT LF@temp$var$writeType$8  LF@temp$var$write$8
+JUMPIFNEQ temp$label$write$write$8 LF@temp$var$writeType$8  bool@true
+FLOAT2INT LF@temp$var$write$8 LF@temp$var$write$8
+LABEL temp$label$write$write$8
+WRITE LF@temp$var$write$8
+PUSHS nil@nil
+POPS GF@__d
+PUSHS string@\010
+DEFVAR LF@temp$var$write$9
+DEFVAR LF@temp$var$writeType$9
+POPS LF@temp$var$write$9
+TYPE LF@temp$var$writeType$9 LF@temp$var$write$9
+JUMPIFNEQ temp$label$write$write$9 LF@temp$var$writeType$9 string@float
+ISINT LF@temp$var$writeType$9  LF@temp$var$write$9
+JUMPIFNEQ temp$label$write$write$9 LF@temp$var$writeType$9  bool@true
+FLOAT2INT LF@temp$var$write$9 LF@temp$var$write$9
+LABEL temp$label$write$write$9
+WRITE LF@temp$var$write$9
+PUSHS nil@nil
+POPS GF@__d
+CREATEFRAME
+CALL $unicorn$0$0
+POPS LF@myValue$$1
+PUSHS LF@myValue$$1
+DEFVAR LF@temp$var$write$10
+DEFVAR LF@temp$var$writeType$10
+POPS LF@temp$var$write$10
+TYPE LF@temp$var$writeType$10 LF@temp$var$write$10
+JUMPIFNEQ temp$label$write$write$10 LF@temp$var$writeType$10 string@float
+ISINT LF@temp$var$writeType$10  LF@temp$var$write$10
+JUMPIFNEQ temp$label$write$write$10 LF@temp$var$writeType$10  bool@true
+FLOAT2INT LF@temp$var$write$10 LF@temp$var$write$10
+LABEL temp$label$write$write$10
+WRITE LF@temp$var$write$10
+PUSHS nil@nil
+POPS GF@__d
+PUSHS string@\010
+DEFVAR LF@temp$var$write$11
+DEFVAR LF@temp$var$writeType$11
+POPS LF@temp$var$write$11
+TYPE LF@temp$var$writeType$11 LF@temp$var$write$11
+JUMPIFNEQ temp$label$write$write$11 LF@temp$var$writeType$11 string@float
+ISINT LF@temp$var$writeType$11  LF@temp$var$write$11
+JUMPIFNEQ temp$label$write$write$11 LF@temp$var$writeType$11  bool@true
+FLOAT2INT LF@temp$var$write$11 LF@temp$var$write$11
+LABEL temp$label$write$write$11
+WRITE LF@temp$var$write$11
+PUSHS nil@nil
+POPS GF@__d
+PUSHS string@Napis\032cislo:\010
+DEFVAR LF@temp$var$write$12
+DEFVAR LF@temp$var$writeType$12
+POPS LF@temp$var$write$12
+TYPE LF@temp$var$writeType$12 LF@temp$var$write$12
+JUMPIFNEQ temp$label$write$write$12 LF@temp$var$writeType$12 string@float
+ISINT LF@temp$var$writeType$12  LF@temp$var$write$12
+JUMPIFNEQ temp$label$write$write$12 LF@temp$var$writeType$12  bool@true
+FLOAT2INT LF@temp$var$write$12 LF@temp$var$write$12
+LABEL temp$label$write$write$12
+WRITE LF@temp$var$write$12
+PUSHS nil@nil
+POPS GF@__d
+DEFVAR LF@temp$var$readNum$0
+READ LF@temp$var$readNum$0 float
+PUSHS LF@temp$var$readNum$0
+POPS LF@valueFromUser$$1
+CREATEFRAME
+PUSHS LF@valueFromUser$$1
+CALL $getAnswer$1$0
+POPS LF@myValue$$1
+PUSHS LF@myValue$$1
+PUSHS nil@nil
+POPS LF@main$0_rn_34
+POPS LF@main$0_ln_34
+PUSHS LF@main$0_ln_34
+PUSHS LF@main$0_rn_34
+TYPES
+POPS LF@main$0_ty_34
+TYPES
+PUSHS LF@main$0_ty_34
+JUMPIFEQS main$0$ok$34
+JUMP main$0$err$34
+LABEL main$0$ok$34
+PUSHS LF@main$0_ln_34
+PUSHS LF@main$0_rn_34
+EQS
+JUMP main$0$end_equal$34
+LABEL main$0$err$34
+PUSHS bool@false
+LABEL main$0$end_equal$34
+PUSHS bool@false
+JUMPIFEQS main$0$ifEnd$4
+PUSHS string@ODPOVED\032NENI!\010
+DEFVAR LF@temp$var$write$13
+DEFVAR LF@temp$var$writeType$13
+POPS LF@temp$var$write$13
+TYPE LF@temp$var$writeType$13 LF@temp$var$write$13
+JUMPIFNEQ temp$label$write$write$13 LF@temp$var$writeType$13 string@float
+ISINT LF@temp$var$writeType$13  LF@temp$var$write$13
+JUMPIFNEQ temp$label$write$write$13 LF@temp$var$writeType$13  bool@true
+FLOAT2INT LF@temp$var$write$13 LF@temp$var$write$13
+LABEL temp$label$write$write$13
+WRITE LF@temp$var$write$13
+PUSHS nil@nil
+POPS GF@__d
+PUSHS nil@nil
+POPS LF@retval
+JUMP main$0$end$0
+JUMP main$0$ifchainend$3
+LABEL main$0$ifEnd$4
+PUSHS LF@myValue$$1
+POPS LF@main$0_ln_39
+PUSHS LF@main$0_ln_39
+TYPES
+POPS LF@main$0_lty_39
+JUMP main$0$Null$39
+LABEL main$0$Num$39
+PUSHS LF@main$0_lty_39
+PUSHS string@int
+JUMPIFEQS main$0$ok$39
+PUSHS LF@main$0_lty_39
+PUSHS string@float
+JUMPIFEQS main$0$ok$39
+JUMP main$0$err$39
+LABEL main$0$String$39
+PUSHS LF@main$0_lty_39
+PUSHS string@string
+JUMPIFEQS main$0$ok$39
+JUMP main$0$err$39
+LABEL main$0$Null$39
+PUSHS LF@main$0_lty_39
+PUSHS string@nil
+JUMPIFEQS main$0$ok$39
+JUMP main$0$err$39
+LABEL main$0$ok$39
+PUSHS bool@true
+JUMP main$0$end_is$39
+LABEL main$0$err$39
+PUSHS bool@false
+LABEL main$0$end_is$39
+PUSHS bool@false
+JUMPIFEQS main$0$ifEnd$5
+JUMP main$0$ifchainend$4
+LABEL main$0$ifEnd$5
+JUMP main$0$ifchainend$4
+LABEL main$0$ifchainend$4
+JUMP main$0$ifchainend$3
+LABEL main$0$ifchainend$3
+PUSHS LF@myValue$$1
+DEFVAR LF@temp$var$write$14
+DEFVAR LF@temp$var$writeType$14
+POPS LF@temp$var$write$14
+TYPE LF@temp$var$writeType$14 LF@temp$var$write$14
+JUMPIFNEQ temp$label$write$write$14 LF@temp$var$writeType$14 string@float
+ISINT LF@temp$var$writeType$14  LF@temp$var$write$14
+JUMPIFNEQ temp$label$write$write$14 LF@temp$var$writeType$14  bool@true
+FLOAT2INT LF@temp$var$write$14 LF@temp$var$write$14
+LABEL temp$label$write$write$14
+WRITE LF@temp$var$write$14
+PUSHS nil@nil
+POPS GF@__d
+PUSHS string@\010
+DEFVAR LF@temp$var$write$15
+DEFVAR LF@temp$var$writeType$15
+POPS LF@temp$var$write$15
+TYPE LF@temp$var$writeType$15 LF@temp$var$write$15
+JUMPIFNEQ temp$label$write$write$15 LF@temp$var$writeType$15 string@float
+ISINT LF@temp$var$writeType$15  LF@temp$var$write$15
+JUMPIFNEQ temp$label$write$write$15 LF@temp$var$writeType$15  bool@true
+FLOAT2INT LF@temp$var$write$15 LF@temp$var$write$15
+LABEL temp$label$write$write$15
+WRITE LF@temp$var$write$15
+PUSHS nil@nil
+POPS GF@__d
+LABEL main$0$while$1$start$1
+PUSHS LF@valueFromUser$$1
+PUSHS int@0
+INT2FLOATS
+PUSHS int@2
+INT2FLOATS
+POPS LF@main$0_rn_48
+POPS LF@main$0_ln_48
+PUSHS LF@main$0_ln_48
+PUSHS LF@main$0_rn_48
+TYPES
+POPS LF@main$0_ty_48
+TYPES
+PUSHS LF@main$0_ty_48
+JUMPIFEQS main$0$ok_minus$48
+JUMP main$0$err_minus$48
+LABEL main$0$ok_minus$48
+PUSHS LF@main$0_ty_48
+PUSHS string@string
+JUMPIFEQS main$0$err_minus$48
+PUSHS LF@main$0_ln_48
+PUSHS LF@main$0_rn_48
+SUBS
+JUMP main$0$end_minus$48
+LABEL main$0$err_minus$48
+EXIT int@25
+LABEL main$0$end_minus$48
+
+POPS LF@main$0_rn_49
+POPS LF@main$0_ln_49
+PUSHS LF@main$0_rn_49
+TYPES
+POPS LF@main$0_rty_49
+PUSHS LF@main$0_ln_49
+TYPES
+POPS LF@main$0_lty_49
+PUSHS LF@main$0_lty_49
+PUSHS string@float
+JUMPIFEQS main$0$le_r_chk$49
+PUSHS LF@main$0_lty_49
+PUSHS string@int
+JUMPIFEQS main$0$le_l_f$49
+JUMP main$0$le_err$49
+LABEL main$0$le_l_f$49
+INT2FLOAT LF@main$0_ln_49 LF@main$0_ln_49
+LABEL main$0$le_r_chk$49
+PUSHS LF@main$0_rty_49
+PUSHS string@float
+JUMPIFEQS main$0$le_ok$49
+PUSHS LF@main$0_rty_49
+PUSHS string@int
+JUMPIFEQS main$0$le_r_f$49
+JUMP main$0$le_err$49
+LABEL main$0$le_r_f$49
+INT2FLOAT LF@main$0_rn_49 LF@main$0_rn_49
+LABEL main$0$le_ok$49
+PUSHS LF@main$0_ln_49
+PUSHS LF@main$0_rn_49
+GTS
+JUMP main$0$le_end$49
+LABEL main$0$le_err$49
+EXIT int@25
+LABEL main$0$le_end$49
+PUSHS bool@false
+JUMPIFEQS main$0$while$1$end$1
+PUSHS string@Jedeme\032dolu!\032
+DEFVAR LF@temp$var$write$16
+DEFVAR LF@temp$var$writeType$16
+POPS LF@temp$var$write$16
+TYPE LF@temp$var$writeType$16 LF@temp$var$write$16
+JUMPIFNEQ temp$label$write$write$16 LF@temp$var$writeType$16 string@float
+ISINT LF@temp$var$writeType$16  LF@temp$var$write$16
+JUMPIFNEQ temp$label$write$write$16 LF@temp$var$writeType$16  bool@true
+FLOAT2INT LF@temp$var$write$16 LF@temp$var$write$16
+LABEL temp$label$write$write$16
+WRITE LF@temp$var$write$16
+PUSHS nil@nil
+POPS GF@__d
+PUSHS LF@valueFromUser$$1
+DEFVAR LF@temp$var$write$17
+DEFVAR LF@temp$var$writeType$17
+POPS LF@temp$var$write$17
+TYPE LF@temp$var$writeType$17 LF@temp$var$write$17
+JUMPIFNEQ temp$label$write$write$17 LF@temp$var$writeType$17 string@float
+ISINT LF@temp$var$writeType$17  LF@temp$var$write$17
+JUMPIFNEQ temp$label$write$write$17 LF@temp$var$writeType$17  bool@true
+FLOAT2INT LF@temp$var$write$17 LF@temp$var$write$17
+LABEL temp$label$write$write$17
+WRITE LF@temp$var$write$17
+PUSHS nil@nil
+POPS GF@__d
+PUSHS string@\032->\032
+DEFVAR LF@temp$var$write$18
+DEFVAR LF@temp$var$writeType$18
+POPS LF@temp$var$write$18
+TYPE LF@temp$var$writeType$18 LF@temp$var$write$18
+JUMPIFNEQ temp$label$write$write$18 LF@temp$var$writeType$18 string@float
+ISINT LF@temp$var$writeType$18  LF@temp$var$write$18
+JUMPIFNEQ temp$label$write$write$18 LF@temp$var$writeType$18  bool@true
+FLOAT2INT LF@temp$var$write$18 LF@temp$var$write$18
+LABEL temp$label$write$write$18
+WRITE LF@temp$var$write$18
+PUSHS nil@nil
+POPS GF@__d
+PUSHS LF@valueFromUser$$1
+PUSHS int@1
+INT2FLOATS
+POPS LF@main$0_rn_62
+POPS LF@main$0_ln_62
+PUSHS LF@main$0_ln_62
+PUSHS LF@main$0_rn_62
+TYPES
+POPS LF@main$0_ty_62
+TYPES
+PUSHS LF@main$0_ty_62
+JUMPIFEQS main$0$ok_minus$62
+JUMP main$0$err_minus$62
+LABEL main$0$ok_minus$62
+PUSHS LF@main$0_ty_62
+PUSHS string@string
+JUMPIFEQS main$0$err_minus$62
+PUSHS LF@main$0_ln_62
+PUSHS LF@main$0_rn_62
+SUBS
+JUMP main$0$end_minus$62
+LABEL main$0$err_minus$62
+EXIT int@25
+LABEL main$0$end_minus$62
+
+POPS LF@valueFromUser$$1
+PUSHS LF@valueFromUser$$1
+DEFVAR LF@temp$var$strVal$1
+DEFVAR LF@temp$var$strType$1
+POPS LF@temp$var$strVal$1
+TYPE LF@temp$var$strType$1 LF@temp$var$strVal$1
+JUMPIFEQ temp$label$str$float$1 LF@temp$var$strType$1 string@float
+JUMPIFEQ temp$label$str$int$1 LF@temp$var$strType$1 string@int
+JUMPIFEQ temp$label$str$string$1 LF@temp$var$strType$1 string@string
+JUMPIFEQ temp$label$str$bool$1 LF@temp$var$strType$1 string@bool
+JUMPIFEQ temp$label$str$null$1 LF@temp$var$strType$1 string@nil
+EXIT int@25
+LABEL temp$label$str$float$1
+PUSHS LF@temp$var$strVal$1
+FLOAT2STRS
+JUMP temp$label$str$end$1
+LABEL temp$label$str$int$1
+PUSHS LF@temp$var$strVal$1
+INT2STRS
+JUMP temp$label$str$end$1
+LABEL temp$label$str$string$1
+PUSHS LF@temp$var$strVal$1
+JUMP temp$label$str$end$1
+LABEL temp$label$str$bool$1
+JUMPIFEQ  temp$label$str$bool$true$1 LF@temp$var$strType$1 string@bool
+PUSHS string@false
+JUMP temp$label$str$end$1
+LABEL temp$label$str$bool$true$1
+PUSHS string@true
+JUMP temp$label$str$end$1
+LABEL temp$label$str$null$1
+PUSHS string@nil
+JUMP temp$label$str$end$1
+LABEL temp$label$str$end$1
+POPS LF@valStr$$2
+PUSHS LF@valStr$$2
+DEFVAR LF@temp$var$write$19
+DEFVAR LF@temp$var$writeType$19
+POPS LF@temp$var$write$19
+TYPE LF@temp$var$writeType$19 LF@temp$var$write$19
+JUMPIFNEQ temp$label$write$write$19 LF@temp$var$writeType$19 string@float
+ISINT LF@temp$var$writeType$19  LF@temp$var$write$19
+JUMPIFNEQ temp$label$write$write$19 LF@temp$var$writeType$19  bool@true
+FLOAT2INT LF@temp$var$write$19 LF@temp$var$write$19
+LABEL temp$label$write$write$19
+WRITE LF@temp$var$write$19
+PUSHS nil@nil
+POPS GF@__d
+PUSHS string@\010
+DEFVAR LF@temp$var$write$20
+DEFVAR LF@temp$var$writeType$20
+POPS LF@temp$var$write$20
+TYPE LF@temp$var$writeType$20 LF@temp$var$write$20
+JUMPIFNEQ temp$label$write$write$20 LF@temp$var$writeType$20 string@float
+ISINT LF@temp$var$writeType$20  LF@temp$var$write$20
+JUMPIFNEQ temp$label$write$write$20 LF@temp$var$writeType$20  bool@true
+FLOAT2INT LF@temp$var$write$20 LF@temp$var$write$20
+LABEL temp$label$write$write$20
+WRITE LF@temp$var$write$20
+PUSHS nil@nil
+POPS GF@__d
+JUMP main$0$while$1$start$1
+LABEL main$0$while$1$end$1
+PUSHS int@1
+INT2FLOATS
+POPS LF@x$$2
+PUSHS string@cervena\032panda\032+\032
+POPS LF@x$$3
+PUSHS string@(
+DEFVAR LF@temp$var$write$21
+DEFVAR LF@temp$var$writeType$21
+POPS LF@temp$var$write$21
+TYPE LF@temp$var$writeType$21 LF@temp$var$write$21
+JUMPIFNEQ temp$label$write$write$21 LF@temp$var$writeType$21 string@float
+ISINT LF@temp$var$writeType$21  LF@temp$var$write$21
+JUMPIFNEQ temp$label$write$write$21 LF@temp$var$writeType$21  bool@true
+FLOAT2INT LF@temp$var$write$21 LF@temp$var$write$21
+LABEL temp$label$write$write$21
+WRITE LF@temp$var$write$21
+PUSHS nil@nil
+POPS GF@__d
+PUSHS int@1
+INT2FLOATS
+PUSHS int@1
+INT2FLOATS
+POPS LF@main$0_rn_81
+POPS LF@main$0_ln_81
+PUSHS LF@main$0_ln_81
+PUSHS LF@main$0_rn_81
+TYPES
+POPS LF@main$0_ty_81
+TYPES
+PUSHS LF@main$0_ty_81
+JUMPIFEQS main$0$ok$81
+JUMP main$0$err$81
+LABEL main$0$ok$81
+PUSHS LF@main$0_ln_81
+PUSHS LF@main$0_rn_81
+EQS
+JUMP main$0$end_equal$81
+LABEL main$0$err$81
+PUSHS bool@false
+LABEL main$0$end_equal$81
+PUSHS bool@false
+JUMPIFEQS main$0$ifEnd$6
+PUSHS LF@x$$3
+PUSHS int@3
+INT2FLOATS
+POPS LF@main$0_rn_85
+POPS LF@main$0_ln_85
+PUSHS LF@main$0_ln_85
+TYPES
+POPS LF@main$0_lty_85
+PUSHS LF@main$0_rn_85
+TYPES
+POPS LF@main$0_rty_85
+PUSHS LF@main$0_lty_85
+PUSHS string@string
+JUMPIFEQS main$0$concat$85
+PUSHS LF@main$0_rty_85
+PUSHS string@string
+JUMPIFEQS main$0$concat$85
+LABEL main$0$mul$85
+PUSHS LF@main$0_ln_85
+PUSHS LF@main$0_rn_85
+MULS
+JUMP main$0$end_mul$85
+LABEL main$0$concat$85
+MOVE LF@main$0_counter_85 int@0
+PUSHS LF@main$0_rn_85
+FLOAT2INTS
+POPS LF@main$0_counter_85
+MOVE LF@main$0_rs_85 string@""
+PUSHS LF@main$0_counter_85
+PUSHS int@0
+JUMPIFEQS main$0$loop_end$85
+MOVE LF@main$0_rs_85 LF@main$0_ln_85
+PUSHS LF@main$0_counter_85
+PUSHS int@1
+SUBS
+POPS LF@main$0_counter_85
+LABEL main$0$start$85
+PUSHS LF@main$0_counter_85
+PUSHS int@0
+JUMPIFEQS main$0$loop_end$85
+CONCAT LF@main$0_rs_85 LF@main$0_rs_85 LF@main$0_ln_85
+PUSHS LF@main$0_counter_85
+PUSHS int@1
+SUBS
+POPS LF@main$0_counter_85
+JUMP main$0$start$85
+LABEL main$0$loop_end$85
+PUSHS LF@main$0_rs_85
+JUMP main$0$end_mul$85
+LABEL main$0$err$85
+EXIT int@25
+LABEL main$0$end_mul$85
+POPS LF@y$$4
+PUSHS LF@y$$4
+POPS LF@x$$4
+PUSHS LF@x$$4
+DEFVAR LF@temp$var$write$22
+DEFVAR LF@temp$var$writeType$22
+POPS LF@temp$var$write$22
+TYPE LF@temp$var$writeType$22 LF@temp$var$write$22
+JUMPIFNEQ temp$label$write$write$22 LF@temp$var$writeType$22 string@float
+ISINT LF@temp$var$writeType$22  LF@temp$var$write$22
+JUMPIFNEQ temp$label$write$write$22 LF@temp$var$writeType$22  bool@true
+FLOAT2INT LF@temp$var$write$22 LF@temp$var$write$22
+LABEL temp$label$write$write$22
+WRITE LF@temp$var$write$22
+PUSHS nil@nil
+POPS GF@__d
+JUMP main$0$ifchainend$5
+LABEL main$0$ifEnd$6
+JUMP main$0$ifchainend$5
+LABEL main$0$ifchainend$5
+PUSHS string@konec)\032
+DEFVAR LF@temp$var$write$23
+DEFVAR LF@temp$var$writeType$23
+POPS LF@temp$var$write$23
+TYPE LF@temp$var$writeType$23 LF@temp$var$write$23
+JUMPIFNEQ temp$label$write$write$23 LF@temp$var$writeType$23 string@float
+ISINT LF@temp$var$writeType$23  LF@temp$var$write$23
+JUMPIFNEQ temp$label$write$write$23 LF@temp$var$writeType$23  bool@true
+FLOAT2INT LF@temp$var$write$23 LF@temp$var$write$23
+LABEL temp$label$write$write$23
+WRITE LF@temp$var$write$23
+PUSHS nil@nil
+POPS GF@__d
+PUSHS LF@x$$3
+DEFVAR LF@temp$var$write$24
+DEFVAR LF@temp$var$writeType$24
+POPS LF@temp$var$write$24
+TYPE LF@temp$var$writeType$24 LF@temp$var$write$24
+JUMPIFNEQ temp$label$write$write$24 LF@temp$var$writeType$24 string@float
+ISINT LF@temp$var$writeType$24  LF@temp$var$write$24
+JUMPIFNEQ temp$label$write$write$24 LF@temp$var$writeType$24  bool@true
+FLOAT2INT LF@temp$var$write$24 LF@temp$var$write$24
+LABEL temp$label$write$write$24
+WRITE LF@temp$var$write$24
+PUSHS nil@nil
+POPS GF@__d
+PUSHS LF@x$$2
+DEFVAR LF@temp$var$write$25
+DEFVAR LF@temp$var$writeType$25
+POPS LF@temp$var$write$25
+TYPE LF@temp$var$writeType$25 LF@temp$var$write$25
+JUMPIFNEQ temp$label$write$write$25 LF@temp$var$writeType$25 string@float
+ISINT LF@temp$var$writeType$25  LF@temp$var$write$25
+JUMPIFNEQ temp$label$write$write$25 LF@temp$var$writeType$25  bool@true
+FLOAT2INT LF@temp$var$write$25 LF@temp$var$write$25
+LABEL temp$label$write$write$25
+WRITE LF@temp$var$write$25
+PUSHS nil@nil
+POPS GF@__d
+PUSHS string@\010
+DEFVAR LF@temp$var$write$26
+DEFVAR LF@temp$var$writeType$26
+POPS LF@temp$var$write$26
+TYPE LF@temp$var$writeType$26 LF@temp$var$write$26
+JUMPIFNEQ temp$label$write$write$26 LF@temp$var$writeType$26 string@float
+ISINT LF@temp$var$writeType$26  LF@temp$var$write$26
+JUMPIFNEQ temp$label$write$write$26 LF@temp$var$writeType$26  bool@true
+FLOAT2INT LF@temp$var$write$26 LF@temp$var$write$26
+LABEL temp$label$write$write$26
+WRITE LF@temp$var$write$26
+PUSHS nil@nil
+POPS GF@__d
+LABEL main$0$end$0
+EXIT int@0

@@ -248,7 +248,7 @@ void add_binop_tmps(VarList* vars, const char* func, int id,AstNode *node) {
    	varlist_add(vars, buf);
     snprintf(buf, sizeof buf, "%s_or_left_%d", func, id);
    	varlist_add(vars, buf);
-    }else if(node->kind == AST_IDENTIFIER){
+    }else if(node->kind == AST_IDENTIFIER || node->kind == AST_GLOBAL_ID){
     snprintf(buf, sizeof buf, "%s_ty_bool_%d", func, id);
    	varlist_add(vars, buf);
     snprintf(buf, sizeof buf, "%s_val_bool_%d", func, id);
@@ -262,6 +262,43 @@ void add_binop_tmps(VarList* vars, const char* func, int id,AstNode *node) {
         snprintf(buf, sizeof buf, "%s_ty_%d", func, id);
         varlist_add(vars, buf);
     }
+}
+void printIfj(){
+printN("DEFVAR LF@temp$var$readStr");
+printN("DEFVAR LF@temp$var$readNum");
+printN("DEFVAR LF@temp$var$readBool");
+printN("DEFVAR LF@temp$var$write");
+printN("DEFVAR LF@temp$var$writeType");
+printN("DEFVAR LF@temp$var$floorVal");
+printN("DEFVAR LF@temp$var$floorType");
+printN("DEFVAR LF@temp$var$strVal");
+printN("DEFVAR LF@temp$var$strType");
+printN("DEFVAR LF@temp$var$lengthVal");
+printN("DEFVAR LF@temp$var$lengthType");
+printN("DEFVAR LF@temp$var$lengthRet");
+printN("DEFVAR LF@temp$var$substringSin");
+printN("DEFVAR LF@temp$var$substringStart");
+printN("DEFVAR LF@temp$var$substringEnd");
+printN("DEFVAR LF@temp$var$substringSLen");
+printN("DEFVAR LF@temp$var$substringSout");
+printN("DEFVAR LF@temp$var$substringType");
+printN("DEFVAR LF@temp$var$substringCmpResult");
+printN("DEFVAR LF@temp$var$substringStemp");
+
+printN("DEFVAR LF@temp$var$strcmpS1");
+printN("DEFVAR LF@temp$var$strcmpS2");
+printN("DEFVAR LF@temp$var$strcmpType");
+printN("DEFVAR LF@temp$var$strcmpCmpResult");
+
+printN("DEFVAR LF@temp$var$ordStr");
+printN("DEFVAR LF@temp$var$ordNum");
+printN("DEFVAR LF@temp$var$ordType");
+printN("DEFVAR LF@temp$var$ordIsInt");
+printN("DEFVAR LF@temp$var$ordOut");
+
+printN("DEFVAR LF@temp$var$chrVal");
+printN("DEFVAR LF@temp$var$chrType");
+printN("DEFVAR LF@temp$var$chrIsInt");
 }
 FuncContext *ConstuctorFuncContext(){
 	FuncContext *funcStruct = malloc(sizeof(FuncContext));
@@ -279,6 +316,7 @@ FuncContext *ConstuctorFuncContext(){
 void DestructorFuncContext(FuncContext *funcStruct){
 	free(funcStruct);
 }
+static int counter_ifj = 0;
 void collectLocalVars(AstNode *node, VarList *vars,FuncContext *funcStruct) {
     if (node == NULL) return;
     for (int i = 0; i < node->arity; i++) {
@@ -293,7 +331,7 @@ void collectLocalVars(AstNode *node, VarList *vars,FuncContext *funcStruct) {
 
           case AST_PARAM:
               break;
-
+          case AST_IFJ_CALL:
           case AST_PLUS:
           case AST_MINUS:
           case AST_MUL:
@@ -308,6 +346,7 @@ void collectLocalVars(AstNode *node, VarList *vars,FuncContext *funcStruct) {
           case AST_NOT:
           case AST_NEQ:
           case AST_TERNARY:
+          case AST_GLOBAL_ID:
           case AST_IDENTIFIER:
           case AST_OR: {
               node->tmp_id = funcStruct->value_counter++;
@@ -319,22 +358,16 @@ void collectLocalVars(AstNode *node, VarList *vars,FuncContext *funcStruct) {
       }
 
   }
-  void emitLookGlobal(AstNode *root, VarList *global){
-      if (root == NULL) return;
-      if(root->kind == AST_GLOBAL_ID){
-          if (root->arity > 0 && root->child[0] != NULL) {
-              AstNode *id_node = root->child[0];
-              if (id_node->kind == AST_GLOBAL_ID && id_node->value.str != NULL) {
-                  varlist_add(global, id_node->value.str);
-              }
-          }
-      } else {
-          for(size_t i = 0; i < root->arity; i++){
-              if (root->child[i] != NULL) {
-                  emitLookGlobal(root->child[i], global);
-              }
-          }
+  void emitLookGlobal(AstNode *root, VarList *global) {
+      if (!root) return;
+
+      if (root->kind == AST_GLOBAL_ID && root->value.str != NULL) {
+          varlist_add(global, root->value.str);
+          return;
       }
+
+      for (size_t i = 0; i < root->arity; i++)
+          emitLookGlobal(root->child[i], global);
   }
 void emitGlobal(AstNode *root){
 	VarList *globals = varListCreate();
@@ -348,6 +381,9 @@ void emitGlobal(AstNode *root){
 
 void emitReturn(AstNode *root,FuncContext *funcStrukt){
 	emitChildren(root,funcStrukt);
+	if(root->child[0]->kind == AST_EMPTY){
+		printN("PUSHS nil@nil");
+	}
 	printN("POPS LF@retval");
 	printN("JUMP %s",funcStrukt->label_end);
 }
@@ -357,6 +393,7 @@ void emitFuncDec(AstNode *root){
 	char *label = NULL;
 	size_t tmp_counter = 0;
 	FuncContext *context = ConstuctorFuncContext();
+	printIfj();
 	context->func_name = root->child[0]->value.str;
 	context->label_end = NULL;
 	context->label_stack = label_stack;
@@ -1498,44 +1535,56 @@ void emitContinue(FuncContext *funcContext) {
     free(label);
 }
 void emitBool(AstNode *node, FuncContext *funcContext) {
-    if (node->kind == AST_IDENTIFIER) {
+    if (node->kind == AST_IDENTIFIER || node->kind == AST_GLOBAL_ID) {
         char ty_var[128], val_var[128];
         char is_false_label[128], end_label[128];
+        char is_type_bool_label[128];
         int id = node->tmp_id;
 
-        snprintf(ty_var, sizeof ty_var, "LF@%s_ty_bool_%d", funcContext->func_name, id);
-        snprintf(val_var, sizeof val_var, "LF@%s_val_bool_%d", funcContext->func_name, id);
+        snprintf(ty_var, sizeof ty_var, "%s_ty_bool_%d", funcContext->func_name, id);
+        snprintf(val_var, sizeof val_var, "%s_val_bool_%d", funcContext->func_name, id);
         snprintf(is_false_label, sizeof is_false_label, "%s$bool_is_false$%d", funcContext->func_name, id);
         snprintf(end_label, sizeof end_label, "%s$bool_end$%d", funcContext->func_name, id);
+        snprintf(is_type_bool_label, sizeof is_type_bool_label, "%s$bool_type_ok$%d", funcContext->func_name, id);
 
         const char *var_name = node->value.str;
-        // Ulož hodnotu a typ
-        printN("PUSHS LF@%s", var_name);
-        printN("POPS %s", val_var);
-        printN("PUSHS %s", val_var);
+
+        // Získání hodnoty a typu
+        if(node->kind == AST_IDENTIFIER){
+            printN("PUSHS LF@%s", var_name);
+        }else{
+            printN("PUSHS GF@%s", var_name);
+        }
+        printN("POPS LF@%s", val_var);
+        printN("PUSHS LF@%s", val_var);
         printN("TYPES");
-        printN("POPS %s", ty_var);
+        printN("POPS LF@%s", ty_var);
 
         // --- KONTROLA 1: NIL ---
-        printN("PUSHS %s", ty_var);
+        printN("PUSHS LF@%s", ty_var);
         printN("PUSHS string@nil");
         printN("JUMPIFEQS %s", is_false_label);
 
-        // --- KONTROLA 2: BOOL@FALSE ---
-        printN("PUSHS %s", ty_var);
+        // --- KONTROLA 2: TYP NENÍ BOOL ---
+        printN("PUSHS LF@%s", ty_var);
         printN("PUSHS string@bool");
-        printN("JUMPIFNEQS %s", end_label);
+        printN("JUMPIFEQS %s", is_type_bool_label);
 
-        printN("PUSHS %s", val_var);
-        printN("PUSHS bool@false");
-        printN("JUMPIFEQS %s", is_false_label);
-
-
-
+        // --- TRUE případ (jiný typ než nil a bool) ---
         printN("PUSHS bool@true");
         printN("JUMP %s", end_label);
 
-        // --- FALSE případy ---
+        // --- KONTROLA 3: HODNOTA BOOL@FALSE
+        printN("LABEL %s", is_type_bool_label);
+        printN("PUSHS LF@%s", val_var);
+        printN("PUSHS bool@false");
+        printN("JUMPIFEQS %s", is_false_label);
+
+        // --- TRUE případ (bool@true) ---
+        printN("PUSHS bool@true");
+        printN("JUMP %s", end_label);
+
+        // --- FALSE případy (nil nebo bool@false) ---
         printN("LABEL %s", is_false_label);
         printN("PUSHS bool@false");
 
@@ -1544,10 +1593,11 @@ void emitBool(AstNode *node, FuncContext *funcContext) {
     }
 }
 void emitCondition(AstNode *node,FuncContext *funcContext){
-	if(node->is_leaf){
+	if(node->arity == 0){
+		printLog(ast_node_type_to_string(node->kind));
 		if(node->kind == AST_SMALL_NULL || (node->kind == AST_BOOL_LIT && strcmp(node->value.str,"false") == 0) || (node->kind == AST_INT_LIT && node->value.int_val == 0) || (node->kind == AST_FLOAT_LIT && node->value.float_val == 0.0)){
 			printN("PUSHS bool@false");
-		}else if(node->kind == AST_IDENTIFIER){
+		}else if(node->kind == AST_IDENTIFIER || node->kind == AST_GLOBAL_ID){
 			emitBool(node,funcContext);
 		}else{
 			printN("PUSHS bool@true");
@@ -1563,7 +1613,7 @@ void emitCondition(AstNode *node,FuncContext *funcContext){
 		emit_command(child, funcContext);
 	}else if(child->kind == AST_SMALL_NULL || (child->kind == AST_BOOL_LIT && strcmp(child->value.str,"false") == 0)){
 			printN("PUSHS bool@false");
-	}else if(child->kind == AST_IDENTIFIER){
+	}else if(child->kind == AST_IDENTIFIER || child->kind == AST_GLOBAL_ID){
 			emitBool(child,funcContext);
 	}else{
 		printN("PUSHS bool@true");
@@ -1725,7 +1775,7 @@ void emitSetterCall(AstNode* node) {
 
 void emitSetter(AstNode* node) {
     DynamiclabelStackStackPtr labelStack = stacklabelStackConstruct(DEFAULT_INIT_ELEMENT_COUNT);
-
+    printIfj();
 	FuncContext *context = ConstuctorFuncContext();
 	context->func_name = node->child[0]->value.str;
 
@@ -1772,6 +1822,7 @@ void emitGetterCall(AstNode* node) {
 void emitGetter(AstNode* node) {
     DynamiclabelStackStackPtr labelStack = stacklabelStackConstruct(DEFAULT_INIT_ELEMENT_COUNT);
 
+    printIfj();
 	FuncContext *context = ConstuctorFuncContext();
 	context->func_name = node->child[0]->value.str;
 
