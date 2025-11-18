@@ -393,7 +393,6 @@ void emitFuncDec(AstNode *root){
 	char *label = NULL;
 	size_t tmp_counter = 0;
 	FuncContext *context = ConstuctorFuncContext();
-	printIfj();
 	context->func_name = root->child[0]->value.str;
 	context->label_end = NULL;
 	context->label_stack = label_stack;
@@ -411,6 +410,7 @@ void emitFuncDec(AstNode *root){
 	context->label_end = label_end;
 	printN("CREATEFRAME");
 	printN("PUSHFRAME");
+	printIfj();
 	//sbirani lokalnich promenych na deklaraci
 	VarList *local_vars = varListCreate();
     varlist_add(local_vars, "retval");
@@ -1764,7 +1764,7 @@ void emitFor(AstNode* node, FuncContext *funcContext)
 
     printN("LABEL %s", endLabel); // ! LABEL KONEC
 
-    
+
     free(errorLabel);
     free(endLabel);
     free(labelStart);
@@ -1784,7 +1784,6 @@ void emitSetterCall(AstNode* node) {
 
 void emitSetter(AstNode* node) {
     DynamiclabelStackStackPtr labelStack = stacklabelStackConstruct(DEFAULT_INIT_ELEMENT_COUNT);
-    printIfj();
 	FuncContext *context = ConstuctorFuncContext();
 	context->func_name = node->child[0]->value.str;
 
@@ -1795,6 +1794,7 @@ void emitSetter(AstNode* node) {
     printN("CREATEFRAME");
     printN("PUSHFRAME");
 
+    printIfj();
     char *pname = node->child[1]->child[0]->value.str;
      	printN("DEFVAR LF@%s", pname);
       	printN("POPS LF@%s", pname); // popne si ze zasobniku hodnotu parametru
@@ -1831,7 +1831,6 @@ void emitGetterCall(AstNode* node) {
 void emitGetter(AstNode* node) {
     DynamiclabelStackStackPtr labelStack = stacklabelStackConstruct(DEFAULT_INIT_ELEMENT_COUNT);
 
-    printIfj();
 	FuncContext *context = ConstuctorFuncContext();
 	context->func_name = node->child[0]->value.str;
 
@@ -1842,6 +1841,7 @@ void emitGetter(AstNode* node) {
     printN("CREATEFRAME");
     printN("PUSHFRAME");
 
+    printIfj();
     VarList *localVariables = varListCreate();
     varlist_add(localVariables, "retval");
 	collectLocalVars(node->child[2], localVariables, context);//funkce uvnitr
