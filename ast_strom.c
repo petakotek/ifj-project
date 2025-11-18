@@ -421,7 +421,7 @@ const char *ast_node_type_to_string(AstNodeType kind) {
 }
 
 
-
+#ifdef ENABLE_DEVELOPMENT_LOGGING
 static void ast_dump_rec(const AstNode *n, int depth, const AstNode *parent) {
     if (!n) {
         fprintf(stderr, "%*s(null)\n", depth * 2, "");
@@ -456,3 +456,9 @@ void ast_dump(const AstNode *root) {
     fprintf(stderr, "===== AST STROM =====\n");
     ast_dump_rec(root, 0, NULL);
 }
+#else
+void ast_dump(const AstNode *root) {
+    printLog("Vypisuji strom s korenem %p\n", root);
+    return;
+}
+#endif
