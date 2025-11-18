@@ -16,7 +16,6 @@
 static size_t while_counter = 0;
 static size_t for_counter = 0;
 static size_t if_counter = 0;
-static size_t condition_counter = 0;
 /*
  *Print funkce na zajistneti \node na konci
  */
@@ -144,7 +143,7 @@ char *generatorLable(char *func_name,FuncContext *funcStruckt,bool pridaniDoStac
  *@params ukazatel na hash_table
  */
 void emitChildren(AstNode *root,FuncContext *funcStruct) {
-    for (int i = 0; i < root->arity; i++) {
+    for (size_t i = 0; i < root->arity; i++) {
         emit_command(root->child[i],funcStruct);
     }
 }
@@ -187,7 +186,7 @@ void varListDescrution(VarList *list){
 }
 void emitFunctions(AstNode *root,FuncContext *funcContext){
 	AstNode *main = NULL;
-	for(int i = 0;i< root->arity;i++){
+	for(size_t i = 0;i< root->arity;i++){
 		if(root->child[i]->kind == AST_FUNC_DEC && strcmp(root->child[i]->child[0]->value.str,"main$0") == 0){
 			main = root->child[i];
 		}else{
@@ -316,10 +315,9 @@ FuncContext *ConstuctorFuncContext(){
 void DestructorFuncContext(FuncContext *funcStruct){
 	free(funcStruct);
 }
-static int counter_ifj = 0;
 void collectLocalVars(AstNode *node, VarList *vars,FuncContext *funcStruct) {
     if (node == NULL) return;
-    for (int i = 0; i < node->arity; i++) {
+    for (size_t i = 0; i < node->arity; i++) {
         collectLocalVars(node->child[i], vars, funcStruct);
     }
     switch (node->kind) {
@@ -420,7 +418,7 @@ void emitFuncDec(AstNode *root){
 	}
 	AstNode *params = root->child[1];
 	if(params->child[0]->kind != AST_EMPTY){
-	for (int i = 0; i < params->arity-1; i++) {
+	for (size_t i = 0; i < params->arity-1; i++) {
     	const char *pname = params->child[i]->value.str;
      	printN("DEFVAR LF@%s", pname);
       	printN("POPS LF@%s", pname);
@@ -448,43 +446,10 @@ stacklabelStackDestruct(label_stack);
 	}
 void emit_call_func(AstNode *node,FuncContext *funcStruct){
 		printN("CREATEFRAME");
-		for(int i = 0; i < node->child[1]->arity;i++){
+		for(size_t i = 0; i < node->child[1]->arity;i++){
 		emit_command(node->child[1]->child[i],funcStruct);
 		}
 		printN("CALL $%s$0",node->child[0]->value.str);
-}
-void emitIfjFunc(AstNode *node,FuncContext *funcStruct) {
-                 AstNode *callee = node->child[0];
-                 AstNode *params = node->child[1];
-
-    if (callee->kind == AST_IDENTIFIER && strcmp(callee->value.str, "write") == 0) {
-        // Projdi všechny parametry
-        for (int i = 0; i < params->arity; i++) {
-            AstNode *arg = params->child[i];
-            if (arg->kind == AST_EMPTY) continue;
-
-            if (arg->kind == AST_IDENTIFIER) {
-                printN("WRITE LF@%s", arg->value.str);
-            } else if (arg->kind == AST_STRING_LIT) {
-                printN("WRITE string@%s", arg->value.str);
-            } else if (arg->kind == AST_INT_LIT) {
-                printN("WRITE int@%lld", arg->value.int_val);
-            } else if (arg->kind == AST_FLOAT_LIT) {
-                printN("WRITE float@%a", arg->value.float_val);
-            } else {
-            /*
-                emit_command(arg, label_stack, counter,  func_name);
-                char tmp[64];
-                snprintf(tmp, sizeof tmp, "%s$wtmp_%d_%d", func_name, node->tmp_id, i);
-                printN("POPS LF@%s", tmp);
-                printN("WRITE LF@%s", tmp);
-                */
-            }
-        }
-        return;
-    }
-
-
 }
 /*
  * Dostaneme zasobnik zkontrolujeme zda je neco na vrchu pokud jo udelame types coz nam da na vrchol
@@ -494,8 +459,8 @@ void emitIfjFunc(AstNode *node,FuncContext *funcStruct) {
  */
 
  void emitPlus(AstNode *node,FuncContext *funcStruct) {
-  	for(int i = 0;i < 2;i++){
-   	emit_command(node->child[i],funcStruct);
+ 	for(size_t i = 0;i < 2;i++){
+   		emit_command(node->child[i],funcStruct);
    	}
      int id = node->tmp_id;
      char ln[128], rn[128], ty[128],rs[128];
@@ -590,7 +555,7 @@ void emitIfjFunc(AstNode *node,FuncContext *funcStruct) {
          snprintf(ty, sizeof ty, "%s_ty_%d", funcStrukt->func_name, id);
 
          int size_for_label = strlen(funcStrukt->func_name)+20;
-         char label_ok[size_for_label], label_add[size_for_label], label_concat[size_for_label], label_end[size_for_label], label_err[size_for_label];
+         char label_ok[size_for_label], label_end[size_for_label], label_err[size_for_label];
          snprintf(label_ok,  sizeof label_ok,  "%s$ok_minus$%d",     funcStrukt->func_name, id);
          snprintf(label_end, sizeof label_end, "%s$end_minus$%d",    funcStrukt->func_name, id);
          snprintf(label_err, sizeof label_err, "%s$err_minus$%d",    funcStrukt->func_name, id);
@@ -1427,7 +1392,7 @@ void emitIfChain(AstNode *node, FuncContext *funcContext)
     */
     char *endLabel = generatorLable("ifchainend", funcContext, false,if_counter);
 
-    for (int i = 0; i < node->arity; i++)
+    for (size_t i = 0; i < node->arity; i++)
     {
         if (node->child[i]->kind == AST_IF)
         {
@@ -1805,7 +1770,7 @@ void emitSetter(AstNode* node) {
 	    printN("DEFVAR LF@%s", localVariables->var_names[i]);
 	}
 
-    for (int i = 0; i < node->child[2]->child[0]->arity; i++)
+    for (size_t i = 0; i < node->child[2]->child[0]->arity; i++)
     {
         emit_command(node->child[2]->child[0]->child[i], context);
     }
@@ -1849,7 +1814,7 @@ void emitGetter(AstNode* node) {
 	    printN("DEFVAR LF@%s", localVariables->var_names[i]);
 	}
     printN("MOVE LF@retval nil@nil");
-    for (int i = 0; i < node->child[2]->child[0]->arity; i++)
+    for (size_t i = 0; i < node->child[2]->child[0]->arity; i++)
     {
         emit_command(node->child[2]->child[0]->child[i], context);
     }
@@ -2078,7 +2043,6 @@ void emit_command(AstNode *node,FuncContext *funcStruct) {
         	emitCondition(node,funcStruct);
          	break;
         case AST_IFJ_CALL:
-       		//emitIfjFunc(node, funcStruct);
             handleBuiltin(node, funcStruct);
          	break;
         default:
