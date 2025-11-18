@@ -75,6 +75,13 @@ char *generatorLable(char *func_name,FuncContext *funcStruckt,bool pridaniDoStac
                     memorySafeExit(INTERNAL_ERROR);
                 }
             }
+            if (prefix_len + 1 + 10 >= size_of_buffer) {
+                result_label = resize_label_name(result_label, &size_of_buffer);
+                if (result_label == NULL) {
+                    printError(INTERNAL_ERROR, "Error resizing label buffer");
+                    memorySafeExit(INTERNAL_ERROR);
+                }
+            }
 
             current_len = snprintf(result_label, size_of_buffer, "%s", prefix);
             if (current_len < 0 || (size_t)current_len >= size_of_buffer) {

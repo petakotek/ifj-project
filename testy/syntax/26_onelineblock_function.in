@@ -3,5 +3,6 @@ class Program {
     static inc(x) { return x + 1 }
     static main() {
         var y = inc(5)
+        Ifj.write(y)
     }
 }

@@ -667,9 +667,6 @@ SemValidationStates recursiveNodeWalker(AstNode* currentNode, AstNodeType parent
                 }
                 return OK;
             } else if (parentNodeType == AST_FUNC_CALL || parentNodeType == AST_IFJ_CALL) {
-                 SemSymbol newSymbol = {
-                    .symbolType = FUNCTION_PARAMETER, .returnValue = NULL_VAL, .scope = NEWEST_SCOPE};
-
                 SemSymbDataType identifierDataType = UNKNOWN_VAL;
                 SemSymbol tempSymbol;
                 SemSymbol* foundSymbol = findSymbolAndModifyAST(currentNode, &tempSymbol, parentNodeType, childNum);
@@ -679,8 +676,6 @@ SemValidationStates recursiveNodeWalker(AstNode* currentNode, AstNodeType parent
                 }
                 
                 identifierDataType = foundSymbol->dataType;
-
-                newSymbol.dataType = identifierDataType;
 
                 if(parentNodeType == AST_IFJ_CALL) {
                     return convSemSymbDTypeToSemValStates(identifierDataType);
@@ -1225,7 +1220,7 @@ void insertSymbolGlobalScope(SemSymbol symbol) {
         return;
     }
 
-    int index = hashTableInsertItem(&scopesStack->array[0], symbol.name, symbol);
+    int index = hashTableInsertItem(scopesStack->array[0], symbol.name, symbol);
 
     if (index == -1) {
         EXEC_END(INTERNAL_ERROR, "Selhalo vlozeni prvku do globalniho ramce!\n");
@@ -1246,7 +1241,7 @@ void insertSymbolCurrentScope(SemSymbol symbol) {
 
     HashTable* currentScope = stackHashTablePtrRead(scopesStack);
 
-    int index = hashTableInsertItem(&currentScope, symbol.name, symbol);
+    int index = hashTableInsertItem(currentScope, symbol.name, symbol);
 
     if (index == -1) {
         EXEC_END(INTERNAL_ERROR, "Selhalo vlozeni prvku do ramce!\n");
@@ -1279,7 +1274,7 @@ void insertUndeclaredReference(char* referenceSymbolName, SemSymbol symbol) {
         return;
     }
 
-    if (hashTableInsertItem(&undeclaredReferenceTable, referenceSymbolName, symbol) == -1) {
+    if (hashTableInsertItem(undeclaredReferenceTable, referenceSymbolName, symbol) == -1) {
         EXEC_END(INTERNAL_ERROR, "Nepodarilo se vlozit prvek do tabulky!\n");
     }
 }
