@@ -1,7 +1,8 @@
 import "ifj25" for Ifj
 class Program {
-    static inc(x) { return x + 1 }
+    static inc(x) { x + 1 }
     static main() {
         var y = inc(5)
+        Ifj.write(y)
     }
 }
