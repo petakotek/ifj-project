@@ -1,11 +1,13 @@
 import "ifj25" for Ifj
 class Program {
     static main() {
+        var j
         for (i in 0 .. 3) {
-            var j = 0
+            j = 0
             while (j < 2) {
                 j = j + 1
             }
         }
+        Ifj.write(j)
     }
 }

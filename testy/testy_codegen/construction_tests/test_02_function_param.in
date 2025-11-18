@@ -1,0 +1,15 @@
+import "ifj25" for Ifj
+
+class Program {
+    static getAnswer(arg) {
+        if (arg is Num) {
+            return arg * 2
+        } else {
+            return null
+        }
+    }
+
+    static main() {
+        Ifj.write(getAnswer(21))
+    }
+}
