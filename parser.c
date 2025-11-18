@@ -336,7 +336,7 @@ AstNode *parser()
     Stack =  NULL;
     stackAstNodeDestruct(AstStack);
     AstStack =  NULL;
-    fprintf(stderr,"PARSER IS DONE\n");
+    printLog("PARSER IS DONE\n");
     return ast_root;
 
 }
@@ -1024,7 +1024,7 @@ void Expr_func(DynamicSymbolStackPtr Stack, Token *gLookahead, DynamicAstNodeSta
         printError(SYNTAX_ERROR, "Chybný výraz\n");
         memorySafeExit(SYNTAX_ERROR);
     }
-    fprintf(stderr,"expr strom po skoncení funcke parseExpression\n");
+    printLog("expr strom po skoncení funcke parseExpression\n");
     ast_dump(expr);
 
     // výsledný uzol výrazu dáme na AST zásobník
