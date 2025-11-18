@@ -667,9 +667,6 @@ SemValidationStates recursiveNodeWalker(AstNode* currentNode, AstNodeType parent
                 }
                 return OK;
             } else if (parentNodeType == AST_FUNC_CALL || parentNodeType == AST_IFJ_CALL) {
-                 SemSymbol newSymbol = {
-                    .symbolType = FUNCTION_PARAMETER, .returnValue = NULL_VAL, .scope = NEWEST_SCOPE};
-
                 SemSymbDataType identifierDataType = UNKNOWN_VAL;
                 SemSymbol tempSymbol;
                 SemSymbol* foundSymbol = findSymbolAndModifyAST(currentNode, &tempSymbol, parentNodeType, childNum);
@@ -679,8 +676,6 @@ SemValidationStates recursiveNodeWalker(AstNode* currentNode, AstNodeType parent
                 }
                 
                 identifierDataType = foundSymbol->dataType;
-
-                newSymbol.dataType = identifierDataType;
 
                 if(parentNodeType == AST_IFJ_CALL) {
                     return convSemSymbDTypeToSemValStates(identifierDataType);
