@@ -606,7 +606,7 @@ Token lexer_token_next() {
                     token.type = TOKEN_NEW_LINE;
                     lexer->pos++;
                     goto token_found;
-                } else if (c == ' ') {
+                } else if (isblank(c)) {
                     lexer->pos++;  // preskakovani mezer
                 } else if (c == '{') {
                     stav = BLOCK_START;
