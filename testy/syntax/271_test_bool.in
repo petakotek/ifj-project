@@ -1,0 +1,20 @@
+import "ifj25" for Ifj
+
+class Program {
+    static main() {
+        var t = true
+        var fa = false
+        if(fa){
+            Ifj.write("a" * 6)
+        }
+        if(t){
+            Ifj.write("pravda")
+        }
+        var x = false
+        while(x){
+            Ifj.write("nepravda")
+        }
+        Ifj.write(t && fa)    // AND: false (0)
+        Ifj.write(t || fa)    // OR: true (1)
+    }
+}

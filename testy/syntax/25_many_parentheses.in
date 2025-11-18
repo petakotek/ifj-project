@@ -2,5 +2,6 @@ import "ifj25" for Ifj
 class Program {
     static main() {
         var x = (((1 + 2) * (3 + 4)) - (5 * (6 - 1)))
+        Ifj.write(x)
     }
 }

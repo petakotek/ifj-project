@@ -1,6 +1,7 @@
 import "ifj25" for Ifj
+
 class Program {
-static main() {
-    var x = 6 + 5
+    static main() {
+        Ifj.write(42)
     }
 }

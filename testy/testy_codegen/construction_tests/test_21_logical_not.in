@@ -1,0 +1,14 @@
+import "ifj25" for Ifj
+
+class Program {
+    static main() {
+        if (!false) {
+            Ifj.write("not_false")
+        }
+        if (!true) {
+            Ifj.write("should_not_print")
+        } else {
+            Ifj.write("not_true")
+        }
+    }
+}

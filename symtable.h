@@ -50,7 +50,7 @@ void hashTableDeleteItem(HashTable *, char *key);  // Funkce pro smazání polo�
 int hashTableSearchItem(HashTable *, char *key);  // Funkce pro nalezení položky v hashovací tabulce
 void       hashTableDealloc(HashTable *);         // funkce pro dealokaci hashovací tabulky
 int        hashItem(char *key, HashTable *);
-HashTable *hashTableRealloc(HashTable *);  // Funkce provede reallokaci tabulky symbolu v pripade,
+HashTable * hashTableRealloc(HashTable *);  // Funkce provede reallokaci tabulky symbolu v pripade,
                                            // ze doslo k naplneni kapacity
 
                                            /**

@@ -40,17 +40,17 @@ int main(){
 	//print_and_free_tokens();
 	//exit(0);
 	// tvorba stromu pres parser
-	AstNode *AST;
-	AST = parser();
-	//funkcia ast_dump -> funkcia na kontrolny vypis ast stromu
-
+	AstNode *AST = parser();
 	ast_dump(AST);
+	//funkcia ast_dump -> funkcia na kontrolny vypis ast stromu
+	
 	bool output;
 	output = startSematicValidation(AST);
 	printLog("Vysledek sem_anal: %i\n", output);
 
-	ast_dump(AST);
-	codegen_generate(AST);
-	memorySafeExit(NO_ERROR);
+	//ast_dump(AST);
 
+	codegen_generate(AST);
+	
+	memorySafeExit(NO_ERROR);
 }
