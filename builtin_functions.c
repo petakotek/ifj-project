@@ -251,7 +251,7 @@ void emitLength(AstNode* functionCallNode, FuncContext* context) {
     emit_command(functionCallNode->child[1]->child[0], context);
 
     // Parametry
-    printN("POPS LF@temp$var$lengthVal$%u", lengthCounter);
+    printN("POPS LF@temp$var$lengthVal");
 
     // Podmínka
     printN("TYPE LF@temp$var$lengthType LF@temp$var$lengthVal");
@@ -292,7 +292,7 @@ void emitSubstring(AstNode* functionCallNode, FuncContext* context) {
     printN("JUMPIFEQ temp$label$substring$startInt$%u LF@temp$var$substringType string@int", substringCounter);
     // Začátek je desetinné číslo, ale možná celočíselné
     printN("ISINT LF@temp$var$substringType  LF@temp$var$substringStart");
-    printN("JUMPIFNEQ temp$label$substring$error$%u LF@temp$var$substringType$%u  bool@true", substringCounter);
+    printN("JUMPIFNEQ temp$label$substring$error$%u LF@temp$var$substringType  bool@true", substringCounter);
     printN("FLOAT2INT LF@temp$var$substringStart LF@temp$var$substringStart");
 
     // Podmínka pro konec podřetězce
@@ -312,8 +312,7 @@ void emitSubstring(AstNode* functionCallNode, FuncContext* context) {
     printN("LT LF@temp$var$substringCmpResult LF@temp$var$substringEnd int@0");
     printN("JUMPIFEQ temp$label$substring$badInput$%u LF@temp$var$substringCmpResult bool@true", substringCounter);
     // začátek > konec ?
-    printN("GT LF@temp$var$substringCmpResult$%u LF@temp$var$substringStart LF@temp$var$substringEnd",
-           substringCounter);
+    printN("GT LF@temp$var$substringCmpResult LF@temp$var$substringStart LF@temp$var$substringEnd");
     printN("JUMPIFEQ temp$label$substring$badInput$%u LF@temp$var$substringCmpResult bool@true", substringCounter);
     // začátek >= délka řetězce ? (>= je negace <)
     printN("LT LF@temp$var$substringCmpResult LF@temp$var$substringEnd LF@temp$var$substringSLen");
