@@ -998,7 +998,7 @@ AstNode* parseExpression(Token *token, int flag)
             break;
 
             case L: // <
-                // printf(" < (%d, %d) ", operatorToPush(StackTop), operatorToPush(actualToken));
+                // printLog(" < (%d, %d) ", operatorToPush(StackTop), operatorToPush(actualToken));
                 if (DEBUG)
                     printLog("\tOperace <\n");
                 // pokud je na za zasobniku pouze dollar, tak tam vlozim  < i
