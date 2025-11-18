@@ -1650,14 +1650,19 @@ void emitFor(AstNode* node, FuncContext *funcContext)
     if (rightRange->value.has_str)
     {
         generateErrorLabel = true; // Jedná se o proměnnou, generuji chybové návěští
-
+        //FLOAT2INT
         rightIsVariable = true;
         printN("PUSHS LF@%s", rightRange->value.str); // pushne se tam promenna
         printN("TYPES"); // kontrola typu promenne
-        printN("PUSHS int@1");
-        printN("TYPES");
+        printN("PUSHS string@float");
 
         printN("JUMPIFNEQS %sexitSix", errorLabel); // ! pokud nejsou stejne, tak skáču na chybové návěští
+        printN("PUSHS LF@%s", rightRange->value.str);
+        printN("ISINTS");
+        printN("PUSHS bool@true");
+        printN("JUMPIFNEQS %sexitSix", errorLabel);
+        printN("PUSHS LF@%s", rightRange->value.str);
+        printN("FLOAT2INTS");
     }
 
     // kontrola levého intervalu, pokud tam je proměnná
@@ -1667,15 +1672,15 @@ void emitFor(AstNode* node, FuncContext *funcContext)
 
         printN("PUSHS LF@%s", leftRange->value.str); // pushne se tam promenna
         printN("TYPES"); // kontrola typu promenne
-        printN("PUSHS int@1");
-        printN("TYPES");
+        printN("PUSHS string@float");
 
-        printN("JUMPIFNEQS %s", errorLabel); // ! pokud nejsou stejne, tak skáču na chybové návěští
-        printN("PUSHS LF@%s", leftRange->value.str); // vložení hodnoty na zásobník aby mohla potom proměnná podmínky si načíst tuto hodnotu
-        printN("PUSHS int@-1");
-        printN("ADDS"); // odečtení jedničky pro první inicializaci proměnné
-
-        printN("PUSHS LF@%s", leftRange->value.str); // vložení hodnoty na zásobník aby mohla potom proměnná podmínky si načíst tuto hodnotu
+        printN("JUMPIFNEQS %sexitSix", errorLabel); // ! pokud nejsou stejne, tak skáču na chybové návěští
+        printN("PUSHS LF@%s", leftRange->value.str);
+        printN("ISINTS");
+        printN("PUSHS bool@true");
+        printN("JUMPIFNEQS %sexitSix", errorLabel);
+        printN("PUSHS LF@%s", leftRange->value.str);
+        printN("FLOAT2INTS"); // vložení hodnoty na zásobník aby mohla potom proměnná podmínky si načíst tuto hodnotu
 
     }else{ // jinak víme, že SA zajistí, že tam je celé číslo
         printN("PUSHS int@%d", leftRange->value.int_val - 1); // nastaveni hodnoty, nastavim o 1 mensi, abych mohl rovnou inkrementovat
@@ -1700,6 +1705,7 @@ void emitFor(AstNode* node, FuncContext *funcContext)
         if (rightIsVariable)
         {
             printN("PUSHS LF@%s", rightRange->value.str);
+            printN("FLOAT2INTS");
         }else{
             printN("PUSHS int@%d", rightRange->value.int_val);
         }
@@ -1721,6 +1727,7 @@ void emitFor(AstNode* node, FuncContext *funcContext)
         if (rightIsVariable)
         {
             printN("PUSHS LF@%s", rightRange->value.str);
+            printN("FLOAT2INTS");
         }else{
             printN("PUSHS int@%d", rightRange->value.int_val);
         }
@@ -1734,6 +1741,7 @@ void emitFor(AstNode* node, FuncContext *funcContext)
         if (rightIsVariable)
         {
             printN("PUSHS LF@%s", rightRange->value.str);
+            printN("FLOAT2INTS");
         }else{
             printN("PUSHS int@%d", rightRange->value.int_val);
         }
@@ -1749,13 +1757,14 @@ void emitFor(AstNode* node, FuncContext *funcContext)
     }
     if (generateErrorLabel)
     {
-        printN("LABEL %s", errorLabel);
-        printN("EXIT int@%i",RUNTIME_SEMANTICS_ERROR_BAD_TYPE);
+        printN("LABEL %sexitSix", errorLabel);
+        printN("EXIT int@%i", RUNTIME_SEMANTICS_ERROR_UNCOMPATIBLE);
         generateErrorLabel = false;
     }
 
     printN("LABEL %s", endLabel); // ! LABEL KONEC
 
+    
     free(errorLabel);
     free(endLabel);
     free(labelStart);
@@ -2073,7 +2082,7 @@ void emit_command(AstNode *node,FuncContext *funcStruct) {
             handleBuiltin(node, funcStruct);
          	break;
         default:
-        	printf("%s \n",ast_node_type_to_string(node->kind));
+        	printLog("%s \n",ast_node_type_to_string(node->kind));
             printError(INTERNAL_ERROR, "Chyba v generatoru neznamy uzel");
             memorySafeExit(INTERNAL_ERROR);
     }

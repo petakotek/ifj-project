@@ -12,7 +12,7 @@ void test1() {
     DynamicStringStackPtr a = testInit(1, "Test1 size to small");
 
     if (a == NULL) {
-        printf("Ok\n\n");
+        printLog("Ok\n\n");
     }
 
     testDestruct(a);
@@ -133,8 +133,8 @@ void test7() {
     stackStringPush(a, "ccc");
 
     printStack(a);
-    printf("Read top: %s\n", stackStringRead(a));
-    printf("Read again: %s\n", stackStringRead(a));
+    printLog("Read top: %s\n", stackStringRead(a));
+    printLog("Read again: %s\n", stackStringRead(a));
 
     stackStringPop(a);
     printStack(a);
@@ -211,32 +211,32 @@ int main() {
     test10();
 }
 DynamicStringStackPtr testInit(unsigned size, char* testName) {
-    printf("\n\n-----------------------------------------------------------\n");
-    printf("[%s]\n", testName);
+    printLog("\n\n-----------------------------------------------------------\n");
+    printLog("[%s]\n", testName);
     return stackStringConstruct(size);
 }
 
 void testDestruct(DynamicStringStackPtr stack) { stackStringDestruct(stack); }
 
 void printStack(DynamicStringStackPtr stack) {
-    printf("Stack nextTopElement: %u\n", stack->nextTopElement);
-    printf("Stack nextDownsizeAt: %u\n", stack->nextDownsizeAt);
-    printf("Stack nextUpsizeAt: %u\n", stack->nextUpsizeAt);
-    printf("Stack maxSize: %u\n", stack->maxSize);
-    printf("Data:\n---\n");
+    printLog("Stack nextTopElement: %u\n", stack->nextTopElement);
+    printLog("Stack nextDownsizeAt: %u\n", stack->nextDownsizeAt);
+    printLog("Stack nextUpsizeAt: %u\n", stack->nextUpsizeAt);
+    printLog("Stack maxSize: %u\n", stack->maxSize);
+    printLog("Data:\n---\n");
     for (unsigned i = 0; i < stack->nextTopElement; i++) {
         if (stack->array[i] != NULL) {
-            printf("    Element %u with value: %s\n", i, stack->array[i]);
+            printLog("    Element %u with value: %s\n", i, stack->array[i]);
         } else {
-            printf("    Element %u with value: NULL\n", i);
+            printLog("    Element %u with value: NULL\n", i);
         }
     }
-    printf("---\n");
+    printLog("---\n");
 
     if (stackStringRead(stack) != NULL) {
-        printf("Stack top element: %s\n", stackStringRead(stack));
+        printLog("Stack top element: %s\n", stackStringRead(stack));
     } else {
-        printf("Stack top element: NULL\n");
+        printLog("Stack top element: NULL\n");
     }
 }
 
