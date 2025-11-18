@@ -143,7 +143,7 @@ void emitWrite(AstNode* functionCallNode, FuncContext* context) {
 
     // Výstup je desetinné číslo, ale možná celočíselné
     printN("ISINT LF@temp$var$writeType LF@temp$var$write");
-    printN("JUMPIFNEQ temp$label$write$write$%u LF@temp$var$writeType  bool@true", writeCounter);
+    printN("JUMPIFNEQ temp$label$write$write$%u LF@temp$var$writeType bool@true", writeCounter);
     printN("FLOAT2INT LF@temp$var$write LF@temp$var$write");
 
     printN("LABEL temp$label$write$write$%u", writeCounter);
@@ -207,11 +207,17 @@ void emitStr(AstNode* functionCallNode, FuncContext* context) {
 
     // Desetinné číslo
     printN("LABEL temp$label$str$float$%u", strCounter);
+    // Desetinné číslo je možná celočíselné
+    printN("ISINT LF@temp$var$strType LF@temp$var$strVal");
+    printN("JUMPIFEQ temp$label$str$floatInt$%u LF@temp$var$strType bool@true", strCounter);
+
     printN("PUSHS LF@temp$var$strVal");
     printN("FLOAT2STRS");
     printN("JUMP temp$label$str$end$%u", strCounter);
 
     // Celé číslo
+    printN("LABEL temp$label$str$floatInt$%u", strCounter);
+    printN("FLOAT2INT LF@temp$var$strVal LF@temp$var$strVal");
     printN("LABEL temp$label$str$int$%u", strCounter);
     printN("PUSHS LF@temp$var$strVal");
     printN("INT2STRS");
@@ -286,13 +292,13 @@ void emitSubstring(AstNode* functionCallNode, FuncContext* context) {
     printN("TYPE LF@temp$var$substringType LF@temp$var$substringSin");
     printN("JUMPIFNEQ temp$label$substring$error$%u LF@temp$var$substringType string@string", substringCounter);
     printN("STRLEN LF@temp$var$substringSLen LF@temp$var$substringSin");
-    printN("ADD LF@temp$var$substringSLen  LF@temp$var$substringSLen  int@1");
+    printN("ADD LF@temp$var$substringSLen LF@temp$var$substringSLen int@1");
     // Podmínka pro počátek podřetězce
     printN("TYPE LF@temp$var$substringType LF@temp$var$substringStart");
     printN("JUMPIFEQ temp$label$substring$startInt$%u LF@temp$var$substringType string@int", substringCounter);
     // Začátek je desetinné číslo, ale možná celočíselné
-    printN("ISINT LF@temp$var$substringType  LF@temp$var$substringStart");
-    printN("JUMPIFNEQ temp$label$substring$error$%u LF@temp$var$substringType  bool@true", substringCounter);
+    printN("ISINT LF@temp$var$substringType LF@temp$var$substringStart");
+    printN("JUMPIFNEQ temp$label$substring$error$%u LF@temp$var$substringType bool@true", substringCounter);
     printN("FLOAT2INT LF@temp$var$substringStart LF@temp$var$substringStart");
 
     // Podmínka pro konec podřetězce
@@ -300,8 +306,8 @@ void emitSubstring(AstNode* functionCallNode, FuncContext* context) {
     printN("TYPE LF@temp$var$substringType LF@temp$var$substringEnd");
     printN("JUMPIFEQ temp$label$substring$endInt$%u LF@temp$var$substringType string@int", substringCounter);
     // Konec je desetinné číslo, ale možná celočíselné
-    printN("ISINT LF@temp$var$substringType  LF@temp$var$substringEnd");
-    printN("JUMPIFNEQ temp$label$substring$error$%u LF@temp$var$substringType  bool@true", substringCounter);
+    printN("ISINT LF@temp$var$substringType LF@temp$var$substringEnd");
+    printN("JUMPIFNEQ temp$label$substring$error$%u LF@temp$var$substringType bool@true", substringCounter);
     printN("FLOAT2INT LF@temp$var$substringEnd LF@temp$var$substringEnd");
 
     // začátek < 0 ?
@@ -452,7 +458,6 @@ void emitChr(AstNode* functionCallNode, FuncContext* context) {
     printN("TYPE LF@temp$var$chrType LF@temp$var$chrVal");
     printN("JUMPIFEQ temp$label$chr$operation$%u LF@temp$var$chrType string@int", chrCounter);
     // Desetinné číslo, ale možná celočíselný
-
     printN("ISINT LF@temp$var$chrIsInt LF@temp$var$chrVal");
     printN("JUMPIFEQ temp$label$chr$float$%u LF@temp$var$chrIsInt bool@true", chrCounter);
     // Chyba
