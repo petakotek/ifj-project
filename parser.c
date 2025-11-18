@@ -444,6 +444,10 @@ void Block_content_func_check(DynamicSymbolStackPtr Stack, Token token)
 
     if (token.type == TOKEN_BLOCK_END) {
         // {} -> prázdny zoznam
+        if (function)
+        {
+            pushCheck(stackSymbolPush(Stack, makeReduce(AST_RETURN, 1)));
+        }
         pushCheck(stackSymbolPush(Stack, makeReduce(AST_NULL, 0)));
         function = false;
         return;
