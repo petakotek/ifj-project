@@ -188,6 +188,7 @@ void emitFloor(AstNode* functionCallNode, FuncContext* context) {
     printN("LABEL temp$label$floor$operation$%u", floorCounter);
     printN("PUSHS LF@temp$var$floorVal$%u", floorCounter);
     printN("FLOAT2INTS");
+    printN("INT2FLOATS");
     printN("JUMP temp$label$floor$end$%u", floorCounter);
 
     // Celé číslo
