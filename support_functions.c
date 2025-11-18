@@ -45,7 +45,6 @@ void printError(enum errorCodes errCode, const char *fmt, ...) {
     va_end(args);
 }
 
-#define ENABLE_DEVELOPMENT_LOGGING // TODO tohle by se mělo dít při překladu
 #ifdef ENABLE_DEVELOPMENT_LOGGING
 void printWarning(const char *fmt, ...) {
     va_list args;
@@ -104,19 +103,19 @@ void print_and_free_tokens() {
     while (token.type != TOKEN_EOF) {
 
         if (token.type == TOKEN_ERROR) {
-            printf("%s\n", token_type_to_string(token.type));
+            printLog("%s\n", token_type_to_string(token.type));
             break;
         }
-        printf("%s", token_type_to_string(token.type));
+        printLog("%s", token_type_to_string(token.type));
         if (token.type == TOKEN_STRING || token.type == TOKEN_STRING_BLOCK) {
-            printf(" -> value: \"%s\"\n", token.value.identifier);
+            printLog(" -> value: \"%s\"\n", token.value.identifier);
             free(token.value.identifier);
         } else if (token.type == TOKEN_INTEGER || token.type == TOKEN_HEXA ||
                    token.type == TOKEN_FLOAT || token.type == TOKEN_FLOAT_EXP ||
                    token.type == TOKEN_INTEGER_EXP) {
-            printf(" -> value: \"%s\"\n", token.value.identifier);
+            printLog(" -> value: \"%s\"\n", token.value.identifier);
         } else if (token.type == TOKEN_IDENTIFIER || token.type == TOKEN_GLOBAL_ID) {
-            printf(" -> id: \"%s\"\n", token.value.identifier);
+            printLog(" -> id: \"%s\"\n", token.value.identifier);
             free(token.value.identifier);
         } else if (token.type == TOKEN_KEYWORD_VAR || token.type == TOKEN_KEYWORD_IF ||
                    token.type == TOKEN_KEYWORD_FOR || token.type == TOKEN_KEYWORD_WHILE ||
@@ -126,18 +125,18 @@ void print_and_free_tokens() {
                    token.type == TOKEN_KEYWORD_STRING || token.type == TOKEN_KEYWORD_NULL ||
                    token.type == TOKEN_KEYWORD_STATIC || token.type == TOKEN_KEYWORD_IS ||
                    token.type == TOKEN_KEYWORD_NULL_SMALL) {
-            printf("\n");
+            printLog("\n");
         } else {
-            printf("\n");
+            printLog("\n");
         }
 
         token = lexer_token_next();
     }
 
     if (token.type == TOKEN_ERROR) {
-     	fprintf(stderr, "Lexer error on line %d.\n", token.line);
+     	printWarning("Lexer error on line %d.\n", token.line);
     } else {
-        printf("%s\n", token_type_to_string(token.type));
+        printLog("%s\n", token_type_to_string(token.type));
     }
 }
 /*

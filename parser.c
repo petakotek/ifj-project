@@ -336,7 +336,7 @@ AstNode *parser()
     Stack =  NULL;
     stackAstNodeDestruct(AstStack);
     AstStack =  NULL;
-    fprintf(stderr,"PARSER IS DONE\n");
+    printLog("PARSER IS DONE\n");
     return ast_root;
 
 }
@@ -444,6 +444,10 @@ void Block_content_func_check(DynamicSymbolStackPtr Stack, Token token)
 
     if (token.type == TOKEN_BLOCK_END) {
         // {} -> prázdny zoznam
+        if (function)
+        {
+            pushCheck(stackSymbolPush(Stack, makeReduce(AST_RETURN, 1)));
+        }
         pushCheck(stackSymbolPush(Stack, makeReduce(AST_NULL, 0)));
         function = false;
         return;
@@ -1020,7 +1024,7 @@ void Expr_func(DynamicSymbolStackPtr Stack, Token *gLookahead, DynamicAstNodeSta
         printError(SYNTAX_ERROR, "Chybný výraz\n");
         memorySafeExit(SYNTAX_ERROR);
     }
-    fprintf(stderr,"expr strom po skoncení funcke parseExpression\n");
+    printLog("expr strom po skoncení funcke parseExpression\n");
     ast_dump(expr);
 
     // výsledný uzol výrazu dáme na AST zásobník

@@ -2031,7 +2031,7 @@ void emit_command(AstNode *node,FuncContext *funcStruct) {
             handleBuiltin(node, funcStruct);
          	break;
         default:
-        	printf("%s \n",ast_node_type_to_string(node->kind));
+        	printLog("%s \n",ast_node_type_to_string(node->kind));
             printError(INTERNAL_ERROR, "Chyba v generatoru neznamy uzel");
             memorySafeExit(INTERNAL_ERROR);
     }

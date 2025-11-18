@@ -192,7 +192,7 @@ AstNodeType getAstNodeTypeFromTokenType(TokenType type)
     case TOKEN_KEYWORD_STRING:      return AST_KEYWORD_STRING;
     case TOKEN_KEYWORD_NULL_SMALL:  return AST_SMALL_NULL;
     case TOKEN_KEYWORD_NULL:        return AST_NULL;
-  //  case TOKEN_STRING_BLOCK:        return AST_STRING_BLOCK;
+    case TOKEN_STRING_BLOCK:        return AST_STRING_BLOCK;
     case TOKEN_HEXA:			    return AST_INT_LIT;
     case TOKEN_INTEGER_EXP:		    return AST_INT_LIT_EXP;
     case TOKEN_FLOAT_EXP:           return AST_FLOAT_LIT_EXP;
@@ -998,7 +998,7 @@ AstNode* parseExpression(Token *token, int flag)
             break;
 
             case L: // <
-                // printf(" < (%d, %d) ", operatorToPush(StackTop), operatorToPush(actualToken));
+                // printLog(" < (%d, %d) ", operatorToPush(StackTop), operatorToPush(actualToken));
                 if (DEBUG)
                     printLog("\tOperace <\n");
                 // pokud je na za zasobniku pouze dollar, tak tam vlozim  < i
