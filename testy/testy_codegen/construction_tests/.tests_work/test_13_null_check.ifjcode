@@ -1,0 +1,56 @@
+.IFJcode25
+JUMP main$0
+LABEL main$0
+CREATEFRAME
+PUSHFRAME
+DEFVAR LF@retval
+DEFVAR LF@main$0_ty_bool_0
+DEFVAR LF@main$0_val_bool_0
+DEFVAR LF@x$$1
+DEFVAR LF@main$0_ty_bool_1
+DEFVAR LF@main$0_val_bool_1
+DEFVAR LF@main$0_ln_2
+DEFVAR LF@main$0_rn_2
+DEFVAR LF@main$0_ty_2
+DEFVAR LF@main$0_ty_bool_3
+DEFVAR LF@main$0_val_bool_3
+MOVE LF@retval nil@nil
+PUSHS LF@x$$1
+PUSHS nil@nil
+POPS LF@main$0_rn_2
+POPS LF@main$0_ln_2
+PUSHS LF@main$0_ln_2
+PUSHS LF@main$0_rn_2
+TYPES
+POPS LF@main$0_ty_2
+TYPES
+PUSHS LF@main$0_ty_2
+JUMPIFEQS main$0$ok$2
+JUMP main$0$err$2
+LABEL main$0$ok$2
+PUSHS LF@main$0_ln_2
+PUSHS LF@main$0_rn_2
+EQS
+JUMP main$0$end_equal$2
+LABEL main$0$err$2
+PUSHS bool@false
+LABEL main$0$end_equal$2
+PUSHS bool@false
+JUMPIFEQS main$0$ifEnd$1
+PUSHS string@is_null
+DEFVAR LF@temp$var$write$0
+DEFVAR LF@temp$var$writeType$0
+POPS LF@temp$var$write$0
+TYPE LF@temp$var$writeType$0 LF@temp$var$write$0
+JUMPIFNEQ temp$label$write$write$0 LF@temp$var$writeType$0 string@float
+ISINT LF@temp$var$writeType$0  LF@temp$var$write$0
+JUMPIFNEQ temp$label$write$write$0 LF@temp$var$writeType$0  bool@true
+FLOAT2INT LF@temp$var$write$0 LF@temp$var$write$0
+LABEL temp$label$write$write$0
+WRITE LF@temp$var$write$0
+PUSHS nil@nil
+JUMP main$0$ifchainend$0
+LABEL main$0$ifEnd$1
+LABEL main$0$ifchainend$0
+LABEL main$0$end$0
+EXIT int@0

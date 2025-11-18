@@ -1,0 +1,85 @@
+.IFJcode25
+JUMP main$0
+LABEL unicorn$g
+CREATEFRAME
+PUSHFRAME
+DEFVAR LF@retval
+DEFVAR LF@unicorn$g_ln_0
+DEFVAR LF@unicorn$g_rn_0
+DEFVAR LF@unicorn$g_ty_0
+DEFVAR LF@unicorn$g_rs_0
+MOVE LF@retval nil@nil
+PUSHS bool@true
+PUSHS bool@false
+JUMPIFEQS $getterEnd$0$ifEnd$1
+PUSHS GF@__a
+PUSHS int@10
+INT2FLOATS
+POPS LF@unicorn$g_rn_0
+POPS LF@unicorn$g_ln_0
+PUSHS LF@unicorn$g_ln_0
+PUSHS LF@unicorn$g_rn_0
+TYPES
+POPS LF@unicorn$g_ty_0
+TYPES
+PUSHS LF@unicorn$g_ty_0
+JUMPIFEQS unicorn$g$ok_add$0
+JUMP unicorn$g$err$0
+LABEL unicorn$g$ok_add$0
+PUSHS LF@unicorn$g_ty_0
+PUSHS string@string
+JUMPIFEQS unicorn$g$concat$0
+PUSHS LF@unicorn$g_ty_0
+PUSHS string@int
+JUMPIFEQS unicorn$g$add$0
+PUSHS LF@unicorn$g_ty_0
+PUSHS string@float
+JUMPIFEQS unicorn$g$add$0
+JUMP unicorn$g$err$0
+LABEL unicorn$g$add$0
+PUSHS LF@unicorn$g_ln_0
+PUSHS LF@unicorn$g_rn_0
+ADDS
+JUMP unicorn$g$end_add$0
+LABEL unicorn$g$concat$0
+MOVE LF@unicorn$g_rs_0 string@""
+CONCAT LF@unicorn$g_rs_0 LF@unicorn$g_ln_0 LF@unicorn$g_rn_0
+PUSHS LF@unicorn$g_rs_0
+JUMP unicorn$g$end_add$0
+LABEL unicorn$g$err$0
+EXIT int@25
+LABEL unicorn$g$end_add$0
+
+POPS LF@retval
+JUMP $getterEnd$0
+JUMP $getterEnd$0$ifchainend$0
+LABEL $getterEnd$0$ifEnd$1
+PUSHS nil@nil
+POPS LF@retval
+JUMP $getterEnd$0
+JUMP $getterEnd$0$ifchainend$0
+LABEL $getterEnd$0$ifchainend$0
+LABEL $getterEnd$0
+PUSHS LF@retval
+POPFRAME
+RETURN
+LABEL main$0
+CREATEFRAME
+PUSHFRAME
+DEFVAR LF@retval
+DEFVAR LF@main$0_ty_bool_0
+DEFVAR LF@main$0_val_bool_0
+MOVE LF@retval nil@nil
+DEFVAR LF@temp$var$write$0
+DEFVAR LF@temp$var$writeType$0
+POPS LF@temp$var$write$0
+TYPE LF@temp$var$writeType$0 LF@temp$var$write$0
+JUMPIFNEQ temp$label$write$write$0 LF@temp$var$writeType$0 string@float
+ISINT LF@temp$var$writeType$0  LF@temp$var$write$0
+JUMPIFNEQ temp$label$write$write$0 LF@temp$var$writeType$0  bool@true
+FLOAT2INT LF@temp$var$write$0 LF@temp$var$write$0
+LABEL temp$label$write$write$0
+WRITE LF@temp$var$write$0
+PUSHS nil@nil
+LABEL main$0$end$0
+EXIT int@0

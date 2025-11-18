@@ -1,0 +1,12 @@
+import "ifj25" for Ifj
+
+class Program {
+    static main() {
+        var x
+        if (x is Null) {
+            Ifj.write("null_type")
+        } else {
+            Ifj.write("not_null_type")
+        }
+    }
+}

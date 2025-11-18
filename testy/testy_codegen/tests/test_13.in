@@ -1,0 +1,15 @@
+import "ifj25" for Ifj
+
+class Program {
+    static main() {
+        if (true && true) {
+            Ifj.write("and_true")
+        }
+        if (true || false) {
+            Ifj.write("or_true")
+        }
+        if (!false) {
+            Ifj.write("not_true")
+        }
+    }
+}

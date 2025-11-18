@@ -929,22 +929,24 @@ Token lexer_token_next() {
                         hexa_count = 0;
                         lexer->pos++;
                     } else if (next == 'n') {
-                    append_char(&buf, &delak, &kapacity, '\\');
                         append_char(&buf, &delak, &kapacity, '\n');
                         lexer->pos++;
                     } else if (next == 'r') {
-                    append_char(&buf, &delak, &kapacity, '\\');
                         append_char(&buf, &delak, &kapacity, '\r');
                         lexer->pos++;
                     } else if (next == 't') {
-                    append_char(&buf, &delak, &kapacity, '\\');
                         append_char(&buf, &delak, &kapacity, '\t');
                         lexer->pos++;
-                    } else if (next == '"' || next == '\\') {
-                    append_char(&buf, &delak, &kapacity, '\\');
-                        append_char(&buf, &delak, &kapacity, next);
+                    } else if (next == '"') {
+                        append_char(&buf, &delak, &kapacity, '\"');
                         lexer->pos++;
-                    } else {
+                    } 
+                    else if (next == '\\') {
+                        append_char(&buf, &delak, &kapacity, '\\');
+                        lexer->pos++;
+                    } 
+
+                    else {
                         free(buf);
                         buf = NULL;
                         printError(LEX_ERROR,

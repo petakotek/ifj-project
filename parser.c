@@ -27,6 +27,7 @@ DynamicAstNodeStackPtr AstStack =  NULL;
 Token token;
 AstNode *ast_root = NULL;
 DynamicSymbolStackPtr Stack = NULL;
+bool function = false;
 
 
 AstNode *parser()
@@ -444,6 +445,7 @@ void Block_content_func_check(DynamicSymbolStackPtr Stack, Token token)
     if (token.type == TOKEN_BLOCK_END) {
         // {} -> prázdny zoznam
         pushCheck(stackSymbolPush(Stack, makeReduce(AST_NULL, 0)));
+        function = false;
         return;
     }
 
@@ -451,6 +453,7 @@ void Block_content_func_check(DynamicSymbolStackPtr Stack, Token token)
         // { NEW_LINE Block_content }
         pushCheck(stackSymbolPush(Stack, makeNonterm(N_Block_content)));
         pushCheck(stackSymbolPush(Stack, makeTerm(TOKEN_NEW_LINE)));
+        function = false;
         return;
     }
 
@@ -470,6 +473,12 @@ void Block_content_func_check(DynamicSymbolStackPtr Stack, Token token)
         case TOKEN_INTEGER_EXP:
         case STRING_BLOCK:
             pushCheck(stackSymbolPush(Stack, makeReduce(AST_STATEMENT_LIST, 1)));
+
+            if (function)
+            {
+                pushCheck(stackSymbolPush(Stack,makeReduce(AST_RETURN,1)));
+                function = false;
+            }
             pushCheck(stackSymbolPush(Stack, makeNonterm(N_oExpr)));
             return;
         default:
@@ -638,6 +647,7 @@ void Func_dec_tail_func(DynamicSymbolStackPtr Stack, Token token)
         pushCheck(stackSymbolPush(Stack, makeNonterm(N_Param)));
         pushCheck(stackSymbolPush(Stack, makeNonterm(N_Opt_newlines)));
         pushCheck(stackSymbolPush(Stack, makeTerm(TOKEN_LPAREN)));
+        function = true;
     }
     else if (token.type == TOKEN_ASSIGN)
     {
@@ -651,6 +661,7 @@ void Func_dec_tail_func(DynamicSymbolStackPtr Stack, Token token)
         pushCheck(stackSymbolPush(Stack, makeTermWithValue(TOKEN_IDENTIFIER)));
         pushCheck(stackSymbolPush(Stack, makeTerm(TOKEN_LPAREN)));
         pushCheck(stackSymbolPush(Stack, makeTerm(TOKEN_ASSIGN)));
+        function = true;
     }
     else if (token.type == TOKEN_BLOCK_STAR)
     {
@@ -660,6 +671,7 @@ void Func_dec_tail_func(DynamicSymbolStackPtr Stack, Token token)
         pushCheck(stackSymbolPush(Stack, makeNonterm(N_Block)));
         pushCheck(stackSymbolPush(Stack, makeReduce(AST_PARAM, 1)));
         pushCheck(stackSymbolPush(Stack, makeReduce(AST_EMPTY, 0)));
+        function = true;
     }
     else
     {

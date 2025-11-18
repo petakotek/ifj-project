@@ -1,0 +1,12 @@
+import "ifj25" for Ifj
+
+class Program {
+    static unicorn=(val) {
+        __a = val
+        Ifj.write("set")
+    }
+
+    static main() {
+        unicorn = 5
+    }
+}

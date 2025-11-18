@@ -1,29 +1,8 @@
 import "ifj25" for Ifj
-
 class Program {
+    static inc(x) { x + 1 }
     static main() {
-        var a = 10.5
-        var b = 5.9
-        var c = 0.8
-        var d = 10
-        var e = 20
-        var f = 10
-
-        Ifj.write(a + b)   // PLUS: 15
-        Ifj.write(a - b)   // MINUS: 5
-        Ifj.write(a * b)   // MUL: 50
-        Ifj.write(a / b)   // DIV: 2
-
-        Ifj.write(a == d)    // EQ: true (1)
-        Ifj.write(a < e)     // LT: true (1)
-        Ifj.write(a > b)     // GT: true (1)
-        Ifj.write(a != b)    // NEQ: true (1)
-        Ifj.write(a >= d)    // GTE: true (1)
-        Ifj.write(a <= f)    // LTE: true (1)
-
-        var t = true
-        var fa = false
-        Ifj.write(t && fa)    // AND: false (0)
-        Ifj.write(t || fa)    // OR: true (1)
+        var y = inc(5)
+        Ifj.write(y)
     }
 }
