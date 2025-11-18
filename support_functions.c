@@ -76,8 +76,6 @@ void printLog(const char *fmt, ...) {
 #endif
 
 bool memoryClean() {
-    // TODO jednotlivé funkce pro vyčištění struktur a podobně
-    // TODO už můžu přidat lexer_free() a zavření souboru/free na načtený soubor
     if(buf != NULL){
 
     }
@@ -89,7 +87,6 @@ bool memoryClean() {
 }
 
 void memorySafeExit(enum errorCodes errCode) {
-    // TODO idk co bude potřeba udělat
     memoryClean();
     exit(errCode);
 }
