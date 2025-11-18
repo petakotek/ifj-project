@@ -153,13 +153,11 @@ void emitWrite(AstNode* functionCallNode, FuncContext* context) {
     printN("POPS LF@temp$var$write$%u", writeCounter);
 
     printN("TYPE LF@temp$var$writeType$%u LF@temp$var$write$%u", writeCounter, writeCounter);
-    printN("JUMPIFNEQ temp$label$write$write$%u LF@temp$var$writeType$%u string@float", writeCounter,
-           writeCounter);
+    printN("JUMPIFNEQ temp$label$write$write$%u LF@temp$var$writeType$%u string@float", writeCounter, writeCounter);
 
     // Výstup je desetinné číslo, ale možná celočíselné
     printN("ISINT LF@temp$var$writeType$%u  LF@temp$var$write$%u", writeCounter, writeCounter);
-    printN("JUMPIFNEQ temp$label$write$write$%u LF@temp$var$writeType$%u  bool@true", writeCounter,
-           writeCounter);
+    printN("JUMPIFNEQ temp$label$write$write$%u LF@temp$var$writeType$%u  bool@true", writeCounter, writeCounter);
     printN("FLOAT2INT LF@temp$var$write$%u LF@temp$var$write$%u", writeCounter, writeCounter);
 
     printN("LABEL temp$label$write$write$%u", writeCounter);
@@ -195,6 +193,7 @@ void emitFloor(AstNode* functionCallNode, FuncContext* context) {
     // Celé číslo
     printN("LABEL temp$label$floor$noOp$%u", floorCounter);
     printN("PUSHS LF@temp$var$floorVal$%u", floorCounter);
+    printN("INT2FLOATS");
     printN("JUMP temp$label$floor$end$%u", floorCounter);
 
     printN("LABEL temp$label$floor$end$%u", floorCounter);
@@ -285,6 +284,7 @@ void emitLength(AstNode* functionCallNode, FuncContext* context) {
     printN("DEFVAR LF@temp$var$lengthRet$%u", lengthCounter);
     printN("STRLEN LF@temp$var$lengthRet$%u LF@temp$var$lengthVal$%u", lengthCounter, lengthCounter);
     printN("PUSHS LF@temp$var$lengthRet$%u", lengthCounter);
+    printN("INT2FLOATS");
 
     lengthCounter++;
 }
@@ -328,8 +328,7 @@ void emitSubstring(AstNode* functionCallNode, FuncContext* context) {
     printN("JUMPIFNEQ temp$label$substring$error$%u LF@temp$var$substringType$%u  bool@true", substringCounter,
            substringCounter);
     printN("FLOAT2INT LF@temp$var$substringStart$%u LF@temp$var$substringStart$%u", substringCounter, substringCounter);
-    
-    
+
     // Podmínka pro konec podřetězce
     printN("LABEL temp$label$substring$startInt$%u", substringCounter);
     printN("TYPE LF@temp$var$substringType$%u LF@temp$var$substringEnd$%u", substringCounter, substringCounter);
@@ -340,9 +339,9 @@ void emitSubstring(AstNode* functionCallNode, FuncContext* context) {
     printN("JUMPIFNEQ temp$label$substring$error$%u LF@temp$var$substringType$%u  bool@true", substringCounter,
            substringCounter);
     printN("FLOAT2INT LF@temp$var$substringEnd$%u LF@temp$var$substringEnd$%u", substringCounter, substringCounter);
-    
+
     // začátek < 0 ?
-    printN("LABEL temp$label$substring$endInt$%u", substringCounter);   
+    printN("LABEL temp$label$substring$endInt$%u", substringCounter);
     printN("LT LF@temp$var$substringCmpResult$%u LF@temp$var$substringStart$%u int@0", substringCounter,
            substringCounter);
     printN("JUMPIFEQ temp$label$substring$badInput$%u LF@temp$var$substringCmpResult$%u bool@true", substringCounter,
@@ -379,13 +378,15 @@ void emitSubstring(AstNode* functionCallNode, FuncContext* context) {
     printN("DEFVAR LF@temp$var$substringStemp$%u", substringCounter);
 
     printN("LABEL temp$label$substring$loopStart$%u", substringCounter);
-    printN("JUMPIFEQ temp$label$substring$save$%u LF@temp$var$substringStart$%u LF@temp$var$substringEnd$%u ", substringCounter,
-        substringCounter, substringCounter);
-    printN("GETCHAR LF@temp$var$substringStemp$%u LF@temp$var$substringSin$%u LF@temp$var$substringStart$%u", substringCounter, substringCounter, substringCounter);
-    printN("CONCAT LF@temp$var$substringSout$%u LF@temp$var$substringSout$%u LF@temp$var$substringStemp$%u", substringCounter, substringCounter, substringCounter);
-    printN("ADD LF@temp$var$substringStart$%u LF@temp$var$substringStart$%u int@1", substringCounter, substringCounter, substringCounter);
+    printN("JUMPIFEQ temp$label$substring$save$%u LF@temp$var$substringStart$%u LF@temp$var$substringEnd$%u ",
+           substringCounter, substringCounter, substringCounter);
+    printN("GETCHAR LF@temp$var$substringStemp$%u LF@temp$var$substringSin$%u LF@temp$var$substringStart$%u",
+           substringCounter, substringCounter, substringCounter);
+    printN("CONCAT LF@temp$var$substringSout$%u LF@temp$var$substringSout$%u LF@temp$var$substringStemp$%u",
+           substringCounter, substringCounter, substringCounter);
+    printN("ADD LF@temp$var$substringStart$%u LF@temp$var$substringStart$%u int@1", substringCounter, substringCounter,
+           substringCounter);
     printN("JUMP temp$label$substring$loopStart$%u", substringCounter);
-
 
     printN("LABEL temp$label$substring$badInput$%u", substringCounter);
     printN("PUSHS nil@nil");
@@ -440,19 +441,22 @@ void emitStrcmp(AstNode* functionCallNode, FuncContext* context) {
     printN("JUMPIFEQ temp$label$strcmp$higher$%u LF@temp$var$strcmpCmpResult$%u bool@true", strcmpCounter,
            strcmpCounter);
     // Operace - s1 = s2
-    printN("JUMP temp$label$strcmp$equal$%u", strcmpCounter);
+	printN("JUMP temp$label$strcmp$equal$%u", strcmpCounter);
 
     // s1 < s2
     printN("LABEL temp$label$strcmp$smaller$%u", strcmpCounter);
     printN("PUSHS int@-1");
+    printN("INT2FLOATS");
     printN("JUMP temp$label$strcmp$end$%u", strcmpCounter);
     // s1 > s2
     printN("LABEL temp$label$strcmp$higher$%u", strcmpCounter);
     printN("PUSHS int@1");
+    printN("INT2FLOATS");
     printN("JUMP temp$label$strcmp$end$%u", strcmpCounter);
     // s1 = s2
     printN("LABEL temp$label$strcmp$equal$%u", strcmpCounter);
     printN("PUSHS int@0");
+	printN("INT2FLOATS");
     printN("JUMP temp$label$strcmp$end$%u", strcmpCounter);
 
     printN("LABEL temp$label$strcmp$end$%u", strcmpCounter);
@@ -498,6 +502,7 @@ void emitOrd(AstNode* functionCallNode, FuncContext* context) {
     printN("STRI2INT LF@temp$var$ordOut$%u LF@temp$var$ordStr$%u LF@temp$var$ordNum$%u", ordCounter, ordCounter,
            ordCounter);
     printN("PUSHS LF@temp$var$ordOut$%u", ordCounter);
+	printN("INT2FLOATS");
 
     ordCounter++;
 }
