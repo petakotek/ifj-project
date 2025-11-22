@@ -1,4 +1,10 @@
-// TODO hlavička
+/**
+ * Fakulta informačních technologií VUT Brno
+ *
+ * @brief Hlavičkový soubor pro implementaci výpisu kódu pro vestavěné funkce
+ * @file builtin_functions.h
+ * @author Vojtěch Voldřich (xvoldrv00)
+ */
 
 #ifndef BUILTIN
 #define BUILTIN
@@ -16,4 +22,4 @@ void handleBuiltin(AstNode * ifjFunctionCall, FuncContext* context);
 
 #endif
 
-// TODO patička
+/*** konec builtin_functions.h ***/

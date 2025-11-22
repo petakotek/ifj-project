@@ -1,4 +1,10 @@
-// TODO hlavička
+/**
+ * Fakulta informačních technologií VUT Brno
+ *
+ * @brief Implementaci výpisu kódu pro vestavěné funkce
+ * @file builtin_functions.c
+ * @author Vojtěch Voldřich (xvoldrv00)
+ */
 
 #include "builtin_functions.h"
 
@@ -25,7 +31,7 @@ void emitReadNum();
 void emitReadBool();
 
 /**
- * @brief Funkce por výpis libovolné hodnoty na výstup
+ * @brief Funkce pro výpis libovolné hodnoty na výstup
  *
  * @param functionCallNode Uzel s voláním funkce
  * @param context Kontext
@@ -41,7 +47,7 @@ void emitWrite(AstNode* functionCallNode, FuncContext* context);
 void emitFloor(AstNode* functionCallNode, FuncContext* context);
 
 /**
- * @brief VFunkce pro převod libovolné vstupní hodnoty na odpovídající řetězec
+ * @brief Funkce pro převod libovolné vstupní hodnoty na odpovídající řetězec
  *
  * @param functionCallNode Uzel s voláním funkce
  * @param context Kontext
@@ -57,7 +63,7 @@ void emitStr(AstNode* functionCallNode, FuncContext* context);
 void emitLength(AstNode* functionCallNode, FuncContext* context);
 
 /**
- * @brief TODO
+ * @brief Funkce pro vytvoření podřetězce
  *
  * @param functionCallNode Uzel s voláním funkce
  * @param context Kontext
@@ -133,11 +139,11 @@ void emitWrite(AstNode* functionCallNode, FuncContext* context) {
     static unsigned writeCounter = 0;
 
     emit_command(functionCallNode->child[1]->child[0], context);
-	
-	// Parametry
+
+    // Parametry
     printN("POPS LF@temp$var$write");
 
-	// Podmínka
+    // Podmínka
     printN("TYPE LF@temp$var$writeType LF@temp$var$write");
     printN("JUMPIFNEQ temp$label$write$write$%u LF@temp$var$writeType string@float", writeCounter);
 
@@ -475,4 +481,4 @@ void emitChr(AstNode* functionCallNode, FuncContext* context) {
     chrCounter++;
 }
 
-// TODO Patička
+/*** konec builtin_functions.c ***/
