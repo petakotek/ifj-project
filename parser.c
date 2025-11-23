@@ -41,7 +41,7 @@ AstNode *parser()
     }
 
     pushCheck(stackSymbolPush(stack,makeTerm(TOKEN_EOF)));
-    pushCheck(stackSymbolPush(stack,makeNonterm(N_Program)));
+    pushCheck(stackSymbolPush(stack,makeNonterm(N_PROGRAM)));
     token = lexer_token_next();
 
     Symbol stackTop;
@@ -185,128 +185,128 @@ AstNode *parser()
         {
             switch (stackTop.symbol)
             {
-                case N_Program:
+                case N_PROGRAM:
                     programFunc(stack);
                     break;
-                case N_Prolog:
+                case N_PROLOG:
                     prologFunc(stack);
                     break;
-                case N_Main_class:
+                case N_MAIN_CLASS:
                     mainClassFunc(stack);
                     break;
-                case N_Main_class_block:
+                case N_MAIN_CLASS_BLOCK:
                     mainClassBlockFunc(stack, token);
                     break;
-                case N_Block:
+                case N_BLOCK:
                     blockFunc(stack);
                     break;
-                case N_Block_content:
+                case N_BLOCK_CONTENT:
                     blockContentFunc(stack, token);
                     break;
-                case N_smth_tail:
+                case N_STMT_TAIL:
                     smthTailFunc(stack, token);
                     break;
-                case N_smth_list:
+                case N_STMT_LIST:
                     smthListFunc(stack, token);
                     break;
-                case N_Func_dec:
+                case N_FUNC_DEC:
                     funcDecFunc(stack);
                     break;
-                case N_Func_dec_tail:
+                case N_FUNC_DEC_TAIL:
                     funcDecTailFunc(stack, token);
                     break;
-                case N_Param:
+                case N_PARAM:
                     paramFunc(stack, token);
                     break;
-                case N_Param_list:
+                case N_PARAM_LIST:
                     paramListFunc(stack, token);
                     break;
-                case N_Var:
+                case N_VAR:
                     varFunc(stack);
                     break;
-                case N_Var_EXT:
+                case N_VAR_EXT:
                     varExtFunc(stack, token);
                     break;
-                case N_Var_arg:
+                case N_VAR_ARG:
                     varArgFunc(stack, token);
                     break;
-                case N_Var_arg_list:
+                case N_VAR_ARG_LIST:
                     varArgListFunc(stack, token);
                     break;
-                case N_Call_assign:
+                case N_CALL_ASSIGN:
                     callAssignFunc(stack);
                     break;
-                case N_Call_assign_list:
+                case N_CALL_ASSIGN_LIST:
                     callAssignListFunc(stack, token);
                     break;
-                case N_Global_assign:
+                case N_GLOBAL_ASSIGN:
                     globalAssignFunc(stack);
                     break;
-                case N_If:
+                case N_IF:
                     ifFunc(stack);
                     break;
-                case N_While:
+                case N_WHILE:
                     whileFunc(stack);
                     break;
-                case N_For:
+                case N_FOR:
                     forFunc(stack);
                     break;
-                case N_Break:
+                case N_BREAK:
                     breakFunc(stack);
                     break;
-                case N_Continue:
+                case N_CONTINUE:
                     continueFunc(stack);
                     break;
-                case N_Return:
+                case N_RETURN:
                     returnFunc(stack);
                     break;
-                case N_Return_expr:
+                case N_RETURN_EXPR:
                     returnExprFunc(stack, token);
                     break;
-                case N_Expr:
+                case N_EXPR:
                     exprFunc(stack, gLookHead, astStack, 0);
                     token = *gLookHead;
                     printLog("precedencna odovzdala token jeho type je = %d\n",token.type);
                     break;
-                case N_cExpr:
+                case N_C_EXPR:
                     exprFunc(stack, gLookHead, astStack, 1);
                     token = *gLookHead;
                     printLog("precedencna odovzdala token jeho type je = %d\n",token.type);
                     break;
-                case N_lExpr:
+                case N_L_EXPR:
                     exprFunc(stack, gLookHead, astStack, -1);
                     printLog("%d",1);
                     token = *gLookHead;
                     printLog("precedencna odovzdala token jeho type je = %d\n",token.type);
                     break;
-                case N_oExpr:
+                case N_O_EXPR:
                     exprFunc(stack, gLookHead, astStack, -2);
                     token = *gLookHead;
                     printLog("precedencna odovzdala token jeho type je = %d\n",token.type);
                     break;
 
-                case N_New_line_check:
+                case N_NEW_LINE_CHECK:
                     newLineFunc(stack,token);
                     break;
-                case N_Opt_newlines:
+                case N_OPT_NEWLINES:
                     optNewlinesFunc(stack,token);
                     break;
-                case N_Block_content_check:
+                case N_BLOCK_CONTENT_CHECK:
                     blockContentFuncCheck(stack,token);
                     break;
-                case N_callIfj:
+                case N_CALL_IFJ:
                     callIfjfunc(stack,token);
                     break;
-                case N_Else_chain:
+                case N_ELSE_CHAIN:
                     elseChainFunc(stack, token);
                     break;
-                case N_Else_item:
+                case N_ELSE_ITEM:
                     elseItemFunc(stack, token);
                     break;
-                case N_callIfjCheck:
+                case N_CALL_IFJ_CHECK:
                     callIfjCheckfunc(stack,token);
                     break;
-                case N_AssignIfjIdCheck:
+                case N_ASSIGN_IFJ_ID_CHECK:
                     AssignIfjIdCheckFunc(stack,token);
                     break;
                 default:
@@ -348,11 +348,11 @@ void programFunc(DynamicSymbolStackPtr stack)
 {
     stackSymbolPop(stack);
     pushCheck(stackSymbolPush(stack, makeReduce(AST_PROGRAM, 2)));
-    pushCheck(stackSymbolPush(stack,makeNonterm(N_Main_class)));
-    pushCheck(stackSymbolPush(stack, makeNonterm(N_Opt_newlines)));
+    pushCheck(stackSymbolPush(stack,makeNonterm(N_MAIN_CLASS)));
+    pushCheck(stackSymbolPush(stack, makeNonterm(N_OPT_NEWLINES)));
     pushCheck(stackSymbolPush(stack,makeTerm(TOKEN_NEW_LINE)));
-    pushCheck(stackSymbolPush(stack,makeNonterm(N_Prolog)));
-    pushCheck(stackSymbolPush(stack, makeNonterm(N_Opt_newlines)));
+    pushCheck(stackSymbolPush(stack,makeNonterm(N_PROLOG)));
+    pushCheck(stackSymbolPush(stack, makeNonterm(N_OPT_NEWLINES)));
 }
 
 void prologFunc(DynamicSymbolStackPtr stack)
@@ -362,13 +362,13 @@ void prologFunc(DynamicSymbolStackPtr stack)
     pushCheck(stackSymbolPush(stack, makeReduce(AST_PROLOG,0)));
     
     pushCheck(stackSymbolPush(stack,makeTerm(TOKEN_KEYWORD_IFJ)));
-    pushCheck(stackSymbolPush(stack, makeNonterm(N_Opt_newlines)));
+    pushCheck(stackSymbolPush(stack, makeNonterm(N_OPT_NEWLINES)));
     pushCheck(stackSymbolPush(stack,makeTerm(TOKEN_KEYWORD_FOR)));
     Token ifj25;
     ifj25.value.identifier = "ifj25";
     ifj25.type = TOKEN_STRING;
     pushCheck(stackSymbolPush(stack,makeTermValue(ifj25)));
-    pushCheck(stackSymbolPush(stack, makeNonterm(N_Opt_newlines)));
+    pushCheck(stackSymbolPush(stack, makeNonterm(N_OPT_NEWLINES)));
     pushCheck(stackSymbolPush(stack,makeTerm(TOKEN_KEYWORD_IMPORT)));
 }
 
@@ -376,9 +376,9 @@ void mainClassFunc(DynamicSymbolStackPtr stack)
 {
     stackSymbolPop(stack);
     pushCheck(stackSymbolPush(stack, makeReduce(AST_MAIN_CLASS, 2)));
-    pushCheck(stackSymbolPush(stack,makeNonterm(N_New_line_check)));
+    pushCheck(stackSymbolPush(stack,makeNonterm(N_NEW_LINE_CHECK)));
     pushCheck(stackSymbolPush(stack,makeTerm(TOKEN_BLOCK_END)));
-    pushCheck(stackSymbolPush(stack,makeNonterm(N_Main_class_block)));
+    pushCheck(stackSymbolPush(stack,makeNonterm(N_MAIN_CLASS_BLOCK)));
     pushCheck(stackSymbolPush(stack,makeTerm(TOKEN_NEW_LINE)));
     pushCheck(stackSymbolPush(stack,makeTerm(TOKEN_BLOCK_STAR)));
     pushCheck(stackSymbolPush(stack, makeTermValueAndCaptureIdentifier("Program")));
@@ -395,13 +395,13 @@ void mainClassBlockFunc(DynamicSymbolStackPtr stack, Token token)
     if (token.type == TOKEN_KEYWORD_STATIC) {
         // Vetva: Main_class_block -> Main_class_item Main_class_block
         pushCheck(stackSymbolPush(stack, makeReduce(AST_MAIN_CLASS_BLOCK, 2)));
-        pushCheck(stackSymbolPush(stack, makeNonterm(N_Main_class_block))); // ... Main_class_block
-        pushCheck(stackSymbolPush(stack, makeNonterm(N_Func_dec)));  // Main_class_item
+        pushCheck(stackSymbolPush(stack, makeNonterm(N_MAIN_CLASS_BLOCK))); // ... Main_class_block
+        pushCheck(stackSymbolPush(stack, makeNonterm(N_FUNC_DEC)));  // Main_class_item
         return;
     }
     else if (token.type == TOKEN_NEW_LINE)
     {
-        pushCheck(stackSymbolPush(stack, makeNonterm(N_Main_class_block)));
+        pushCheck(stackSymbolPush(stack, makeNonterm(N_MAIN_CLASS_BLOCK)));
         pushCheck(stackSymbolPush(stack, makeTerm(TOKEN_NEW_LINE)));
         return;
     }
@@ -428,7 +428,7 @@ void blockFunc(DynamicSymbolStackPtr stack)
     // AST_BLOCK má 1 dieťa = STATEMENT_LIST
     pushCheck(stackSymbolPush(stack, makeReduce(AST_BLOCK, 1)));
     pushCheck(stackSymbolPush(stack, makeTerm(TOKEN_BLOCK_END)));
-    pushCheck(stackSymbolPush(stack, makeNonterm(N_Block_content_check)));
+    pushCheck(stackSymbolPush(stack, makeNonterm(N_BLOCK_CONTENT_CHECK)));
     pushCheck(stackSymbolPush(stack, makeTerm(TOKEN_BLOCK_STAR)));
 }
 
@@ -449,7 +449,7 @@ void blockContentFuncCheck(DynamicSymbolStackPtr stack, Token token)
 
     if (token.type == TOKEN_NEW_LINE) {
         // { NEW_LINE Block_content }
-        pushCheck(stackSymbolPush(stack, makeNonterm(N_Block_content)));
+        pushCheck(stackSymbolPush(stack, makeNonterm(N_BLOCK_CONTENT)));
         pushCheck(stackSymbolPush(stack, makeTerm(TOKEN_NEW_LINE)));
         function = false;
         return;
@@ -477,7 +477,7 @@ void blockContentFuncCheck(DynamicSymbolStackPtr stack, Token token)
                 pushCheck(stackSymbolPush(stack,makeReduce(AST_RETURN,1)));
                 function = false;
             }
-            pushCheck(stackSymbolPush(stack, makeNonterm(N_oExpr)));
+            pushCheck(stackSymbolPush(stack, makeNonterm(N_O_EXPR)));
             return;
         default:
             printError(SYNTAX_ERROR, "Po '{' vo funkcii očakávam NEW_LINE, '}', alebo one-liner výraz");
@@ -490,7 +490,7 @@ void blockContentFunc(DynamicSymbolStackPtr stack, Token token)
     stackSymbolPop(stack);
     // Preskoč leading NEW_LINE* vo vnútri bloku
     if (token.type == TOKEN_NEW_LINE) {
-        pushCheck(stackSymbolPush(stack, makeNonterm(N_Block_content)));
+        pushCheck(stackSymbolPush(stack, makeNonterm(N_BLOCK_CONTENT)));
         pushCheck(stackSymbolPush(stack, makeTerm(TOKEN_NEW_LINE)));
         return;
     }
@@ -502,8 +502,8 @@ void blockContentFunc(DynamicSymbolStackPtr stack, Token token)
     }
     // Inak: 1 položka + chvost → pravorekurzívny plochý zoznam
     pushCheck(stackSymbolPush(stack, makeReduce(AST_STATEMENT_LIST, 2)));
-    pushCheck(stackSymbolPush(stack, makeNonterm(N_smth_tail)));
-    pushCheck(stackSymbolPush(stack, makeNonterm(N_smth_list)));
+    pushCheck(stackSymbolPush(stack, makeNonterm(N_STMT_TAIL)));
+    pushCheck(stackSymbolPush(stack, makeNonterm(N_STMT_LIST)));
 }
 
 void smthTailFunc(DynamicSymbolStackPtr stack, Token token)
@@ -512,7 +512,7 @@ void smthTailFunc(DynamicSymbolStackPtr stack, Token token)
     // Po jednej položke môžu nasledovať NEW_LINE a ďalší obsah,
     // alebo epsilon (keď hneď príde '}' alebo niečo, čo už nespadá do FIRST smth_list).
     if (token.type == TOKEN_NEW_LINE) {
-        pushCheck(stackSymbolPush(stack, makeNonterm(N_Block_content))); // znovu začni obsah (buď ďalšia položka, alebo })
+        pushCheck(stackSymbolPush(stack, makeNonterm(N_BLOCK_CONTENT))); // znovu začni obsah (buď ďalšia položka, alebo })
         pushCheck(stackSymbolPush(stack, makeTerm(TOKEN_NEW_LINE)));
         return;
     }
@@ -529,39 +529,39 @@ void smthListFunc(DynamicSymbolStackPtr stack, Token token)
     stackSymbolPop(stack);
     switch (token.type) {
         case TOKEN_KEYWORD_RETURN:
-            pushCheck(stackSymbolPush(stack, makeNonterm(N_Return)));        
+            pushCheck(stackSymbolPush(stack, makeNonterm(N_RETURN)));        
             return;
         case TOKEN_KEYWORD_VAR:
-            pushCheck(stackSymbolPush(stack, makeNonterm(N_Var)));           
+            pushCheck(stackSymbolPush(stack, makeNonterm(N_VAR)));           
             return;
         case TOKEN_KEYWORD_IF:
-            pushCheck(stackSymbolPush(stack, makeNonterm(N_If)));         
+            pushCheck(stackSymbolPush(stack, makeNonterm(N_IF)));         
             return;
         case TOKEN_KEYWORD_WHILE:
-            pushCheck(stackSymbolPush(stack, makeNonterm(N_While)));         
+            pushCheck(stackSymbolPush(stack, makeNonterm(N_WHILE)));         
             return;
         case TOKEN_KEYWORD_FOR:   
-            pushCheck(stackSymbolPush(stack, makeNonterm(N_For)));           
+            pushCheck(stackSymbolPush(stack, makeNonterm(N_FOR)));           
             return;
         case TOKEN_KEYWORD_BREAK:
-            pushCheck(stackSymbolPush(stack, makeNonterm(N_Break)));         
+            pushCheck(stackSymbolPush(stack, makeNonterm(N_BREAK)));         
             return;
         case TOKEN_KEYWORD_CONTINUE:
-            pushCheck(stackSymbolPush(stack, makeNonterm(N_Continue)));      
+            pushCheck(stackSymbolPush(stack, makeNonterm(N_CONTINUE)));      
             return;
         case TOKEN_IDENTIFIER:
-            pushCheck(stackSymbolPush(stack, makeNonterm(N_Call_assign)));   
+            pushCheck(stackSymbolPush(stack, makeNonterm(N_CALL_ASSIGN)));   
             return;
             
         case TOKEN_KEYWORD_IFJ:
             pushCheck(stackSymbolPush(stack, makeReduce(AST_IFJ_CALL, 2)));
-            pushCheck(stackSymbolPush(stack, makeNonterm(N_callIfj)));
+            pushCheck(stackSymbolPush(stack, makeNonterm(N_CALL_IFJ)));
             pushCheck(stackSymbolPush(stack, makeTerm(TOKEN_KEYWORD_IFJ)));
             return;
         case TOKEN_GLOBAL_ID: 
-            pushCheck(stackSymbolPush(stack, makeNonterm(N_Global_assign))); return;
+            pushCheck(stackSymbolPush(stack, makeNonterm(N_GLOBAL_ASSIGN))); return;
         case TOKEN_BLOCK_STAR:
-            pushCheck(stackSymbolPush(stack, makeNonterm(N_Block))); 
+            pushCheck(stackSymbolPush(stack, makeNonterm(N_BLOCK))); 
             return;
 
         // ak nechceš holé výrazové statementy, tieto nechaj vypnuté:
@@ -569,7 +569,7 @@ void smthListFunc(DynamicSymbolStackPtr stack, Token token)
         // case TOKEN_FLOAT:
         // case TOKEN_STRING:
         // case TOKEN_LPAREN:
-        //     pushCheck(stackSymbolPush(stack, makeNonterm(N_Expr)));
+        //     pushCheck(stackSymbolPush(stack, makeNonterm(N_EXPR)));
         //     return;
 
         default:
@@ -582,7 +582,7 @@ void smthListFunc(DynamicSymbolStackPtr stack, Token token)
 void funcDecFunc(DynamicSymbolStackPtr stack)
 {
     stackSymbolPop(stack);
-    pushCheck(stackSymbolPush(stack, makeNonterm(N_Func_dec_tail)));
+    pushCheck(stackSymbolPush(stack, makeNonterm(N_FUNC_DEC_TAIL)));
     pushCheck(stackSymbolPush(stack, makeTermWithValue(TOKEN_IDENTIFIER)));
     pushCheck(stackSymbolPush(stack, makeTerm(TOKEN_KEYWORD_STATIC)));
 }
@@ -596,10 +596,10 @@ void funcDecTailFunc(DynamicSymbolStackPtr stack, Token token)
         // Vetva: ( Param ) Block
         pushCheck(stackSymbolPush(stack, makeReduce(AST_FUNC_DEC, 3)));
         pushCheck(stackSymbolPush(stack, makeTerm(TOKEN_NEW_LINE)));
-        pushCheck(stackSymbolPush(stack, makeNonterm(N_Block)));
+        pushCheck(stackSymbolPush(stack, makeNonterm(N_BLOCK)));
         pushCheck(stackSymbolPush(stack, makeTerm(TOKEN_RPAREN)));
-        pushCheck(stackSymbolPush(stack, makeNonterm(N_Param)));
-        pushCheck(stackSymbolPush(stack, makeNonterm(N_Opt_newlines)));
+        pushCheck(stackSymbolPush(stack, makeNonterm(N_PARAM)));
+        pushCheck(stackSymbolPush(stack, makeNonterm(N_OPT_NEWLINES)));
         pushCheck(stackSymbolPush(stack, makeTerm(TOKEN_LPAREN)));
         function = true;
     }
@@ -608,7 +608,7 @@ void funcDecTailFunc(DynamicSymbolStackPtr stack, Token token)
         // Vetva: = ( identifier ) Block (getter/setter)
         pushCheck(stackSymbolPush(stack, makeReduce(AST_SETTER, 3)));
         pushCheck(stackSymbolPush(stack, makeTerm(TOKEN_NEW_LINE)));
-        pushCheck(stackSymbolPush(stack, makeNonterm(N_Block)));
+        pushCheck(stackSymbolPush(stack, makeNonterm(N_BLOCK)));
         pushCheck(stackSymbolPush(stack, makeTerm(TOKEN_RPAREN)));
         pushCheck(stackSymbolPush(stack, makeReduce(AST_PARAM, 2)));
         pushCheck(stackSymbolPush(stack, makeReduce(AST_EMPTY, 0)));
@@ -622,7 +622,7 @@ void funcDecTailFunc(DynamicSymbolStackPtr stack, Token token)
         // Vetva: Block
         pushCheck(stackSymbolPush(stack, makeReduce(AST_GETTER, 3)));
         pushCheck(stackSymbolPush(stack, makeTerm(TOKEN_NEW_LINE)));
-        pushCheck(stackSymbolPush(stack, makeNonterm(N_Block)));
+        pushCheck(stackSymbolPush(stack, makeNonterm(N_BLOCK)));
         pushCheck(stackSymbolPush(stack, makeReduce(AST_PARAM, 1)));
         pushCheck(stackSymbolPush(stack, makeReduce(AST_EMPTY, 0)));
         function = true;
@@ -640,7 +640,7 @@ void paramFunc(DynamicSymbolStackPtr stack, Token token)
     if (token.type == TOKEN_IDENTIFIER)
     {
         pushCheck(stackSymbolPush(stack, makeReduce(AST_PARAM, 2)));
-        pushCheck(stackSymbolPush(stack, makeNonterm(N_Param_list)));
+        pushCheck(stackSymbolPush(stack, makeNonterm(N_PARAM_LIST)));
         pushCheck(stackSymbolPush(stack, makeTermWithValue(TOKEN_IDENTIFIER)));
     }
     else if (token.type == TOKEN_RPAREN)
@@ -662,9 +662,9 @@ void paramListFunc(DynamicSymbolStackPtr stack, Token token)
     if (token.type == TOKEN_COMMA)
     {
         pushCheck(stackSymbolPush(stack, makeReduce(AST_PARAM, 2))); 
-        pushCheck(stackSymbolPush(stack, makeNonterm(N_Param_list)));
+        pushCheck(stackSymbolPush(stack, makeNonterm(N_PARAM_LIST)));
         pushCheck(stackSymbolPush(stack, makeTermWithValue(TOKEN_IDENTIFIER)));
-        pushCheck(stackSymbolPush(stack, makeNonterm(N_Opt_newlines)));
+        pushCheck(stackSymbolPush(stack, makeNonterm(N_OPT_NEWLINES)));
         pushCheck(stackSymbolPush(stack, makeTerm(TOKEN_COMMA)));
         
     }
@@ -683,7 +683,7 @@ void varFunc(DynamicSymbolStackPtr stack)
 {
     stackSymbolPop(stack);
     pushCheck(stackSymbolPush(stack, makeReduce(AST_VAR, 2)));
-    pushCheck(stackSymbolPush(stack, makeNonterm(N_Var_EXT)));
+    pushCheck(stackSymbolPush(stack, makeNonterm(N_VAR_EXT)));
     pushCheck(stackSymbolPush(stack, makeTermWithValue(TOKEN_IDENTIFIER)));
     pushCheck(stackSymbolPush(stack, makeTerm(TOKEN_KEYWORD_VAR)));
 }
@@ -694,7 +694,7 @@ void varExtFunc(DynamicSymbolStackPtr stack, Token token)
     if (token.type == TOKEN_ASSIGN)
     {
         pushCheck(stackSymbolPush(stack, makeReduce(AST_ASSIGN, 1)));
-        pushCheck(stackSymbolPush(stack, makeNonterm(N_AssignIfjIdCheck)));
+        pushCheck(stackSymbolPush(stack, makeNonterm(N_ASSIGN_IFJ_ID_CHECK)));
         pushCheck(stackSymbolPush(stack, makeTerm(TOKEN_ASSIGN)));
     }
 
@@ -728,14 +728,14 @@ void varArgFunc(DynamicSymbolStackPtr stack, Token token)
         case TOKEN_INTEGER_EXP:
         case TOKEN_STRING_BLOCK:
             pushCheck(stackSymbolPush(stack, makeReduce(AST_PARAM, 2)));
-            pushCheck(stackSymbolPush(stack, makeNonterm(N_Var_arg_list)));
-            pushCheck(stackSymbolPush(stack, makeNonterm(N_Expr)));
+            pushCheck(stackSymbolPush(stack, makeNonterm(N_VAR_ARG_LIST)));
+            pushCheck(stackSymbolPush(stack, makeNonterm(N_EXPR)));
             return;
         case TOKEN_LPAREN:
             // Expr var_arg_list  => uložíme ako AST_PARAM (zoznam argumentov) => arity = 2
             pushCheck(stackSymbolPush(stack, makeReduce(AST_PARAM, 2)));
-            pushCheck(stackSymbolPush(stack, makeNonterm(N_Var_arg_list)));
-            pushCheck(stackSymbolPush(stack, makeNonterm(N_lExpr)));
+            pushCheck(stackSymbolPush(stack, makeNonterm(N_VAR_ARG_LIST)));
+            pushCheck(stackSymbolPush(stack, makeNonterm(N_L_EXPR)));
             return;
 
         // eps (žiadne argumenty)
@@ -756,9 +756,9 @@ void varArgListFunc(DynamicSymbolStackPtr stack, Token token)
      if (token.type == TOKEN_COMMA) {
         // , Expr var_arg_list  => Expr (1) + tail (1) => arity = 2
         pushCheck(stackSymbolPush(stack, makeReduce(AST_PARAM, 2)));
-         pushCheck(stackSymbolPush(stack, makeNonterm(N_Var_arg_list)));
-         pushCheck(stackSymbolPush(stack, makeNonterm(N_cExpr)));
-         pushCheck(stackSymbolPush(stack, makeNonterm(N_Opt_newlines)));
+         pushCheck(stackSymbolPush(stack, makeNonterm(N_VAR_ARG_LIST)));
+         pushCheck(stackSymbolPush(stack, makeNonterm(N_C_EXPR)));
+         pushCheck(stackSymbolPush(stack, makeNonterm(N_OPT_NEWLINES)));
          pushCheck(stackSymbolPush(stack, makeTerm(TOKEN_COMMA)));
     } else if (token.type == TOKEN_RPAREN) {
          // eps
@@ -772,7 +772,7 @@ void varArgListFunc(DynamicSymbolStackPtr stack, Token token)
 void callAssignFunc(DynamicSymbolStackPtr stack)
 {
     stackSymbolPop(stack);
-    pushCheck(stackSymbolPush(stack, makeNonterm(N_Call_assign_list)));
+    pushCheck(stackSymbolPush(stack, makeNonterm(N_CALL_ASSIGN_LIST)));
     pushCheck(stackSymbolPush(stack, makeTermWithValue(TOKEN_IDENTIFIER)));
 
 }
@@ -782,12 +782,12 @@ void callAssignListFunc(DynamicSymbolStackPtr stack, Token token)
     stackSymbolPop(stack);
     if (token.type == TOKEN_ASSIGN) {
         pushCheck(stackSymbolPush(stack, makeReduce(AST_ASSIGN, 2))); // IDENT, EXPR
-        pushCheck(stackSymbolPush(stack, makeNonterm(N_AssignIfjIdCheck)));
+        pushCheck(stackSymbolPush(stack, makeNonterm(N_ASSIGN_IFJ_ID_CHECK)));
         pushCheck(stackSymbolPush(stack, makeTerm(TOKEN_ASSIGN)));
     } else if (token.type == TOKEN_LPAREN) {
         pushCheck(stackSymbolPush(stack, makeReduce(AST_FUNC_CALL, 2))); // IDENT, PARAM(args)
         pushCheck(stackSymbolPush(stack, makeTerm(TOKEN_RPAREN)));
-        pushCheck(stackSymbolPush(stack, makeNonterm(N_Var_arg)));
+        pushCheck(stackSymbolPush(stack, makeNonterm(N_VAR_ARG)));
         pushCheck(stackSymbolPush(stack, makeTerm(TOKEN_LPAREN)));
     }
     else {
@@ -801,7 +801,7 @@ void callAssignListFunc(DynamicSymbolStackPtr stack, Token token)
     // AST_ASSIGN(Expr) => arity = 1
     pushCheck(stackSymbolPush(stack, makeReduce(AST_GLOBAL_ID, 2)));
     pushCheck(stackSymbolPush(stack, makeReduce(AST_ASSIGN,1)));
-    pushCheck(stackSymbolPush(stack, makeNonterm(N_AssignIfjIdCheck)));
+    pushCheck(stackSymbolPush(stack, makeNonterm(N_ASSIGN_IFJ_ID_CHECK)));
     pushCheck(stackSymbolPush(stack, makeTerm(TOKEN_ASSIGN)));
     pushCheck(stackSymbolPush(stack, makeTermWithValue(TOKEN_GLOBAL_ID)));
 }
@@ -815,14 +815,14 @@ void ifFunc(DynamicSymbolStackPtr stack)
     pushCheck(stackSymbolPush(stack, makeReduce(AST_IF_CHAIN, 2)));
 
     // 2) zvyšok (zoznam ďalších vetiev)
-    pushCheck(stackSymbolPush(stack, makeNonterm(N_Else_chain)));
+    pushCheck(stackSymbolPush(stack, makeNonterm(N_ELSE_CHAIN)));
 
     // 1) prvá vetva ako BRANCH(cond, block)
     pushCheck(stackSymbolPush(stack, makeReduce(AST_IF, 2)));
-    pushCheck(stackSymbolPush(stack, makeNonterm(N_Block)));
+    pushCheck(stackSymbolPush(stack, makeNonterm(N_BLOCK)));
     pushCheck(stackSymbolPush(stack, makeReduce(AST_CONDITION, 1)));
     pushCheck(stackSymbolPush(stack, makeTerm(TOKEN_RPAREN)));
-    pushCheck(stackSymbolPush(stack, makeNonterm(N_lExpr)));
+    pushCheck(stackSymbolPush(stack, makeNonterm(N_L_EXPR)));
     pushCheck(stackSymbolPush(stack, makeTerm(TOKEN_LPAREN)));
     pushCheck(stackSymbolPush(stack, makeTerm(TOKEN_KEYWORD_IF)));
 }
@@ -835,8 +835,8 @@ void elseChainFunc(DynamicSymbolStackPtr stack, Token token)
         // Else_chain -> Else_item Else_chain
         // Skladáme dvojice do IF_CHAIN(2); builder to sploští
         pushCheck(stackSymbolPush(stack, makeReduce(AST_IF_CHAIN, 2)));
-        pushCheck(stackSymbolPush(stack, makeNonterm(N_Else_chain))); // tail
-        pushCheck(stackSymbolPush(stack, makeNonterm(N_Else_item)));  // head
+        pushCheck(stackSymbolPush(stack, makeNonterm(N_ELSE_CHAIN))); // tail
+        pushCheck(stackSymbolPush(stack, makeNonterm(N_ELSE_ITEM)));  // head
         pushCheck(stackSymbolPush(stack, makeTerm(TOKEN_KEYWORD_ELSE)));
         return;
     }
@@ -851,10 +851,10 @@ void elseItemFunc(DynamicSymbolStackPtr stack, Token token)
     if (token.type == TOKEN_KEYWORD_IF) {
         // else if ( lExpr ) NEW_LINE Block   => premeníme na BRANCH(cond, block)
         pushCheck(stackSymbolPush(stack, makeReduce(AST_IF, 2)));
-        pushCheck(stackSymbolPush(stack, makeNonterm(N_Block)));
+        pushCheck(stackSymbolPush(stack, makeNonterm(N_BLOCK)));
         pushCheck(stackSymbolPush(stack, makeReduce(AST_CONDITION, 1)));
         pushCheck(stackSymbolPush(stack, makeTerm(TOKEN_RPAREN)));
-        pushCheck(stackSymbolPush(stack, makeNonterm(N_lExpr)));
+        pushCheck(stackSymbolPush(stack, makeNonterm(N_L_EXPR)));
         pushCheck(stackSymbolPush(stack, makeTerm(TOKEN_LPAREN)));
         pushCheck(stackSymbolPush(stack, makeTerm(TOKEN_KEYWORD_IF)));
         return;
@@ -862,7 +862,7 @@ void elseItemFunc(DynamicSymbolStackPtr stack, Token token)
     else if (token.type == TOKEN_BLOCK_STAR) {
         // else { ... }  => necháme AST_ELSE(1)
         pushCheck(stackSymbolPush(stack, makeReduce(AST_ELSE, 1)));
-        pushCheck(stackSymbolPush(stack, makeNonterm(N_Block)));
+        pushCheck(stackSymbolPush(stack, makeNonterm(N_BLOCK)));
         return;
     }
 
@@ -876,10 +876,10 @@ void whileFunc(DynamicSymbolStackPtr stack)
     stackSymbolPop(stack);
     // deti: Expr, Block => arity = 2
     pushCheck(stackSymbolPush(stack, makeReduce(AST_WHILE, 2)));
-    pushCheck(stackSymbolPush(stack, makeNonterm(N_Block)));
+    pushCheck(stackSymbolPush(stack, makeNonterm(N_BLOCK)));
     pushCheck(stackSymbolPush(stack, makeReduce(AST_CONDITION, 1)));
     pushCheck(stackSymbolPush(stack, makeTerm(TOKEN_RPAREN)));
-    pushCheck(stackSymbolPush(stack, makeNonterm(N_lExpr)));
+    pushCheck(stackSymbolPush(stack, makeNonterm(N_L_EXPR)));
     pushCheck(stackSymbolPush(stack, makeTerm(TOKEN_LPAREN)));
     pushCheck(stackSymbolPush(stack, makeTerm(TOKEN_KEYWORD_WHILE)));
 }
@@ -890,10 +890,10 @@ void forFunc(DynamicSymbolStackPtr stack)
     stackSymbolPop(stack);
     // deti: Expr, Block => arity = 2  (IDENT v AST neukladáme)
     pushCheck(stackSymbolPush(stack, makeReduce(AST_FOR, 2)));
-    pushCheck(stackSymbolPush(stack, makeNonterm(N_Block)));
+    pushCheck(stackSymbolPush(stack, makeNonterm(N_BLOCK)));
     pushCheck(stackSymbolPush(stack, makeReduce(AST_CONDITION, 2)));
     pushCheck(stackSymbolPush(stack, makeTerm(TOKEN_RPAREN)));
-    pushCheck(stackSymbolPush(stack, makeNonterm(N_lExpr)));
+    pushCheck(stackSymbolPush(stack, makeNonterm(N_L_EXPR)));
     pushCheck(stackSymbolPush(stack, makeTerm(TOKEN_KEYWORD_IN)));
     pushCheck(stackSymbolPush(stack, makeTermWithValue(TOKEN_IDENTIFIER)));
     pushCheck(stackSymbolPush(stack, makeTerm(TOKEN_LPAREN)));
@@ -919,7 +919,7 @@ void returnFunc(DynamicSymbolStackPtr stack)
 {
     stackSymbolPop(stack);
     pushCheck(stackSymbolPush(stack, makeReduce(AST_RETURN, 1)));
-    pushCheck(stackSymbolPush(stack, makeNonterm(N_Return_expr)));
+    pushCheck(stackSymbolPush(stack, makeNonterm(N_RETURN_EXPR)));
     pushCheck(stackSymbolPush(stack, makeTerm(TOKEN_KEYWORD_RETURN)));
 }
 
@@ -940,11 +940,11 @@ void returnExprFunc(DynamicSymbolStackPtr stack, Token token)
         case TOKEN_INTEGER_EXP:
         case TOKEN_KEYWORD_NULL_SMALL:
         case TOKEN_STRING_BLOCK:
-            pushCheck(stackSymbolPush(stack, makeNonterm(N_Expr)));
+            pushCheck(stackSymbolPush(stack, makeNonterm(N_EXPR)));
             break;
         case TOKEN_LPAREN:
             pushCheck(stackSymbolPush(stack, makeTerm(TOKEN_RPAREN)));
-            pushCheck(stackSymbolPush(stack, makeNonterm(N_lExpr)));
+            pushCheck(stackSymbolPush(stack, makeNonterm(N_L_EXPR)));
             pushCheck(stackSymbolPush(stack, makeTerm(TOKEN_LPAREN)));
             break;
 
@@ -988,7 +988,7 @@ void  newLineFunc(DynamicSymbolStackPtr stack, Token token)
     stackSymbolPop(stack);
     if (token.type == TOKEN_NEW_LINE)
     {
-        pushCheck(stackSymbolPush(stack,makeNonterm(N_New_line_check)));
+        pushCheck(stackSymbolPush(stack,makeNonterm(N_NEW_LINE_CHECK)));
         pushCheck(stackSymbolPush(stack, makeTerm(TOKEN_NEW_LINE)));
         return;
     }
@@ -1009,7 +1009,7 @@ void optNewlinesFunc(DynamicSymbolStackPtr stack, Token token)
     if (token.type == TOKEN_NEW_LINE)
     {
         // Reprezentuje "NEW_LINE Opt_newlines"
-        pushCheck(stackSymbolPush(stack, makeNonterm(N_Opt_newlines)));
+        pushCheck(stackSymbolPush(stack, makeNonterm(N_OPT_NEWLINES)));
         pushCheck(stackSymbolPush(stack, makeTerm(TOKEN_NEW_LINE)));
         return;
     }
@@ -1022,10 +1022,10 @@ void callIfjfunc(DynamicSymbolStackPtr stack, Token token)
 
     if (token.type == TOKEN_DOT){
         pushCheck(stackSymbolPush(stack, makeTerm(TOKEN_RPAREN)));
-        pushCheck(stackSymbolPush(stack, makeNonterm(N_Var_arg)));
+        pushCheck(stackSymbolPush(stack, makeNonterm(N_VAR_ARG)));
         pushCheck(stackSymbolPush(stack, makeTerm(TOKEN_LPAREN)));
-        pushCheck(stackSymbolPush(stack, makeNonterm(N_callIfjCheck)));
-        pushCheck(stackSymbolPush(stack, makeNonterm(N_Opt_newlines)));
+        pushCheck(stackSymbolPush(stack, makeNonterm(N_CALL_IFJ_CHECK)));
+        pushCheck(stackSymbolPush(stack, makeNonterm(N_OPT_NEWLINES)));
         pushCheck(stackSymbolPush(stack, makeTerm(TOKEN_DOT)));
     }
     else
@@ -1077,14 +1077,14 @@ void AssignIfjIdCheckFunc(DynamicSymbolStackPtr stack, Token token)
     if (token.type == TOKEN_KEYWORD_IFJ)
     {
         pushCheck(stackSymbolPush(stack, makeReduce(AST_IFJ_CALL, 2)));
-        pushCheck(stackSymbolPush(stack, makeNonterm(N_callIfj)));
+        pushCheck(stackSymbolPush(stack, makeNonterm(N_CALL_IFJ)));
         pushCheck(stackSymbolPush(stack, makeTerm(TOKEN_KEYWORD_IFJ)));
         return;
     }
     
     else
     {
-        pushCheck(stackSymbolPush(stack, makeNonterm(N_Expr)));
+        pushCheck(stackSymbolPush(stack, makeNonterm(N_EXPR)));
     }
 }
 
