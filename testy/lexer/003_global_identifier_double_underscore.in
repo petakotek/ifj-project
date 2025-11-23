@@ -1,0 +1,6 @@
+import "ifj25" for Ifj
+class Program { 
+    static main() { 
+        var __g = 0 __g = __g + 1 
+        } 
+    }

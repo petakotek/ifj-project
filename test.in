@@ -3,6 +3,7 @@ class Program {
     static isEven(n) {
         if (n == 0) {
             return true
+            var a = 1.
         }
         return isEven(n - 1)
     }

@@ -1,0 +1,6 @@
+import "ifj25" for Ifj
+class Ids { 
+    static main() { 
+        var x = 1 var x1 = 2 var x_y = 3 var xy_1 = 4 
+        } 
+}

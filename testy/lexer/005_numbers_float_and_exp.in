@@ -1,0 +1,2 @@
+import "ifj25" for Ifj
+class Program { static main() { var a = 1.5 var b = 2e3 var c = 3.14e2 } }

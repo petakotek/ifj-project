@@ -36,12 +36,14 @@ int main(){
         memorySafeExit(LEX_ERROR);
     }
 	// inicializovani struktury staraji se o cteni ze souboru
+	/*
 	lexer_init(source_file);
-	//print_and_free_tokens();
-	//exit(0);
+	print_and_free_tokens();
+	exit(0);
+	*/
 	// tvorba stromu pres parser
 	AstNode *AST = parser();
-	ast_dump(AST);
+	//ast_dump(AST);
 	//funkcia ast_dump -> funkcia na kontrolny vypis ast stromu
 
 	bool output;
@@ -51,6 +53,5 @@ int main(){
 	//ast_dump(AST);
 
 	codegen_generate(AST);
-
 	memorySafeExit(NO_ERROR);
 }

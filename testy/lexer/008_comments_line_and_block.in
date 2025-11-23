@@ -1,0 +1,8 @@
+import "ifj25" for Ifj
+class Program {
+    static main() {
+        // line comment
+        var a = 1 /* block
+        comment */ var b = 2
+    }
+}

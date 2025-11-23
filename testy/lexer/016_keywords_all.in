@@ -1,0 +1,12 @@
+import "ifj25" for Ifj
+class C {
+    static main() {
+        var t = true
+        var f = false
+        if (t) { } else { }
+        while (f) { break }
+        for (i in 0 .. 1) { continue }
+        return
+    }
+    static isX(a){ return a is Num }
+}
