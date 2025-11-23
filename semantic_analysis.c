@@ -557,13 +557,13 @@ SemValidationStates recursiveNodeWalker(AstNode* currentNode, AstNodeType parent
                     return OK;
                 }
 
-                // IMPORTANT Dokud nebude pořádná statická analýza, tak nelze přiřadit přesnou hodnotu (např kvůli
+                // IMPORTANT Dokud nebude statická analýza, tak nelze přiřadit přesnou hodnotu (např kvůli
                 // if/else blokům) leftSymbol->dataType = rightSymbol->dataType;
                 leftSymbol->dataType = UNKNOWN_VAL;
             }
 
             if (leftSymbol != NULL) {
-                // IMPORTANT Dokud nebude pořádná statická analýza, tak nelze přiřadit přesnou hodnotu (např kvůli
+                // IMPORTANT Dokud nebude statická analýza, tak nelze přiřadit přesnou hodnotu (např kvůli
                 // if/else blokům) leftSymbol->dataType = convSemValStatesToSemSymbDType(rightChild);
                 leftSymbol->dataType = UNKNOWN_VAL;
             }

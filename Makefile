@@ -26,7 +26,6 @@ dev: clean
 
 .PHONY: all clean
 
-# TODO zabalení dle zadání
 pack:
 	rm -rf xvoldrv00.zip ./tmpIsItOk
 	clang-format -i *.c *.h
