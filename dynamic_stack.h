@@ -1,18 +1,14 @@
 /**
  * Fakulta informačních technologií VUT Brno
  *
- * Hlavička pro dynamický zásobník (prostor se zvětšuje i zmenšuje dle naplnění) s podporou určení
- * datového typu před překladem
+ * @brief Hlavička pro dynamický zásobník (prostor se zvětšuje i zmenšuje dle naplnění) s podporou určení datového typu
+ * před překladem
  * @file dynamic_stack.h
  * @author Vojtěch Voldřich (xvoldrv00)
  */
 
- // TODO dokumentační komentáře a další codestyle věci
-
-
 #ifndef DYNAMIC_STACK
 #define DYNAMIC_STACK 1
-
 
 #include "symbol.h"
 #include "symtable.h"
@@ -26,10 +22,10 @@
 /**
  * @brief Makro pro deklaraci zásobníku pro určitý datový typ
  *
- * Vytvoří deklarace struktury a funkcí pro práci se zásobníkem s formátem stackNAMEOperace
+ * Deklaruje strukturu, datový typ a funkce pro práci se zásobníkem s formátem stackNAMEOperace
  * (stackIntPush)
  * @param TYPE Datový typ data v poli zásobníku
- * @param NAME Řetězec pro odlišení funkcí prodaný typ zásobníku
+ * @param NAME Řetězec pro odlišení funkcí pro daný typ zásobníku
  */
 #define DECLARE_STACK(TYPE, NAME)                                                                         \
     /**                                                                                                   \
@@ -99,7 +95,7 @@
     /**                                                                                                   \
      * @brief Vrátí data z vrcholu zásobníku (nemaže zásobník)                                     \
      *                                                                                                    \
-     * @attention Očekává, že zásobník existuje a není prázdný. Jinak nedefinované chování!     \
+     * @attention Očekává, že zásobník existuje a není prázdný. Jinak nedefinované chování!   \
      * @param stack Ukazatel na zásobník                                                                \
      * @return Data z vrcholu                                                                             \
      */                                                                                                   \
@@ -127,18 +123,17 @@
     /**                                                                                                   \
      * @brief Zajišťuje dealokaci dat i metadat zásobníku                                             \
      *                                                                                                    \
-     * @attention Pokud jsou položky zásobníku ukazatele, je potřeba dealokaci cílů ukazatelů        \
+     * @attention Pokud jsou položky zásobníku ukazatele, je potřeba dealokaci cílů ukazatelů      \
      * zajistit zvlášť. Zásobník tuto variantu nekontroluje!                                         \
      * @param stack Ukazatel na zásobník                                                                \
      */                                                                                                   \
     void stack##NAME##Destruct(Dynamic##NAME##StackPtr stack);
 
-//  DECLARE_STACK(char*, String) // Slouží pro testování
 DECLARE_STACK(Symbol, Symbol)
 DECLARE_STACK(AstNode*, AstNode)
 DECLARE_STACK(HashTable*, HashTablePtr)
 DECLARE_STACK(Token, Precedence)
-DECLARE_STACK(char *, labelStack)
+DECLARE_STACK(char*, labelStack)
 DECLARE_STACK(AstNode*, EmitOp)
 
 #endif
