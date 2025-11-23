@@ -348,8 +348,8 @@ void collectLocalVars(AstNode *node, VarList *vars,FuncContext *funcStruct) {
           case AST_GLOBAL_ID:
           case AST_IDENTIFIER:
           case AST_OR: {
-              node->tmp_id = funcStruct->value_counter++;
-              add_binop_tmps(vars, funcStruct->func_name, node->tmp_id,node);
+              node->tmpId = funcStruct->value_counter++;
+              add_binop_tmps(vars, funcStruct->func_name, node->tmpId,node);
               break;
           }
           default:
@@ -463,7 +463,7 @@ void emit_call_func(AstNode *node,FuncContext *funcStruct){
  	for(size_t i = 0;i < 2;i++){
    		emit_command(node->child[i],funcStruct);
    	}
-     int id = node->tmp_id;
+     int id = node->tmpId;
      char ln[128], rn[128], ty[128],rs[128];
      snprintf(ln, sizeof ln, "%s_ln_%d", funcStruct->func_name, id);
      snprintf(rn, sizeof rn, "%s_rn_%d", funcStruct->func_name, id);
@@ -549,7 +549,7 @@ void emit_call_func(AstNode *node,FuncContext *funcStruct){
 			emit_command(node->child[i], funcStrukt);
 		}
 	        // Po emitBinaryOp máme na zásobníku: [hodnota_left, hodnota_right]
-         int id = node->tmp_id;
+         int id = node->tmpId;
          char ln[128], rn[128], ty[128];
          snprintf(ln, sizeof ln, "%s_ln_%d", funcStrukt->func_name, id);
          snprintf(rn, sizeof rn, "%s_rn_%d", funcStrukt->func_name, id);
@@ -610,7 +610,7 @@ void emitMul(AstNode *node, FuncContext *funcStruct) {
         emit_command(node->child[i], funcStruct);
     }
 
-    int id = node->tmp_id;
+    int id = node->tmpId;
     char ln[128], rn[128], rty[128], lty[128], rs[128], counter[128];
     snprintf(ln, sizeof ln, "%s_ln_%d", funcStruct->func_name, id);
     snprintf(rn, sizeof rn, "%s_rn_%d", funcStruct->func_name, id);
@@ -710,7 +710,7 @@ void emitDiv(AstNode *node,FuncContext *funcStrukt) {
 		emit_command(node->child[i], funcStrukt);
 	}
     // Příprava dočasných proměnných a labelů
-    int id = node->tmp_id;
+    int id = node->tmpId;
     char ln[128], rn[128], ty[128];
     snprintf(ln, sizeof ln, "%s_ln_%d", funcStrukt->func_name, id);
     snprintf(rn, sizeof rn, "%s_rn_%d", funcStrukt->func_name, id);
@@ -806,7 +806,7 @@ void emit_equal(AstNode *node, FuncContext *funcStrukt) {
 		emit_command(node->child[i], funcStrukt);
 	}
     // Příprava dočasných proměnných a labelů
-    int id = node->tmp_id;
+    int id = node->tmpId;
     char ln[128], rn[128], ty[128];
     snprintf(ln, sizeof ln, "%s_ln_%d", funcStrukt->func_name, id);
     snprintf(rn, sizeof rn, "%s_rn_%d", funcStrukt->func_name, id);
@@ -859,7 +859,7 @@ void emit_less(AstNode *node, FuncContext *funcStruct) {
 	for(int i = 0;i< 2;i++){
         emit_command(node->child[i], funcStruct);
     }
-    int id = node->tmp_id;
+    int id = node->tmpId;
     char ln[128], rn[128], rty[128], lty[128];
     snprintf(ln,  sizeof ln,  "%s_ln_%d",  funcStruct->func_name, id);
     snprintf(rn,  sizeof rn,  "%s_rn_%d",  funcStruct->func_name, id);
@@ -932,7 +932,7 @@ void emit_greater(AstNode *node,FuncContext *funcStruct) {
 	for(int i = 0;i< 2;i++){
         emit_command(node->child[i], funcStruct);
     }
-    int id = node->tmp_id;
+    int id = node->tmpId;
     char ln[128], rn[128], rty[128], lty[128];
     snprintf(ln,  sizeof ln,  "%s_ln_%d",  funcStruct->func_name, id);
     snprintf(rn,  sizeof rn,  "%s_rn_%d",  funcStruct->func_name, id);
@@ -1005,7 +1005,7 @@ void emit_less_equal(AstNode *node, FuncContext *funcStruct) {
     for(int i = 0;i< 2;i++){
         emit_command(node->child[i], funcStruct);
     }
-    int id = node->tmp_id;
+    int id = node->tmpId;
     char ln[128], rn[128], rty[128], lty[128];
     snprintf(ln,  sizeof ln,  "%s_ln_%d",  funcStruct->func_name, id);
     snprintf(rn,  sizeof rn,  "%s_rn_%d",  funcStruct->func_name, id);
@@ -1086,7 +1086,7 @@ void emit_greater_equal(AstNode *node, FuncContext *funcStruct) {
 	for(int i = 0;i< 2;i++){
         emit_command(node->child[i], funcStruct);
     }
-    int id = node->tmp_id;
+    int id = node->tmpId;
     char ln[128], rn[128], rty[128], lty[128];
     snprintf(ln,  sizeof ln,  "%s_ln_%d",  funcStruct->func_name, id);
     snprintf(rn,  sizeof rn,  "%s_rn_%d",  funcStruct->func_name, id);
@@ -1166,7 +1166,7 @@ void emit_equal_not(AstNode *node, FuncContext *funcStruct) {
 
 //&& neni to obycejny operator
 void emit_and(AstNode *node, FuncContext *funcContext) {
-    int id = node->tmp_id;
+    int id = node->tmpId;
     char label_false[128], label_end[128];
     snprintf(label_false, sizeof label_false, "%s$and_false$%d", funcContext->func_name, id);
     snprintf(label_end,   sizeof label_end,   "%s$and_end$%d",   funcContext->func_name, id);
@@ -1197,7 +1197,7 @@ void emit_and(AstNode *node, FuncContext *funcContext) {
     printN("LABEL %s", label_end);
 }
 void emit_or(AstNode *node, FuncContext *funcContext) {
-    int id = node->tmp_id;
+    int id = node->tmpId;
     char label_true[128], label_end[128];
     snprintf(label_true, sizeof label_true, "%s$or_success$%d", funcContext->func_name, id);
     snprintf(label_end,  sizeof label_end,  "%s$or_end$%d",     funcContext->func_name, id);
@@ -1221,7 +1221,7 @@ void emit_or(AstNode *node, FuncContext *funcContext) {
     printN("LABEL %s", label_end);
 }
 void emit_negace(AstNode *node,FuncContext *funcStruct) {
-    int id = node->tmp_id;
+    int id = node->tmpId;
     char value[128],value_type[128];
     snprintf(value, sizeof value, "%s_ln_%d", funcStruct->func_name, id);
     snprintf(value_type, sizeof value, "%s_ty_%d", funcStruct->func_name, id);
@@ -1237,7 +1237,7 @@ void emit_negace(AstNode *node,FuncContext *funcStruct) {
 
 void emitUnaryMinus(AstNode *node, FuncContext *funcStrukt) {
      emit_command(node->child[0], funcStrukt);
-    int id = node->tmp_id;
+    int id = node->tmpId;
 
     char ln[128], ty[128];
     snprintf(ln, sizeof ln, "%s_ln_%d", funcStrukt->func_name, id);
@@ -1288,7 +1288,7 @@ void emitUnaryMinus(AstNode *node, FuncContext *funcStrukt) {
 }
 void emit_is(AstNode *node, FuncContext *funcStruct) {
     emit_command(node->child[0], funcStruct);
-    int id = node->tmp_id;
+    int id = node->tmpId;
     char ln[128], lty[128];
     snprintf(ln, sizeof ln, "%s_ln_%d", funcStruct->func_name, id);
     snprintf(lty, sizeof lty, "%s_lty_%d", funcStruct->func_name, id);
@@ -1505,7 +1505,7 @@ void emitBool(AstNode *node, FuncContext *funcContext) {
         char ty_var[128], val_var[128];
         char is_false_label[128], end_label[128];
         char is_type_bool_label[128];
-        int id = node->tmp_id;
+        int id = node->tmpId;
 
         snprintf(ty_var, sizeof ty_var, "%s_ty_bool_%d", funcContext->func_name, id);
         snprintf(val_var, sizeof val_var, "%s_val_bool_%d", funcContext->func_name, id);
@@ -1560,8 +1560,8 @@ void emitBool(AstNode *node, FuncContext *funcContext) {
 }
 void emitCondition(AstNode *node,FuncContext *funcContext){
 	if(node->arity == 0){
-		printLog(ast_node_type_to_string(node->kind));
-		if(node->kind == AST_SMALL_NULL || (node->kind == AST_BOOL_LIT && strcmp(node->value.str,"false") == 0) || (node->kind == AST_INT_LIT && node->value.int_val == 0) || (node->kind == AST_FLOAT_LIT && node->value.float_val == 0.0)){
+		printLog(astNodeTypeToString(node->kind));
+		if(node->kind == AST_SMALL_NULL || (node->kind == AST_BOOL_LIT && strcmp(node->value.str,"false") == 0) || (node->kind == AST_INT_LIT && node->value.intVal == 0) || (node->kind == AST_FLOAT_LIT && node->value.floatVal == 0.0)){
 			printN("PUSHS bool@false");
 		}else if(node->kind == AST_IDENTIFIER || node->kind == AST_GLOBAL_ID){
 			emitBool(node,funcContext);
@@ -1613,7 +1613,7 @@ void emitFor(AstNode* node, FuncContext *funcContext)
 
     // kotrola pravého intervalu, pokud tam je proměnná
 
-    if (rightRange->value.has_str)
+    if (rightRange->value.hasStr)
     {
         generateErrorLabel = true; // Jedná se o proměnnou, generuji chybové návěští
         //FLOAT2INT
@@ -1632,7 +1632,7 @@ void emitFor(AstNode* node, FuncContext *funcContext)
     }
 
     // kontrola levého intervalu, pokud tam je proměnná
-    if (leftRange->value.has_str)
+    if (leftRange->value.hasStr)
     {
         generateErrorLabel = true; // Jedná se o proměnnou, generuji chybové návěští
 
@@ -1649,7 +1649,7 @@ void emitFor(AstNode* node, FuncContext *funcContext)
         printN("FLOAT2INTS"); // vložení hodnoty na zásobník aby mohla potom proměnná podmínky si načíst tuto hodnotu
 
     }else{ // jinak víme, že SA zajistí, že tam je celé číslo
-        printN("PUSHS int@%d", leftRange->value.int_val - 1); // nastaveni hodnoty, nastavim o 1 mensi, abych mohl rovnou inkrementovat
+        printN("PUSHS int@%d", leftRange->value.intVal - 1); // nastaveni hodnoty, nastavim o 1 mensi, abych mohl rovnou inkrementovat
     }
 
     printN("POPS LF@%s", variable); // ulozeni hodnoty do promenne
@@ -1673,7 +1673,7 @@ void emitFor(AstNode* node, FuncContext *funcContext)
             printN("PUSHS LF@%s", rightRange->value.str);
             printN("FLOAT2INTS");
         }else{
-            printN("PUSHS int@%d", rightRange->value.int_val);
+            printN("PUSHS int@%d", rightRange->value.intVal);
         }
 
 
@@ -1695,7 +1695,7 @@ void emitFor(AstNode* node, FuncContext *funcContext)
             printN("PUSHS LF@%s", rightRange->value.str);
             printN("FLOAT2INTS");
         }else{
-            printN("PUSHS int@%d", rightRange->value.int_val);
+            printN("PUSHS int@%d", rightRange->value.intVal);
         }
 
         printN("EQS"); // ? porovnání, pokud je hodnota proměnné stejná jako konečná hodnota => ukončuji cyklus
@@ -1709,7 +1709,7 @@ void emitFor(AstNode* node, FuncContext *funcContext)
             printN("PUSHS LF@%s", rightRange->value.str);
             printN("FLOAT2INTS");
         }else{
-            printN("PUSHS int@%d", rightRange->value.int_val);
+            printN("PUSHS int@%d", rightRange->value.intVal);
         }
         printN("GTS"); // ? porovnání, pokud je hodnota proměnné stejná jako konečná hodnota => ukončuji cyklus
         printN("PUSHS bool@true");
@@ -1837,7 +1837,7 @@ void emitGetter(AstNode* node) {
 }
 void emit_ternarni(AstNode *node, FuncContext *funcStruct){
     char label_true[128], label_end[128];
-    int id = node->tmp_id;
+    int id = node->tmpId;
     snprintf(label_true, sizeof label_true, "%s$true$%d", funcStruct->func_name, id);
     snprintf(label_end, sizeof label_end, "%s$end$%d", funcStruct->func_name, id);
     emitCondition(node->child[0], funcStruct);
@@ -1878,10 +1878,10 @@ void emit_command(AstNode *node,FuncContext *funcStruct) {
         	emitFunctions(node,funcStruct);
          	break;
           case AST_FLOAT_LIT:
-              printN("PUSHS float@%a", node->value.float_val);
+              printN("PUSHS float@%a", node->value.floatVal);
               break;
         case AST_INT_LIT:
-            printN("PUSHS int@%lld", node->value.int_val);
+            printN("PUSHS int@%lld", node->value.intVal);
             printN("INT2FLOATS");
             break;
 
@@ -1906,10 +1906,10 @@ void emit_command(AstNode *node,FuncContext *funcStruct) {
        		printN("PUSHS nil@nil");
          	break;
         case AST_FLOAT_LIT_EXP:
-      		printN("PUSHS int@%s",node->value.float_val);
+      		printN("PUSHS int@%s",node->value.floatVal);
         	break;
         case AST_INT_LIT_EXP:
-       		printN("PUSHS int@%s",node->value.int_val);
+       		printN("PUSHS int@%s",node->value.intVal);
          	break;
         case AST_WHILE:
             emitWhile(node, funcStruct);
@@ -2047,7 +2047,7 @@ void emit_command(AstNode *node,FuncContext *funcStruct) {
             handleBuiltin(node, funcStruct);
          	break;
         default:
-        	printLog("%s \n",ast_node_type_to_string(node->kind));
+        	printLog("%s \n",astNodeTypeToString(node->kind));
             printError(INTERNAL_ERROR, "Chyba v generatoru neznamy uzel");
             memorySafeExit(INTERNAL_ERROR);
     }

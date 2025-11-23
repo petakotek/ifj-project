@@ -22,14 +22,14 @@
  */
 typedef struct Symbol
 {
-    bool is_terminal;
+    bool isTerminal;
     int symbol;
     TokenValue value;
-    bool value_needed;
-    bool is_reduce;
-    size_t reduce_arity;     // koľko detí zozbierať
-    AstNodeType reduce_kind;
-    bool capture_value;
+    bool valueNeeded;
+    bool isReduce;
+    size_t reduceArity;     // koľko detí zozbierať
+    AstNodeType reduceKind;
+    bool captureValue;
     bool freeNeeded;
 } Symbol;
 

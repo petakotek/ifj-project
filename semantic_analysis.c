@@ -291,7 +291,7 @@ SemValidationStates recursiveNodeWalker(AstNode* currentNode, AstNodeType parent
         }
         case (AST_MAIN_CLASS): {
             printLog("AST_MAIN_CLASS\n");
-            if (currentNode->child[0]->value.has_str == false ||
+            if (currentNode->child[0]->value.hasStr == false ||
                 strncmp(currentNode->child[0]->value.str, "Program", 8) != 0) {
                 EXEC_END(SEMANTICS_ERROR_OTHERS, "Ocekavan 'Program'!\n");
             }
@@ -417,7 +417,7 @@ SemValidationStates recursiveNodeWalker(AstNode* currentNode, AstNodeType parent
                     i++;
                     size_t preDeletionArity = currentNode->arity;
                     for (size_t deletionIterator = i; deletionIterator < preDeletionArity; deletionIterator++) {
-                        ast_free_whole(currentNode->child[deletionIterator]);
+                        astFreeWhole(currentNode->child[deletionIterator]);
                         currentNode->arity--;
                     }
                     break;
