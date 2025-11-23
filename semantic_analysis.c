@@ -1,4 +1,10 @@
-// TODO hlavička
+/**
+ * Fakulta informačních technologií VUT Brno
+ *
+ * @brief Implementace sémantické analýzy
+ * @file semantic_analysis.c
+ * @author Vojtěch Voldřich (xvoldrv00)
+ */
 
 #include "semantic_analysis.h"
 
@@ -9,15 +15,23 @@
 #include "support_functions.h"
 #include "symtable.h"
 
+/**
+ * @brief Makro pro zajištění stejných kódů u výpisu i ukončení programu
+ *
+ * @param CODE Ukončovací kód
+ * @param TEXT Řetězec pro vypsání společně s ukončením
+ */
 #define EXEC_END(CODE, TEXT)    \
     do {                        \
         printError(CODE, TEXT); \
         memorySafeExit(CODE);   \
     } while (0)
 
+/**
+ * @brief Makro pro index nejnovějšího rámce
+ *
+ */
 #define NEWEST_SCOPE scopesStack->nextTopElement - 1
-
-// TODO aktualizace dokumentačních komentářů
 
 /**
  * @brief Ukazatel na zásobník pro ukládání jednotlivých rámců
@@ -25,6 +39,10 @@
  */
 static DynamicHashTablePtrStackPtr scopesStack = NULL;
 
+/**
+ * @brief Ukazatel na tabulku referencí na neznámé identifikátory
+ *
+ */
 static HashTable* undeclaredReferenceTable = NULL;
 
 /**
@@ -54,8 +72,7 @@ void deleteScope();
 SemSymbol* findGlobalSymbol(char* key);
 
 /**
- * @brief Prohledá všechny rámce, vrací ukazatel na první nalezený symbol a upraví AST pokud se
- * jedná o lokální proměnnou
+ * @brief Prohledá všechny rámce, vrací ukazatel na první nalezený symbol
  *
  * Začíná nejbližším rámcem (vrchol zásobníku)
  * @attention V případě nalezení symbolu upraví AST uzel
@@ -94,29 +111,27 @@ void insertSymbolGlobalScope(SemSymbol symbol);
  * @brief Přidá symbol do aktuálního rámce
  *
  * @param symbol Symbol pro přidání
- * @return true Úspěch
- * @return false Došlo k chybě
  */
 void insertSymbolCurrentScope(SemSymbol symbol);
 
 /**
- * @brief Vytvoří tabulku symbolů pro uložení volání na nedeklarované funkce
+ * @brief Vytvoří tabulku symbolů pro uložení referencí na neznámé identifikátory
  *
  */
 void createUndeclaredFunctionCallsTable();
 
 /**
- * @brief Odstraní z tabulky nedeklarovaných referencí všechny příslušné reference
+ * @brief Odstraní z tabulky referencí na neznámé identifikátory danou referenci
  *
- * @param referenceSymbolName Název reference nově deklarované reference ( @note zpracovaný pomocí
+ * @param referenceSymbolName Název reference nově známého identifikátoru ( @note zpracovaného pomocí
  * @see initNewSymbol() )
  */
 void removeUndeclaredReference(char* referenceSymbolName);
 
 /**
- * @brief Přidá nedeklarovanou referenci do tabulky
+ * @brief Přidá novou referenci na neznámí identifikátor do tabulky
  *
- * @param referenceSymbolName Název nedeklarované reference ( @note zpracovaný pomocí
+ * @param referenceSymbolName Název neznámého identifikátoru ( @note zpracovaný pomocí
  * @see initNewSymbol() )
  * @param symbol Symbol pro přidání ( @note zpracovaný pomocí
  * @see initNewSymbol() )
@@ -126,15 +141,14 @@ void insertUndeclaredReference(char* referenceSymbolName, SemSymbol symbol);
 /**
  * @brief Převede informace z AST uzlu do symbolu pro uložení do tabulky
  *
- * @note Pokud je cílový symbol funkce, tak ji přejmenuje v sourceNode i destSymbol na
- * "nazevFunkce$pocetParametru"
+ * @note V případě potřeby upraví název v symbolu u v AST uzlu
  * @param sourceNode Zdrojový AST uzel
  * @param destSymbol Symbol pro upravení
  */
 void initNewSymbol(AstNode* sourceNode, SemSymbol* destSymbol);
 
 /**
- * @brief Zpracovává sémantickou kontrolu volání vestavěných funkcí
+ * @brief Zajišťuje sémantickou kontrolu volání vestavěných funkcí
  *
  * @param functionCallNode Uzel typu IFJ_CALL
  * @return SemValidationStates Návratová hodnota volání funkce
@@ -146,17 +160,17 @@ SemValidationStates handleBuildinFunctions(AstNode* functionCallNode);
  *
  * @note (s výjimkou == a !=)
  * @param currentNode AST uzel operátoru
- * @param operatorCode Typ uzlu (kód operátoru)
+ * @param operatorCode Typ uzlu
  * @param operatorName Řetězec o maximálně 2 znacích sloužící pro identifikaci operátoru při výpisu chyby (např.: >=)
  * @return SemValidationStates Výsledek sémantické analýzy podstromu
  */
 SemValidationStates handleComparisonOperators(AstNode* currentNode, AstNodeType operatorCode, char* operatorName);
 
 /**
- * @brief Zpracuje aritmetické (a řetězcové)
+ * @brief Zpracuje aritmetické (a řetězcové) operátory
  *
  * @param currentNode AST uzel operátoru
- * @param operatorCode Typ uzlu (kód operátoru)
+ * @param operatorCode Typ uzlu
  * @param operatorName Řetězec o maximálně 1 znaku sloužící pro identifikaci operátoru při výpisu chyby (např.: +)
  * @return SemValidationStates Výsledek sémantické analýzy podstromu
  */
@@ -165,9 +179,9 @@ SemValidationStates handleMathOperators(AstNode* currentNode, AstNodeType operat
 /**
  * @brief Počet znaků potřebných pro uložení čísla jako řetězce
  *
- * K počtu ještě přičte 1 pro uložení '\0'
+ * Je zohledněn i prostor pro nulový byte ('\0')
  * @param n Číslo
- * @return size_t Počet znaků
+ * @return size_t Počet číslic
  */
 size_t digitsCount(size_t n);
 
@@ -344,8 +358,8 @@ SemValidationStates recursiveNodeWalker(AstNode* currentNode, AstNodeType parent
             if (parentNodeType == AST_IFJ_CALL) {
                 fakeParentType = AST_IFJ_CALL;
             } else if (parentNodeType == AST_FUNC_CALL) {
-                    fakeParentType = AST_FUNC_CALL;
-         } else {
+                fakeParentType = AST_FUNC_CALL;
+            } else {
                 createNewScope();
             }
             for (size_t i = 0; i < currentNode->arity; i++) {
@@ -543,13 +557,13 @@ SemValidationStates recursiveNodeWalker(AstNode* currentNode, AstNodeType parent
                     return OK;
                 }
 
-                // IMPORTANT Dokud nebude pořádná statická analýza, tak nelze přiřadit přesnou hodnotu (např kvůli
+                // IMPORTANT Dokud nebude statická analýza, tak nelze přiřadit přesnou hodnotu (např kvůli
                 // if/else blokům) leftSymbol->dataType = rightSymbol->dataType;
                 leftSymbol->dataType = UNKNOWN_VAL;
             }
 
             if (leftSymbol != NULL) {
-                // IMPORTANT Dokud nebude pořádná statická analýza, tak nelze přiřadit přesnou hodnotu (např kvůli
+                // IMPORTANT Dokud nebude statická analýza, tak nelze přiřadit přesnou hodnotu (např kvůli
                 // if/else blokům) leftSymbol->dataType = convSemValStatesToSemSymbDType(rightChild);
                 leftSymbol->dataType = UNKNOWN_VAL;
             }
@@ -668,22 +682,22 @@ SemValidationStates recursiveNodeWalker(AstNode* currentNode, AstNodeType parent
                 return OK;
             } else if (parentNodeType == AST_FUNC_CALL || parentNodeType == AST_IFJ_CALL) {
                 SemSymbDataType identifierDataType = UNKNOWN_VAL;
-                SemSymbol tempSymbol;
+                SemSymbol       tempSymbol;
                 SemSymbol* foundSymbol = findSymbolAndModifyAST(currentNode, &tempSymbol, parentNodeType, childNum);
 
                 if (foundSymbol == NULL) {
-                    EXEC_END(SEMANTICS_ERROR_UNDEF, "Promena v danem ramci neexistuje a nemuze byt parametr promenne!\n");
+                    EXEC_END(SEMANTICS_ERROR_UNDEF,
+                             "Promena v danem ramci neexistuje a nemuze byt parametr promenne!\n");
                 }
-                
+
                 identifierDataType = foundSymbol->dataType;
 
-                if(parentNodeType == AST_IFJ_CALL) {
+                if (parentNodeType == AST_IFJ_CALL) {
                     return convSemSymbDTypeToSemValStates(identifierDataType);
                 }
 
                 return OK;
-            }
-            else {
+            } else {
                 SemSymbol tempSymbol;
 
                 SemSymbol* foundSymbol = findSymbolCurrentScope(currentNode->value.str);
@@ -1280,7 +1294,6 @@ void insertUndeclaredReference(char* referenceSymbolName, SemSymbol symbol) {
 }
 
 void initNewSymbol(AstNode* sourceNode, SemSymbol* destSymbol) {
-    // TODO symbol dataType a symbolType a functionReturnValue a scope můžu nastavit před voláním
     if (sourceNode == NULL || destSymbol == NULL) {
         EXEC_END(INTERNAL_ERROR, "Neplatne hodnoty!\n");
         return;
@@ -1294,8 +1307,7 @@ void initNewSymbol(AstNode* sourceNode, SemSymbol* destSymbol) {
             char* newName = malloc(sizeof(char) * newNameLength);
 
             size_t numberOfParams = sourceNode->child[1]->arity;
-            numberOfParams--;  // Každá deklarace i volání funkce obsahuje v parametrech 1
-                               // AST_EMTPY
+            numberOfParams--;  // Každá deklarace i volání funkce obsahuje v parametrech 1 AST_EMTPY
 
             if (newName == NULL) {
                 EXEC_END(INTERNAL_ERROR, "Selhala alokace pameti!");
@@ -1752,4 +1764,4 @@ SemValidationStates convSemSymbDTypeToSemValStates(SemSymbDataType dataType) {
     }
 }
 
-// TODO patička
+/*** konec semantic_analysis.c ***/

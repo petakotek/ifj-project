@@ -1,4 +1,10 @@
-// TODO hlavička
+/**
+ * Fakulta informačních technologií VUT Brno
+ *
+ * @brief Hlavička pro implementaci sémantické analýzy
+ * @file semantic_analysis.h
+ * @author Vojtěch Voldřich (xvoldrv00)
+ */
 
 #ifndef SEMANTIC_ANALYSIS
 #define SEMANTIC_ANALYSIS
@@ -28,26 +34,25 @@ typedef enum {
      */
     GLOBAL,
     /**
-     * @brief Definice nebo volání nedefinované funkce
+     * @brief Definice nebo volání funkce
      *
      */
     FUNCTION,
     /**
-     * @brief Parametr u definice funkce
+     * @brief Parametr u definice funkce / proměnná u for cyklu
      *
      */
     FUNCTION_PARAMETER,
     /**
-     * @brief // Definice nastavovače
+     * @brief Definice nastavovače
      *
      */
     SETTER,
     /**
-     * @brief // Definice získávače
+     * @brief Definice získávače
      *
      */
     GETTER,
-
 } SemSymbolTypes;
 
 /**
@@ -78,13 +83,13 @@ typedef enum {
     /**
      * @brief Nemá hodnotu (např při vytvoření proměnné bez přiřazení)
      *
-     * @note Používán jako základní hodnota (např. při deklaraci funkce)
+     * @note Používán jako základní hodnota (například při deklaraci funkce)
      */
     NULL_VAL,
     /**
      * @brief Nelze určit hodnotu (parametry a návratová hodnota funkcí)
      *
-     * @note Všechny operátory berou tento typ jako validní
+     * @note Všechny operátory berou tento typ jako platný
      */
     UNKNOWN_VAL
 } SemSymbDataType;
@@ -127,15 +132,14 @@ typedef enum {
     /**
      * @brief Nelze určit hodnotu (parametry a návratová hodnota funkcí)
      *
-     * @note Všechny operátory berou tuto hodnotu jako validní, ale snaží se ji nevracet (domýšlí si
-     * na základě sémantických pravidel nebo druhého operandu vhodnou návratovou hodnotu)
+     * @note Všechny operátory berou tuto hodnotu jako validní, ale snaží se ji nevracet
      */
     UNKNOWN_DATA,
     /**
      * @brief Zpracovaný uzel je identifikátor
      *
-     * @note Nerozlišuje jestli lokální nebo globální
-     * @note Existenci operátoru si ověřuje zpracovaný uzel
+     * @note Nerozlišuje zda je lokální, globální, nastavovač nebo získávač
+     * @note Existenci operandu si ověřuje zpracovaný uzel
      */
     IDENTIFIER,
     /**
@@ -205,4 +209,5 @@ bool startSematicValidation(AstNode* root);
 void freeSemanticsMemory();
 
 #endif
-// TODO patička
+
+/*** konec semantic_analysis.h ***/
