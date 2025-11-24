@@ -953,7 +953,7 @@ SemValidationStates recursiveNodeWalker(AstNode* currentNode, AstNodeType parent
             SemValidationStates rightChild = recursiveNodeWalker(currentNode->child[1], AST_DOUBLE_DOT, 1);
 
             if ((leftChild == NUMBER_DATA || leftChild == INT_DATA || leftChild == UNKNOWN_DATA) &&
-                (rightChild == NUMBER_DATA || rightChild == INT_DATA || rightChild == UNKNOWN_DATA)) {
+                (rightChild == NUMBER_DATA || rightChild == INT_DATA || rightChild == UNKNOWN_DATA) && currentNode->child[0]->kind != AST_FLOAT_LIT && currentNode->child[1]->kind != AST_FLOAT_LIT) {
                 return OK;
             }
             EXEC_END(SEMANTICS_ERROR_UNCOMPATIBLE, "(..) Operandy musi byt cela cisla!\n");
@@ -966,7 +966,7 @@ SemValidationStates recursiveNodeWalker(AstNode* currentNode, AstNodeType parent
             SemValidationStates rightChild = recursiveNodeWalker(currentNode->child[1], AST_TRIPLE_DOT, 1);
 
             if ((leftChild == NUMBER_DATA || leftChild == INT_DATA || leftChild == UNKNOWN_DATA) &&
-                (rightChild == NUMBER_DATA || rightChild == INT_DATA || rightChild == UNKNOWN_DATA)) {
+                (rightChild == NUMBER_DATA || rightChild == INT_DATA || rightChild == UNKNOWN_DATA) && currentNode->child[0]->kind != AST_FLOAT_LIT && currentNode->child[1]->kind != AST_FLOAT_LIT) {
                 return OK;
             }
             EXEC_END(SEMANTICS_ERROR_UNCOMPATIBLE, "(...) Operandy musi byt cela cisla!\n");
@@ -1518,12 +1518,12 @@ SemValidationStates handleBuildinFunctions(AstNode* functionCallNode) {
         }
 
         SemValidationStates secondChild = recursiveNodeWalker(functionCallNode->child[1]->child[1], AST_IFJ_CALL, 1);
-        if (secondChild != NUMBER_DATA && secondChild != INT_DATA && secondChild != UNKNOWN_DATA) {
+        if ((secondChild != NUMBER_DATA && secondChild != INT_DATA && secondChild != UNKNOWN_DATA) || functionCallNode->child[1]->child[1]->kind == AST_FLOAT_LIT) {
             EXEC_END(SEMANTICS_ERROR_INCORRECT, "(Ifj.substring) Nevhodny druhy parametr!\n");
         }
 
         SemValidationStates thirdChild = recursiveNodeWalker(functionCallNode->child[1]->child[2], AST_IFJ_CALL, 2);
-        if (thirdChild != NUMBER_DATA && thirdChild != INT_DATA && thirdChild != UNKNOWN_DATA) {
+        if ((thirdChild != NUMBER_DATA && thirdChild != INT_DATA && thirdChild != UNKNOWN_DATA) || functionCallNode->child[1]->child[2]->kind == AST_FLOAT_LIT) {
             EXEC_END(SEMANTICS_ERROR_INCORRECT, "(Ifj.substring) Nevhodny treti parametr!\n");
         }
 
@@ -1563,7 +1563,7 @@ SemValidationStates handleBuildinFunctions(AstNode* functionCallNode) {
         }
 
         SemValidationStates secondChild = recursiveNodeWalker(functionCallNode->child[1]->child[1], AST_IFJ_CALL, 1);
-        if (secondChild != NUMBER_DATA && secondChild != INT_DATA && secondChild != UNKNOWN_DATA) {
+        if ((secondChild != NUMBER_DATA && secondChild != INT_DATA && secondChild != UNKNOWN_DATA) || functionCallNode->child[1]->child[1]->kind == AST_FLOAT_LIT) {
             EXEC_END(SEMANTICS_ERROR_INCORRECT, "(Ifj.ord) Nevhodny druhy parametr!\n");
         }
 
@@ -1578,7 +1578,7 @@ SemValidationStates handleBuildinFunctions(AstNode* functionCallNode) {
         }
 
         SemValidationStates firstChild = recursiveNodeWalker(functionCallNode->child[1]->child[0], AST_IFJ_CALL, 0);
-        if (firstChild != NUMBER_DATA && firstChild != INT_DATA && firstChild != UNKNOWN_DATA) {
+        if ((firstChild != NUMBER_DATA && firstChild != INT_DATA && firstChild != UNKNOWN_DATA) || functionCallNode->child[1]->child[0]->kind == AST_FLOAT_LIT) {
             EXEC_END(SEMANTICS_ERROR_INCORRECT, "(Ifj.char) Nevhodny parametr!\n");
         }
 
@@ -1676,7 +1676,7 @@ SemValidationStates handleMathOperators(AstNode* currentNode, AstNodeType operat
                 return STRING_DATA;
             if (rightChild == UNKNOWN_DATA)
                 return STRING_DATA;
-            if(rightChild == NUMBER_DATA) 
+            if(rightChild == NUMBER_DATA && currentNode->child[1]->kind != AST_FLOAT_LIT) 
                 return STRING_DATA;
         }
     }
