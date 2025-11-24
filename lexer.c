@@ -1305,7 +1305,7 @@ token_found:;
 token_found_string:;
     return token;
 }
-Token funkceProVojtu(char *input,Token token){
+Token isEffectivelyInteger(char *input,Token token){
 	bool dot = false;
 	int pos_dot;
 	int i = 0;
