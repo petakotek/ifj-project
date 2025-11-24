@@ -3,7 +3,7 @@
  *
  * @brief Implementace pomocných funkcí
  * @file support_functions.c
- * @author Vojtěch Voldřich (xvoldrv00)
+ * @author Vojtěch Voldřich (xvoldrv00), Josef Pasek (xpasekj00)
  */
 
 #include "support_functions.h"
@@ -17,13 +17,12 @@
 #include "parser.h"
 #include "semantic_analysis.h"
 
-// TODO pepoooooooooo!
-/*
- * Definujeme zakladni kapacitu cteni souboru
+/**
+ * @brief Počáteční kapacita řetězce pro uložení vstupu
+ * 
  */
 #define INITIAL_CAPACITY 1024
 
-// TODO pepoooooooooo!
 /**
  * @brief Ukazatel na vstupní znakové pole
  *
@@ -86,10 +85,7 @@ void memorySafeExit(enum errorCodes errCode) {
     exit(errCode);
 }
 
-// TODO pepoooooooooo!
-/*
- *sorry pouze testovaci funkce ta se bude mazat tezce vygenerovana gemini
- */
+#ifdef ENABLE_DEVELOPMENT_LOGGING
 void print_and_free_tokens() {
     Token token = lexerTokenNext();
     while (token.type != TOKEN_EOF) {
@@ -129,9 +125,12 @@ void print_and_free_tokens() {
         printLog("%s\n", tokenTypeToString(token.type));
     }
 }
-/*
- * Funkce na cteni pro nacteni ze vstupu jelikoz muj fseek byl nebezpecny
- */
+#else
+void print_and_free_tokens() {
+    return;
+}
+#endif
+
 char *readAllStdin(void) {
     char *buffer = malloc(INITIAL_CAPACITY);
     if (buffer == NULL) {
@@ -150,7 +149,7 @@ char *readAllStdin(void) {
 
         total_size += bytes_read;
 
-        // zvětšovani bufferu aby nedoslo k preteceni
+        // zvětšení bufferu aby nedošlo k přetečení
         if (total_size >= capacity - 1) {
             capacity *= 2;
             char *new_buffer = realloc(buffer, capacity);
@@ -162,8 +161,9 @@ char *readAllStdin(void) {
         }
     }
 
-    // Null-terminate řetězec
+    // Ukončení řetězce
     buffer[total_size] = '\0';
     return buffer;
 }
+
 /*** konec support_functions.c ***/
