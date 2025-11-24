@@ -7,9 +7,12 @@
  */
 #include "lexer.h"
 
+#include "parser.h"
 #include "support_functions.h"
 
 #include <ctype.h>
+#include <stdbool.h>
+#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 
@@ -756,17 +759,14 @@ Token lexerTokenNext() {
                 } else if (isdigit(c)) {
                     lexer->pos++;
                 } else{
-                	if(c == '.'){
-                 	lexer->pos--;
-                  	token.type             = TOKEN_INTEGER;
-	                token.value.identifier = substring(zacatek, lexer->pos);
-	                token.line             = radek;
-	                goto token_found;
-                 	}
-                    token.type             = TOKEN_FLOAT;
-                    token.value.identifier = substring(zacatek, lexer->pos);
-                    token.line             = radek;
-                    goto token_found;
+                if(c == '.'){
+                lexer->pos--;
+                }
+                char *lexeme = substring(zacatek, lexer->pos);
+                token = funkceProVojtu(lexeme, token);
+                token.value.identifier = lexeme;
+                token.line = radek;
+                goto token_found;
                 }
                 break;
             }
@@ -1304,5 +1304,39 @@ token_found:;
     buf = NULL;
 token_found_string:;
     return token;
+}
+Token isEffectivelyInteger(char *input,Token token){
+	bool dot = false;
+	int pos_dot;
+	int i = 0;
+	while(input[i] != '\0'){
+		if(input[i] == '.'){
+			dot = true;
+			break;
+		}
+		i++;
+	}
+
+	if(!dot){
+		token.value.identifier = input;
+		token.type = TOKEN_INTEGER;
+		return token;
+	}
+	i++;
+	pos_dot = i;
+	while(input[i] != '\0'){
+		if(input[i] != '0'){
+			token.value.identifier = input;
+			printLog("it is float %s \n",input);
+			token.type = TOKEN_FLOAT;
+			return token;
+		}
+		i++;
+	}
+	input[pos_dot-1] = '\0';
+	token.value.identifier = input;
+	token.type = TOKEN_INTEGER;
+	printLog("it is integer %s \n",input);
+	return token;
 }
 /*** konec soubor ***/
