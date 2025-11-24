@@ -17,7 +17,7 @@
 #include <stdio.h>
 
 
-#define TABLE_CAPACITY 10  // nastavení počtu položek tabulky
+#define TABLE_CAPACITY 20  // nastavení počtu položek tabulky
 
 /**
  * @brief Inicializace tabulky, alokace pole prvků
@@ -170,7 +170,7 @@ int hashTableSearchItem(HashTable *hashT, char *key) {
 
         // prosli jsme celou tabulku
         if (currentIndex == originalIndex && shift >= hashT->tableCapacity) {
-            printError(INTERNAL_ERROR, "Prvek \"%s\" v tabulce nebyl nalezen\n", key);
+            // printError(INTERNAL_ERROR, "Prvek \"%s\" v tabulce nebyl nalezen\n", key);
             return -1;
         }
     }
@@ -227,7 +227,6 @@ int hashItem(char *key, HashTable *hashT) {
  */
 void hashTableRealloc(HashTable *hashT)
 {
-    // printf("REALOKACE !!!!\n");
     if (hashT == NULL)
     {
         printError(INTERNAL_ERROR, "Tabulka je prazdna");
