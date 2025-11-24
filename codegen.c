@@ -29,12 +29,12 @@ void printN(const char *fmt, ...) {
 /**
  * @brief print na .IFJcode25 ktery je musi byt na zacatku
  */
-void emit_prolog() { printN(".IFJcode25"); }
+void emitProlog() { printN(".IFJcode25"); }
 /**
  *@buffer na jednotlive labely aby se nakonci uvolnovali
  */
 char *buffer_pointer_label[MAX_LABELS];
-char *resize_label_name(char *prefix, size_t *size) {
+char *resizeLabelName(char *prefix, size_t *size) {
     *size *= 2;
     prefix = realloc(prefix, *size);
     if (prefix == NULL) {
@@ -68,14 +68,14 @@ char *generatorLable(char *func_name,FuncContext *funcStruckt,bool pridaniDoStac
             size_t prefix_len = strlen(prefix);
 
             if (prefix_len + 1 + 10 >= size_of_buffer) {
-                result_label = resize_label_name(result_label, &size_of_buffer);
+                result_label = resizeLabelName(result_label, &size_of_buffer);
                 if (result_label == NULL) {
                     printError(INTERNAL_ERROR, "Error resizing label buffer");
                     memorySafeExit(INTERNAL_ERROR);
                 }
             }
             if (prefix_len + 1 + 10 >= size_of_buffer) {
-                result_label = resize_label_name(result_label, &size_of_buffer);
+                result_label = resizeLabelName(result_label, &size_of_buffer);
                 if (result_label == NULL) {
                     printError(INTERNAL_ERROR, "Error resizing label buffer");
                     memorySafeExit(INTERNAL_ERROR);
@@ -107,7 +107,7 @@ char *generatorLable(char *func_name,FuncContext *funcStruckt,bool pridaniDoStac
     if (written <= 0 || (size_t)written >= remaining_space) {
         // potřebna resize
         if ((size_t)written >= remaining_space) {
-            result_label = resize_label_name(result_label, &size_of_buffer);
+            result_label = resizeLabelName(result_label, &size_of_buffer);
             if (result_label == NULL) {
                 printError(INTERNAL_ERROR, "Error resizing label buffer (suffix)");
                 memorySafeExit(INTERNAL_ERROR);
@@ -145,7 +145,7 @@ char *generatorLable(char *func_name,FuncContext *funcStruckt,bool pridaniDoStac
  */
 void emitChildren(AstNode *root,FuncContext *funcStruct) {
     for (size_t i = 0; i < root->arity; i++) {
-        emit_command(root->child[i],funcStruct);
+        emitCommand(root->child[i],funcStruct);
     }
 }
 /*
@@ -161,7 +161,7 @@ VarList* varListCreate() {
 /*
 *@brief funcke na pridavani do varlistu i s resize
 */
-void varlist_add(VarList *list, const char *name) {
+void varListAdd(VarList *list, const char *name) {
     for (int i = 0; i < list->count; i++) {
         if (strcmp(list->var_names[i], name) == 0) {
             return;
@@ -191,76 +191,76 @@ void emitFunctions(AstNode *root,FuncContext *funcContext){
 		if(root->child[i]->kind == AST_FUNC_DEC && strcmp(root->child[i]->child[0]->value.str,"main$0") == 0){
 			main = root->child[i];
 		}else{
-			emit_command(root->child[i],funcContext);
+			emitCommand(root->child[i],funcContext);
 		}
 	}
-	emit_command(main, funcContext);
+	emitCommand(main, funcContext);
 }
-void add_binop_tmps(VarList* vars, const char* func, int id,AstNode *node) {
+void addBinopTmps(VarList* vars, const char* func, int id,AstNode *node) {
     char buf[128];
 
     if(node->kind == AST_PLUS){
    	snprintf(buf, sizeof buf, "%s_ln_%d", func, id);
-       varlist_add(vars, buf);
+       varListAdd(vars, buf);
        snprintf(buf, sizeof buf, "%s_rn_%d", func, id);
-       varlist_add(vars, buf);
+       varListAdd(vars, buf);
        snprintf(buf, sizeof buf, "%s_ty_%d", func, id);
-       varlist_add(vars, buf);
+       varListAdd(vars, buf);
 	    snprintf(buf, sizeof buf, "%s_rs_%d", func, id);
-	    varlist_add(vars, buf);
+	    varListAdd(vars, buf);
     }else if(node->kind == AST_GT || node->kind == AST_LT || node->kind == AST_LTE || node->kind == AST_GTE || node->kind == AST_IS){
    		snprintf(buf, sizeof buf, "%s_ln_%d", func, id);
-       	varlist_add(vars, buf);
+       	varListAdd(vars, buf);
         snprintf(buf, sizeof buf, "%s_rn_%d", func, id);
-        varlist_add(vars, buf);
+        varListAdd(vars, buf);
    		snprintf(buf, sizeof buf, "%s_rty_%d", func, id);
-	    varlist_add(vars, buf);
+	    varListAdd(vars, buf);
     	snprintf(buf, sizeof buf, "%s_lty_%d", func, id);
-	    varlist_add(vars, buf);
+	    varListAdd(vars, buf);
     }else if(node->kind == AST_NOT){
    		snprintf(buf, sizeof buf, "%s_ln_%d", func, id);
-	    varlist_add(vars, buf);
+	    varListAdd(vars, buf);
     }
     else if(node->kind == AST_MUL){
     	snprintf(buf, sizeof buf, "%s_ln_%d", func, id);
-    	varlist_add(vars, buf);
+    	varListAdd(vars, buf);
         snprintf(buf, sizeof buf, "%s_rn_%d", func, id);
-       	varlist_add(vars, buf);
+       	varListAdd(vars, buf);
         snprintf(buf, sizeof buf, "%s_rty_%d", func, id);
-       	varlist_add(vars, buf);
+       	varListAdd(vars, buf);
         snprintf(buf, sizeof buf, "%s_lty_%d", func, id);
-       	varlist_add(vars, buf);
+       	varListAdd(vars, buf);
         snprintf(buf, sizeof buf, "%s_rs_%d", func, id);
-       	varlist_add(vars, buf);
+       	varListAdd(vars, buf);
         snprintf(buf, sizeof buf, "%s_counter_%d", func, id);
-       	varlist_add(vars, buf);
+       	varListAdd(vars, buf);
     }else if(node->kind == AST_AND){
     snprintf(buf, sizeof buf, "%s$and_false$%d", func, id);
-   	varlist_add(vars, buf);
+   	varListAdd(vars, buf);
     snprintf(buf,   sizeof buf,   "%s$and_end$%d", func, id);
-   	varlist_add(vars, buf);
+   	varListAdd(vars, buf);
     snprintf(buf, sizeof buf, "%s_and_left_%d", func,id);
-   	varlist_add(vars, buf);
+   	varListAdd(vars, buf);
     }else if(node->kind == AST_OR){
     snprintf(buf, sizeof buf, "%s$or_success$%d", func, id);
-   	varlist_add(vars, buf);
+   	varListAdd(vars, buf);
     snprintf(buf,  sizeof buf,  "%s$or_end$%d",     func, id);
-   	varlist_add(vars, buf);
+   	varListAdd(vars, buf);
     snprintf(buf, sizeof buf, "%s_or_left_%d", func, id);
-   	varlist_add(vars, buf);
+   	varListAdd(vars, buf);
     }else if(node->kind == AST_IDENTIFIER || node->kind == AST_GLOBAL_ID){
     snprintf(buf, sizeof buf, "%s_ty_bool_%d", func, id);
-   	varlist_add(vars, buf);
+   	varListAdd(vars, buf);
     snprintf(buf, sizeof buf, "%s_val_bool_%d", func, id);
-   	varlist_add(vars, buf);
+   	varListAdd(vars, buf);
     }
     else{
     	snprintf(buf, sizeof buf, "%s_ln_%d", func, id);
-        varlist_add(vars, buf);
+        varListAdd(vars, buf);
         snprintf(buf, sizeof buf, "%s_rn_%d", func, id);
-        varlist_add(vars, buf);
+        varListAdd(vars, buf);
         snprintf(buf, sizeof buf, "%s_ty_%d", func, id);
-        varlist_add(vars, buf);
+        varListAdd(vars, buf);
     }
 }
 void printIfj(){
@@ -300,7 +300,7 @@ printN("DEFVAR LF@temp$var$chrVal");
 printN("DEFVAR LF@temp$var$chrType");
 printN("DEFVAR LF@temp$var$chrIsInt");
 }
-FuncContext *ConstuctorFuncContext(){
+FuncContext *constuctorFuncContext(){
 	FuncContext *funcStruct = malloc(sizeof(FuncContext));
 	if(!funcStruct){
 		printError(INTERNAL_ERROR, "chyba v alokaci");
@@ -313,7 +313,7 @@ FuncContext *ConstuctorFuncContext(){
 	funcStruct->value_counter = 0;
 	return funcStruct;
 }
-void DestructorFuncContext(FuncContext *funcStruct){
+void destructorFuncContext(FuncContext *funcStruct){
 	free(funcStruct);
 }
 void collectLocalVars(AstNode *node, VarList *vars,FuncContext *funcStruct) {
@@ -324,7 +324,7 @@ void collectLocalVars(AstNode *node, VarList *vars,FuncContext *funcStruct) {
     switch (node->kind) {
           case AST_VAR:
               if (node->child[0] && node->child[0]->kind == AST_IDENTIFIER) {
-                  varlist_add(vars, node->child[0]->value.str);
+                  varListAdd(vars, node->child[0]->value.str);
               }
               break;
 
@@ -349,7 +349,7 @@ void collectLocalVars(AstNode *node, VarList *vars,FuncContext *funcStruct) {
           case AST_IDENTIFIER:
           case AST_OR: {
               node->tmpId = funcStruct->value_counter++;
-              add_binop_tmps(vars, funcStruct->func_name, node->tmpId,node);
+              addBinopTmps(vars, funcStruct->func_name, node->tmpId,node);
               break;
           }
           default:
@@ -361,7 +361,7 @@ void collectLocalVars(AstNode *node, VarList *vars,FuncContext *funcStruct) {
       if (!root) return;
 
       if (root->kind == AST_GLOBAL_ID && root->value.str != NULL) {
-          varlist_add(global, root->value.str);
+          varListAdd(global, root->value.str);
           return;
       }
 
@@ -391,7 +391,7 @@ void emitFuncDec(AstNode *root){
 	bool main = false;
 	char *label = NULL;
 	size_t tmp_counter = 0;
-	FuncContext *context = ConstuctorFuncContext();
+	FuncContext *context = constuctorFuncContext();
 	context->func_name = root->child[0]->value.str;
 	context->label_end = NULL;
 	context->label_stack = label_stack;
@@ -412,7 +412,7 @@ void emitFuncDec(AstNode *root){
 	printIfj();
 	//sbirani lokalnich promenych na deklaraci
 	VarList *local_vars = varListCreate();
-    varlist_add(local_vars, "retval");
+    varListAdd(local_vars, "retval");
 	collectLocalVars(root->child[2], local_vars,context);//funkce uvnitr
 	for (int i = 0; i < local_vars->count; i++) {
 	    printN("DEFVAR LF@%s", local_vars->var_names[i]);
@@ -442,13 +442,13 @@ void emitFuncDec(AstNode *root){
     free(item);
 }
 stacklabelStackDestruct(label_stack);
-	DestructorFuncContext(context);
+	destructorFuncContext(context);
 	free(label_end);
 	}
 void emit_call_func(AstNode *node,FuncContext *funcStruct){
 		printN("CREATEFRAME");
 		for(size_t i = 0; i < node->child[1]->arity;i++){
-		emit_command(node->child[1]->child[i],funcStruct);
+		emitCommand(node->child[1]->child[i],funcStruct);
 		}
 		printN("CALL $%s$0",node->child[0]->value.str);
 }
@@ -461,7 +461,7 @@ void emit_call_func(AstNode *node,FuncContext *funcStruct){
 
  void emitPlus(AstNode *node,FuncContext *funcStruct) {
  	for(size_t i = 0;i < 2;i++){
-   		emit_command(node->child[i],funcStruct);
+   		emitCommand(node->child[i],funcStruct);
    	}
      int id = node->tmpId;
      char ln[128], rn[128], ty[128],rs[128];
@@ -546,7 +546,7 @@ void emit_call_func(AstNode *node,FuncContext *funcStruct){
 			return;
 		}
 			for(int i = 0;i< 2;i++){
-			emit_command(node->child[i], funcStrukt);
+			emitCommand(node->child[i], funcStrukt);
 		}
 	        // Po emitBinaryOp máme na zásobníku: [hodnota_left, hodnota_right]
          int id = node->tmpId;
@@ -607,7 +607,7 @@ dodelat * operator na string a cislo
 void emitMul(AstNode *node, FuncContext *funcStruct) {
     // Vyhodnoť obě děti
     for(int i = 0; i < 2; i++) {
-        emit_command(node->child[i], funcStruct);
+        emitCommand(node->child[i], funcStruct);
     }
 
     int id = node->tmpId;
@@ -707,7 +707,7 @@ void emitMul(AstNode *node, FuncContext *funcStruct) {
 
 void emitDiv(AstNode *node,FuncContext *funcStrukt) {
 	for(int i = 0;i< 2;i++){
-		emit_command(node->child[i], funcStrukt);
+		emitCommand(node->child[i], funcStrukt);
 	}
     // Příprava dočasných proměnných a labelů
     int id = node->tmpId;
@@ -801,9 +801,9 @@ void emitDiv(AstNode *node,FuncContext *funcStrukt) {
     // Konec dělení
     printN("LABEL %s", label_end);
 }
-void emit_equal(AstNode *node, FuncContext *funcStrukt) {
+void emitEqual(AstNode *node, FuncContext *funcStrukt) {
 	for(int i = 0;i< 2;i++){
-		emit_command(node->child[i], funcStrukt);
+		emitCommand(node->child[i], funcStrukt);
 	}
     // Příprava dočasných proměnných a labelů
     int id = node->tmpId;
@@ -854,10 +854,10 @@ void emit_equal(AstNode *node, FuncContext *funcStrukt) {
     printN("LABEL %s", label_end);
 }
 
-void emit_less(AstNode *node, FuncContext *funcStruct) {
+void emitLess(AstNode *node, FuncContext *funcStruct) {
 
 	for(int i = 0;i< 2;i++){
-        emit_command(node->child[i], funcStruct);
+        emitCommand(node->child[i], funcStruct);
     }
     int id = node->tmpId;
     char ln[128], rn[128], rty[128], lty[128];
@@ -927,10 +927,10 @@ void emit_less(AstNode *node, FuncContext *funcStruct) {
 
     printN("LABEL %s", label_end);
 }
-void emit_greater(AstNode *node,FuncContext *funcStruct) {
+void emitGreater(AstNode *node,FuncContext *funcStruct) {
 
 	for(int i = 0;i< 2;i++){
-        emit_command(node->child[i], funcStruct);
+        emitCommand(node->child[i], funcStruct);
     }
     int id = node->tmpId;
     char ln[128], rn[128], rty[128], lty[128];
@@ -1003,7 +1003,7 @@ void emit_greater(AstNode *node,FuncContext *funcStruct) {
 
 void emit_less_equal(AstNode *node, FuncContext *funcStruct) {
     for(int i = 0;i< 2;i++){
-        emit_command(node->child[i], funcStruct);
+        emitCommand(node->child[i], funcStruct);
     }
     int id = node->tmpId;
     char ln[128], rn[128], rty[128], lty[128];
@@ -1084,7 +1084,7 @@ void emit_less_equal(AstNode *node, FuncContext *funcStruct) {
 void emit_greater_equal(AstNode *node, FuncContext *funcStruct) {
 
 	for(int i = 0;i< 2;i++){
-        emit_command(node->child[i], funcStruct);
+        emitCommand(node->child[i], funcStruct);
     }
     int id = node->tmpId;
     char ln[128], rn[128], rty[128], lty[128];
@@ -1159,13 +1159,13 @@ void emit_greater_equal(AstNode *node, FuncContext *funcStruct) {
     printN("LABEL %s", label_end);
 }
 
-void emit_equal_not(AstNode *node, FuncContext *funcStruct) {
-    emit_equal(node, funcStruct);
+void emitEqualNot(AstNode *node, FuncContext *funcStruct) {
+    emitEqual(node, funcStruct);
     printN("NOTS");
 }
 
 //&& neni to obycejny operator
-void emit_and(AstNode *node, FuncContext *funcContext) {
+void emitAnd(AstNode *node, FuncContext *funcContext) {
     int id = node->tmpId;
     char label_false[128], label_end[128];
     snprintf(label_false, sizeof label_false, "%s$and_false$%d", funcContext->func_name, id);
@@ -1196,7 +1196,7 @@ void emit_and(AstNode *node, FuncContext *funcContext) {
 
     printN("LABEL %s", label_end);
 }
-void emit_or(AstNode *node, FuncContext *funcContext) {
+void emitOr(AstNode *node, FuncContext *funcContext) {
     int id = node->tmpId;
     char label_true[128], label_end[128];
     snprintf(label_true, sizeof label_true, "%s$or_success$%d", funcContext->func_name, id);
@@ -1220,7 +1220,7 @@ void emit_or(AstNode *node, FuncContext *funcContext) {
 
     printN("LABEL %s", label_end);
 }
-void emit_negace(AstNode *node,FuncContext *funcStruct) {
+void emitNegace(AstNode *node,FuncContext *funcStruct) {
     int id = node->tmpId;
     char value[128],value_type[128];
     snprintf(value, sizeof value, "%s_ln_%d", funcStruct->func_name, id);
@@ -1236,7 +1236,7 @@ void emit_negace(AstNode *node,FuncContext *funcStruct) {
 }
 
 void emitUnaryMinus(AstNode *node, FuncContext *funcStrukt) {
-     emit_command(node->child[0], funcStrukt);
+     emitCommand(node->child[0], funcStrukt);
     int id = node->tmpId;
 
     char ln[128], ty[128];
@@ -1286,8 +1286,8 @@ void emitUnaryMinus(AstNode *node, FuncContext *funcStrukt) {
     printN("LABEL %s",label_end);
 
 }
-void emit_is(AstNode *node, FuncContext *funcStruct) {
-    emit_command(node->child[0], funcStruct);
+void emitIs(AstNode *node, FuncContext *funcStruct) {
+    emitCommand(node->child[0], funcStruct);
     int id = node->tmpId;
     char ln[128], lty[128];
     snprintf(ln, sizeof ln, "%s_ln_%d", funcStruct->func_name, id);
@@ -1358,29 +1358,29 @@ void emit_is(AstNode *node, FuncContext *funcStruct) {
 
     printN("LABEL %s", label_end);
 }
-void emit_assigned(AstNode *node, FuncContext *funcStruct) {
+void emitAssigned(AstNode *node, FuncContext *funcStruct) {
     if (node->child[0]->kind == AST_SETTER_CALL)
     {
-        emit_command(node->child[1], funcStruct);
+        emitCommand(node->child[1], funcStruct);
         emitSetterCall(node->child[0]);
         return;
     }
 
-		emit_command(node->child[1], funcStruct);
+		emitCommand(node->child[1], funcStruct);
 	    printN("POPS LF@%s",node->child[0]->value.str);
 }
 /*
 *opravi
 */
-void emit_var(AstNode *node, FuncContext *funcStruct){
+void emitVar(AstNode *node, FuncContext *funcStruct){
 	if(node->child[1]->kind != AST_EMPTY){
-	emit_command(node->child[1]->child[0], funcStruct);
+	emitCommand(node->child[1]->child[0], funcStruct);
 	printN("POPS LF@%s",node->child[0]->value.str);
 	}
 }
-void emit_Global(AstNode *node, FuncContext *funcStruct){
+void emitGLobal(AstNode *node, FuncContext *funcStruct){
 	if(node->child[1]->kind != AST_EMPTY){
-	emit_command(node->child[1]->child[0], funcStruct);
+	emitCommand(node->child[1]->child[0], funcStruct);
 	printN("POPS GF@%s",node->child[0]->value.str);
 	}
 }
@@ -1462,7 +1462,7 @@ void emitWhile(AstNode* node, FuncContext *funcContext)
     if (node->child[0]->kind == AST_CONDITION)
     {
         // while -> condition -> AST samotneho operatoru
-        emit_command(node->child[0], funcContext);
+        emitCommand(node->child[0], funcContext);
         printN("PUSHS bool@false");
         printN("JUMPIFEQS %s", endLabel);
     }else{
@@ -1471,7 +1471,7 @@ void emitWhile(AstNode* node, FuncContext *funcContext)
         memorySafeExit(INTERNAL_ERROR);
     }
 
-    emit_command(node->child[1], funcContext); // zpracovani obsahu uvnitr while
+    emitCommand(node->child[1], funcContext); // zpracovani obsahu uvnitr while
     printN("JUMP %s", labelStart); // * JUMP zpět na začáteční návěští
 
     printN("LABEL %s", endLabel); // ! LABEL KONEC
@@ -1571,12 +1571,12 @@ void emitCondition(AstNode *node,FuncContext *funcContext){
 		return;
 	}
 	if(node->kind == AST_LT || node->kind == AST_LTE || node->kind == AST_EQ || node->kind == AST_GT || node->kind == AST_GTE || node->kind == AST_OR || node->kind == AST_NOT || node->kind == AST_NEQ || node->kind == AST_AND || node->kind == AST_IS){
-		emit_command(node,funcContext);
+		emitCommand(node,funcContext);
 		return;
 	}
 	AstNode *child = node->child[0];
 	if(child->kind == AST_LT || child->kind == AST_LTE || child->kind == AST_EQ || child->kind == AST_GT || child->kind == AST_GTE || child->kind == AST_OR || child->kind == AST_NOT || child->kind == AST_NEQ || child->kind == AST_AND || child->kind == AST_IS){
-		emit_command(child, funcContext);
+		emitCommand(child, funcContext);
 	}else if(child->kind == AST_SMALL_NULL || (child->kind == AST_BOOL_LIT && strcmp(child->value.str,"false") == 0)){
 			printN("PUSHS bool@false");
 	}else if(child->kind == AST_IDENTIFIER || child->kind == AST_GLOBAL_ID){
@@ -1683,7 +1683,7 @@ void emitFor(AstNode* node, FuncContext *funcContext)
         printN("JUMPIFEQS %s", endLabel);
         printN("PUSHS LF@%s", variable); // hodim si na zasobnik opet hodnotu, ktere zvysuji hodnotu
 
-        emit_command(node->child[1], funcContext); // zpracovani dalsich veci ve for cyklu
+        emitCommand(node->child[1], funcContext); // zpracovani dalsich veci ve for cyklu
 
         printN("JUMP %s", labelStart);  // * JUMP zpět na začáteční návěští
 
@@ -1717,7 +1717,7 @@ void emitFor(AstNode* node, FuncContext *funcContext)
 
         printN("PUSHS LF@%s", variable); // vraceni hodnoty na zasobnik
 
-        emit_command(node->child[1], funcContext);
+        emitCommand(node->child[1], funcContext);
 
         printN("JUMP %s", labelStart);  // * JUMP zpět na začáteční návěští
     }
@@ -1750,7 +1750,7 @@ void emitSetterCall(AstNode* node) {
 
 void emitSetter(AstNode* node) {
     DynamiclabelStackStackPtr labelStack = stacklabelStackConstruct(DEFAULT_INIT_ELEMENT_COUNT);
-	FuncContext *context = ConstuctorFuncContext();
+	FuncContext *context = constuctorFuncContext();
 	context->func_name = node->child[0]->value.str;
 
 	context->label_stack = labelStack;
@@ -1773,7 +1773,7 @@ void emitSetter(AstNode* node) {
 
     for (size_t i = 0; i < node->child[2]->child[0]->arity; i++)
     {
-        emit_command(node->child[2]->child[0]->child[i], context);
+        emitCommand(node->child[2]->child[0]->child[i], context);
     }
     printN("LABEL %s", context->label_end);
     printN("POPFRAME");
@@ -1787,7 +1787,7 @@ void emitSetter(AstNode* node) {
         free(item);
     }
     stacklabelStackDestruct(labelStack);
-	DestructorFuncContext(context);
+	destructorFuncContext(context);
 }
 
 void emitGetterCall(AstNode* node) {
@@ -1797,7 +1797,7 @@ void emitGetterCall(AstNode* node) {
 void emitGetter(AstNode* node) {
     DynamiclabelStackStackPtr labelStack = stacklabelStackConstruct(DEFAULT_INIT_ELEMENT_COUNT);
 
-	FuncContext *context = ConstuctorFuncContext();
+	FuncContext *context = constuctorFuncContext();
 	context->func_name = node->child[0]->value.str;
 
 	context->label_stack = labelStack;
@@ -1809,7 +1809,7 @@ void emitGetter(AstNode* node) {
 
     printIfj();
     VarList *localVariables = varListCreate();
-    varlist_add(localVariables, "retval");
+    varListAdd(localVariables, "retval");
 	collectLocalVars(node->child[2], localVariables, context);//funkce uvnitr
 	for (int i = 0; i < localVariables->count; i++) {
 	    printN("DEFVAR LF@%s", localVariables->var_names[i]);
@@ -1817,7 +1817,7 @@ void emitGetter(AstNode* node) {
     printN("MOVE LF@retval nil@nil");
     for (size_t i = 0; i < node->child[2]->child[0]->arity; i++)
     {
-        emit_command(node->child[2]->child[0]->child[i], context);
+        emitCommand(node->child[2]->child[0]->child[i], context);
     }
     printN("LABEL %s", context->label_end);
     printN("PUSHS LF@retval");
@@ -1832,10 +1832,10 @@ void emitGetter(AstNode* node) {
         free(item);
     }
     stacklabelStackDestruct(labelStack);
-	DestructorFuncContext(context);
+	destructorFuncContext(context);
 
 }
-void emit_ternarni(AstNode *node, FuncContext *funcStruct){
+void emitTernarni(AstNode *node, FuncContext *funcStruct){
     char label_true[128], label_end[128];
     int id = node->tmpId;
     snprintf(label_true, sizeof label_true, "%s$true$%d", funcStruct->func_name, id);
@@ -1843,10 +1843,10 @@ void emit_ternarni(AstNode *node, FuncContext *funcStruct){
     emitCondition(node->child[0], funcStruct);
     printN("PUSHS bool@true");
     printN("JUMPIFEQS %s", label_true);
-    emit_command(node->child[2], funcStruct);
+    emitCommand(node->child[2], funcStruct);
     printN("JUMP %s", label_end);
     printN("LABEL %s", label_true);
-    emit_command(node->child[1], funcStruct);
+    emitCommand(node->child[1], funcStruct);
     printN("LABEL %s", label_end);
 }
 /*
@@ -1858,10 +1858,10 @@ void emit_ternarni(AstNode *node, FuncContext *funcStruct){
  * TODO udelat if condition aby poznal co tam ma udelat
  * TODO false nebo null je false ostatni pushu true
  */
-void emit_command(AstNode *node,FuncContext *funcStruct) {
+void emitCommand(AstNode *node,FuncContext *funcStruct) {
     switch (node->kind) {
         case AST_PROLOG:
-            emit_prolog();
+            emitProlog();
             break;
         case AST_MAIN_CLASS:
         		emitGlobal(node);
@@ -1938,7 +1938,7 @@ void emit_command(AstNode *node,FuncContext *funcStruct) {
             emitGetter(node);
             break;
         case AST_NOT:
-        	emit_negace(node, funcStruct);
+        	emitNegace(node, funcStruct);
          	break;
         case AST_IF_CHAIN:
             emitIfChain(node, funcStruct);
@@ -1966,13 +1966,13 @@ void emit_command(AstNode *node,FuncContext *funcStruct) {
         // Proměnné / Přiřazení
         case AST_VAR:
             // Nová implementace: deklarace/inicializace proměnné
-            emit_var(node, funcStruct);
+            emitVar(node, funcStruct);
             break;
         case AST_ASSIGN:
-            emit_assigned(node,funcStruct);
+            emitAssigned(node,funcStruct);
             break;
         case AST_IS:
-        	emit_is(node,funcStruct);
+        	emitIs(node,funcStruct);
          	break;
         // Listy
         case AST_IDENTIFIER:
@@ -1984,7 +1984,7 @@ void emit_command(AstNode *node,FuncContext *funcStruct) {
         case AST_GLOBAL_ID:
             // Nová implementace: nacteni globalni promenne
             if(node->arity != 0){
-            emit_Global(node, funcStruct);
+            emitGLobal(node, funcStruct);
             }else {
             printN("PUSHS GF@%s", node->value.str);
             }
@@ -2007,22 +2007,22 @@ void emit_command(AstNode *node,FuncContext *funcStruct) {
        		emitDiv(node, funcStruct);
             break;
         case AST_EQ:
-            emit_equal(node, funcStruct);
+            emitEqual(node, funcStruct);
             break;
         case AST_LT:
-            emit_less(node, funcStruct);
+            emitLess(node, funcStruct);
             break;
         case AST_GT:
-            emit_greater(node,funcStruct);
+            emitGreater(node,funcStruct);
             break;
         case AST_NEQ:
-            emit_equal_not(node, funcStruct);
+            emitEqualNot(node, funcStruct);
             break;
         case AST_AND:
-            emit_and(node, funcStruct);
+            emitAnd(node, funcStruct);
             break;
         case AST_OR:
-            emit_or(node, funcStruct);
+            emitOr(node, funcStruct);
             break;
         case AST_GTE:
             emit_greater_equal(node, funcStruct);
@@ -2038,7 +2038,7 @@ void emit_command(AstNode *node,FuncContext *funcStruct) {
        		printN("PUSHS string@Null");
             break;
         case AST_TERNARY:
-        	emit_ternarni(node,funcStruct);
+        	emitTernarni(node,funcStruct);
          	break;
         case AST_CONDITION:
         	emitCondition(node,funcStruct);
@@ -2052,10 +2052,10 @@ void emit_command(AstNode *node,FuncContext *funcStruct) {
             memorySafeExit(INTERNAL_ERROR);
     }
 }
-void codegen_generate(AstNode *root) {
-	FuncContext *funcStruct = ConstuctorFuncContext();
+void codegenGenerate(AstNode *root) {
+	FuncContext *funcStruct = constuctorFuncContext();
     emitChildren(root,funcStruct);
-    DestructorFuncContext(funcStruct);
+    destructorFuncContext(funcStruct);
     /*
     printN("EXIT %s", NO_ERROR);
     printN("LABEL error %s", RUNTIME_SEMANTICS_ERROR_BAD_TYPE);

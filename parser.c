@@ -42,7 +42,7 @@ AstNode *parser()
 
     pushCheck(stackSymbolPush(stack,makeTerm(TOKEN_EOF)));
     pushCheck(stackSymbolPush(stack,makeNonterm(N_PROGRAM)));
-    token = lexer_token_next();
+    token = lexerTokenNext();
 
     Symbol stackTop;
     gLookHead = &token;
@@ -173,7 +173,7 @@ AstNode *parser()
                 //printLog("ok\n");
                 tokenFree(&token);
                 stackSymbolPop(stack);
-                token = lexer_token_next(); 
+                token = lexerTokenNext();
             }
             else
             {
@@ -323,8 +323,8 @@ AstNode *parser()
         printError(SYNTAX_ERROR, "AST je prázdny\n");
         memorySafeExit(SYNTAX_ERROR);
     }
-    
-    
+
+
     astRoot = stackAstNodeRead(astStack);
     stackSymbolDestruct(stack);
     stack =  NULL;
@@ -360,7 +360,7 @@ void prologFunc(DynamicSymbolStackPtr stack)
 
     stackSymbolPop(stack);
     pushCheck(stackSymbolPush(stack, makeReduce(AST_PROLOG,0)));
-    
+
     pushCheck(stackSymbolPush(stack,makeTerm(TOKEN_KEYWORD_IFJ)));
     pushCheck(stackSymbolPush(stack, makeNonterm(N_OPT_NEWLINES)));
     pushCheck(stackSymbolPush(stack,makeTerm(TOKEN_KEYWORD_FOR)));
@@ -433,7 +433,7 @@ void blockFunc(DynamicSymbolStackPtr stack)
 }
 
 void blockContentFuncCheck(DynamicSymbolStackPtr stack, Token token)
-{ 
+{
     stackSymbolPop(stack);
 
     if (token.type == TOKEN_BLOCK_END) {
@@ -529,39 +529,39 @@ void smthListFunc(DynamicSymbolStackPtr stack, Token token)
     stackSymbolPop(stack);
     switch (token.type) {
         case TOKEN_KEYWORD_RETURN:
-            pushCheck(stackSymbolPush(stack, makeNonterm(N_RETURN)));        
+            pushCheck(stackSymbolPush(stack, makeNonterm(N_RETURN)));
             return;
         case TOKEN_KEYWORD_VAR:
-            pushCheck(stackSymbolPush(stack, makeNonterm(N_VAR)));           
+            pushCheck(stackSymbolPush(stack, makeNonterm(N_VAR)));
             return;
         case TOKEN_KEYWORD_IF:
-            pushCheck(stackSymbolPush(stack, makeNonterm(N_IF)));         
+            pushCheck(stackSymbolPush(stack, makeNonterm(N_IF)));
             return;
         case TOKEN_KEYWORD_WHILE:
-            pushCheck(stackSymbolPush(stack, makeNonterm(N_WHILE)));         
+            pushCheck(stackSymbolPush(stack, makeNonterm(N_WHILE)));
             return;
-        case TOKEN_KEYWORD_FOR:   
-            pushCheck(stackSymbolPush(stack, makeNonterm(N_FOR)));           
+        case TOKEN_KEYWORD_FOR:
+            pushCheck(stackSymbolPush(stack, makeNonterm(N_FOR)));
             return;
         case TOKEN_KEYWORD_BREAK:
-            pushCheck(stackSymbolPush(stack, makeNonterm(N_BREAK)));         
+            pushCheck(stackSymbolPush(stack, makeNonterm(N_BREAK)));
             return;
         case TOKEN_KEYWORD_CONTINUE:
-            pushCheck(stackSymbolPush(stack, makeNonterm(N_CONTINUE)));      
+            pushCheck(stackSymbolPush(stack, makeNonterm(N_CONTINUE)));
             return;
         case TOKEN_IDENTIFIER:
-            pushCheck(stackSymbolPush(stack, makeNonterm(N_CALL_ASSIGN)));   
+            pushCheck(stackSymbolPush(stack, makeNonterm(N_CALL_ASSIGN)));
             return;
-            
+
         case TOKEN_KEYWORD_IFJ:
             pushCheck(stackSymbolPush(stack, makeReduce(AST_IFJ_CALL, 2)));
             pushCheck(stackSymbolPush(stack, makeNonterm(N_CALL_IFJ)));
             pushCheck(stackSymbolPush(stack, makeTerm(TOKEN_KEYWORD_IFJ)));
             return;
-        case TOKEN_GLOBAL_ID: 
+        case TOKEN_GLOBAL_ID:
             pushCheck(stackSymbolPush(stack, makeNonterm(N_GLOBAL_ASSIGN))); return;
         case TOKEN_BLOCK_STAR:
-            pushCheck(stackSymbolPush(stack, makeNonterm(N_BLOCK))); 
+            pushCheck(stackSymbolPush(stack, makeNonterm(N_BLOCK)));
             return;
 
         // ak nechceš holé výrazové statementy, tieto nechaj vypnuté:
@@ -647,7 +647,7 @@ void paramFunc(DynamicSymbolStackPtr stack, Token token)
     {
         pushCheck(stackSymbolPush(stack, makeReduce(AST_PARAM, 1))); // eps
         pushCheck(stackSymbolPush(stack, makeReduce(AST_EMPTY, 0)));
-        
+
     }
     else
     {
@@ -661,12 +661,12 @@ void paramListFunc(DynamicSymbolStackPtr stack, Token token)
     stackSymbolPop(stack);
     if (token.type == TOKEN_COMMA)
     {
-        pushCheck(stackSymbolPush(stack, makeReduce(AST_PARAM, 2))); 
+        pushCheck(stackSymbolPush(stack, makeReduce(AST_PARAM, 2)));
         pushCheck(stackSymbolPush(stack, makeNonterm(N_PARAM_LIST)));
         pushCheck(stackSymbolPush(stack, makeTermWithValue(TOKEN_IDENTIFIER)));
         pushCheck(stackSymbolPush(stack, makeNonterm(N_OPT_NEWLINES)));
         pushCheck(stackSymbolPush(stack, makeTerm(TOKEN_COMMA)));
-        
+
     }
     else if (token.type == TOKEN_RPAREN)
     {
@@ -979,7 +979,7 @@ void exprFunc(DynamicSymbolStackPtr stack, Token *gLookHead, DynamicAstNodeStack
 
     // výsledný uzol výrazu dáme na AST zásobník
     pushCheck(stackAstNodePush(astStack, expr));
-    
+
 }
 
 void  newLineFunc(DynamicSymbolStackPtr stack, Token token)
@@ -1041,7 +1041,7 @@ void callIfjCheckfunc(DynamicSymbolStackPtr stack, Token token)
 {
     stackSymbolPop(stack);
 
-    if (token.type != TOKEN_IDENTIFIER || token.value.identifier == NULL) 
+    if (token.type != TOKEN_IDENTIFIER || token.value.identifier == NULL)
     {
         printError(SYNTAX_ERROR, "Ocakavany nazov funkcie po 'ifj.'");
         memorySafeExit(SYNTAX_ERROR);
@@ -1081,7 +1081,7 @@ void AssignIfjIdCheckFunc(DynamicSymbolStackPtr stack, Token token)
         pushCheck(stackSymbolPush(stack, makeTerm(TOKEN_KEYWORD_IFJ)));
         return;
     }
-    
+
     else
     {
         pushCheck(stackSymbolPush(stack, makeNonterm(N_EXPR)));
@@ -1150,7 +1150,7 @@ Symbol makeTermValueAndCaptureIdentifier(const char *exact) {
 
 void tokenFree(Token *token)
 {
-    if (!token) 
+    if (!token)
     {
         return;
     }
@@ -1186,7 +1186,7 @@ void tokenFree(Token *token)
         case TOKEN_FALSE:
         case STRING_BLOCK:
 
-            if (token->value.identifier) 
+            if (token->value.identifier)
             {
                 free(token->value.identifier);
                 token->value.identifier = NULL;

@@ -1,5 +1,6 @@
 
 /*
+ * Fakulta informačních technologií VUT Brno
  *
  * Autoři: xpasekj00
  * Soubor: lexer.h
@@ -163,20 +164,22 @@ typedef struct {
  * @param source  vstupní řetězec zpracovávaný lexerem (z main.c)
  * @return        0 při úspěchu, -1 při chybě alokace
  */
-int lexer_init(const char *source);
+int lexerInit(const char *source);
 /*
  * Uvolní paměť spojenou s lexerem a nastaví ukazatel na NULL.
  */
-void lexer_free(void);
+void lexerFree(void);
 /*
  * Hlavní funkce konečného automatu pro získání dalšího tokenu.
  *
  * @return  další token ze vstupu; pokud není více tokenů,
  *          vrací TOKEN_EOF; při chybě může vrátit ERROR_TOKEN
  */
-Token lexer_token_next();
-TokenType match_identifikator(const char *identifikator);
-char *token_type_to_string(TokenType type);
+Token lexerTokenNext();
+TokenType matchIdentifikator(const char *identifikator);
+char *tokenTypeToString(TokenType type);
 extern char *source_file;
 extern char *buf;
 #endif
+
+/*** konec soubor ***/

@@ -505,7 +505,7 @@ bool checkFirstTokenType(Token actualToken)
 
     default:
         printError(SYNTAX_ERROR, "(PSA) prvni odeslany token neni identifikator, dostal jsem %s\n",
-                token_type_to_string(actualToken.type));
+                tokenTypeToString(actualToken.type));
         memorySafeExit(SYNTAX_ERROR);
         break;
     }
@@ -553,7 +553,7 @@ void printStack(DynamicPrecedenceStackPtr stack)
         Token tokenRead = stackPrecedenceRead(stack);
         stackPrecedencePop(stack);
         if (DEBUG)
-        printLog("%s ", token_type_to_string(tokenRead.type));
+        printLog("%s ", tokenTypeToString(tokenRead.type));
 
     stackPrecedencePush(stackTmp, tokenRead);
     }
@@ -577,7 +577,7 @@ void functionCalled(DynamicPrecedenceStackPtr stackP,
 {
     findPrecedenceRule(stackP, stackA); // zpracuji identifikator, co je na vrcholu zasobniku
 
-    *actualToken = lexer_token_next();
+    *actualToken = lexerTokenNext();
     if (actualToken->type == TOKEN_RPAREN) // Funkce nemá žádný parametr
     {
 
@@ -617,7 +617,7 @@ void functionCalled(DynamicPrecedenceStackPtr stackP,
 
         if (actualToken->type != TOKEN_NEW_LINE)
         {
-            *actualToken = lexer_token_next();
+            *actualToken = lexerTokenNext();
         }
         if (actualToken->type == TOKEN_NEW_LINE)
         {
@@ -636,7 +636,7 @@ void functionCalled(DynamicPrecedenceStackPtr stackP,
             stackAstNodePush(stackA, param);
             if (actualToken->type == TOKEN_COMMA)
             {
-                *actualToken = lexer_token_next();
+                *actualToken = lexerTokenNext();
                 if (actualToken->type == TOKEN_RPAREN) // za čárkou je hned zavorka -> syntaktická chyba
                 {
                     printError(SYNTAX_ERROR,
@@ -694,7 +694,7 @@ void functionCalled(DynamicPrecedenceStackPtr stackP,
 
         if (actualToken->type != TOKEN_NEW_LINE)
         {
-            *actualToken = lexer_token_next();
+            *actualToken = lexerTokenNext();
         }
         if (actualToken->type == TOKEN_NEW_LINE)
         {
@@ -799,7 +799,7 @@ AstNode* parseExpression(Token *token, int flag)
         if (checkIs)
         {
             if (DEBUG)
-                printLog("actualToken %s\n", token_type_to_string(actualToken.type));
+                printLog("actualToken %s\n", tokenTypeToString(actualToken.type));
 
             if (operatorToPush(StackTop) == INDEX_IS)
             {
@@ -811,7 +811,7 @@ AstNode* parseExpression(Token *token, int flag)
                 {
                     printError(SYNTAX_ERROR,
                         "(PSA) Za klicovym slovem Is nasleduje nezname klicove slovo: %s\n ",
-                        token_type_to_string(actualToken.type));
+                        tokenTypeToString(actualToken.type));
                     freePrecedenceStack(stackP);
                     freeAstStack(stackA);
                     tokenPrecedenceFree(&actualToken);
@@ -861,7 +861,7 @@ AstNode* parseExpression(Token *token, int flag)
             {
                 if (actualToken.type == TOKEN_NEW_LINE)
                 {
-                    actualToken = lexer_token_next(); // posouvám se na další token
+                    actualToken = lexerTokenNext(); // posouvám se na další token
                     if (operatorToPush(actualToken) != INDEX_ID) // dalsi token neni identifikator, cislo, ...
                     {
                         printError(SYNTAX_ERROR,
@@ -939,8 +939,8 @@ AstNode* parseExpression(Token *token, int flag)
         {
             printLog("%d Aktualni token %s a stacktop: %s [%d, %d]\n",
                 poradiCount++,
-                token_type_to_string(actualToken.type),
-                token_type_to_string(stackPrecedenceRead(stackP).type),
+                tokenTypeToString(actualToken.type),
+                tokenTypeToString(stackPrecedenceRead(stackP).type),
                 operatorToPush(StackTop), operatorToPush(actualToken));
             printStack(stackP);
         }
@@ -1029,7 +1029,7 @@ AstNode* parseExpression(Token *token, int flag)
                     printLog("\t\t\t%d < (%d, %d) ",poradiCount++, operatorToPush(StackTop), operatorToPush(actualToken));
                     printStack(stackP);
                 }
-                actualToken = lexer_token_next();
+                actualToken = lexerTokenNext();
             break;
 
             case E: // =
@@ -1040,7 +1040,7 @@ AstNode* parseExpression(Token *token, int flag)
                     printStack(stackP);
                 }
 
-                actualToken = lexer_token_next();
+                actualToken = lexerTokenNext();
             break;
 
             default: // stav ktery nesmi nastat

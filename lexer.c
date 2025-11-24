@@ -1,4 +1,5 @@
 /*
+ * Fakulta informačních technologií VUT Brno
  *
  * Autoři: xpasekj00
  * Soubor: lexer.c
@@ -13,7 +14,7 @@
 #include <string.h>
 
 /*
- * Proměna  která je potřebna byti viditelnou v celem souboru
+ * Proměne  která je potřebna byti viditelnou v celem souboru
  */
 static LexerState *lexer = NULL;
 static int CountComents = 0;
@@ -27,7 +28,7 @@ char *source_file = NULL;
  * @param source  vstupní řetězec zpracovávaný lexerem (z main.c)
  * @return        0 při úspěchu, -1 při chybě alokace
  */
-int lexer_init(const char *source) {
+int lexerInit(const char *source) {
     lexer = malloc(sizeof(LexerState));
     if (lexer == NULL) {
     printError(INTERNAL_ERROR, "nepovedeny malloc v substringu v lexeru\n");
@@ -42,7 +43,7 @@ int lexer_init(const char *source) {
 /*
  * Uvolní paměť spojenou s lexerem a nastaví ukazatel na NULL.
  */
-void lexer_free(void) {
+void lexerFree(void) {
     if (lexer != NULL) {
         free(lexer);
         lexer = NULL;
@@ -57,7 +58,7 @@ void lexer_free(void) {
  * @param char *string
  * @return TokenType
  */
-TokenType match_identifikator(const char *identifikator) {
+TokenType matchIdentifikator(const char *identifikator) {
     if (strcmp(identifikator, "if") == 0) {
         return TOKEN_KEYWORD_IF;
     }
@@ -121,7 +122,7 @@ TokenType match_identifikator(const char *identifikator) {
     return TOKEN_IDENTIFIER;
 }
 /*
- * Funkce nakrajeni stringu na token interne NUZKY
+ * Funkce nakrajéní stringu na token
  *@param int start startovaci pozice
  *@param int end koncici pozice
  * @return vraci char *vysledek
@@ -146,7 +147,7 @@ char *substring(size_t start, size_t end) {
 /*
 *Funkce ktera prevadi typ tokenu na char * pro print
 */
- char *token_type_to_string(TokenType type) {
+ char *tokenTypeToString(TokenType type) {
     switch (type) {
         case TOKEN_EOF:
             return "EOF";
@@ -280,12 +281,12 @@ char *substring(size_t start, size_t end) {
  *@params int *delka aktualni delka buffru
  *@params c znak dodavany
  */
-void append_char(char **buf, int *delka, int *kapacita, char c) {
+void appendChar(char **buf, int *delka, int *kapacita, char c) {
     if (*delka + 1 >= *kapacita) {  // ve chvili kdy hrozi preteceni realloc
         *kapacita *= 2;
         *buf = realloc(*buf, *kapacita);
         if(buf == NULL){
-       	printError(INTERNAL_ERROR, "error in append_char reallock \n");
+       	printError(INTERNAL_ERROR, "error in appendChar reallock \n");
         memorySafeExit(INTERNAL_ERROR);
         }
     }
@@ -293,7 +294,7 @@ void append_char(char **buf, int *delka, int *kapacita, char c) {
     (*buf)[*delka] = '\0';
 
 }
-Token lexer_token_next() {
+Token lexerTokenNext() {
     // inicializace bufferu na string
 
     buf = calloc(INIT_CAPACITY, sizeof(char)); /* Musi se dojit na konec pomoci goto jinak MUSI BYT FREE!!! jinak memory leak typicky nasobky 32byt */
@@ -341,7 +342,7 @@ Token lexer_token_next() {
 
                 case ID:
                     token.value.identifier = substring(zacatek, lexer->pos);
-                    token.type             = match_identifikator(token.value.identifier);
+                    token.type             = matchIdentifikator(token.value.identifier);
                     token.line             = radek;
                     goto token_found;
 
@@ -676,7 +677,7 @@ Token lexer_token_next() {
                     free(buf);
                     buf = NULL;
                     printError(LEX_ERROR,
-                               "nezname pismeno v lexer_token_next "
+                               "nezname pismeno v lexerTokenNext "
                                "%c on line : %lu",
                                c, lexer->pos);
                     memorySafeExit(LEX_ERROR);
@@ -689,7 +690,7 @@ Token lexer_token_next() {
                     lexer->pos++;
                 } else {
                     token.value.identifier = substring(zacatek, lexer->pos);
-                    token.type             = match_identifikator(token.value.identifier);
+                    token.type             = matchIdentifikator(token.value.identifier);
                     token.line             = radek;
                     goto token_found;
                 }
@@ -707,7 +708,7 @@ Token lexer_token_next() {
                     free(buf);
                     buf = NULL;
                     printError(LEX_ERROR,
-                               "nezname pismeno v lexer_token_next"
+                               "nezname pismeno v lexerTokenNext"
                                "%c on line : %lu",
                                c, lexer->pos);
                     memorySafeExit(LEX_ERROR);
@@ -781,7 +782,7 @@ Token lexer_token_next() {
                 free(buf);
                 buf = NULL;
                 printError(LEX_ERROR,
-                               "neznamy charakter v lexer_token_next"
+                               "neznamy charakter v lexerTokenNext"
                                "%c on line : %lu",
                                current_char, lexer->pos + 1);
                 memorySafeExit(LEX_ERROR);
@@ -795,7 +796,7 @@ Token lexer_token_next() {
                     free(buf);
                     buf = NULL;
                     printError(LEX_ERROR,
-                               "neznamy charakter v lexer_token_next"
+                               "neznamy charakter v lexerTokenNext"
                                "%c on line : %lu",
                                c, lexer->pos);
                     memorySafeExit(LEX_ERROR);
@@ -835,7 +836,7 @@ Token lexer_token_next() {
                      } else {
                          free(buf);
                          printError(LEX_ERROR,
-                                    "neznamy charakter v lexer_token_next: %c on line : %lu",
+                                    "neznamy charakter v lexerTokenNext: %c on line : %lu",
                                     next_char, lexer->pos);
                          memorySafeExit(LEX_ERROR);
                     }
@@ -848,7 +849,7 @@ Token lexer_token_next() {
                      free(buf);
                      buf = NULL;
                      printError(LEX_ERROR,
-                                "neznamy charakter v lexer_token_next: %c on line : %lu",
+                                "neznamy charakter v lexerTokenNext: %c on line : %lu",
                                 c, lexer->pos);
                      memorySafeExit(LEX_ERROR);
                  }
@@ -865,7 +866,7 @@ Token lexer_token_next() {
                         free(buf);
                         buf = NULL;
                         printError(LEX_ERROR,
-                                    "neznamy charakter v lexer_token_next: %c on line : %lu",
+                                    "neznamy charakter v lexerTokenNext: %c on line : %lu",
                                     next_char, lexer->pos);
                         memorySafeExit(LEX_ERROR);
                     }
@@ -878,7 +879,7 @@ Token lexer_token_next() {
                     free(buf);
                     buf = NULL;
                     printError(LEX_ERROR,
-                                "neznamy charakter v lexer_token_next: %c on line : %lu",
+                                "neznamy charakter v lexerTokenNext: %c on line : %lu",
                                 c, lexer->pos);
                     memorySafeExit(LEX_ERROR);
                 }
@@ -948,20 +949,20 @@ Token lexer_token_next() {
                         hexa_count = 0;
                         lexer->pos++;
                     } else if (next == 'n') {
-                        append_char(&buf, &delak, &kapacity, '\n');
+                        appendChar(&buf, &delak, &kapacity, '\n');
                         lexer->pos++;
                     } else if (next == 'r') {
-                        append_char(&buf, &delak, &kapacity, '\r');
+                        appendChar(&buf, &delak, &kapacity, '\r');
                         lexer->pos++;
                     } else if (next == 't') {
-                        append_char(&buf, &delak, &kapacity, '\t');
+                        appendChar(&buf, &delak, &kapacity, '\t');
                         lexer->pos++;
                     } else if (next == '"') {
-                        append_char(&buf, &delak, &kapacity, '\"');
+                        appendChar(&buf, &delak, &kapacity, '\"');
                         lexer->pos++;
                     }
                     else if (next == '\\') {
-                        append_char(&buf, &delak, &kapacity, '\\');
+                        appendChar(&buf, &delak, &kapacity, '\\');
                         lexer->pos++;
                     }
 
@@ -969,7 +970,7 @@ Token lexer_token_next() {
                         free(buf);
                         buf = NULL;
                         printError(LEX_ERROR,
-                                   "neznamy charakter v lexer_token_next"
+                                   "neznamy charakter v lexerTokenNext"
                                    "%c on line : %lu",
                                    c, lexer->pos);
                         memorySafeExit(LEX_ERROR);
@@ -978,13 +979,13 @@ Token lexer_token_next() {
                     free(buf);
                     buf = NULL;
                     printError(LEX_ERROR,
-                               "neznamy charakter v lexer_token_next"
+                               "neznamy charakter v lexerTokenNext"
                                "%c on line : %lu",
                                c, lexer->pos);
                     memorySafeExit(LEX_ERROR);
                 } else {
                     // tady je nacitani znaku do docaneho bufferu
-                    append_char(&buf, &delak, &kapacity, c);
+                    appendChar(&buf, &delak, &kapacity, c);
                     lexer->pos++;
                 }
                 break;
@@ -1000,14 +1001,14 @@ Token lexer_token_next() {
                         // prevedeni na cislo
                         int vysledek_int = (int)strtol(hexa_buffer, NULL, 16);
                         // prevedeni na znak
-                        append_char(&buf, &delak, &kapacity, (char)vysledek_int);
+                        appendChar(&buf, &delak, &kapacity, (char)vysledek_int);
                         stav       = STRING;
                         hexa_count = 0;
                     } else {
                         free(buf);
                         buf = NULL;
                         printError(LEX_ERROR,
-                                   "neznamy charakter v lexer_token_next"
+                                   "neznamy charakter v lexerTokenNext"
                                    "%c on line : %lu",
                                    c, lexer->pos);
                         memorySafeExit(LEX_ERROR);
@@ -1038,7 +1039,7 @@ Token lexer_token_next() {
                     free(buf);
                     buf = NULL;
                     printError(LEX_ERROR,
-                               "neznamy charakter v lexer_token_next"
+                               "neznamy charakter v lexerTokenNext"
                                "%c on line : %lu",
                                c, lexer->pos);
                     memorySafeExit(LEX_ERROR);
@@ -1231,7 +1232,7 @@ Token lexer_token_next() {
                     free(buf);
                     buf = NULL;
                     printError(LEX_ERROR,
-                               "neznamy charakter v lexer_token_next"
+                               "neznamy charakter v lexerTokenNext"
                                "%c on line : %lu",
                                c, lexer->pos);
                     memorySafeExit(LEX_ERROR);
@@ -1252,7 +1253,7 @@ Token lexer_token_next() {
                     free(buf);
                     buf = NULL;
                     printError(LEX_ERROR,
-                               "neznamy charakter v lexer_token_next"
+                               "neznamy charakter v lexerTokenNext"
                                "%c on line : %lu",
                                c, lexer->pos);
                     memorySafeExit(LEX_ERROR);
@@ -1285,7 +1286,7 @@ Token lexer_token_next() {
                 free(buf);
                 buf = NULL;
                 printError(LEX_ERROR,
-                           "neznamy charakter v lexer_token_next"
+                           "neznamy charakter v lexerTokenNext"
                            "%c on line : %lu",
                            c, lexer->pos);
                 memorySafeExit(LEX_ERROR);
@@ -1294,7 +1295,7 @@ Token lexer_token_next() {
     free(buf);
     buf = NULL;
     printError(LEX_ERROR,
-               "neznamy charakter v lexer_token_next"
+               "neznamy charakter v lexerTokenNext"
                "%c on line : %lu",
                c, lexer->pos);
     memorySafeExit(LEX_ERROR);
@@ -1304,3 +1305,4 @@ token_found:;
 token_found_string:;
     return token;
 }
+/*** konec soubor ***/
