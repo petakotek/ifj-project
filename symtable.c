@@ -1,12 +1,13 @@
 /**
  * Fakulta informačních technologií VUT Brno
  *
- * Hlavičkový soubor pro implementaci hashovací tabulky s implicitním zřetězením
+ * @brief Hlavičkový soubor pro implementaci hashovací tabulky s implicitním zřetězením
  * pro projekt do předmětu IFJ
  * @file hashtable.c
  * @author Petr Kotek (xkotekp00)
  * Upraveno: 13.10.2025
  */
+
 #include "symtable.h"
 
 #include "support_functions.h"
@@ -16,7 +17,7 @@
 #include <stdio.h>
 
 
-#define TABLE_CAPACITY 200  // nastavení počtu položek tabulky
+#define TABLE_CAPACITY 10  // nastavení počtu položek tabulky
 
 /**
  * @brief Inicializace tabulky, alokace pole prvků
@@ -24,12 +25,15 @@
  */
 HashTable *hashTableInit() {
     HashTable *hashT;
-    hashT = malloc(sizeof(HashTable) + sizeof(TableItem) * TABLE_CAPACITY);
+    hashT = malloc(sizeof(HashTable));
 
     if (hashT == NULL) {
         printError(INTERNAL_ERROR, "Chyba alokace pameti tabulky");
         return NULL;
     }
+
+    hashT->items = malloc(sizeof(TableItem) * TABLE_CAPACITY);
+
     hashT->tableCapacity = TABLE_CAPACITY;
     hashT->tableSize     = 0;
 
@@ -58,9 +62,18 @@ void hashTableInitItems(HashTable *hashT) {
  * @return Funkce vraci index v poli polozek
  */
 int hashTableInsertItem(HashTable *hashT, char *key, SemSymbol token) {
-    if (hashT == NULL || key == NULL) return -1;
+    if (hashT == NULL || key == NULL) // tabulka je prazdna nebo zadany klic je NULL
+    {
+        return -1;
+    }
+    
+    int nasobek = hashT->tableSize * 1.2;
+    if (nasobek > hashT->tableCapacity)
+    {
+        hashTableRealloc(hashT);
+    }
 
- 
+
     int existing = hashTableSearchItem(hashT, key);
     if (existing != -1)
     {
@@ -68,52 +81,44 @@ int hashTableInsertItem(HashTable *hashT, char *key, SemSymbol token) {
         return existing;
     }
 
-    if (hashT->tableSize >= hashT->tableCapacity)
-    {
-        if (!hashTableRealloc(hashT)) {
-            printError(INTERNAL_ERROR, "Selhani realokace");
-        return -1;
-    }
-    }
+    // int nasobek = hashT->tableSize * 1.2;
+
+
+    
 
     int index = hashItem(key, hashT);
     int steps = 0;
  
-    while (steps < hashT->tableCapacity) {
+    while (steps < hashT->tableCapacity)
+    {
         int curr = (index + steps) % hashT->tableCapacity;
         TableItem *item = &hashT->items[curr];
 
-        if (item->isEmpty || item->isDeleted)
-        {
-            if (item->key != NULL)
+            if (item->isEmpty || item->isDeleted)
             {
-                free(item->key);
+                if (item->key != NULL)
+                {
+                    free(item->key);
+                }
+
+                item->key = malloc(strlen(key) + 1);
+                if (item->key == NULL) {
+                    printError(INTERNAL_ERROR, "Chyba alokace klice");
+                    return -1;
             }
+                strcpy(item->key, key);
 
-            item->key = malloc(strlen(key) + 1);
-            if (item->key == NULL) {
-                printError(INTERNAL_ERROR, "Chyba alokace klice");
-                return -1;
-        }
-            strcpy(item->key, key);
+                item->symbol = token;
+                item->isEmpty = false;
+                item->isDeleted = false;
 
-            item->symbol = token;
-            item->isEmpty = false;
-            item->isDeleted = false;
-
-                        hashT->tableSize++;
-            return curr;
+                hashT->tableSize++;
+                return curr;
             }
-
         steps++;
-        }
-
-    // Tabulka plná → realokuj a zkus znovu
-    if (!hashTableRealloc(hashT)) {
-        printError(INTERNAL_ERROR, "Selhani realokace po vycerpani");
-        return -1;
     }
-    return hashTableInsertItem(hashT, key, token);  // rekurze
+
+    return -1;
 
 }
 /**
@@ -190,8 +195,9 @@ void hashTableDealloc(HashTable *hashT) {
             hashT->items[i].symbol.name = NULL;  // Uvolnění paměti zajišťují funkce pro AS strom
         }
     }
+    free(hashT->items); // uvolneni alokace pole
 
-    free(hashT);
+    free(hashT); // uvolneni alokace tabulky
 }
 /**
  * @brief Hashovací funkce
@@ -219,33 +225,56 @@ int hashItem(char *key, HashTable *hashT) {
  * @param hashT je ukazatel na tabulku, která bude alokována
  * @return nemá návratovou hodnotu
  */
-HashTable *hashTableRealloc(HashTable *hashT) {
-    if (hashT == NULL || hashT->tableCapacity <= 0) {
+void hashTableRealloc(HashTable *hashT)
+{
+    // printf("REALOKACE !!!!\n");
+    if (hashT == NULL)
+    {
         printError(INTERNAL_ERROR, "Tabulka je prazdna");
-        return NULL;
+        return;
     }
-
+    
     int oldCapacity = hashT->tableCapacity;
-    // navýšení kapacity tabulky o 50%
-    int        newCapacity = hashT->tableCapacity + (hashT->tableCapacity / 2);
-    HashTable *newTable    = realloc(hashT, sizeof(HashTable) + sizeof(TableItem) * newCapacity);
+    int newCapacity = hashT->tableCapacity + (hashT->tableCapacity / 2); // + 50 %
+    
+    TableItem *oldArray = hashT->items;
 
-    if (newTable == NULL) {
-        printError(INTERNAL_ERROR, "Chyba realokace pameti tabulky symbolu");
-        return NULL;
+    TableItem *newArray = malloc(sizeof(TableItem) * newCapacity);
+    
+    if (newArray == NULL) {
+        printError(INTERNAL_ERROR, "Chyba realokace pameti pole symbolu");
+        hashTableDealloc(hashT);
+        return;
+    }
+    
+    hashT->items = newArray;
+    hashT->tableCapacity = newCapacity; // nastaveni nove kapacity tabulky
+    hashTableInitItems(hashT);
+
+    for (int i = 0; i < oldCapacity; i++)
+    {
+        bool empty = oldArray[i].isEmpty;
+        char *key = oldArray[i].key;
+        SemSymbol symbol = oldArray[i].symbol;
+
+        if (empty == false)
+        {
+            if (oldArray[i].key != NULL)
+            {
+                hashTableInsertItem(hashT, key, symbol);
+                free(key);
+            }
+        }
     }
 
-    // Inicializace novych prvku
-    for (int i = oldCapacity; i < newCapacity; i++) {
-        newTable->items[i].key         = NULL;
-        newTable->items[i].isDeleted   = false;
-        newTable->items[i].isEmpty     = true;
-        newTable->items[i].symbol.name = NULL;
-    }
-    newTable->tableCapacity = newCapacity;
+    free(oldArray);
+    oldArray = NULL;
 
-    return newTable;
 }
 
-bool hashTableIsEmpty(HashTable *hashT) { return hashT->tableSize == 0; }
-/* Konec hashtable.h */
+bool hashTableIsEmpty(HashTable *hashT)
+{ 
+    return hashT->tableSize == 0;
+}
+
+/* Konec symtable.c */
