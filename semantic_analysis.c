@@ -1658,9 +1658,8 @@ SemValidationStates handleMathOperators(AstNode* currentNode, AstNodeType operat
         if (rightChild == UNKNOWN_DATA)
             return UNKNOWN_DATA;
         if (rightChild == STRING_DATA) {
-            if (operatorCode == AST_PLUS) {
+            if (operatorCode == AST_PLUS) 
                 return STRING_DATA;
-            }
         }
     }
 
@@ -1675,9 +1674,10 @@ SemValidationStates handleMathOperators(AstNode* currentNode, AstNodeType operat
         if (operatorCode == AST_MUL) {
             if (rightChild == INT_DATA)
                 return STRING_DATA;
-            if (rightChild == UNKNOWN_DATA) {
+            if (rightChild == UNKNOWN_DATA)
                 return STRING_DATA;
-            }
+            if(rightChild == NUMBER_DATA) 
+                return STRING_DATA;
         }
     }
 
