@@ -18,50 +18,44 @@
  */
 typedef enum
 {
-    N_Program,
-    N_Prolog,
-    N_Main_class,
-    N_Main_class_block,
-    N_Block_content,
-    N_Block,
-    N_smth,
-    N_smth_tail,
-    N_smth_list,
-    N_Oneline_expr_opt,
-    N_Func_dec,
-    N_Func_dec_tail,
-    N_Param,
-    N_Param_list,
-    N_Var,
-    N_Var_EXT,
-    N_Var_arg,
-    N_Var_arg_list,
-    N_Call_assign,
-    N_Call_assign_list,
-    N_Global_assign,
-    N_If,
-    N_Else,
-    N_While,
-    N_For,
-    N_Break,
-    N_Continue,
-    N_Return,
-    N_Return_expr,
-    N_Else_body,
-    N_Expr,
-    N_New_line_check,
-    N_Opt_newlines,
-    N_Start,
-    N_lExpr,
-    N_cExpr,
-    N_Block_content_check,
-    N_oExpr,
-    N_Func_block_content_check,
-    N_callIfj,
-    N_Else_chain,
-    N_Else_item,
-    N_callIfjCheck,
-    N_AssignIfjIdCheck,
+    N_PROGRAM,
+    N_PROLOG,
+    N_MAIN_CLASS,
+    N_MAIN_CLASS_BLOCK,
+    N_BLOCK_CONTENT,
+    N_BLOCK,
+    N_STMT_TAIL,
+    N_STMT_LIST,
+    N_FUNC_DEC,
+    N_FUNC_DEC_TAIL,
+    N_PARAM,
+    N_PARAM_LIST,
+    N_VAR,
+    N_VAR_EXT,
+    N_VAR_ARG,
+    N_VAR_ARG_LIST,
+    N_CALL_ASSIGN,
+    N_CALL_ASSIGN_LIST,
+    N_GLOBAL_ASSIGN,
+    N_IF,
+    N_WHILE,
+    N_FOR,
+    N_BREAK,
+    N_CONTINUE,
+    N_RETURN,
+    N_RETURN_EXPR,
+    N_EXPR,
+    N_NEW_LINE_CHECK,
+    N_OPT_NEWLINES,
+    N_L_EXPR,
+    N_C_EXPR,
+    N_BLOCK_CONTENT_CHECK,
+    N_O_EXPR,
+    N_CALL_IFJ,
+    N_ELSE_CHAIN,
+    N_ELSE_ITEM,
+    N_CALL_IFJ_CHECK,
+    N_ASSIGN_IFJ_ID_CHECK,
 } Nonterm;
 
 AstNode* parser();
@@ -81,9 +75,9 @@ Symbol makeTermWithValue(TokenType type);
 
 /**
  * @brief pomocná funkcia na vytvorenie struktury neterminalu
- * @param N Neterminal z enum Nonterm
+ * @param nonTerm Neterminal z enum Nonterm
  */
-Symbol makeNonterm(Nonterm N);
+Symbol makeNonterm(Nonterm nonTerm);
 
 /**
  * @brief pomocná funkcia na vytvorenie strukturý Symbol ktorá
@@ -111,198 +105,180 @@ void pushCheck(bool boolean);
 
 /**
  * @brief Funkcia na zaobchádzanie s netermínalom Program
- * @param Stack Inicializovaný Stack na ktorom sú strukturý Symbol neterminálov a terminálov
+ * @param stack Inicializovaný stack na ktorom sú strukturý Symbol neterminálov a terminálov
  */
-void Program_func(DynamicSymbolStackPtr Stack);
+void programFunc(DynamicSymbolStackPtr stack);
 
 /**
  * @brief Funkcia na zaobchádzanie s netermínalom Prolog
- * @param Stack Inicializovaný Stack na ktorom sú strukturý Symbol neterminálov a terminálov
+ * @param stack Inicializovaný stack na ktorom sú strukturý Symbol neterminálov a terminálov
  */
-void Prolog_func(DynamicSymbolStackPtr Stack);
+void prologFunc(DynamicSymbolStackPtr stack);
 
 /**
  * @brief Funkcia na zaobchádzanie s netermínalom Main_class
- * @param Stack Inicializovaný Stack na ktorom sú strukturý Symbol neterminálov a terminálov
+ * @param stack Inicializovaný stack na ktorom sú strukturý Symbol neterminálov a terminálov
  */
-void Main_class_func(DynamicSymbolStackPtr Stack);
+void mainClassFunc(DynamicSymbolStackPtr stack);
 
 /**
  * @brief Funkcia na zaobchádzanie s netermínalom Main_class_block
- * @param Stack Inicializovaný Stack na ktorom sú strukturý Symbol neterminálov a terminálov
+ * @param stack Inicializovaný stack na ktorom sú strukturý Symbol neterminálov a terminálov
  * @param token Aktuálne použivaný token z lexer.c
  */
-void Main_class_block_func(DynamicSymbolStackPtr Stack, Token token);
+void mainClassBlockFunc(DynamicSymbolStackPtr stack, Token token);
 
 /**
  * @brief Funkcia na zaobchádzanie s netermínalom Block
- * @param Stack Inicializovaný Stack na ktorom sú strukturý Symbol neterminálov a terminálov
+ * @param stack Inicializovaný stack na ktorom sú strukturý Symbol neterminálov a terminálov
  */
-void Block_func(DynamicSymbolStackPtr Stack);
+void blockFunc(DynamicSymbolStackPtr stack);
 
 /**
  * @brief Funkcia na zaobchádzanie s netermínalom Block_content
- * @param Stack Inicializovaný Stack na ktorom sú strukturý Symbol neterminálov a terminálov
+ * @param stack Inicializovaný stack na ktorom sú strukturý Symbol neterminálov a terminálov
  * @param token Aktuálne použivaný token z lexer.c
  */
-void Block_content_func(DynamicSymbolStackPtr Stack, Token token);
+void blockContentFunc(DynamicSymbolStackPtr stack, Token token);
 
-/**
- * @brief Funkcia na zaobchádzanie s netermínalom Smth
- * @param Stack Inicializovaný Stack na ktorom sú strukturý Symbol neterminálov a terminálov
- */
-void smth_func(DynamicSymbolStackPtr Stack);
 
 /**
  * @brief Funkcia na zaobchádzanie s netermínalom smth_tail
- * @param Stack Inicializovaný Stack na ktorom sú strukturý Symbol neterminálov a terminálov
+ * @param stack Inicializovaný stack na ktorom sú strukturý Symbol neterminálov a terminálov
  * @param token Aktuálne použivaný token z lexer.c
  */
-void smth_tail_func(DynamicSymbolStackPtr Stack, Token token);
+void smthTailFunc(DynamicSymbolStackPtr stack, Token token);
 
 /**
  * @brief Funkcia na zaobchádzanie s netermínalom smth_list
- * @param Stack Inicializovaný Stack na ktorom sú strukturý Symbol neterminálov a terminálov
+ * @param stack Inicializovaný stack na ktorom sú strukturý Symbol neterminálov a terminálov
  * @param token Aktuálne použivaný token z lexer.c
  */
-void smth_list_func(DynamicSymbolStackPtr Stack, Token token);
+void smthListFunc(DynamicSymbolStackPtr stack, Token token);
 
-/**
- * @brief Funkcia na zaobchádzanie s netermínalom Oneline_expr_opt
- * @param Stack Inicializovaný Stack na ktorom sú strukturý Symbol neterminálov a terminálov
- * @param token Aktuálne použivaný token z lexer.c
- */
-void Oneline_expr_opt_func(DynamicSymbolStackPtr Stack, Token token);
 
 /**
  * @brief Funkcia na zaobchádzanie s netermínalom Func_dec
- * @param Stack Inicializovaný Stack na ktorom sú strukturý Symbol neterminálov a terminálov
+ * @param stack Inicializovaný stack na ktorom sú strukturý Symbol neterminálov a terminálov
  */
-void Func_dec_func(DynamicSymbolStackPtr Stack);
+void funcDecFunc(DynamicSymbolStackPtr stack);
 
 /**
  * @brief Funkcia na zaobchádzanie s netermínalom Func_dec_tail
- * @param Stack Inicializovaný Stack na ktorom sú strukturý Symbol neterminálov a terminálov
+ * @param stack Inicializovaný stack na ktorom sú strukturý Symbol neterminálov a terminálov
  * @param token Aktuálne použivaný token z lexer.c
  */
-void Func_dec_tail_func(DynamicSymbolStackPtr Stack, Token token);
+void funcDecTailFunc(DynamicSymbolStackPtr stack, Token token);
 
 /**
  * @brief Funkcia na zaobchádzanie s netermínalom Param_func
- * @param Stack Inicializovaný Stack na ktorom sú strukturý Symbol neterminálov a terminálov
+ * @param stack Inicializovaný stack na ktorom sú strukturý Symbol neterminálov a terminálov
  * @param token Aktuálne použivaný token z lexer.c
  */
-void Param_func(DynamicSymbolStackPtr Stack, Token token);
+void paramFunc(DynamicSymbolStackPtr stack, Token token);
 
 /**
  * @brief Funkcia na zaobchádzanie s netermínalom Param_list
- * @param Stack Inicializovaný Stack na ktorom sú strukturý Symbol neterminálov a terminálov
+ * @param stack Inicializovaný stack na ktorom sú strukturý Symbol neterminálov a terminálov
  * @param token Aktuálne použivaný token z lexer.c
  */
-void Param_list_func(DynamicSymbolStackPtr Stack, Token token);
+void paramListFunc(DynamicSymbolStackPtr stack, Token token);
 
 
 
 /**
  * @brief Funkcia na zaobchádzanie s netermínalom Var
- * @param Stack Inicializovaný Stack na ktorom sú strukturý Symbol neterminálov a terminálov
+ * @param stack Inicializovaný stack na ktorom sú strukturý Symbol neterminálov a terminálov
  */
-void Var_func(DynamicSymbolStackPtr Stack);
+void varFunc(DynamicSymbolStackPtr stack);
 
 /**
  * @brief Funkcia na zaobchádzanie s netermínalom var_ext
- * @param Stack Inicializovaný Stack na ktorom sú strukturý Symbol neterminálov a terminálov
+ * @param stack Inicializovaný stack na ktorom sú strukturý Symbol neterminálov a terminálov
  * @param token Aktuálne použivaný token z lexer.c
  */
-void Var_EXT_func(DynamicSymbolStackPtr Stack, Token token);
+void varExtFunc(DynamicSymbolStackPtr stack, Token token);
 
 /**
  * @brief Funkcia na zaobchádzanie s netermínalom Var_arg
- * @param Stack Inicializovaný Stack na ktorom sú strukturý Symbol neterminálov a terminálov
+ * @param stack Inicializovaný stack na ktorom sú strukturý Symbol neterminálov a terminálov
  * @param token Aktuálne použivaný token z lexer.c
  */
-void Var_arg_func(DynamicSymbolStackPtr Stack, Token token);
+void varArgFunc(DynamicSymbolStackPtr stack, Token token);
 
 /**
  * @brief Funkcia na zaobchádzanie s netermínalom Var_arg_list
- * @param Stack Inicializovaný Stack na ktorom sú strukturý Symbol neterminálov a terminálov
+ * @param stack Inicializovaný stack na ktorom sú strukturý Symbol neterminálov a terminálov
  * @param token Aktuálne použivaný token z lexer.c
  */
-void var_arg_list_func(DynamicSymbolStackPtr Stack, Token token);
+void varArgListFunc(DynamicSymbolStackPtr stack, Token token);
 
 /**
  * @brief Funkcia na zaobchádzanie s netermínalom Call_assign
- * @param Stack Inicializovaný Stack na ktorom sú strukturý Symbol neterminálov a terminálov
+ * @param stack Inicializovaný stack na ktorom sú strukturý Symbol neterminálov a terminálov
  */
-void Call_assign_func(DynamicSymbolStackPtr Stack);
+void callAssignFunc(DynamicSymbolStackPtr stack);
 
 /**
  * @brief Funkcia na zaobchádzanie s netermínalom Call_assign_list
- * @param Stack Inicializovaný Stack na ktorom sú strukturý Symbol neterminálov a terminálov
+ * @param stack Inicializovaný stack na ktorom sú strukturý Symbol neterminálov a terminálov
  * @param token Aktuálne použivaný token z lexer.c
  */
-void Call_assign_list_func(DynamicSymbolStackPtr Stack, Token token);
+void callAssignListFunc(DynamicSymbolStackPtr stack, Token token);
 
 /**
  * @brief Funkcia na zaobchádzanie s netermínalom Global_assign
- * @param Stack Inicializovaný Stack na ktorom sú strukturý Symbol neterminálov a terminálov
+ * @param stack Inicializovaný stack na ktorom sú strukturý Symbol neterminálov a terminálov
  */
-void Global_assign_func(DynamicSymbolStackPtr Stack);
+void globalAssignFunc(DynamicSymbolStackPtr stack);
 
 /**
  * @brief Funkcia na zaobchádzanie s netermínalom If
- * @param Stack Inicializovaný Stack na ktorom sú strukturý Symbol neterminálov a terminálov
+ * @param stack Inicializovaný stack na ktorom sú strukturý Symbol neterminálov a terminálov
  */
-void If_func(DynamicSymbolStackPtr Stack);
-
-/**
- * @brief Funkcia na zaobchádzanie s netermínalom Else
- * @param Stack Inicializovaný Stack na ktorom sú strukturý Symbol neterminálov a terminálov
- * @param token Aktuálne použivaný token z lexer.c
- */
-void Else_func(DynamicSymbolStackPtr Stack, Token token);
+void ifFunc(DynamicSymbolStackPtr stack);
 
 /**
  * @brief Funkcia na zaobchádzanie s netermínalom While
- * @param Stack Inicializovaný Stack na ktorom sú strukturý Symbol neterminálov a terminálov
+ * @param stack Inicializovaný stack na ktorom sú strukturý Symbol neterminálov a terminálov
  */
-void While_func(DynamicSymbolStackPtr Stack);
+void whileFunc(DynamicSymbolStackPtr stack);
 
 /**
  * @brief Funkcia na zaobchádzanie s netermínalom For
- * @param Stack Inicializovaný Stack na ktorom sú strukturý Symbol neterminálov a terminálov
+ * @param stack Inicializovaný stack na ktorom sú strukturý Symbol neterminálov a terminálov
  */
-void For_func(DynamicSymbolStackPtr Stack);
+void forFunc(DynamicSymbolStackPtr stack);
 
 /**
  * @brief Funkcia na zaobchádzanie s netermínalom Break
- * @param Stack Inicializovaný Stack na ktorom sú strukturý Symbol neterminálov a terminálov
+ * @param stack Inicializovaný stack na ktorom sú strukturý Symbol neterminálov a terminálov
  */
-void Break_func(DynamicSymbolStackPtr Stack);
+void breakFunc(DynamicSymbolStackPtr stack);
 
 /**
  * @brief Funkcia na zaobchádzanie s netermínalom Continue
- * @param Stack Inicializovaný Stack na ktorom sú strukturý Symbol neterminálov a terminálov
+ * @param stack Inicializovaný stack na ktorom sú strukturý Symbol neterminálov a terminálov
  */
-void Continue_func(DynamicSymbolStackPtr Stack);
+void continueFunc(DynamicSymbolStackPtr stack);
 
 /**
  * @brief Funkcia na zaobchádzanie s netermínalom Return
- * @param Stack Inicializovaný Stack na ktorom sú strukturý Symbol neterminálov a terminálov
+ * @param stack Inicializovaný stack na ktorom sú strukturý Symbol neterminálov a terminálov
  * @param token Aktuálne použivaný token z lexer.c
  */
-void Return_func(DynamicSymbolStackPtr Stack);
+void returnFunc(DynamicSymbolStackPtr stack);
 
 /**
  * @brief Funkcia na zaobchádzanie s netermínalom Return_expr
- * @param Stack Inicializovaný Stack na ktorom sú strukturý Symbol neterminálov a terminálov
+ * @param stack Inicializovaný stack na ktorom sú strukturý Symbol neterminálov a terminálov
  * @param token Aktuálne použivaný token z lexer.c
  */
-void Return_expr_func(DynamicSymbolStackPtr Stack, Token token);
+void returnExprFunc(DynamicSymbolStackPtr stack, Token token);
 
 /**
  * @brief Funkcia na zaobchádzanie s netermínalom Expr
- * @param Stack Inicializovaný Stack na ktorom sú strukturý Symbol neterminálov a terminálov
+ * @param stack Inicializovaný stack na ktorom sú strukturý Symbol neterminálov a terminálov
  * @param gLookahead ukazatel na aktualny token, cez ktory sa zaroven vrati token z precedencnej analyzy
  * @param AstStack stack uzlov
  * @param flag typ int ->  0  na konci vyrazu moze byt TOKEN_NEW_LINE || TOKEN_RPAREN || TOKEN_BLOCK_END
@@ -310,24 +286,24 @@ void Return_expr_func(DynamicSymbolStackPtr Stack, Token token);
  *  1 na konci vyrazu moze byt TOKEN_COMMA || TOKEN_RPAREN
  *  -2 na konci musi byt TOKEN_BLOCK_END
  */
-void Expr_func(DynamicSymbolStackPtr Stack,Token *gLookahead, DynamicAstNodeStackPtr AstStack,int flag);
+void exprFunc(DynamicSymbolStackPtr stack,Token *gLookahead, DynamicAstNodeStackPtr AstStack,int flag);
 
 /**
  * @brief Funkcia na zaobchádzanie s netermínalom New_line
- * @param Stack Inicializovaný Stack na ktorom sú strukturý Symbol neterminálov a terminálov
+ * @param stack Inicializovaný stack na ktorom sú strukturý Symbol neterminálov a terminálov
  * @param token Aktuálne použivaný token z lexer.c
  */
-void  New_line_func(DynamicSymbolStackPtr Stack, Token token);
+void  newLineFunc(DynamicSymbolStackPtr stack, Token token);
 
-void Opt_newlines_func(DynamicSymbolStackPtr Stack, Token token);
+void optNewlinesFunc(DynamicSymbolStackPtr stack, Token token);
 
 Symbol makeTermValueAndCaptureIdentifier(const char *exact);
-void Block_content_func_check(DynamicSymbolStackPtr Stack, Token token);
+void blockContentFuncCheck(DynamicSymbolStackPtr stack, Token token);
 void tokenFree(Token *token);
-void callIfjfunc(DynamicSymbolStackPtr Stack, Token token);
-void Else_item_func(DynamicSymbolStackPtr Stack, Token token);
-void Else_chain_func(DynamicSymbolStackPtr Stack, Token token);
-void callIfjCheckfunc(DynamicSymbolStackPtr Stack, Token token);
-void AssignIfjIdCheckFunc(DynamicSymbolStackPtr Stack, Token token);
+void callIfjfunc(DynamicSymbolStackPtr stack, Token token);
+void elseItemFunc(DynamicSymbolStackPtr stack, Token token);
+void elseChainFunc(DynamicSymbolStackPtr stack, Token token);
+void callIfjCheckfunc(DynamicSymbolStackPtr stack, Token token);
+void AssignIfjIdCheckFunc(DynamicSymbolStackPtr stack, Token token);
 void parserFree(void);
 #endif // PARSER_H

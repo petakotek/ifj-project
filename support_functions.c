@@ -75,7 +75,7 @@ void printLog(const char *fmt, ...) {
 #endif
 
 void memoryClean() {
-    lexer_free();
+    lexerFree();
     parserFree();
     freeSemanticsMemory();
     free(source_file);
@@ -91,13 +91,13 @@ void memorySafeExit(enum errorCodes errCode) {
  *sorry pouze testovaci funkce ta se bude mazat tezce vygenerovana gemini
  */
 void print_and_free_tokens() {
-    Token token = lexer_token_next();
+    Token token = lexerTokenNext();
     while (token.type != TOKEN_EOF) {
         if (token.type == TOKEN_ERROR) {
-            printLog("%s\n", token_type_to_string(token.type));
+            printLog("%s\n", tokenTypeToString(token.type));
             break;
         }
-        printLog("%s", token_type_to_string(token.type));
+        printLog("%s", tokenTypeToString(token.type));
         if (token.type == TOKEN_STRING || token.type == TOKEN_STRING_BLOCK) {
             printLog(" -> value: \"%s\"\n", token.value.identifier);
             free(token.value.identifier);
@@ -120,19 +120,19 @@ void print_and_free_tokens() {
             printLog("\n");
         }
 
-        token = lexer_token_next();
+        token = lexerTokenNext();
     }
 
     if (token.type == TOKEN_ERROR) {
         printWarning("Lexer error on line %d.\n", token.line);
     } else {
-        printLog("%s\n", token_type_to_string(token.type));
+        printLog("%s\n", tokenTypeToString(token.type));
     }
 }
 /*
  * Funkce na cteni pro nacteni ze vstupu jelikoz muj fseek byl nebezpecny
  */
-char *read_all_stdin(void) {
+char *readAllStdin(void) {
     char *buffer = malloc(INITIAL_CAPACITY);
     if (buffer == NULL) {
         return NULL;

@@ -89,7 +89,7 @@ void print_and_free_tokens();
  * @param void
  * @return pointer na na allockovane pole se vstupem
  */
-char *read_all_stdin(void);
+char *readAllStdin(void);
 #endif
 
 /*** konec support_functions.h ***/

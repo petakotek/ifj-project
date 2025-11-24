@@ -138,7 +138,7 @@ void emitReadBool() {
 void emitWrite(AstNode* functionCallNode, FuncContext* context) {
     static unsigned writeCounter = 0;
 
-    emit_command(functionCallNode->child[1]->child[0], context);
+    emitCommand(functionCallNode->child[1]->child[0], context);
 
     // Parametry
     printN("POPS LF@temp$var$write");
@@ -162,7 +162,7 @@ void emitWrite(AstNode* functionCallNode, FuncContext* context) {
 void emitFloor(AstNode* functionCallNode, FuncContext* context) {
     static unsigned floorCounter = 0;
 
-    emit_command(functionCallNode->child[1]->child[0], context);
+    emitCommand(functionCallNode->child[1]->child[0], context);
 
     // Parametry
     printN("POPS LF@temp$var$floorVal");
@@ -195,7 +195,7 @@ void emitFloor(AstNode* functionCallNode, FuncContext* context) {
 void emitStr(AstNode* functionCallNode, FuncContext* context) {
     static unsigned strCounter = 0;
 
-    emit_command(functionCallNode->child[1]->child[0], context);
+    emitCommand(functionCallNode->child[1]->child[0], context);
 
     // Parametry
     printN("POPS LF@temp$var$strVal");
@@ -260,7 +260,7 @@ void emitStr(AstNode* functionCallNode, FuncContext* context) {
 void emitLength(AstNode* functionCallNode, FuncContext* context) {
     static unsigned lengthCounter = 0;
 
-    emit_command(functionCallNode->child[1]->child[0], context);
+    emitCommand(functionCallNode->child[1]->child[0], context);
 
     // Parametry
     printN("POPS LF@temp$var$lengthVal");
@@ -283,9 +283,9 @@ void emitLength(AstNode* functionCallNode, FuncContext* context) {
 void emitSubstring(AstNode* functionCallNode, FuncContext* context) {
     static unsigned substringCounter = 0;
 
-    emit_command(functionCallNode->child[1]->child[0], context);
-    emit_command(functionCallNode->child[1]->child[1], context);
-    emit_command(functionCallNode->child[1]->child[2], context);
+    emitCommand(functionCallNode->child[1]->child[0], context);
+    emitCommand(functionCallNode->child[1]->child[1], context);
+    emitCommand(functionCallNode->child[1]->child[2], context);
 
     printN("PUSHS string@");
     printN("POPS LF@temp$var$substringSout");
@@ -364,8 +364,8 @@ void emitSubstring(AstNode* functionCallNode, FuncContext* context) {
 void emitStrcmp(AstNode* functionCallNode, FuncContext* context) {
     static unsigned strcmpCounter = 0;
 
-    emit_command(functionCallNode->child[1]->child[0], context);
-    emit_command(functionCallNode->child[1]->child[1], context);
+    emitCommand(functionCallNode->child[1]->child[0], context);
+    emitCommand(functionCallNode->child[1]->child[1], context);
 
     printN("POPS LF@temp$var$strcmpS2");
     printN("POPS LF@temp$var$strcmpS1");
@@ -418,8 +418,8 @@ void emitStrcmp(AstNode* functionCallNode, FuncContext* context) {
 void emitOrd(AstNode* functionCallNode, FuncContext* context) {
     static unsigned ordCounter = 0;
 
-    emit_command(functionCallNode->child[1]->child[0], context);
-    emit_command(functionCallNode->child[1]->child[1], context);
+    emitCommand(functionCallNode->child[1]->child[0], context);
+    emitCommand(functionCallNode->child[1]->child[1], context);
 
     // Parametry
     printN("POPS LF@temp$var$ordNum");
@@ -455,7 +455,7 @@ void emitOrd(AstNode* functionCallNode, FuncContext* context) {
 void emitChr(AstNode* functionCallNode, FuncContext* context) {
     static unsigned chrCounter = 0;
 
-    emit_command(functionCallNode->child[1]->child[0], context);
+    emitCommand(functionCallNode->child[1]->child[0], context);
 
     // Parametry
     printN("POPS LF@temp$var$chrVal");

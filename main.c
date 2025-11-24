@@ -30,20 +30,18 @@ int main(){
 	}
 	source_file = NULL;
 	//volani funcke na nacteni souboru
-	source_file = read_all_stdin();
+	source_file = readAllStdin();
 	if (source_file == NULL) {
 		printError(LEX_ERROR, "Selhalo načítání vstupů\n");
         memorySafeExit(LEX_ERROR);
     }
 	// inicializovani struktury staraji se o cteni ze souboru
-	/*
-	lexer_init(source_file);
-	print_and_free_tokens();
-	exit(0);
-	*/
+	lexerInit(source_file);
+	//print_and_free_tokens();
+	//exit(0);
 	// tvorba stromu pres parser
 	AstNode *AST = parser();
-	//ast_dump(AST);
+	astDump(AST);
 	//funkcia ast_dump -> funkcia na kontrolny vypis ast stromu
 
 	bool output;
@@ -52,6 +50,7 @@ int main(){
 
 	//ast_dump(AST);
 
-	codegen_generate(AST);
+	codegenGenerate(AST);
+
 	memorySafeExit(NO_ERROR);
 }

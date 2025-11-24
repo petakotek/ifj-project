@@ -95,23 +95,23 @@ typedef enum AstNodeType {
 
 /**
  * @brief struktura na uchovavanie hodnoty tokenu pre abstraktny syntakticky strom
- * @param int_value typ int -> uchovanie hodnoty tokenu pre cele cislo
- * @param float_val typ float -> uchovanie hodnoty tokenu pre desatine cislo
+ * @param intVal typ int -> uchovanie hodnoty tokenu pre cele cislo
+ * @param floatVal typ float -> uchovanie hodnoty tokenu pre desatine cislo
  * @param str typ *char -> uchovanie hodnoty tokenu pre premennu, globalnu premennu a pre retazec
- * @param has_str typ bool -> nastavime true ak zapisujeme do str
- * @param is_int typ bool -> nastavime true ak zapisujeme do int_val
- * @param is_float typ bool -> nastavime true ak zapisujeme do float_val
- * @param is_bool typ bool -> nastavime true ak zapisujem AST_BOOL
+ * @param hasStr typ bool -> nastavime true ak zapisujeme do str
+ * @param isInt typ bool -> nastavime true ak zapisujeme do intVal
+ * @param isFloat typ bool -> nastavime true ak zapisujeme do floatVal
+ * @param isBool typ bool -> nastavime true ak zapisujem AST_BOOL
  *
  */
 typedef struct AstValue {
-    long long int_val;
-    double    float_val;
+    long long intVal;
+    double    floatVal;
     char     *str;  // pre IDENTIFIER / GLOBAL_ID / STRING_LIT / BOOl_LIT
-    bool      has_str;
-    bool      is_int;
-    bool      is_float;
-    bool      is_bool;
+    bool      hasStr;
+    bool      isInt;
+    bool      isFloat;
+    bool      isBool;
 } AstValue;
 
 /**
@@ -119,19 +119,19 @@ typedef struct AstValue {
  * @param kind typu AstNodeType -> typ uzla(názov)
  * @param arity typu size_t -> pocet deti uzla
  * @param child typu Astnode **child -> ukazel na list deti uzla
- * @param is_leaf typu bool podla ktoreho vieme urcit ci sa jedna o list alebo o uzol
+ * @param isLeaf typu bool podla ktoreho vieme urcit ci sa jedna o list alebo o uzol
  * false -> uzol, true -> list
  * @param value typu Astvalue -> struktura ktora obsahuje konkretne hodnoty pre listy
- * (teda pouziva sa ak is_leaf = true)
+ * (teda pouziva sa ak isLeaf = true)
  */
 typedef struct AstNode {
     AstNodeType      kind;
     size_t           arity;
     struct AstNode **child;
-    bool is_leaf;
-    AstValue value;          // platný len ak is_leaf == true
+    bool isLeaf;
+    AstValue value;          // platný len ak isLeaf == true
     //pro generovani docasnych promenych pouziva pouze codegen
-    int tmp_id;
+    int tmpId;
 } AstNode;
 
 /**
@@ -141,7 +141,7 @@ typedef struct AstNode {
  * @param token token ktoreho hodnotu chceme dat do listu
  * @return Astnode*
  */
-AstNode *new_leaf(AstNodeType kind, Token token);
+AstNode *newLeaf(AstNodeType kind, Token token);
 
 /**
  * @brief funkcia ktora vytvori novy uzol z vlastnosti parametrov
@@ -151,13 +151,13 @@ AstNode *new_leaf(AstNodeType kind, Token token);
  * ich pocet sa rovna arity
  * @return Astnode* ktory uz obsahuje vsetky svoje deti
  */
-AstNode *ast_new(AstNodeType kind, size_t arity, AstNode **kids);
+AstNode *astNew(AstNodeType kind, size_t arity, AstNode **kids);
 
 /**
  * @brief funkcia ktora uvolni vsetky uzly a ich deti
  * @param node koren uzla ktory chceme uvolnit
  */
-void ast_free_whole(AstNode *node);
+void astFreeWhole(AstNode *node);
 
 /**
  * @brief pomocna funkcia na vkladanie hodnoty do abstraktneho syntaktickeho stromu.
@@ -166,30 +166,30 @@ void ast_free_whole(AstNode *node);
  * @param kind predstavuje typ uzla ktorý sa ma vytvoriť (názov)
  * @param token token z ktoreho hodnotu chceme vlozit do abstraktneho syntaktickeho stromu
  */
-void ast_value_from_token(AstValue *out, AstNodeType kind, Token *token);
+void astValueFromToken(AstValue *out, AstNodeType kind, Token *token);
 
 /**
  * @brief pomocna funkcia na bezpecne vlozenie retazca do abstraktneho syntaktickeho stromu.
  * Vklada ho tam tak aby po uvolneni scannera sa neuvolni ani samotny retazec
  * @param string retazec ktory chceme vlozit
  */
-char *dup_cstr(const char *string);
+char *dupCstr(const char *string);
 
 /**
  * @brief pomocna funkcia pre vypis nazvu uzla kde z AstNodetype spravime retazec
  * @param kind typ uzla (nazov) ktory chceme vypisat
  */
-const char *ast_node_type_to_string(AstNodeType kind);
+const char *astNodeTypeToString(AstNodeType kind);
 
 /**
  * @brief pomocna funkcia pre vypis celeho stromu
  * @param root koren uzla ktory chceme vypisat
  */
-void     ast_dump(const AstNode *root);
-AstNode *build_param_flat(size_t n, AstNode **kids);
-AstNode *build_stmtlist_flat(size_t n, AstNode **kids);
-AstNode *build_classblock_flat(size_t n, AstNode **kids);
-AstNode *build_ifchain_flat(size_t n, AstNode **kids);
+void     astDump(const AstNode *root);
+AstNode *buildParamFlat(size_t n, AstNode **kids);
+AstNode *buildStmtListFlat(size_t n, AstNode **kids);
+AstNode *buildClassBlockFlat(size_t n, AstNode **kids);
+AstNode *buildIfChainFlat(size_t n, AstNode **kids);
 double floatExp(const char *s);
 char *stringChanging(char *tmp);
 char *stringChangingLit(char *tmp);

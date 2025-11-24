@@ -252,7 +252,7 @@ void freeAstStack(DynamicAstNodeStackPtr stack)
     {
         AstNode *tmp = stackAstNodeRead(stack);
         stackAstNodePop(stack);
-        ast_free_whole(tmp);
+        astFreeWhole(tmp);
         tmp = NULL;
     }
     stackAstNodeDestruct(stack);
@@ -324,7 +324,7 @@ void findPrecedenceRule(DynamicPrecedenceStackPtr stack, DynamicAstNodeStackPtr 
             stackPrecedencePop(stack); // vyhodim vyraz
             stackPrecedencePop(stack); // vyhodim <
             AstNode* newNode = NULL;
-            newNode = new_leaf(getAstNodeTypeFromTokenType(p1.type), p1);
+            newNode = newLeaf(getAstNodeTypeFromTokenType(p1.type), p1);
 
             tokenPrecedenceFree(&p1); // uvolneni nepotrebneho tokenu
 
@@ -349,7 +349,7 @@ void findPrecedenceRule(DynamicPrecedenceStackPtr stack, DynamicAstNodeStackPtr 
                 // Levý uzel (i když by u unárních bylo přesnější dát pravý)
                 kids[0] = firstChild;
                 // vytvoření stromu s jedním dítětem, který bude ten výraz
-                AstNode *newRoot = ast_new(getAstNodeTypeFromTokenType(p2.type), 1, kids);
+                AstNode *newRoot = astNew(getAstNodeTypeFromTokenType(p2.type), 1, kids);
                 stackAstNodePush(stackA, newRoot);
                 free(kids);
                 p2.type = TOKEN_EXPRESSION; // vratim na klasicky zasobnik jenom expression
@@ -367,7 +367,7 @@ void findPrecedenceRule(DynamicPrecedenceStackPtr stack, DynamicAstNodeStackPtr 
                 // Levý uzel (i když by u unárních bylo přesnější dát pravý)
                 kids[0] = firstChild;
                 // vytvoření stromu s jedním dítětem, který bude ten výraz
-                AstNode *newRoot = ast_new(AST_MINUS, 1, kids);
+                AstNode *newRoot = astNew(AST_MINUS, 1, kids);
                 stackAstNodePush(stackA, newRoot);
                 free(kids);
                 p2.type = TOKEN_EXPRESSION; // vratim na klasicky zasobnik jenom expression
@@ -403,7 +403,7 @@ void findPrecedenceRule(DynamicPrecedenceStackPtr stack, DynamicAstNodeStackPtr 
                 stackAstNodePop(stackA);
                 kids[1] = firstChild; // Pravý uzel
                 kids[0] = secondChild; // Levý uzel
-                AstNode *newRoot = ast_new(getAstNodeTypeFromTokenType(p2.type), 2, kids);
+                AstNode *newRoot = astNew(getAstNodeTypeFromTokenType(p2.type), 2, kids);
                 free(kids); // uvolneni deti, nebudou uz potreba
                 stackAstNodePush(stackA, newRoot);
 
@@ -453,7 +453,7 @@ void findPrecedenceRule(DynamicPrecedenceStackPtr stack, DynamicAstNodeStackPtr 
                 kids[1] = ifNode; // pokud je to pravda
                 kids[0] = contidionNode; // podmínka
 
-                AstNode *newRoot = ast_new(AST_TERNARY, 3, kids);
+                AstNode *newRoot = astNew(AST_TERNARY, 3, kids);
                 free(kids); // uvolneni deti, nebudou uz potreba
                 stackAstNodePush(stackA, newRoot);
 
@@ -503,7 +503,7 @@ bool checkFirstTokenType(Token actualToken)
 
     default:
         printError(SYNTAX_ERROR, "(PSA) prvni odeslany token neni identifikator, dostal jsem %s\n",
-                token_type_to_string(actualToken.type));
+                tokenTypeToString(actualToken.type));
         memorySafeExit(SYNTAX_ERROR);
         break;
     }
@@ -551,7 +551,7 @@ void printStack(DynamicPrecedenceStackPtr stack)
         Token tokenRead = stackPrecedenceRead(stack);
         stackPrecedencePop(stack);
         if (DEBUG)
-        printLog("%s ", token_type_to_string(tokenRead.type));
+        printLog("%s ", tokenTypeToString(tokenRead.type));
 
     stackPrecedencePush(stackTmp, tokenRead);
     }
@@ -575,7 +575,7 @@ void functionCalled(DynamicPrecedenceStackPtr stackP,
 {
     findPrecedenceRule(stackP, stackA); // zpracuji identifikator, co je na vrcholu zasobniku
 
-    *actualToken = lexer_token_next();
+    *actualToken = lexerTokenNext();
     if (actualToken->type == TOKEN_RPAREN) // Funkce nemá žádný parametr
     {
 
@@ -585,12 +585,12 @@ void functionCalled(DynamicPrecedenceStackPtr stackP,
         // Přidání prázdného parametru jako poslední dítě uzlu parametrů
         Token tokenEmpty = {.type = 0};
         AstNode* empty = NULL;
-        empty = new_leaf(AST_EMPTY, tokenEmpty);
+        empty = newLeaf(AST_EMPTY, tokenEmpty);
 
 
         paramKids[0] = empty;
 
-        AstNode* paramNode = ast_new(AST_PARAM, 1, paramKids);
+        AstNode* paramNode = astNew(AST_PARAM, 1, paramKids);
         free(paramKids);
         stackAstNodePush(stackA, paramNode);
 
@@ -608,14 +608,14 @@ void functionCalled(DynamicPrecedenceStackPtr stackP,
         kids[0] = identif;
         kids[1] = params;
 
-        AstNode *functionCallRoot = ast_new(AST_FUNC_CALL, 2, kids);
+        AstNode *functionCallRoot = astNew(AST_FUNC_CALL, 2, kids);
         free(kids);
         stackAstNodePush(stackA, functionCallRoot);
 
 
         if (actualToken->type != TOKEN_NEW_LINE)
         {
-            *actualToken = lexer_token_next();
+            *actualToken = lexerTokenNext();
         }
         if (actualToken->type == TOKEN_NEW_LINE)
         {
@@ -634,7 +634,7 @@ void functionCalled(DynamicPrecedenceStackPtr stackP,
             stackAstNodePush(stackA, param);
             if (actualToken->type == TOKEN_COMMA)
             {
-                *actualToken = lexer_token_next();
+                *actualToken = lexerTokenNext();
                 if (actualToken->type == TOKEN_RPAREN) // za čárkou je hned zavorka -> syntaktická chyba
                 {
                     printError(SYNTAX_ERROR,
@@ -653,7 +653,7 @@ void functionCalled(DynamicPrecedenceStackPtr stackP,
         // Přidání prázdného parametru jako poslední dítě uzlu parametrů
         Token tokenEmpty = {.type = 0};
         AstNode* empty = NULL;
-        empty = new_leaf(AST_EMPTY, tokenEmpty);
+        empty = newLeaf(AST_EMPTY, tokenEmpty);
         stackAstNodePush(stackA, empty);
 
 
@@ -670,7 +670,7 @@ void functionCalled(DynamicPrecedenceStackPtr stackP,
             stackAstNodePop(stackA);
             paramKids[paramCount - 1 - i] = kid; // tady to ma Kuba implementovane
         }
-        AstNode* paramNode = ast_new(AST_PARAM, paramCount, paramKids);
+        AstNode* paramNode = astNew(AST_PARAM, paramCount, paramKids);
         free(paramKids);
         // na zasobniku by mela byt ted jen identif a paramNode
         stackAstNodePush(stackA, paramNode);
@@ -685,14 +685,14 @@ void functionCalled(DynamicPrecedenceStackPtr stackP,
         functionKids[0] = identif;
         functionKids[1] = params;
 
-        AstNode* functionRoot = ast_new(AST_FUNC_CALL, 2, functionKids);
+        AstNode* functionRoot = astNew(AST_FUNC_CALL, 2, functionKids);
         free(functionKids);
         stackAstNodePush(stackA, functionRoot);
 
 
         if (actualToken->type != TOKEN_NEW_LINE)
         {
-            *actualToken = lexer_token_next();
+            *actualToken = lexerTokenNext();
         }
         if (actualToken->type == TOKEN_NEW_LINE)
         {
@@ -797,7 +797,7 @@ AstNode* parseExpression(Token *token, int flag)
         if (checkIs)
         {
             if (DEBUG)
-                printLog("actualToken %s\n", token_type_to_string(actualToken.type));
+                printLog("actualToken %s\n", tokenTypeToString(actualToken.type));
 
             if (operatorToPush(StackTop) == INDEX_IS)
             {
@@ -809,7 +809,7 @@ AstNode* parseExpression(Token *token, int flag)
                 {
                     printError(SYNTAX_ERROR,
                         "(PSA) Za klicovym slovem Is nasleduje nezname klicove slovo: %s\n ",
-                        token_type_to_string(actualToken.type));
+                        tokenTypeToString(actualToken.type));
                     freePrecedenceStack(stackP);
                     freeAstStack(stackA);
                     tokenPrecedenceFree(&actualToken);
@@ -859,7 +859,7 @@ AstNode* parseExpression(Token *token, int flag)
             {
                 if (actualToken.type == TOKEN_NEW_LINE)
                 {
-                    actualToken = lexer_token_next(); // posouvám se na další token
+                    actualToken = lexerTokenNext(); // posouvám se na další token
                     if (operatorToPush(actualToken) != INDEX_ID) // dalsi token neni identifikator, cislo, ...
                     {
                         printError(SYNTAX_ERROR,
@@ -937,8 +937,8 @@ AstNode* parseExpression(Token *token, int flag)
         {
             printLog("%d Aktualni token %s a stacktop: %s [%d, %d]\n",
                 poradiCount++,
-                token_type_to_string(actualToken.type),
-                token_type_to_string(stackPrecedenceRead(stackP).type),
+                tokenTypeToString(actualToken.type),
+                tokenTypeToString(stackPrecedenceRead(stackP).type),
                 operatorToPush(StackTop), operatorToPush(actualToken));
             printStack(stackP);
         }
@@ -961,7 +961,7 @@ AstNode* parseExpression(Token *token, int flag)
             AstNode* root = stackAstNodeRead(stackA);
             if (DEBUG)
             {
-                printLog("string %s\n", ast_node_type_to_string(root->kind));
+                printLog("string %s\n", astNodeTypeToString(root->kind));
                 printLog("Final stack: ");
                 printStack(stackP);
             }
@@ -1027,7 +1027,7 @@ AstNode* parseExpression(Token *token, int flag)
                     printLog("\t\t\t%d < (%d, %d) ",poradiCount++, operatorToPush(StackTop), operatorToPush(actualToken));
                     printStack(stackP);
                 }
-                actualToken = lexer_token_next();
+                actualToken = lexerTokenNext();
             break;
 
             case E: // =
@@ -1038,7 +1038,7 @@ AstNode* parseExpression(Token *token, int flag)
                     printStack(stackP);
                 }
 
-                actualToken = lexer_token_next();
+                actualToken = lexerTokenNext();
             break;
 
             default: // stav ktery nesmi nastat
