@@ -178,6 +178,8 @@ void lexerFree(void);
 Token lexerTokenNext();
 TokenType matchIdentifikator(const char *identifikator);
 char *tokenTypeToString(TokenType type);
+
+Token funkceProVojtu(char *input,Token token);
 extern char *source_file;
 extern char *buf;
 #endif
