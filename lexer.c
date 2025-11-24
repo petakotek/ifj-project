@@ -763,7 +763,7 @@ Token lexerTokenNext() {
                 lexer->pos--;
                 }
                 char *lexeme = substring(zacatek, lexer->pos);
-                token = funkceProVojtu(lexeme, token);
+                token = isEffectivelyInteger(lexeme, token);
                 token.value.identifier = lexeme;
                 token.line = radek;
                 goto token_found;
