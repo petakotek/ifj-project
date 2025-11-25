@@ -7,6 +7,7 @@
  */
 #include "lexer.h"
 
+#include "codegen.h"
 #include "parser.h"
 #include "support_functions.h"
 
@@ -732,44 +733,54 @@ Token lexerTokenNext() {
             /*
              * Stav cislo ze ktereho se da dostat do float_number, Digit_exp
              */
-            case NUMBER: {
-                if (isdigit(c)) {
-                    lexer->pos++;
-                } else if (c == '.') {
-                    stav = FLOAT_NUMBER;
-                    lexer->pos++;
-                } else if (c == 'e') {
-                    stav = DIGIT_EXP;
-                    lexer->pos++;
-                } else {
-	                token.type             = TOKEN_INTEGER;
-	                token.value.identifier = substring(zacatek, lexer->pos);
-	                token.line             = radek;
-	                goto token_found;
-	                }
-                break;
-            }
+             case NUMBER: {
+                 if (isdigit(c)) {
+                     lexer->pos++;
+                 } else if (c == '.') {
+                     char next_char = lexer->input[lexer->pos + 1];
+
+                     if (isdigit(next_char)) {
+                         stav = FLOAT_NUMBER;
+                         lexer->pos++;
+                     } else {
+                         token.type = TOKEN_INTEGER;
+                         token.value.identifier = substring(zacatek, lexer->pos);
+                         token.line = radek;
+                         goto token_found;
+                     }
+                 } else if (c == 'e' || c == 'E') {
+                     stav = DIGIT_EXP;
+                     lexer->pos++;
+                 } else {
+                     token.type = TOKEN_INTEGER;
+                     token.value.identifier = substring(zacatek, lexer->pos);
+                     token.line = radek;
+                     goto token_found;
+                 }
+                 break;
+             }
+
             /*
              * Stav cislo ze ktereho se da dostat do float_exp
              */
-            case FLOAT_NUMBER: {
-                if (c == 'e') {
-                    stav = FLOAT_EXP;
-                    lexer->pos++;
-                } else if (isdigit(c)) {
-                    lexer->pos++;
-                } else{
-                if(c == '.'){
-                lexer->pos--;
-                }
-                char *lexeme = substring(zacatek, lexer->pos);
-                token = isEffectivelyInteger(lexeme, token);
-                token.value.identifier = lexeme;
-                token.line = radek;
-                goto token_found;
-                }
-                break;
-            }
+
+             case FLOAT_NUMBER: {
+                 if (isdigit(c)) {
+                     lexer->pos++;
+                 } else if (c == 'e' || c == 'E') {
+                     stav = FLOAT_EXP;
+                     lexer->pos++;
+                 } else {
+                     char *lexeme = substring(zacatek, lexer->pos);
+                     token = isEffectivelyInteger(lexeme, token);
+                     if (token.type == 0) token.type = TOKEN_FLOAT;
+                     token.value.identifier = lexeme;
+                     token.line = radek;
+                     goto token_found;
+                 }
+                 break;
+             }
+
             /*
              * Stav pro nulo ve kterem se bud dostaneme do float_number pokud je nasledovana tecko
              * nebo do hexa pokud nasleduje x pokud je dalsi cislo integer tak vyhodime error
@@ -943,12 +954,7 @@ Token lexerTokenNext() {
                     // Escape znaky
                     lexer->pos++;
                     char next = lexer->input[lexer->pos];
-                    if (next == 'x') {
-                        // hura hexa cislo
-                        stav       = ZNAK_HEXA;
-                        hexa_count = 0;
-                        lexer->pos++;
-                    } else if (next == 'n') {
+                	if (next == 'n') {
                         appendChar(&buf, &delak, &kapacity, '\n');
                         lexer->pos++;
                     } else if (next == 'r') {
@@ -960,13 +966,20 @@ Token lexerTokenNext() {
                     } else if (next == '"') {
                         appendChar(&buf, &delak, &kapacity, '\"');
                         lexer->pos++;
-                    }
-                    else if (next == '\\') {
-                        appendChar(&buf, &delak, &kapacity, '\\');
-                        lexer->pos++;
-                    }
-
-                    else {
+                    }else if (next == '\\') {
+                    		lexer->pos++;
+                    		char next_2 = lexer->input[lexer->pos];
+                            if (next_2 == 'x') {
+                                // hura hexa cislo
+                               	printLog("hello");
+                                stav       = ZNAK_HEXA;
+                                hexa_count = 0;
+                                lexer->pos++;
+                            }else{
+                            	appendChar(&buf, &delak, &kapacity, '\\');
+                             	lexer->pos++;
+                            }
+                    }else {
                         free(buf);
                         buf = NULL;
                         printError(LEX_ERROR,
@@ -991,6 +1004,7 @@ Token lexerTokenNext() {
                 break;
             }
             case ZNAK_HEXA: {
+            	printLog("hello");
                 if (isxdigit(c) && hexa_count < 2) {
                     // pridavame hexa cislo do hexa_buffer coz je docasny buffer pro hexa cislo
                     hexa_buffer[hexa_count++] = c;
