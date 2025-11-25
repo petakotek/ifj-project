@@ -793,7 +793,7 @@ SemValidationStates recursiveNodeWalker(AstNode* currentNode, AstNodeType parent
         }
         case (AST_FLOAT_LIT): {
             printLog("AST_FLOAT_LIT\n");
-            return NUMBER_DATA;
+            return FLOAT_DATA;
         }
         case (AST_BOOL_LIT): {
             printLog("AST_BOOL_LIT\n");
@@ -834,6 +834,8 @@ SemValidationStates recursiveNodeWalker(AstNode* currentNode, AstNodeType parent
                     return NUMBER_DATA;
                 if (onlyChild == INT_DATA)
                     return INT_DATA;
+                if (onlyChild == FLOAT_DATA)
+                    return FLOAT_DATA;
                 if (onlyChild == UNKNOWN_DATA)
                     return UNKNOWN_DATA;
                 EXEC_END(SEMANTICS_ERROR_UNCOMPATIBLE, "(unarni -)  Nekompatibilni datovy typ!\n");
@@ -953,7 +955,7 @@ SemValidationStates recursiveNodeWalker(AstNode* currentNode, AstNodeType parent
             SemValidationStates rightChild = recursiveNodeWalker(currentNode->child[1], AST_DOUBLE_DOT, 1);
 
             if ((leftChild == NUMBER_DATA || leftChild == INT_DATA || leftChild == UNKNOWN_DATA) &&
-                (rightChild == NUMBER_DATA || rightChild == INT_DATA || rightChild == UNKNOWN_DATA) && currentNode->child[0]->kind != AST_FLOAT_LIT && currentNode->child[1]->kind != AST_FLOAT_LIT) {
+                (rightChild == NUMBER_DATA || rightChild == INT_DATA || rightChild == UNKNOWN_DATA)) {
                 return OK;
             }
             EXEC_END(SEMANTICS_ERROR_UNCOMPATIBLE, "(..) Operandy musi byt cela cisla!\n");
@@ -966,7 +968,7 @@ SemValidationStates recursiveNodeWalker(AstNode* currentNode, AstNodeType parent
             SemValidationStates rightChild = recursiveNodeWalker(currentNode->child[1], AST_TRIPLE_DOT, 1);
 
             if ((leftChild == NUMBER_DATA || leftChild == INT_DATA || leftChild == UNKNOWN_DATA) &&
-                (rightChild == NUMBER_DATA || rightChild == INT_DATA || rightChild == UNKNOWN_DATA) && currentNode->child[0]->kind != AST_FLOAT_LIT && currentNode->child[1]->kind != AST_FLOAT_LIT) {
+                (rightChild == NUMBER_DATA || rightChild == INT_DATA || rightChild == UNKNOWN_DATA)) {
                 return OK;
             }
             EXEC_END(SEMANTICS_ERROR_UNCOMPATIBLE, "(...) Operandy musi byt cela cisla!\n");
@@ -1004,10 +1006,7 @@ SemValidationStates recursiveNodeWalker(AstNode* currentNode, AstNodeType parent
                 return DATATYPE_KEYWORD;
             }
             // Značí prázdný jednořádkový blok (jeho návratovou hodnotu)
-            // return NULL_DATA;
-
-            // IMPORTANT, protože není statická sémantická kontrola je potřeba přetypovat.
-            return UNKNOWN_DATA;
+            return NULL_DATA;
         }
         case (AST_BREAK): {
             printLog("AST_BREAK\n");
@@ -1471,7 +1470,7 @@ SemValidationStates handleBuildinFunctions(AstNode* functionCallNode) {
         }
 
         SemValidationStates onlyChild = recursiveNodeWalker(functionCallNode->child[1]->child[0], AST_IFJ_CALL, 0);
-        if (onlyChild == NUMBER_DATA || onlyChild == INT_DATA || onlyChild == UNKNOWN_DATA) {
+        if (onlyChild == NUMBER_DATA || onlyChild == INT_DATA || onlyChild == FLOAT_DATA || onlyChild == UNKNOWN_DATA) {
             return INT_DATA;
         }
 
@@ -1518,12 +1517,12 @@ SemValidationStates handleBuildinFunctions(AstNode* functionCallNode) {
         }
 
         SemValidationStates secondChild = recursiveNodeWalker(functionCallNode->child[1]->child[1], AST_IFJ_CALL, 1);
-        if ((secondChild != NUMBER_DATA && secondChild != INT_DATA && secondChild != UNKNOWN_DATA) || functionCallNode->child[1]->child[1]->kind == AST_FLOAT_LIT) {
+        if (secondChild != NUMBER_DATA && secondChild != INT_DATA && secondChild != UNKNOWN_DATA) {
             EXEC_END(SEMANTICS_ERROR_INCORRECT, "(Ifj.substring) Nevhodny druhy parametr!\n");
         }
 
         SemValidationStates thirdChild = recursiveNodeWalker(functionCallNode->child[1]->child[2], AST_IFJ_CALL, 2);
-        if ((thirdChild != NUMBER_DATA && thirdChild != INT_DATA && thirdChild != UNKNOWN_DATA) || functionCallNode->child[1]->child[2]->kind == AST_FLOAT_LIT) {
+        if (thirdChild != NUMBER_DATA && thirdChild != INT_DATA && thirdChild != UNKNOWN_DATA) {
             EXEC_END(SEMANTICS_ERROR_INCORRECT, "(Ifj.substring) Nevhodny treti parametr!\n");
         }
 
@@ -1563,7 +1562,7 @@ SemValidationStates handleBuildinFunctions(AstNode* functionCallNode) {
         }
 
         SemValidationStates secondChild = recursiveNodeWalker(functionCallNode->child[1]->child[1], AST_IFJ_CALL, 1);
-        if ((secondChild != NUMBER_DATA && secondChild != INT_DATA && secondChild != UNKNOWN_DATA) || functionCallNode->child[1]->child[1]->kind == AST_FLOAT_LIT) {
+        if (secondChild != NUMBER_DATA && secondChild != INT_DATA && secondChild != UNKNOWN_DATA) {
             EXEC_END(SEMANTICS_ERROR_INCORRECT, "(Ifj.ord) Nevhodny druhy parametr!\n");
         }
 
@@ -1578,7 +1577,7 @@ SemValidationStates handleBuildinFunctions(AstNode* functionCallNode) {
         }
 
         SemValidationStates firstChild = recursiveNodeWalker(functionCallNode->child[1]->child[0], AST_IFJ_CALL, 0);
-        if ((firstChild != NUMBER_DATA && firstChild != INT_DATA && firstChild != UNKNOWN_DATA) || functionCallNode->child[1]->child[0]->kind == AST_FLOAT_LIT) {
+        if (firstChild != NUMBER_DATA && firstChild != INT_DATA && firstChild != UNKNOWN_DATA) {
             EXEC_END(SEMANTICS_ERROR_INCORRECT, "(Ifj.char) Nevhodny parametr!\n");
         }
 
@@ -1598,6 +1597,8 @@ SemValidationStates handleComparisonOperators(AstNode* currentNode, AstNodeType 
             return BOOLEAN_DATA;
         if (rightChild == INT_DATA)
             return BOOLEAN_DATA;
+        if (rightChild == FLOAT_DATA)
+            return BOOLEAN_DATA;
         if (rightChild == UNKNOWN_DATA)
             return BOOLEAN_DATA;
     }
@@ -1607,6 +1608,19 @@ SemValidationStates handleComparisonOperators(AstNode* currentNode, AstNodeType 
             return BOOLEAN_DATA;
         if (rightChild == INT_DATA)
             return BOOLEAN_DATA;
+        if (rightChild == FLOAT_DATA)
+            return BOOLEAN_DATA;
+        if (rightChild == UNKNOWN_DATA)
+            return BOOLEAN_DATA;
+    }
+
+    if (leftChild == FLOAT_DATA) {
+        if (rightChild == NUMBER_DATA)
+            return BOOLEAN_DATA;
+        if (rightChild == INT_DATA)
+            return BOOLEAN_DATA;
+        if (rightChild == FLOAT_DATA)
+            return BOOLEAN_DATA;
         if (rightChild == UNKNOWN_DATA)
             return BOOLEAN_DATA;
     }
@@ -1615,6 +1629,8 @@ SemValidationStates handleComparisonOperators(AstNode* currentNode, AstNodeType 
         if (rightChild == NUMBER_DATA)
             return BOOLEAN_DATA;
         if (rightChild == INT_DATA)
+            return BOOLEAN_DATA;
+        if (rightChild == FLOAT_DATA)
             return BOOLEAN_DATA;
         if (rightChild == UNKNOWN_DATA)
             return BOOLEAN_DATA;
@@ -1637,6 +1653,19 @@ SemValidationStates handleMathOperators(AstNode* currentNode, AstNodeType operat
             return NUMBER_DATA;
         if (rightChild == INT_DATA)
             return NUMBER_DATA;
+        if (rightChild == FLOAT_DATA)
+            return NUMBER_DATA;
+        if (rightChild == UNKNOWN_DATA)
+            return NUMBER_DATA;
+    }
+
+    if (leftChild == FLOAT_DATA) {
+        if (rightChild == NUMBER_DATA)
+            return NUMBER_DATA;
+        if (rightChild == INT_DATA)
+            return NUMBER_DATA;
+        if (rightChild == FLOAT_DATA)
+            return NUMBER_DATA;
         if (rightChild == UNKNOWN_DATA)
             return NUMBER_DATA;
     }
@@ -1646,6 +1675,8 @@ SemValidationStates handleMathOperators(AstNode* currentNode, AstNodeType operat
             return NUMBER_DATA;
         if (rightChild == INT_DATA)
             return operatorCode == AST_DIV ? NUMBER_DATA : INT_DATA;
+        if (rightChild == FLOAT_DATA)
+            return NUMBER_DATA;
         if (rightChild == UNKNOWN_DATA)
             return UNKNOWN_DATA;
     }
@@ -1655,10 +1686,12 @@ SemValidationStates handleMathOperators(AstNode* currentNode, AstNodeType operat
             return UNKNOWN_DATA;
         if (rightChild == INT_DATA)
             return UNKNOWN_DATA;
+        if (rightChild == FLOAT_DATA)
+            return UNKNOWN_DATA;
         if (rightChild == UNKNOWN_DATA)
             return UNKNOWN_DATA;
         if (rightChild == STRING_DATA) {
-            if (operatorCode == AST_PLUS) 
+            if (operatorCode == AST_PLUS)
                 return STRING_DATA;
         }
     }
@@ -1676,7 +1709,7 @@ SemValidationStates handleMathOperators(AstNode* currentNode, AstNodeType operat
                 return STRING_DATA;
             if (rightChild == UNKNOWN_DATA)
                 return STRING_DATA;
-            if(rightChild == NUMBER_DATA && currentNode->child[1]->kind != AST_FLOAT_LIT) 
+            if (rightChild == NUMBER_DATA)
                 return STRING_DATA;
         }
     }
@@ -1718,6 +1751,9 @@ SemSymbDataType convSemValStatesToSemSymbDType(SemValidationStates returnedValue
         case (INT_DATA): {
             return INT_VAL;
         }
+        case (FLOAT_DATA): {
+            return FLOAT_VAL;
+        }
         case (STRING_DATA): {
             return STRING_VAL;
         }
@@ -1744,6 +1780,9 @@ SemValidationStates convSemSymbDTypeToSemValStates(SemSymbDataType dataType) {
         }
         case (INT_VAL): {
             return INT_DATA;
+        }
+        case (FLOAT_VAL): {
+            return FLOAT_DATA;
         }
         case (STRING_VAL): {
             return STRING_DATA;

@@ -2,12 +2,10 @@
 import "ifj25" for Ifj
 class Program {
     static main() {
-        var str 
-        str = "hello"
-        var num 
-        num = 5
-        //if (str < num) {  // ERROR: cannot compare string with number using < STATICAN
-        if("a" < 2) {
+        var str = "hello"
+        var num = 5
+        if (str < num) {  // ERROR: cannot compare string with number using < STATICAN
+        //if("a" < 2) {
             Ifj.write("String is less\n")
         } else {
             Ifj.write("Number is less\n")

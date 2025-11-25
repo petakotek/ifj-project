@@ -2,13 +2,11 @@
 import "ifj25" for Ifj
 class Program {
     static main() {
-        var num 
-        num = 42
-        var str 
-        str = "The answer is "
+        var num = 42
+        var str = "The answer is "
         var result 
-        //result = num + str  // ERROR: cannot add string to number STATICAN
-        result = 2 + "str"
+        result = num + str  // ERROR: cannot add string to number STATICAN
+        //result = 2 + "str"
         Ifj.write(result)
         Ifj.write("\n")
     }

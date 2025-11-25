@@ -61,7 +61,7 @@ typedef enum {
  */
 typedef enum {
     /**
-     * @brief Hodnota je (pravděpodobně desetinné) číslo
+     * @brief Hodnota je číslo
      *
      */
     NUMBER_VAL,
@@ -70,6 +70,11 @@ typedef enum {
      *
      */
     INT_VAL,
+    /**
+     * @brief Desetinné číslo
+     *
+     */
+    FLOAT_VAL,
     /**
      * @brief Řetězec
      *
@@ -105,7 +110,7 @@ typedef enum {
      */
     OK,
     /**
-     * @brief Výstupem zpracování uzlu je (pravděpodobně desetinné) číslo
+     * @brief Výstupem zpracování uzlu je číslo
      *
      */
     NUMBER_DATA,
@@ -114,6 +119,11 @@ typedef enum {
      *
      */
     INT_DATA,
+    /**
+     * @brief Výstupem je desetinné číslo
+     *
+     */
+    FLOAT_DATA,
     /**
      * @brief Výstupem zpracování uzlu (a jeho potomků) je řetězec
      *
