@@ -1,0 +1,8 @@
+import "ifj25" for Ifj
+class Program {
+    static main() {
+        var i = 3.14      // NUMBER_DATA, napr. z výpočtu
+        var s = "abcd"
+        var z = Ifj.chr(i)
+    }
+}
