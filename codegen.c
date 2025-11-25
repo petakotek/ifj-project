@@ -12,12 +12,14 @@
 #include "semantic_analysis.h"
 #include "support_functions.h"
 #include "builtin_functions.h"
-#define MAX_LABELS 1000
 static size_t while_counter = 0;
 static size_t for_counter = 0;
 static size_t if_counter = 0;
-/*
- *Print funkce na zajistneti \node na konci
+/**
+ * @brief Tiskne formátovaný text se znakem nového řádku na konci.
+ *
+ * @param fmt Formátovací řetězec.
+ * @param ... Argumenty pro formátování.
  */
 void printN(const char *fmt, ...) {
     va_list args;
@@ -31,9 +33,12 @@ void printN(const char *fmt, ...) {
  */
 void emitProlog() { printN(".IFJcode25"); }
 /**
- *@buffer na jednotlive labely aby se nakonci uvolnovali
+ * @brief Změní velikost bufferu pro jména labelů.
+ *
+ * @param prefix Buffer, který se má realokovat.
+ * @param size Ukazatel na velikost, která se zdvojnásobí.
+ * @return Ukazatel na nově alokovaný buffer.
  */
-char *buffer_pointer_label[MAX_LABELS];
 char *resizeLabelName(char *prefix, size_t *size) {
     *size *= 2;
     prefix = realloc(prefix, *size);
@@ -44,12 +49,16 @@ char *resizeLabelName(char *prefix, size_t *size) {
     return prefix;
 }
 /**
- * @brief generator jednotlivych labelu. Label je tvoren z nazvu lablu ktere existovali ve vetvi
- * prednim priklad: fun$1$while$2 je label druheho while loopu ve funkci fun fun$1$while$2$end je
- * koncovy label toho while loopu
- * @param label_stack stack na ukladani prubezne lablu
- * @param func_name jmeno funcke ktere chceme pripojit
- * @return ukazatel na vysledny label
+ * @brief Generuje unikátní label na základě existujícího prefixu větve a nového bloku.
+ *
+ * Label je tvořen z řetězce existujících labelů ve větvi s připojením nového bloku.
+ * Příklad: `fun$1$while$2` je label pro druhý `while` cyklus uvnitř funkce `fun`.
+ *
+ * @param func_name Jméno bloku (např. "fun", "if", "while").
+ * @param funcStruckt Kontext funkce obsahující zásobník labelů (`label_stack`).
+ * @param pridaniDoStacku Logická hodnota určující, zda se má vygenerovaný label uložit na zásobník.
+ * @param global_counter Globální čítač pro unikátní číslování aktuálního bloku.
+ * @return Ukazatel na nově alokovaný řetězec obsahující výsledný label.
  */
 char *generatorLable(char *func_name,FuncContext *funcStruckt,bool pridaniDoStacku,size_t global_counter) {
     size_t size_of_buffer = 128;
@@ -134,14 +143,11 @@ char *generatorLable(char *func_name,FuncContext *funcStruckt,bool pridaniDoStac
     // a jeho vraceni
     return result_label;
 }
-/*
- *@brief zajisti aby globalni promene byly inicializovany hned na zacatku
- *@param ukazatel na hash_table
- */
-/*
- *@brief zajisti rozbaleni uzlu
- *@params ukazatel na uzel
- *@params ukazatel na hash_table
+/**
+ * @brief Generuje kód voláním emitCommand pro všechny potomky uzlu.
+ *
+ * @param root Uzel, jehož potomci se zpracovávají.
+ * @param funcStruct Kontext funkce pro generování kódu.
  */
 void emitChildren(AstNode *root,FuncContext *funcStruct) {
     for (size_t i = 0; i < root->arity; i++) {
@@ -149,7 +155,7 @@ void emitChildren(AstNode *root,FuncContext *funcStruct) {
     }
 }
 /*
-* @brief funkce na zalozeni struktury na zapsani var promenych
+* @brief Funkce na zalozeni struktury na zapsani var promenych.
 */
 VarList* varListCreate() {
     VarList *list = malloc(sizeof(VarList));
@@ -158,10 +164,17 @@ VarList* varListCreate() {
     list->var_names = calloc(1,sizeof(char*) * list->capacity);
     return list;
 }
-/*
-*@brief funcke na pridavani do varlistu i s resize
-*/
-void varListAdd(VarList *list, const char *name) {
+/**
+ * @brief Přidá jméno proměnné do seznamu (listu) s automatickou změnou velikosti.
+ *
+ * Pokud je seznam plný, kapacita se zdvojnásobí pomocí `realloc()`.
+ * Funkce kontroluje duplicitu: pokud proměnná s daným jménem již existuje,
+ * operace je ignorována. Jméno proměnné je zkopírováno (duplikováno) a uloženo.
+ *
+ * @param list Ukazatel na strukturu VarList, do které se má proměnná přidat.
+ * @param name Ukazatel na řetězec obsahující jméno proměnné, které se má přidat.
+ */
+void varListAdd(VarList *list, char *name) {
     for (int i = 0; i < list->count; i++) {
         if (strcmp(list->var_names[i], name) == 0) {
             return;
@@ -175,9 +188,14 @@ void varListAdd(VarList *list, const char *name) {
     list->var_names[list->count] = strdup(name);
     list->count++;
 }
-/*
-*@brief funkce na niceni listu volano na konci kazde funkce
-*/
+/**
+ * @brief Uvolní (zničí) seznam proměnných a veškerou alokovanou paměť.
+ *
+ * Funkce uvolní paměť alokovanou pro jednotlivá jména proměnných i pro samotné pole
+ * ukazatelů.
+ *
+ * @param list Ukazatel na strukturu VarList, která má být zničena.
+ */
 void varListDescrution(VarList *list){
 	for(int i = 0;i <list->count;i++){
 		free(list->var_names[i]);
@@ -453,10 +471,7 @@ void emit_call_func(AstNode *node,FuncContext *funcStruct){
 		printN("CALL $%s$0",node->child[0]->value.str);
 }
 /*
- * Dostaneme zasobnik zkontrolujeme zda je neco na vrchu pokud jo udelame types coz nam da na vrchol
- * typ na vrchol a potom si pushneme dite a dame na nej types zasobnik type promena (dite) type
- * promena ze zasobnika
- * JUMPIFEQS/JUMPIFNEQS ⟨label⟩
+*
  */
 
  void emitPlus(AstNode *node,FuncContext *funcStruct) {

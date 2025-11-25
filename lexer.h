@@ -38,8 +38,6 @@ typedef enum{
 	BLOCK_END,
 	PAR_LEFT,
 	PAR_RIGHT,
-	SQUARE_LEFT,
-	SQUARE_RIGHT,
 	PLUS,      // +
     MINUS,     // -
     SLASH,     // /
@@ -110,8 +108,6 @@ typedef enum {
     TOKEN_KEYWORD_VAR,
     TOKEN_BLOCK_STAR,
     TOKEN_BLOCK_END,
-    TOKEN_SQUARE_LEFT,
-    TOKEN_SQUARE_RIGHT,
     TOKEN_DOUBLE_MINUS,
     TOKEN_KEYWORD_FOR,
     TOKEN_KEYWORD_CLASS,
