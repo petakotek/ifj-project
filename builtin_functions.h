@@ -14,11 +14,11 @@
 
 /**
  * @brief Funkce zajišťuje zpracování volání vestavěných funkcí
- * 
- * @param ifjFunctionCall Uzel s voláním libovolné vestavěné funkce 
+ *
+ * @param ifjFunctionCall Uzel s voláním libovolné vestavěné funkce
  * @param context Kontext
  */
-void handleBuiltin(AstNode * ifjFunctionCall, FuncContext* context);
+void handleBuiltin(AstNode* ifjFunctionCall, FuncContext* context);
 
 #endif
 

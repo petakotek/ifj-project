@@ -19,7 +19,7 @@
 
 /**
  * @brief Počáteční kapacita řetězce pro uložení vstupu
- * 
+ *
  */
 #define INITIAL_CAPACITY 1024
 
@@ -126,9 +126,7 @@ void print_and_free_tokens() {
     }
 }
 #else
-void print_and_free_tokens() {
-    return;
-}
+void print_and_free_tokens() { return; }
 #endif
 
 char *readAllStdin(void) {

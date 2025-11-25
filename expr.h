@@ -4,6 +4,6 @@
 
 #include "ast_strom.h"
 
-AstNode* parseExpression(Token *token,int flag);
+AstNode* parseExpression(Token* token, int flag);
 
 #endif

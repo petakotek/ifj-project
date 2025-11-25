@@ -84,7 +84,7 @@ void printLog(const char *fmt, ...);
 
 /**
  * @brief Pomocná funkce pro výpis tokenů lexikální analýzy
- * 
+ *
  */
 void print_and_free_tokens();
 

@@ -53,7 +53,6 @@ typedef enum AstNodeType {
     AST_RETURN,
     AST_TERNARY,
 
-
     // listy
     AST_IDENTIFIER,
     AST_GLOBAL_ID,
@@ -65,25 +64,25 @@ typedef enum AstNodeType {
     AST_EMPTY,
 
     // expression
-    AST_PLUS,            // +
-    AST_MINUS,           // -
-    AST_MUL,             // *
-    AST_DIV,             // /
-    AST_EQ,              // ==
-    AST_NEQ,             // !=
-    AST_LT,              // <
-    AST_GT,              // >
-    AST_NOT,             // !
-    AST_AND,             // &&
-    AST_OR,              // ||
-    AST_IS,              // is
-    AST_GTE,             // >=
-    AST_LTE,             // <=
-    AST_LPAREN,          // (
-    AST_RPAREN,          // )
-    AST_NULL,            // Prázdný blok
-    AST_TRIPLE_DOT,      // ...
-    AST_DOUBLE_DOT,      // ..
+    AST_PLUS,        // +
+    AST_MINUS,       // -
+    AST_MUL,         // *
+    AST_DIV,         // /
+    AST_EQ,          // ==
+    AST_NEQ,         // !=
+    AST_LT,          // <
+    AST_GT,          // >
+    AST_NOT,         // !
+    AST_AND,         // &&
+    AST_OR,          // ||
+    AST_IS,          // is
+    AST_GTE,         // >=
+    AST_LTE,         // <=
+    AST_LPAREN,      // (
+    AST_RPAREN,      // )
+    AST_NULL,        // Prázdný blok
+    AST_TRIPLE_DOT,  // ...
+    AST_DOUBLE_DOT,  // ..
 
     AST_KEYWORD_NUM,     // Num
     AST_KEYWORD_STRING,  // String
@@ -128,9 +127,9 @@ typedef struct AstNode {
     AstNodeType      kind;
     size_t           arity;
     struct AstNode **child;
-    bool isLeaf;
-    AstValue value;          // platný len ak isLeaf == true
-    //pro generovani docasnych promenych pouziva pouze codegen
+    bool             isLeaf;
+    AstValue         value;  // platný len ak isLeaf == true
+    // pro generovani docasnych promenych pouziva pouze codegen
     int tmpId;
 } AstNode;
 
@@ -190,9 +189,9 @@ AstNode *buildParamFlat(size_t n, AstNode **kids);
 AstNode *buildStmtListFlat(size_t n, AstNode **kids);
 AstNode *buildClassBlockFlat(size_t n, AstNode **kids);
 AstNode *buildIfChainFlat(size_t n, AstNode **kids);
-double floatExp(const char *s);
-char *stringChanging(char *tmp);
-char *stringChangingLit(char *tmp);
-char *escapeString(char *tmp);
+double   floatExp(const char *s);
+char    *stringChanging(char *tmp);
+char    *stringChangingLit(char *tmp);
+char    *escapeString(char *tmp);
 
 #endif  // AST_STROM_H

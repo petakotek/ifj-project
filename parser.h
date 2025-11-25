@@ -1,12 +1,12 @@
 /**
-* Fakulta informačných technologií VUT Brno
-*
-* Hlavičkový súbor pre implementáciu lexikálnej analýzy
-* pre projekt do predmetu IFJ
-* @file  parser.h
-* @author Jakub Jambrozi (xjambrj00)
-* upravované: 22.10.2025
-*/
+ * Fakulta informačných technologií VUT Brno
+ *
+ * Hlavičkový súbor pre implementáciu lexikálnej analýzy
+ * pre projekt do predmetu IFJ
+ * @file  parser.h
+ * @author Jakub Jambrozi (xjambrj00)
+ * upravované: 22.10.2025
+ */
 
 #ifndef PARSER_H
 #define PARSER_H
@@ -16,8 +16,7 @@
 /**
  * @brief Definicia neterminálov
  */
-typedef enum
-{
+typedef enum {
     N_PROGRAM,
     N_PROLOG,
     N_MAIN_CLASS,
@@ -58,7 +57,7 @@ typedef enum
     N_ASSIGN_IFJ_ID_CHECK,
 } Nonterm;
 
-AstNode* parser();
+AstNode *parser();
 
 /**
  * @brief pomocná funkcia na vytvorenie struktury terminalu
@@ -93,15 +92,14 @@ Symbol makeReduce(AstNodeType kind, size_t arity);
  */
 Symbol makeTermValue(Token token);
 
-
 /**
  * @brief kontrolná funkcia zda prebehlo pushnovanie na zásobík správne
  * @param boolean bool returnutý funkciou po pushovaní
  */
 void pushCheck(bool boolean);
 
-
-/*-----------------------------------POMOCNÉ FUNKCIE PRE NETERMÍNALY-------------------------------------------------------*/
+/*-----------------------------------POMOCNÉ FUNKCIE PRE
+ * NETERMÍNALY-------------------------------------------------------*/
 
 /**
  * @brief Funkcia na zaobchádzanie s netermínalom Program
@@ -141,7 +139,6 @@ void blockFunc(DynamicSymbolStackPtr stack);
  */
 void blockContentFunc(DynamicSymbolStackPtr stack, Token token);
 
-
 /**
  * @brief Funkcia na zaobchádzanie s netermínalom smth_tail
  * @param stack Inicializovaný stack na ktorom sú štrukturý Symbol neterminálov a terminálov
@@ -155,7 +152,6 @@ void smthTailFunc(DynamicSymbolStackPtr stack, Token token);
  * @param token Aktuálne použivaný token z lexer.c
  */
 void smthListFunc(DynamicSymbolStackPtr stack, Token token);
-
 
 /**
  * @brief Funkcia na zaobchádzanie s netermínalom Func_dec
@@ -183,8 +179,6 @@ void paramFunc(DynamicSymbolStackPtr stack, Token token);
  * @param token Aktuálne použivaný token z lexer.c
  */
 void paramListFunc(DynamicSymbolStackPtr stack, Token token);
-
-
 
 /**
  * @brief Funkcia na zaobchádzanie s netermínalom Var
@@ -286,24 +280,24 @@ void returnExprFunc(DynamicSymbolStackPtr stack, Token token);
  *  1 na konci vyrazu moze byt TOKEN_COMMA || TOKEN_RPAREN
  *  -2 na konci musi byt TOKEN_BLOCK_END
  */
-void exprFunc(DynamicSymbolStackPtr stack,Token *gLookahead, DynamicAstNodeStackPtr AstStack,int flag);
+void exprFunc(DynamicSymbolStackPtr stack, Token *gLookahead, DynamicAstNodeStackPtr AstStack, int flag);
 
 /**
  * @brief Funkcia na zaobchádzanie s netermínalom New_line
  * @param stack Inicializovaný stack na ktorom sú štrukturý Symbol neterminálov a terminálov
  * @param token Aktuálne použivaný token z lexer.c
  */
-void  newLineFunc(DynamicSymbolStackPtr stack, Token token);
+void newLineFunc(DynamicSymbolStackPtr stack, Token token);
 
 void optNewlinesFunc(DynamicSymbolStackPtr stack, Token token);
 
 Symbol makeTermValueAndCaptureIdentifier(const char *exact);
-void blockContentFuncCheck(DynamicSymbolStackPtr stack, Token token);
-void tokenFree(Token *token);
-void callIfjfunc(DynamicSymbolStackPtr stack, Token token);
-void elseItemFunc(DynamicSymbolStackPtr stack, Token token);
-void elseChainFunc(DynamicSymbolStackPtr stack, Token token);
-void callIfjCheckfunc(DynamicSymbolStackPtr stack, Token token);
-void AssignIfjIdCheckFunc(DynamicSymbolStackPtr stack, Token token);
-void parserFree(void);
-#endif // PARSER_H
+void   blockContentFuncCheck(DynamicSymbolStackPtr stack, Token token);
+void   tokenFree(Token *token);
+void   callIfjfunc(DynamicSymbolStackPtr stack, Token token);
+void   elseItemFunc(DynamicSymbolStackPtr stack, Token token);
+void   elseChainFunc(DynamicSymbolStackPtr stack, Token token);
+void   callIfjCheckfunc(DynamicSymbolStackPtr stack, Token token);
+void   AssignIfjIdCheckFunc(DynamicSymbolStackPtr stack, Token token);
+void   parserFree(void);
+#endif  // PARSER_H
