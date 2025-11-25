@@ -1,0 +1,7 @@
+import "ifj25" for Ifj
+class Program {
+    static main() {
+        var n = 2.5
+        var s = "abc" * n    // n: NUMBER_DATA, nie AST_FLOAT_LIT
+    }
+}
