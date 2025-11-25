@@ -554,16 +554,18 @@ void smthListFunc(DynamicSymbolStackPtr stack, Token token)
                 printError(SYNTAX_ERROR, "break vo funkcii mimo while a for\n");
                 memorySafeExit(SYNTAX_ERROR);
             }
+            break;
         case TOKEN_KEYWORD_CONTINUE:
             if (block)
             {
-                pushCheck(stackSymbolPush(stack, makeNonterm(N_BREAK)));
+                pushCheck(stackSymbolPush(stack, makeNonterm(N_CONTINUE)));
             }
             else
             {
                 printError(SYNTAX_ERROR, "break vo funkcii mimo while a for\n");
                 memorySafeExit(SYNTAX_ERROR);
             }
+            break;
         case TOKEN_IDENTIFIER:
             pushCheck(stackSymbolPush(stack, makeNonterm(N_CALL_ASSIGN)));
             return;
