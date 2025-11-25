@@ -5,6 +5,7 @@ class Program {
     }
 
     static main() {
+        var b
         var c = (id(b) > 0) ? id(1) : id(0)
     }
 }
