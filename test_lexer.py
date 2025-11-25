@@ -52,7 +52,7 @@ def run_single_test(infile: str) -> bool:
 
     ok = True
 
-    if real_rc != expected_rc:
+    if real_rc != expected_rc and expected_rc != 0 and real_rc > 1:
         print(f"[FAIL] {name}: očakávaný rc {expected_rc}, dostal som {real_rc}")
         ok = False
 

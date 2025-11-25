@@ -17,14 +17,14 @@ $(EXEC): $(OBJ)
 
 clean:
 	rm -f $(OBJ) $(EXEC)
-	rm -rf xvoldrv00.zip ./tmpIsItOk
+	rm -rf xvoldrv00.zip ./tmpIsItOk ready.zip testy.zip
 
 
 dev: clean
 	$(MAKE) CFLAGS="$(CFLAGS) $(DEV_CFLAGS)"
 
 
-.PHONY: all clean
+.PHONY: all clean pack dev pack_merlin_test
 
 pack:
 	rm -rf xvoldrv00.zip ./tmpIsItOk
@@ -32,3 +32,8 @@ pack:
 	zip xvoldrv00.zip *.c *.h rozdeleni rozsireni dokumentace.pdf Makefile
 	mkdir ./tmpIsItOk
 	./is_it_ok.sh xvoldrv00.zip ./tmpIsItOk
+
+pack_merlin_test: pack
+	rm -rf testy.zip ready.zip
+	zip -r testy.zip ./testy *.sh ic25int-linux-x86_64 *.py
+	zip ready.zip *.zip

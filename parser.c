@@ -28,6 +28,7 @@ Token token;
 AstNode *astRoot = NULL;
 DynamicSymbolStackPtr stack = NULL;
 bool function = false;
+bool block = false;
 
 
 AstNode *parser()
@@ -544,11 +545,27 @@ void smthListFunc(DynamicSymbolStackPtr stack, Token token)
             pushCheck(stackSymbolPush(stack, makeNonterm(N_FOR)));
             return;
         case TOKEN_KEYWORD_BREAK:
-            pushCheck(stackSymbolPush(stack, makeNonterm(N_BREAK)));
-            return;
+            if (block)
+            {
+                pushCheck(stackSymbolPush(stack, makeNonterm(N_BREAK)));
+            }
+            else
+            {
+                printError(SYNTAX_ERROR, "break vo funkcii mimo while a for\n");
+                memorySafeExit(SYNTAX_ERROR);
+            }
+            break;
         case TOKEN_KEYWORD_CONTINUE:
-            pushCheck(stackSymbolPush(stack, makeNonterm(N_CONTINUE)));
-            return;
+            if (block)
+            {
+                pushCheck(stackSymbolPush(stack, makeNonterm(N_CONTINUE)));
+            }
+            else
+            {
+                printError(SYNTAX_ERROR, "break vo funkcii mimo while a for\n");
+                memorySafeExit(SYNTAX_ERROR);
+            }
+            break;
         case TOKEN_IDENTIFIER:
             pushCheck(stackSymbolPush(stack, makeNonterm(N_CALL_ASSIGN)));
             return;
@@ -877,6 +894,7 @@ void whileFunc(DynamicSymbolStackPtr stack)
     // deti: Expr, Block => arity = 2
     pushCheck(stackSymbolPush(stack, makeReduce(AST_WHILE, 2)));
     pushCheck(stackSymbolPush(stack, makeNonterm(N_BLOCK)));
+    block = true;
     pushCheck(stackSymbolPush(stack, makeReduce(AST_CONDITION, 1)));
     pushCheck(stackSymbolPush(stack, makeTerm(TOKEN_RPAREN)));
     pushCheck(stackSymbolPush(stack, makeNonterm(N_L_EXPR)));
@@ -891,6 +909,7 @@ void forFunc(DynamicSymbolStackPtr stack)
     // deti: Expr, Block => arity = 2  (IDENT v AST neukladáme)
     pushCheck(stackSymbolPush(stack, makeReduce(AST_FOR, 2)));
     pushCheck(stackSymbolPush(stack, makeNonterm(N_BLOCK)));
+    block = true;
     pushCheck(stackSymbolPush(stack, makeReduce(AST_CONDITION, 2)));
     pushCheck(stackSymbolPush(stack, makeTerm(TOKEN_RPAREN)));
     pushCheck(stackSymbolPush(stack, makeNonterm(N_L_EXPR)));

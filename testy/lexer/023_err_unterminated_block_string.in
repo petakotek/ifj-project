@@ -1,2 +1,10 @@
 import "ifj25" for Ifj
+<<<<<<< HEAD
 class Program { static main() { var s = "Hello } }
+=======
+class Program { 
+    static main() { 
+        var s = """Hello 
+        } 
+        }
+>>>>>>> ec696dae1e94a8ed20180a939c3bba5b919e031c

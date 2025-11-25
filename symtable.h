@@ -36,9 +36,9 @@ typedef struct {
  */
 typedef struct {
     int tableSize; /** Aktuální velikost tabulky @param tableCapacity Kapacita tabulky nemůže být
-                      větší jak její velikost !!! */
+                      větší jak její velikost */
     int       tableCapacity;  // Kapacita tabulky, která může být využita
-    TableItem items[];        // Pole položek v Hashovací tabulce
+    TableItem *items;        // Pole položek v Hashovací tabulce
 } HashTable;
 
 HashTable *hashTableInit();
@@ -50,7 +50,7 @@ void hashTableDeleteItem(HashTable *, char *key);  // Funkce pro smazání polo�
 int hashTableSearchItem(HashTable *, char *key);  // Funkce pro nalezení položky v hashovací tabulce
 void       hashTableDealloc(HashTable *);         // funkce pro dealokaci hashovací tabulky
 int        hashItem(char *key, HashTable *);
-HashTable * hashTableRealloc(HashTable *);  // Funkce provede reallokaci tabulky symbolu v pripade,
+void hashTableRealloc(HashTable *);  // Funkce provede reallokaci tabulky symbolu v pripade,
                                            // ze doslo k naplneni kapacity
 
                                            /**
@@ -64,4 +64,5 @@ bool hashTableIsEmpty(HashTable * hashT);
 // TODO obecně uklidit symtable.* a podepsat se
 
 #endif  // SYMTABLE_H
-        /* Konec hashtable.h */
+
+/* Konec hashtable.h */

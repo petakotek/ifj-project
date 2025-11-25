@@ -28,6 +28,7 @@ int main(){
 	if(stdin == NULL){
 		return 0;
 	}
+	// TODO předělat PSA lgging na prekladovy flag misto proprietární proměnné
 	source_file = NULL;
 	//volani funcke na nacteni souboru
 	source_file = readAllStdin();
@@ -39,18 +40,22 @@ int main(){
 	lexerInit(source_file);
 	print_and_free_tokens();
 	exit(0);
+	/*
+	print_and_free_tokens();
+	exit(0);
+	*/
 	// tvorba stromu pres parser
-	AstNode *AST = parser();
-	astDump(AST);
-	//funkcia ast_dump -> funkcia na kontrolny vypis ast stromu
+	AstNode *ast = parser();
+	//astDump(AST);
+	//funkcia astDump -> funkcia na kontrolny vypis ast stromu
 
 	bool output;
-	output = startSematicValidation(AST);
+	output = startSematicValidation(ast);
 	printLog("Vysledek sem_anal: %i\n", output);
 
-	//ast_dump(AST);
+	//astDump(AST);
 
-	codegenGenerate(AST);
+	codegenGenerate(ast);
 
 	memorySafeExit(NO_ERROR);
 }

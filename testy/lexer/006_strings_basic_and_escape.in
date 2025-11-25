@@ -1,2 +1,6 @@
 import "ifj25" for Ifj
-class Program { static main() { var s = "A\\nB\\tC\\x41\\"\\\\" } }
+class Program { 
+    static main() { 
+        var s = "A\\nB\\tC\\x41\\"\\\\" 
+        } 
+        }

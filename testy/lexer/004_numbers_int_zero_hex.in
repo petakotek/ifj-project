@@ -1,2 +1,8 @@
 import "ifj25" for Ifj
-class Program { static main() { var a = 0 var b = 0x1A var c = 42 } }
+class Program { 
+    static main() { 
+        var a = 0 
+        var b = 0x1A 
+        var c = 42 
+        } 
+        }

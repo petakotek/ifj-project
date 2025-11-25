@@ -1,14 +1,16 @@
 import "ifj25" for Ifj
 class Program {
-    static isEven(n) {
-        if (n == 0) {
-            return true
-            var a = 1.
-        }
-        return isEven(n - 1)
-    }
     static main() {
-        var x = isEven(4)
-        Ifj.write(x)
+        //var x = 2e5
+        //var s = "aaa"
+        //Ifj.substring(s, 1.0, 2.1)
+        //Ifj.chr(1.00000000000000000000000001)
+        //var a= s * 1.1
+        for(i in 1..2) {
+            return 1
+        }
+        //for(i in 1.0...2.0) {
+        //    return 1
+        //}
     }
 }
