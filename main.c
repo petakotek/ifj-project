@@ -46,14 +46,14 @@ int main(){
 	AstNode *ast = parser();
 	//astDump(AST);
 	//funkcia astDump -> funkcia na kontrolny vypis ast stromu
-	/*
+	
 	bool output;
 	output = startSematicValidation(ast);
 	printLog("Vysledek sem_anal: %i\n", output);
 
 	//astDump(AST);
 
-	codegen_generate(ast);
-	*/
+	codegenGenerate(ast);
+
 	memorySafeExit(NO_ERROR);
 }
