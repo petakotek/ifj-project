@@ -2,13 +2,11 @@
 import "ifj25" for Ifj
 class Program {
     static main() {
-        var a 
-        a = "hello"
-        var b 
-        b = 5
+        var a = "hello"
+        var b = 5
         var result 
-        //result = a - b  // ERROR: cannot subtract number from string (kontrola je ale jen v ramci STATICAN)
-        result = "h" - 5 // V základním rozšíření
+        result = a - b  // ERROR: cannot subtract number from string (kontrola je ale jen v ramci STATICAN)
+        //result = "h" - 5 // V základním rozšíření
         Ifj.write(result)
         Ifj.write("\n")
     }
