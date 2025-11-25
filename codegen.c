@@ -12,8 +12,7 @@
 #include "semantic_analysis.h"
 #include "support_functions.h"
 #include "builtin_functions.h"
-static size_t while_counter = 0;
-static size_t for_counter = 0;
+static size_t loop_counter = 0;
 static size_t if_counter = 0;
 /**
  * @brief Tiskne formátovaný text se znakem nového řádku na konci.
@@ -203,6 +202,16 @@ void varListDescrution(VarList *list){
 	free(list->var_names);
 	free(list);
 }
+/**
+ * @brief Generuje kód pro všechny deklarované funkce.
+ *
+ * Zajišťuje, že hlavní funkce (`main$0`) je emitována jako poslední,
+ * aby byla umístěna na konec programu a ostatní funkce
+ * jsou emitovány v pořadí, v jakém se nacházejí v AST.
+ *
+ * @param root Kořenový uzel AST obsahující deklarace funkcí.
+ * @param funcContext Kontext funkce (proměnné, zásobníky atd.) pro generování kódu.
+ */
 void emitFunctions(AstNode *root,FuncContext *funcContext){
 	AstNode *main = NULL;
 	for(size_t i = 0;i< root->arity;i++){
@@ -214,6 +223,18 @@ void emitFunctions(AstNode *root,FuncContext *funcContext){
 	}
 	emitCommand(main, funcContext);
 }
+/**
+ * @brief Přidá do seznamu dočasných proměnných (tmps) potřebné pro binární operace.
+ *
+ * Tato funkce generuje unikátní jména dočasných proměnných na základě typu binární
+ * operace (uzlu AST) a aktuálního kontextu (jména funkce a ID). Jména jsou
+ * uložena do seznamu `vars`.
+ *
+ * @param vars Ukazatel na seznam proměnných (VarList), kam se mají dočasné proměnné přidat.
+ * @param func Jméno aktuální funkce pro prefix jména dočasné proměnné.
+ * @param id Unikátní ID pro danou operaci.
+ * @param node Ukazatel na uzel AST, který reprezentuje binární operaci.
+ */
 void addBinopTmps(VarList* vars, const char* func, int id,AstNode *node) {
     char buf[128];
 
@@ -281,6 +302,9 @@ void addBinopTmps(VarList* vars, const char* func, int id,AstNode *node) {
         varListAdd(vars, buf);
     }
 }
+/*
+*tohle odmitam komentovat za to se stydim
+*/
 void printIfj(){
 printN("DEFVAR LF@temp$var$readStr");
 printN("DEFVAR LF@temp$var$readNum");
@@ -318,6 +342,11 @@ printN("DEFVAR LF@temp$var$chrVal");
 printN("DEFVAR LF@temp$var$chrType");
 printN("DEFVAR LF@temp$var$chrIsInt");
 }
+/**
+ * @brief Alokuje paměť a inicializuje strukturu kontextu funkce (FuncContext).
+ *
+ * @return Ukazatel na novou strukturu FuncContext.
+ */
 FuncContext *constuctorFuncContext(){
 	FuncContext *funcStruct = malloc(sizeof(FuncContext));
 	if(!funcStruct){
@@ -329,8 +358,10 @@ FuncContext *constuctorFuncContext(){
 	funcStruct->label_end = NULL;
 	funcStruct->main = false;
 	funcStruct->value_counter = 0;
+	funcStruct->loop_counter = 0;
 	return funcStruct;
 }
+
 void destructorFuncContext(FuncContext *funcStruct){
 	free(funcStruct);
 }
@@ -1467,13 +1498,12 @@ void emitElse(AstNode *node, FuncContext *funcContext)
  */
 void emitWhile(AstNode* node, FuncContext *funcContext)
 {
-    while_counter++;
-
-    char* block_prefix = generatorLable("while", funcContext, true,while_counter);
-    char* labelStart = generatorLable("start", funcContext, false,while_counter);
+    loop_counter++;
+    char* block_prefix = generatorLable("while", funcContext, true,loop_counter);
+    char* labelStart = generatorLable("start", funcContext, false,loop_counter);
     printN("LABEL %s", labelStart);
     char* endLabel = NULL;
-    endLabel = generatorLable("end", funcContext, false,while_counter);
+    endLabel = generatorLable("end", funcContext, false,loop_counter);
     if (node->child[0]->kind == AST_CONDITION)
     {
         // while -> condition -> AST samotneho operatoru
@@ -1500,18 +1530,18 @@ void emitWhile(AstNode* node, FuncContext *funcContext)
         	printError(INTERNAL_ERROR, "nepovedene uvolneni lablu na konci while loopu");
          	memorySafeExit(INTERNAL_ERROR);
         }
-   // free(block_prefix);
+        loop_counter--;
 }
 
 void emitBreak(FuncContext *funcContext)
 {
-    char *label = generatorLable("end", funcContext, false,0);
+    char *label = generatorLable("end", funcContext, false,loop_counter);
     printN("JUMP %s", label);
     free(label);
 }
 
 void emitContinue(FuncContext *funcContext) {
-	char *label = generatorLable("start", funcContext, false, 0);
+	char *label = generatorLable("start", funcContext, false,loop_counter);
     printN("JUMP %s", label);
     free(label);
 }
@@ -1606,16 +1636,16 @@ void emitCondition(AstNode *node,FuncContext *funcContext){
  */
 void emitFor(AstNode* node, FuncContext *funcContext)
 {
-    for_counter++;
+    loop_counter++;
 
-    char* block_prefix = generatorLable("for", funcContext, true,for_counter);
+    char* block_prefix = generatorLable("for", funcContext, true,loop_counter);
 
-    char* errorLabel = generatorLable("TypesError", funcContext, false,for_counter);
+    char* errorLabel = generatorLable("TypesError", funcContext, false,loop_counter);
     bool generateErrorLabel = false;
 
-    char* labelStart = generatorLable("start", funcContext, false,for_counter);
+    char* labelStart = generatorLable("start", funcContext, false,loop_counter);
 
-    char* endLabel = generatorLable("end", funcContext, false,for_counter);
+    char* endLabel = generatorLable("end", funcContext, false,loop_counter);
 
     char* variable = node->child[0]->child[0]->value.str; // ? hodnota proměnné sektoru podmínky for cyklu
 
@@ -1757,6 +1787,7 @@ void emitFor(AstNode* node, FuncContext *funcContext)
         	printError(INTERNAL_ERROR, "nepovedene uvolneni lablu na konci while loopu");
          	memorySafeExit(INTERNAL_ERROR);
         }
+        loop_counter--;
 }
 
 void emitSetterCall(AstNode* node) {
