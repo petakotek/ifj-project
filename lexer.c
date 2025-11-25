@@ -252,10 +252,6 @@ char *substring(size_t start, size_t end) {
             return "BLOCK_STAR";
         case TOKEN_BLOCK_END:
             return "BLOCK_END";
-        case TOKEN_SQUARE_LEFT:
-            return "SQUARE_LEFT";
-        case TOKEN_SQUARE_RIGHT:
-            return "SQUARE_RIGHT";
         case TOKEN_KEYWORD_CONTINUE:
             return "CONTINUE";
         case TOKEN_KEYWORD_BREAK:
@@ -518,14 +514,6 @@ Token lexerTokenNext() {
                     token.type = TOKEN_RPAREN;
                     goto token_found;
 
-                case SQUARE_LEFT:
-                    token.type = TOKEN_SQUARE_LEFT;
-                    goto token_found;
-
-                case SQUARE_RIGHT:
-                    token.type = TOKEN_SQUARE_RIGHT;
-                    goto token_found;
-
                 // Logické operátory
                 case AND_HALF:
                     free(buf);
@@ -625,13 +613,7 @@ Token lexerTokenNext() {
                 } else if (c == ')') {
                     stav = PAR_RIGHT;
                     lexer->pos++;
-                } else if (c == '[') {
-                    stav = SQUARE_LEFT;
-                    lexer->pos++;
-                } else if (c == ']') {
-                    stav = SQUARE_RIGHT;
-                    lexer->pos++;
-                } else if (c == '+') {
+                }else if (c == '+') {
                     stav = PLUS;
                     lexer->pos++;
                 } else if (c == '-') {
@@ -954,7 +936,12 @@ Token lexerTokenNext() {
                     // Escape znaky
                     lexer->pos++;
                     char next = lexer->input[lexer->pos];
-                	if (next == 'n') {
+                    if (next == 'x') {
+                        // hura hexa cislo
+                        stav       = ZNAK_HEXA;
+                        hexa_count = 0;
+                        lexer->pos++;
+                    } else if (next == 'n') {
                         appendChar(&buf, &delak, &kapacity, '\n');
                         lexer->pos++;
                     } else if (next == 'r') {
@@ -966,24 +953,17 @@ Token lexerTokenNext() {
                     } else if (next == '"') {
                         appendChar(&buf, &delak, &kapacity, '\"');
                         lexer->pos++;
-                    }else if (next == '\\') {
-                    		lexer->pos++;
-                    		char next_2 = lexer->input[lexer->pos];
-                            if (next_2 == 'x') {
-                                // hura hexa cislo
-                               	printLog("hello");
-                                stav       = ZNAK_HEXA;
-                                hexa_count = 0;
-                                lexer->pos++;
-                            }else{
-                            	appendChar(&buf, &delak, &kapacity, '\\');
-                             	lexer->pos++;
-                            }
-                    }else {
+                    }
+                    else if (next == '\\') {
+                        appendChar(&buf, &delak, &kapacity, '\\');
+                        lexer->pos++;
+                    }
+
+                    else {
                         free(buf);
                         buf = NULL;
                         printError(LEX_ERROR,
-                                   "neznamy charakter v lexerTokenNext"
+                                   "neznamy jsem tu v else v string charakter v lexerTokenNext"
                                    "%c on line : %lu",
                                    c, lexer->pos);
                         memorySafeExit(LEX_ERROR);
@@ -1004,7 +984,6 @@ Token lexerTokenNext() {
                 break;
             }
             case ZNAK_HEXA: {
-            	printLog("hello");
                 if (isxdigit(c) && hexa_count < 2) {
                     // pridavame hexa cislo do hexa_buffer coz je docasny buffer pro hexa cislo
                     hexa_buffer[hexa_count++] = c;
@@ -1108,16 +1087,6 @@ Token lexerTokenNext() {
             }
             case PAR_RIGHT: {
                 token.type = TOKEN_RPAREN;
-                token.line = radek;
-                goto token_found;
-            }
-            case SQUARE_LEFT: {
-                token.type = TOKEN_SQUARE_LEFT;
-                token.line = radek;
-                goto token_found;
-            }
-            case SQUARE_RIGHT: {
-                token.type = TOKEN_SQUARE_RIGHT;
                 token.line = radek;
                 goto token_found;
             }
