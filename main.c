@@ -28,6 +28,7 @@ int main(){
 	if(stdin == NULL){
 		return 0;
 	}
+	// TODO předělat PSA lgging na prekladovy flag misto proprietární proměnné
 	source_file = NULL;
 	//volani funcke na nacteni souboru
 	source_file = read_all_stdin();

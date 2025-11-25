@@ -3,7 +3,7 @@
  *
  * @brief Hlavičkový soubor pro pomocné funkce
  * @file support_functions.h
- * @author Vojtěch Voldřich (xvoldrv00)
+ * @author Vojtěch Voldřich (xvoldrv00), Josef Pasek (xpasekj00)
  */
 
 #ifndef SUPPORT_FUNCTIONS
@@ -82,12 +82,17 @@ void printWarning(const char *fmt, ...);
  */
 void printLog(const char *fmt, ...);
 
-// TODO pepoooooooo!
-void print_and_free_tokens();
 /**
- * @brief Funkce na nacteni vstupu do retezce tak a abychom se vyhli fseek
+ * @brief Pomocná funkce pro výpis tokenů lexikální analýzy
+ * 
+ */
+void print_and_free_tokens();
+
+/**
+ * @brief Funkce na načtení vstupu do řetězce
+ *
  * @param void
- * @return pointer na na allockovane pole se vstupem
+ * @return Ukazatel na alokovaný řetězec
  */
 char *readAllStdin(void);
 #endif

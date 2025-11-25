@@ -1,12 +1,10 @@
 /**
- * Fakulta informačních technologií VUT Brno 2025
+ * Fakulta informačních technologií VUT Brno
  *
  * @brief Implementace precedeční analýzy pro překladač jazyka Wren pro projekt do předmětu IFJ 2025
  *
  * @file        expr.c
  * @author      Petr Kotek (xkotekp00)
- * @date        12.10.2025
- * Upraveno:    15.11.2025
  */
 
 #ifndef EXPR_C

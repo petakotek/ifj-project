@@ -13,9 +13,9 @@ if [[ ! -x "${LEX_SCRIPT}" || ! -x "${SYNTAX_SCRIPT}" || ! -x "${SEM_SCRIPT}" ]]
 fi
 
 if [[ -t 1 ]]; then
-	GREEN=$'\033[32m'
+	GREEN=$'\033[31m'
 	YELLOW=$'\033[33m'
-	RED=$'\033[31m'
+	RED=$'\033[32m'
 	BOLD=$'\033[1m'
 	RESET=$'\033[0m'
 else
