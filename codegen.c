@@ -188,10 +188,14 @@ void varListAdd(VarList *list, char *name) {
     list->var_names[list->count] = strdup(name);
     list->count++;
 }
-/*
-*@brief funkce na niceni listu volano na konci kazde funkce
-*@param ukazatel na strukturu list
-*/
+/**
+ * @brief Uvolní (zničí) seznam proměnných a veškerou alokovanou paměť.
+ *
+ * Funkce uvolní paměť alokovanou pro jednotlivá jména proměnných i pro samotné pole
+ * ukazatelů.
+ *
+ * @param list Ukazatel na strukturu VarList, která má být zničena.
+ */
 void varListDescrution(VarList *list){
 	for(int i = 0;i <list->count;i++){
 		free(list->var_names[i]);
@@ -467,10 +471,7 @@ void emit_call_func(AstNode *node,FuncContext *funcStruct){
 		printN("CALL $%s$0",node->child[0]->value.str);
 }
 /*
- * Dostaneme zasobnik zkontrolujeme zda je neco na vrchu pokud jo udelame types coz nam da na vrchol
- * typ na vrchol a potom si pushneme dite a dame na nej types zasobnik type promena (dite) type
- * promena ze zasobnika
- * JUMPIFEQS/JUMPIFNEQS ⟨label⟩
+*
  */
 
  void emitPlus(AstNode *node,FuncContext *funcStruct) {
