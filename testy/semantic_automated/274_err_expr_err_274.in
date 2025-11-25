@@ -3,8 +3,6 @@ class Program {
     static main() {
         var i = 3.14      // NUMBER_DATA, napr. z výpočtu
         var s = "abcd"
-        var x = Ifj.substring(s, i, 2)
         var y = Ifj.ord(s, i)
-        var z = Ifj.chr(i)
     }
 }
