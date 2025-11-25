@@ -30,27 +30,29 @@ int main(){
 	}
 	source_file = NULL;
 	//volani funcke na nacteni souboru
-	source_file = readAllStdin();
+	source_file = read_all_stdin();
 	if (source_file == NULL) {
 		printError(LEX_ERROR, "Selhalo načítání vstupů\n");
         memorySafeExit(LEX_ERROR);
     }
 	// inicializovani struktury staraji se o cteni ze souboru
-	lexerInit(source_file);
-	//print_and_free_tokens();
-	//exit(0);
+	lexer_init(source_file);
+	/*
+	print_and_free_tokens();
+	exit(0);
+	*/
 	// tvorba stromu pres parser
-	AstNode *AST = parser();
-	astDump(AST);
-	//funkcia ast_dump -> funkcia na kontrolny vypis ast stromu
-
+	AstNode *ast = parser();
+	//astDump(AST);
+	//funkcia astDump -> funkcia na kontrolny vypis ast stromu
+	/*
 	bool output;
-	output = startSematicValidation(AST);
+	output = startSematicValidation(ast);
 	printLog("Vysledek sem_anal: %i\n", output);
 
-	//ast_dump(AST);
+	//astDump(AST);
 
-	codegenGenerate(AST);
-
+	codegen_generate(ast);
+	*/
 	memorySafeExit(NO_ERROR);
 }
