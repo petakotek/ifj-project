@@ -1,16 +1,125 @@
-import "ifj25" for Ifj
-class Program {
-    static main() {
-        //var x = 2e5
-        //var s = "aaa"
-        //Ifj.substring(s, 1.0, 2.1)
-        //Ifj.chr(1.00000000000000000000000001)
-        //var a= s * 1.1
-        for(i in 1..2) {
-            return 1
-        }
-        //for(i in 1.0...2.0) {
-        //    return 1
-        //}
-    }
-}
+.IFJcode25
+JUMP main$0
+LABEL main$0
+CREATEFRAME
+PUSHFRAME
+DEFVAR LF@temp$var$readStr
+DEFVAR LF@temp$var$readNum
+DEFVAR LF@temp$var$readBool
+DEFVAR LF@temp$var$write
+DEFVAR LF@temp$var$writeType
+DEFVAR LF@temp$var$floorVal
+DEFVAR LF@temp$var$floorType
+DEFVAR LF@temp$var$strVal
+DEFVAR LF@temp$var$strType
+DEFVAR LF@temp$var$lengthVal
+DEFVAR LF@temp$var$lengthType
+DEFVAR LF@temp$var$lengthRet
+DEFVAR LF@temp$var$substringSin
+DEFVAR LF@temp$var$substringStart
+DEFVAR LF@temp$var$substringEnd
+DEFVAR LF@temp$var$substringSLen
+DEFVAR LF@temp$var$substringSout
+DEFVAR LF@temp$var$substringType
+DEFVAR LF@temp$var$substringCmpResult
+DEFVAR LF@temp$var$substringStemp
+DEFVAR LF@temp$var$strcmpS1
+DEFVAR LF@temp$var$strcmpS2
+DEFVAR LF@temp$var$strcmpType
+DEFVAR LF@temp$var$strcmpCmpResult
+DEFVAR LF@temp$var$ordStr
+DEFVAR LF@temp$var$ordNum
+DEFVAR LF@temp$var$ordType
+DEFVAR LF@temp$var$ordIsInt
+DEFVAR LF@temp$var$ordOut
+DEFVAR LF@temp$var$chrVal
+DEFVAR LF@temp$var$chrType
+DEFVAR LF@temp$var$chrIsInt
+DEFVAR LF@retval
+DEFVAR LF@main$0_ty_bool_0
+DEFVAR LF@main$0_val_bool_0
+DEFVAR LF@i$$1
+DEFVAR LF@main$0_ty_bool_1
+DEFVAR LF@main$0_val_bool_1
+DEFVAR LF@main$0_ty_bool_2
+DEFVAR LF@main$0_val_bool_2
+DEFVAR LF@main$0_ln_3
+DEFVAR LF@main$0_rn_3
+DEFVAR LF@main$0_ty_3
+DEFVAR LF@main$0_rs_3
+DEFVAR LF@main$0_ty_bool_4
+DEFVAR LF@main$0_val_bool_4
+MOVE LF@retval nil@nil
+PUSHS int@0
+INT2FLOATS
+POPS LF@i$$1
+LABEL main$0$while$1$start$1
+PUSHS bool@true
+PUSHS bool@false
+JUMPIFEQS main$0$while$1$end$1
+PUSHS LF@i$$1
+PUSHS int@1
+INT2FLOATS
+POPS LF@main$0_rn_3
+POPS LF@main$0_ln_3
+PUSHS LF@main$0_ln_3
+PUSHS LF@main$0_rn_3
+TYPES
+POPS LF@main$0_ty_3
+TYPES
+PUSHS LF@main$0_ty_3
+JUMPIFEQS main$0$ok_add$3
+JUMP main$0$err$3
+LABEL main$0$ok_add$3
+PUSHS LF@main$0_ty_3
+PUSHS string@string
+JUMPIFEQS main$0$concat$3
+PUSHS LF@main$0_ty_3
+PUSHS string@int
+JUMPIFEQS main$0$add$3
+PUSHS LF@main$0_ty_3
+PUSHS string@float
+JUMPIFEQS main$0$add$3
+JUMP main$0$err$3
+LABEL main$0$add$3
+PUSHS LF@main$0_ln_3
+PUSHS LF@main$0_rn_3
+ADDS
+JUMP main$0$end_add$3
+LABEL main$0$concat$3
+MOVE LF@main$0_rs_3 string@""
+CONCAT LF@main$0_rs_3 LF@main$0_ln_3 LF@main$0_rn_3
+PUSHS LF@main$0_rs_3
+JUMP main$0$end_add$3
+LABEL main$0$err$3
+EXIT int@25
+LABEL main$0$end_add$3
+
+POPS LF@i$$1
+DEFVAR LF@i$$3
+PUSHS int@0
+POPS LF@i$$3
+PUSHS LF@i$$3
+LABEL main$0$while$1$for$2$start$2
+PUSHS int@1
+ADDS
+POPS LF@i$$3
+PUSHS LF@i$$3
+PUSHS int@2
+EQS
+PUSHS bool@true
+JUMPIFEQS main$0$while$1$for$2$end$2
+PUSHS LF@i$$3
+PUSHS int@2
+GTS
+PUSHS bool@true
+JUMPIFEQS main$0$while$1$for$2$end$2
+PUSHS LF@i$$3
+JUMP main$0$while$1$for$2$end$2
+JUMP main$0$while$1$for$2$start$2
+LABEL main$0$while$1$for$2$end$2
+JUMP main$0$while$1$end$1
+JUMP main$0$while$1$start$1
+LABEL main$0$while$1$end$1
+LABEL main$0$end$0
+EXIT int@0
