@@ -35,7 +35,7 @@ char *source_file = NULL;
 int lexerInit(const char *source) {
     lexer = malloc(sizeof(LexerState));
     if (lexer == NULL) {
-    printError(INTERNAL_ERROR, "nepovedeny malloc v substringu v lexeru\n");
+    printError(INTERNAL_ERROR, "nepovedeny malloc v lexeru\n");
     memorySafeExit(INTERNAL_ERROR);
     }
     lexer->length = strlen(source);
@@ -286,7 +286,7 @@ void appendChar(char **buf, int *delka, int *kapacita, char c) {
         *kapacita *= 2;
         *buf = realloc(*buf, *kapacita);
         if(buf == NULL){
-       	printError(INTERNAL_ERROR, "error in appendChar reallock \n");
+       	printError(INTERNAL_ERROR, "Chyba v reallocku reallock \n");
         memorySafeExit(INTERNAL_ERROR);
         }
     }
@@ -519,7 +519,7 @@ Token lexerTokenNext() {
                     free(buf);
                     buf = NULL;
                     printError(LEX_ERROR,
-                               "neznamy charakter"
+                               "Neznamy charakter"
                                "%c on line : %lu",
                                c, lexer->pos);
                     memorySafeExit(LEX_ERROR);
@@ -533,7 +533,7 @@ Token lexerTokenNext() {
                     free(buf);
                     buf = NULL;
                     printError(LEX_ERROR,
-                               "neznamy charakter"
+                               "Neznamy charakter"
                                "%c on line : %lu",
                                c, lexer->pos);
                     memorySafeExit(LEX_ERROR);
@@ -663,7 +663,7 @@ Token lexerTokenNext() {
                     free(buf);
                     buf = NULL;
                     printError(LEX_ERROR,
-                               "nezname pismeno v lexerTokenNext "
+                               "Nezname pismeno v lexerTokenNext "
                                "%c on line : %lu",
                                c, lexer->pos);
                     memorySafeExit(LEX_ERROR);
@@ -694,7 +694,7 @@ Token lexerTokenNext() {
                     free(buf);
                     buf = NULL;
                     printError(LEX_ERROR,
-                               "nezname pismeno v lexerTokenNext"
+                               "Nezname pismeno v lexerTokenNext"
                                "%c on line : %lu",
                                c, lexer->pos);
                     memorySafeExit(LEX_ERROR);
@@ -775,7 +775,7 @@ Token lexerTokenNext() {
                 free(buf);
                 buf = NULL;
                 printError(LEX_ERROR,
-                               "neznamy charakter v lexerTokenNext"
+                               "Neznamy charakter v lexerTokenNext"
                                "%c on line : %lu",
                                current_char, lexer->pos + 1);
                 memorySafeExit(LEX_ERROR);
@@ -789,7 +789,7 @@ Token lexerTokenNext() {
                     free(buf);
                     buf = NULL;
                     printError(LEX_ERROR,
-                               "neznamy charakter v lexerTokenNext"
+                               "Neznamy charakter v lexerTokenNext"
                                "%c on line : %lu",
                                c, lexer->pos);
                     memorySafeExit(LEX_ERROR);
@@ -829,23 +829,23 @@ Token lexerTokenNext() {
                      } else {
                          free(buf);
                          printError(LEX_ERROR,
-                                    "neznamy charakter v lexerTokenNext: %c on line : %lu",
+                                    "Neznamy charakter v lexerTokenNext: %c on line : %lu",
                                     next_char, lexer->pos);
                          memorySafeExit(LEX_ERROR);
                     }
-                 } else if (lexer->input[lexer->pos - 1] != '-' && lexer->input[lexer->pos - 1] != '+' && !isdigit(c)) {
-                     token.type             = TOKEN_INTEGER_EXP;
-                     token.value.identifier = substring(zacatek, lexer->pos);
-                     token.line             = radek;
-                     goto token_found;
                  } else {
-                     free(buf);
-                     buf = NULL;
-                     printError(LEX_ERROR,
-                                "neznamy charakter v lexerTokenNext: %c on line : %lu",
-                                c, lexer->pos);
-                     memorySafeExit(LEX_ERROR);
-                 }
+                         char prev_char = lexer->input[lexer->pos - 1];
+                         if (!isdigit(prev_char)) {
+                             free(buf);
+                             printError(LEX_ERROR, "Neplatny format cisla (chybi exponent): %s",
+                                        substring(zacatek, lexer->pos), lexer->pos);
+                             memorySafeExit(LEX_ERROR);
+                         }
+                         token.type             = TOKEN_INTEGER_EXP;
+                         token.value.identifier = substring(zacatek, lexer->pos);
+                         token.line             = radek;
+                         goto token_found;
+                     }
                  break;
              }
              case FLOAT_EXP: {
@@ -859,24 +859,25 @@ Token lexerTokenNext() {
                         free(buf);
                         buf = NULL;
                         printError(LEX_ERROR,
-                                    "neznamy charakter v lexerTokenNext: %c on line : %lu",
+                                    "Neznamy charakter v lexerTokenNext: %c on line : %lu",
                                     next_char, lexer->pos);
                         memorySafeExit(LEX_ERROR);
                     }
-                } else if (lexer->input[lexer->pos - 1] != '-' && lexer->input[lexer->pos - 1] != '+' && !isdigit(c)) {
-                    token.type             = TOKEN_FLOAT;
+                } else {
+                    char prev_char = lexer->input[lexer->pos - 1];
+                    if (!isdigit(prev_char)) {
+                        free(buf);
+                        buf = NULL;
+                        printError(LEX_ERROR, "Neplatny format cisla (chybi exponent): %s",
+                                substring(zacatek, lexer->pos), lexer->pos);
+                        memorySafeExit(LEX_ERROR);
+                    }
+                    token.type             = TOKEN_FLOAT_EXP;
                     token.value.identifier = substring(zacatek, lexer->pos);
                     token.line             = radek;
                     goto token_found;
-                } else {
-                    free(buf);
-                    buf = NULL;
-                    printError(LEX_ERROR,
-                                "neznamy charakter v lexerTokenNext: %c on line : %lu",
-                                c, lexer->pos);
-                    memorySafeExit(LEX_ERROR);
                 }
-                break;
+            break;
             }
             /*
              * Zpracovani komentaru a jejich preskoceni
@@ -963,7 +964,7 @@ Token lexerTokenNext() {
                         free(buf);
                         buf = NULL;
                         printError(LEX_ERROR,
-                                   "neznamy jsem tu v else v string charakter v lexerTokenNext"
+                                   "Neznamy jsem tu v else v string charakter v lexerTokenNext"
                                    "%c on line : %lu",
                                    c, lexer->pos);
                         memorySafeExit(LEX_ERROR);
@@ -972,7 +973,7 @@ Token lexerTokenNext() {
                     free(buf);
                     buf = NULL;
                     printError(LEX_ERROR,
-                               "neznamy charakter v lexerTokenNext"
+                               "Neznamy charakter v lexerTokenNext"
                                "%c on line : %lu",
                                c, lexer->pos);
                     memorySafeExit(LEX_ERROR);
@@ -1001,7 +1002,7 @@ Token lexerTokenNext() {
                         free(buf);
                         buf = NULL;
                         printError(LEX_ERROR,
-                                   "neznamy charakter v lexerTokenNext"
+                                   "Neznamy charakter v lexerTokenNext"
                                    "%c on line : %lu",
                                    c, lexer->pos);
                         memorySafeExit(LEX_ERROR);
@@ -1032,7 +1033,7 @@ Token lexerTokenNext() {
                     free(buf);
                     buf = NULL;
                     printError(LEX_ERROR,
-                               "neznamy charakter v lexerTokenNext"
+                               "Neznamy charakter v lexerTokenNext"
                                "%c on line : %lu",
                                c, lexer->pos);
                     memorySafeExit(LEX_ERROR);
@@ -1215,7 +1216,7 @@ Token lexerTokenNext() {
                     free(buf);
                     buf = NULL;
                     printError(LEX_ERROR,
-                               "neznamy charakter v lexerTokenNext"
+                               "Neznamy charakter v lexerTokenNext"
                                "%c on line : %lu",
                                c, lexer->pos);
                     memorySafeExit(LEX_ERROR);
@@ -1236,7 +1237,7 @@ Token lexerTokenNext() {
                     free(buf);
                     buf = NULL;
                     printError(LEX_ERROR,
-                               "neznamy charakter v lexerTokenNext"
+                               "Neznamy charakter v lexerTokenNext"
                                "%c on line : %lu",
                                c, lexer->pos);
                     memorySafeExit(LEX_ERROR);
@@ -1269,7 +1270,7 @@ Token lexerTokenNext() {
                 free(buf);
                 buf = NULL;
                 printError(LEX_ERROR,
-                           "neznamy charakter v lexerTokenNext"
+                           "Neznamy charakter v lexerTokenNext"
                            "%c on line : %lu",
                            c, lexer->pos);
                 memorySafeExit(LEX_ERROR);
@@ -1278,7 +1279,7 @@ Token lexerTokenNext() {
     free(buf);
     buf = NULL;
     printError(LEX_ERROR,
-               "neznamy charakter v lexerTokenNext"
+               "Neznamy charakter v lexerTokenNext"
                "%c on line : %lu",
                c, lexer->pos);
     memorySafeExit(LEX_ERROR);
@@ -1310,7 +1311,6 @@ Token isEffectivelyInteger(char *input,Token token){
 	while(input[i] != '\0'){
 		if(input[i] != '0'){
 			token.value.identifier = input;
-			printLog("it is float %s \n",input);
 			token.type = TOKEN_FLOAT;
 			return token;
 		}
@@ -1319,7 +1319,6 @@ Token isEffectivelyInteger(char *input,Token token){
 	input[pos_dot-1] = '\0';
 	token.value.identifier = input;
 	token.type = TOKEN_INTEGER;
-	printLog("it is integer %s \n",input);
 	return token;
 }
 /*** konec soubor ***/
