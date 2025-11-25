@@ -3,14 +3,14 @@ class Program {
     static main() {
         //var x = 2e5
         //var s = "aaa"
-        //Ifj.substring(s, 1.0, 2.0)
-        //Ifj.chr(1.0)
-        //var a= s * 1.0e5
-        //for(i in 1.0e5..2e5) {
-        //    return 1
-        //}
-        for(i in 1.0...2.0) {
+        //Ifj.substring(s, 1.0, 2.1)
+        //Ifj.chr(1.00000000000000000000000001)
+        //var a= s * 1.1
+        for(i in 1..2) {
             return 1
         }
+        //for(i in 1.0...2.0) {
+        //    return 1
+        //}
     }
 }
