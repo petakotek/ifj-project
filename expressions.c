@@ -9,9 +9,9 @@
 #ifndef EXPR_C
 #define EXPR_C
 
-#include "expr.h"
+#include "expressions.h"
 
-#include "ast_strom.h"
+#include "ast.h"
 #include "dynamic_stack.h"
 #include "lexer.h"
 #include "support_functions.h"

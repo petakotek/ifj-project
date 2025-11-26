@@ -11,7 +11,7 @@
 
 #include <stddef.h>
 
-#include "ast_strom.h"
+#include "ast.h"
 
 /**
  * @brief Číselník typů sémantických symbolů

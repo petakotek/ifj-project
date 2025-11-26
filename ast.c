@@ -4,7 +4,7 @@
  * Soubor: ast_strom.c
  * Popis: zajistuje ulozeni vysledku z parseru do stromu
  */
-#include "ast_strom.h"
+#include "ast.h"
 
 #include <math.h>
 #include <stdbool.h>

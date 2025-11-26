@@ -15,8 +15,8 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "ast_strom.h"
-#include "expr.h"
+#include "ast.h"
+#include "expressions.h"
 #include "lexer.h"
 #include "support_functions.h"
 #include "symbol.h"

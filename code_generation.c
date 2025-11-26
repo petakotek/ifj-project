@@ -1,4 +1,4 @@
-#include "codegen.h"
+#include "code_generation.h"
 
 #include <stdarg.h>
 #include <stdbool.h>
@@ -7,7 +7,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "ast_strom.h"
+#include "ast.h"
 #include "builtin_functions.h"
 #include "dynamic_stack.h"
 #include "support_functions.h"

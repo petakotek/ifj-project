@@ -6,8 +6,8 @@
  * @author Vojtěch Voldřich (xvoldrv00), Jakub Jambrozi (xjambrj00), Petr Kotek (xkotekp00), Josef Pasek (xpasekj00)
  */
 
-#include "ast_strom.h"
-#include "codegen.h"
+#include "ast.h"
+#include "code_generation.h"
 #include "lexer.h"
 #include "parser.h"
 #include "semantic_analysis.h"

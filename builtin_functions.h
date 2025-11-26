@@ -9,8 +9,8 @@
 #ifndef BUILTIN
 #define BUILTIN
 
-#include "ast_strom.h"
-#include "codegen.h"
+#include "ast.h"
+#include "code_generation.h"
 
 /**
  * @brief Funkce zajišťuje zpracování volání vestavěných funkcí

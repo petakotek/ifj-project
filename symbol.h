@@ -14,7 +14,7 @@
 
 #include <stdbool.h>
 
-#include "ast_strom.h"
+#include "ast.h"
 #include "lexer.h"
 
 /**

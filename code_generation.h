@@ -4,7 +4,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#include "ast_strom.h"
+#include "ast.h"
 #include "dynamic_stack.h"
 #include "support_functions.h"
 #include "symtable.h"
