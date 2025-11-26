@@ -2,7 +2,7 @@
  * Fakulta informačních technologií VUT Brno
  *
  * @brief Implementace precedenční analýzy pro překladač jazyka Wren pro projekt do předmětu IFJ 2025
- * @file expr.c
+ * @file expressions.c
  * @author Petr Kotek (xkotekp00)
  */
 
@@ -1022,4 +1022,4 @@ AstNode *parseExpression(Token *token, int flag) {
 
 #endif
 
-/* Konec souboru expr.c */
+/* Konec souboru expression.c */

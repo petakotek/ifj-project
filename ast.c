@@ -1,7 +1,7 @@
 /*
  *
  * Autoři: xpasekj00
- * Soubor: ast_strom.c
+ * Soubor: ast.c
  * Popis: zajistuje ulozeni vysledku z parseru do stromu
  */
 #include "ast.h"
