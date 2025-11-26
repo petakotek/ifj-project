@@ -23,6 +23,7 @@
         "získávače",
         "získávačem"
     ],
+    "cSpell.language": "en,cs,sk",
     "files.associations": {
         "support_functions.h": "c",
         "parser.h": "c",
