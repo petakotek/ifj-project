@@ -1,12 +1,10 @@
-/*
- * Projekt IFJ25: Varianta zadání tabulka s rozptýlenými položkami s implicitním zřetězením položek
- * Autoři:
- * Soubor: main.c
- * Popis: Vstupni bod do programu spojuje jednotlivé moduly
+/**
+ * Fakulta informačních technologií VUT Brno
+ *
+ * @brief Projekt IFJ25: Varianta zadání tabulka s rozptýlenými položkami s implicitním zřetězením položek
+ * @file main.c
+ * @author Vojtěch Voldřich (xvoldrv00), Jakub Jambrozi (xjambrj00), Petr Kotek (xkotekp00), Josef Pasek (xpasekj00)
  */
-#include <stddef.h>
-#include <stdio.h>
-#include <stdlib.h>
 
 #include "ast_strom.h"
 #include "codegen.h"
@@ -17,36 +15,32 @@
 
 #define SYMBOL_SIZE 201
 #define LITERAL_SIZE 101
+
 int main() {
-    /*
-     * Nacitani v vstupu
-     * source_file je globalni promena extern je v lexer.h
-     */
+    // Načítání vstupu
     if (stdin == NULL) {
         return 0;
     }
-    // TODO předělat PSA lgging na prekladovy flag misto proprietární proměnné
+    // Globální proměnná z v lexer.h
     source_file = NULL;
-    // volani funcke na nacteni souboru
+    // Volání funkce na načtení souboru
     source_file = readAllStdin();
     if (source_file == NULL) {
         printError(LEX_ERROR, "Selhalo načítání vstupů\n");
         memorySafeExit(LEX_ERROR);
     }
-    // inicializovani struktury staraji se o cteni ze souboru
+    // Inicializace struktury pro čtení ze souboru
     lexerInit(source_file);
-    // tvorba stromu pres parser
+
+    // Syntaktická kontrola a sestavení AST stromu
     AstNode *ast = parser();
-    // astDump(AST);
-    // funkcia astDump -> funkcia na kontrolny vypis ast stromu
 
-    bool output;
-    output = startSematicValidation(ast);
-    printLog("Vysledek sem_anal: %i\n", output);
+    // Sémantická kontrolo a úprava AST stromu
+    startSematicValidation(ast);
 
-    // astDump(AST);
-
+    // Generování kódu
     codegenGenerate(ast);
 
     memorySafeExit(NO_ERROR);
 }
+/*** konec main.c ***/

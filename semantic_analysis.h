@@ -207,10 +207,8 @@ typedef struct {
  * @brief Funkce pro zahájení sémantické kontroly
  *
  * @param root Vrchol abstraktního syntaktického stromu
- * @return true Sémantická kontrola je v pořádku
- * @return false Byla nalezena sémantická chyba
  */
-bool startSematicValidation(AstNode* root);
+void startSematicValidation(AstNode* root);
 
 /**
  * @brief Uklidí paměť používanou sémantickou analýzou

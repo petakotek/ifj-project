@@ -1,10 +1,9 @@
 /**
  * Fakulta informačních technologií VUT Brno
  *
- * @brief Implementace precedeční analýzy pro překladač jazyka Wren pro projekt do předmětu IFJ 2025
- *
- * @file        expr.c
- * @author      Petr Kotek (xkotekp00)
+ * @brief Implementace precedenční analýzy pro překladač jazyka Wren pro projekt do předmětu IFJ 2025
+ * @file expr.c
+ * @author Petr Kotek (xkotekp00)
  */
 
 #ifndef EXPR_C
@@ -17,7 +16,11 @@
 #include "lexer.h"
 #include "support_functions.h"
 
-#define DEBUG true  // přepínač pro povolení debugovacích výpisů
+#ifdef ENABLE_DEVELOPMENT_LOGGING
+#define DEBUG true
+#else
+#define DEBUG false
+#endif
 
 typedef enum {
     R,  // >

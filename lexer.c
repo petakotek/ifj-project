@@ -13,8 +13,6 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "codegen.h"
-#include "parser.h"
 #include "support_functions.h"
 
 /*
