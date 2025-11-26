@@ -87,7 +87,7 @@ char *generatorLable(char *func_name,FuncContext *funcStruckt,bool pridaniDoStac
                 free(result_label);
                 printError(INTERNAL_ERROR, "Error during initial label copy");
                 memorySafeExit(INTERNAL_ERROR);
-                return NULL;
+		return NULL;
             }
         }
     }
@@ -535,7 +535,7 @@ void emit_call_func(AstNode *node,FuncContext *funcStruct){
 
      // --- CHYBA ---
      printN("LABEL %s", label_err);
-     printN("EXIT int@%i",RUNTIME_SEMANTICS_ERROR_BAD_TYPE);
+     printN("EXIT int@%i",RUNTIME_SEMANTICS_ERROR_UNCOMPATIBLE);
      // --- KONEC ---
      printN("LABEL %s", label_end);
 	printN("");
@@ -596,7 +596,7 @@ void emit_call_func(AstNode *node,FuncContext *funcStruct){
          printN("JUMP %s", label_end);
          // --- CHYBA ---
          printN("LABEL %s", label_err);
-         printN("EXIT int@%i",RUNTIME_SEMANTICS_ERROR_BAD_TYPE);
+         printN("EXIT int@%i",RUNTIME_SEMANTICS_ERROR_UNCOMPATIBLE);
          // --- KONEC ---
          printN("LABEL %s", label_end);
 	printN("");
@@ -701,7 +701,7 @@ void emitMul(AstNode *node, FuncContext *funcStruct) {
     printN("JUMP %s", label_end);
 
     printN("LABEL %s", label_err);
-    printN("EXIT int@%d", RUNTIME_SEMANTICS_ERROR_BAD_TYPE);
+    printN("EXIT int@%d", RUNTIME_SEMANTICS_ERROR_UNCOMPATIBLE);
     printN("LABEL %s", label_end);
 }
 
@@ -792,11 +792,11 @@ void emitDiv(AstNode *node,FuncContext *funcStrukt) {
 
     // Chyba: dělení nulou
     printN("LABEL %s", label_div_zero);
-    printN("EXIT int@%i",RUNTIME_SEMANTICS_ERROR_BAD_TYPE);
+    printN("EXIT int@%i",RUNTIME_SEMANTICS_ERROR_UNCOMPATIBLE);
 
     // Chyba: nekompatibilní typy
     printN("LABEL %s", label_err);
-    printN("EXIT int@%i",RUNTIME_SEMANTICS_ERROR_BAD_TYPE);
+    printN("EXIT int@%i",RUNTIME_SEMANTICS_ERROR_UNCOMPATIBLE);
 
     // Konec dělení
     printN("LABEL %s", label_end);
@@ -923,7 +923,7 @@ void emit_less(AstNode *node, FuncContext *funcStruct) {
 
     // Chyba: nil nebo různé typy
     printN("LABEL %s", label_err);
-    printN("EXIT int@%i", RUNTIME_SEMANTICS_ERROR_BAD_TYPE);
+    printN("EXIT int@%i", RUNTIME_SEMANTICS_ERROR_UNCOMPATIBLE);
 
     printN("LABEL %s", label_end);
 }
@@ -996,7 +996,7 @@ void emit_greater(AstNode *node,FuncContext *funcStruct) {
 
     // Chyba: nil nebo různé typy
     printN("LABEL %s", label_err);
-    printN("EXIT int@%i",RUNTIME_SEMANTICS_ERROR_BAD_TYPE);
+    printN("EXIT int@%i",RUNTIME_SEMANTICS_ERROR_UNCOMPATIBLE);
 
     printN("LABEL %s", label_end);
 }
@@ -1077,7 +1077,7 @@ void emit_less_equal(AstNode *node, FuncContext *funcStruct) {
     printN("JUMP %s", label_end);
 
     printN("LABEL %s", label_err);
-    printN("EXIT int@%i", RUNTIME_SEMANTICS_ERROR_BAD_TYPE);
+    printN("EXIT int@%i", RUNTIME_SEMANTICS_ERROR_UNCOMPATIBLE);
 
     printN("LABEL %s", label_end);
 }
@@ -1154,7 +1154,7 @@ void emit_greater_equal(AstNode *node, FuncContext *funcStruct) {
     printN("JUMP %s", label_end);
 
     printN("LABEL %s", label_err);
-    printN("EXIT int@%i",RUNTIME_SEMANTICS_ERROR_BAD_TYPE);
+    printN("EXIT int@%i",RUNTIME_SEMANTICS_ERROR_UNCOMPATIBLE);
 
     printN("LABEL %s", label_end);
 }
@@ -1269,7 +1269,7 @@ void emitUnaryMinus(AstNode *node, FuncContext *funcStrukt) {
     printN("JUMPIFEQS %s", label_ok_float);
 
     // Error - nejde o int ani float
-    printN("EXIT int@%i",RUNTIME_SEMANTICS_ERROR_BAD_TYPE);
+    printN("EXIT int@%i",RUNTIME_SEMANTICS_ERROR_UNCOMPATIBLE);
 
     // OK label - proveď operaci
     printN("LABEL %s", label_ok);
@@ -2058,8 +2058,8 @@ void codegen_generate(AstNode *root) {
     DestructorFuncContext(funcStruct);
     /*
     printN("EXIT %s", NO_ERROR);
-    printN("LABEL error %s", RUNTIME_SEMANTICS_ERROR_BAD_TYPE);
-    printN("EXIT %s", RUNTIME_SEMANTICS_ERROR_BAD_TYPE);
+    printN("LABEL error %s", RUNTIME_SEMANTICS_ERROR_UNCOMPATIBLE);
+    printN("EXIT %s", RUNTIME_SEMANTICS_ERROR_UNCOMPATIBLE);
     printN("LABEL error%s", RUNTIME_SEMANTICS_ERROR_UNCOMPATIBLE);
     printN("EXIT %s", RUNTIME_SEMANTICS_ERROR_UNCOMPATIBLE);
     */

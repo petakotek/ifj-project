@@ -43,7 +43,7 @@ int main(){
 	AstNode *AST = parser();
 	ast_dump(AST);
 	//funkcia ast_dump -> funkcia na kontrolny vypis ast stromu
-
+	
 	bool output;
 	output = startSematicValidation(AST);
 	printLog("Vysledek sem_anal: %i\n", output);
@@ -51,6 +51,6 @@ int main(){
 	//ast_dump(AST);
 
 	codegen_generate(AST);
-
+	
 	memorySafeExit(NO_ERROR);
 }

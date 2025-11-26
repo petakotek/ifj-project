@@ -1280,7 +1280,6 @@ void insertUndeclaredReference(char* referenceSymbolName, SemSymbol symbol) {
 }
 
 void initNewSymbol(AstNode* sourceNode, SemSymbol* destSymbol) {
-    // TODO symbol dataType a symbolType a functionReturnValue a scope můžu nastavit před voláním
     if (sourceNode == NULL || destSymbol == NULL) {
         EXEC_END(INTERNAL_ERROR, "Neplatne hodnoty!\n");
         return;
