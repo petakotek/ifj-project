@@ -809,9 +809,7 @@ SemValidationStates recursiveNodeWalker(AstNode* currentNode, AstNodeType parent
         }
         case (AST_SMALL_NULL): {
             printLog("AST_SMALL_NULL\n");
-            // return NULL_DATA;
-            // IMPORTANT, protože není statická sémantická kontrola je potřeba přetypovat.
-            return UNKNOWN_DATA;
+            return NULL_DATA;
         }
         case (AST_KEYWORD_NUM): {
             printLog("AST_KEYWORD_NUM\n");
