@@ -1,5 +1,5 @@
 /**
- * Fakulta informačných technologií VUT Brno
+ * Fakulta informačných technológií VUT Brno
  *
  * Súbor pre implementáciu lexikálnej analýzy
  * pre projekt do predmetu IFJ
@@ -278,7 +278,7 @@ AstNode *parser() {
                     AssignIfjIdCheckFunc(stack, token);
                     break;
                 default:
-                    printError(INTERNAL_ERROR, "Nespravny Neterminal\n");
+                    printError(INTERNAL_ERROR, "Nespravny Neterminál\n");
                     memorySafeExit(INTERNAL_ERROR);
                     break;
             }
@@ -301,7 +301,7 @@ AstNode *parser() {
 
 void pushCheck(bool boolean) {
     if (!boolean) {
-        printError(INTERNAL_ERROR, "Chyba pushovania na stack\n");
+        printError(INTERNAL_ERROR, "Chyba vloženia na stack\n");
         memorySafeExit(INTERNAL_ERROR);
     }
 }
@@ -854,7 +854,7 @@ void exprFunc(DynamicSymbolStackPtr stack, Token *gLookHead, DynamicAstNodeStack
         printError(SYNTAX_ERROR, "Chybný výraz\n");
         memorySafeExit(SYNTAX_ERROR);
     }
-    printLog("expr strom po skoncení funcke parseExpression\n");
+    printLog("expr strom po skončení funkcie parseExpression\n");
     astDump(expr);
 
     pushCheck(stackAstNodePush(astStack, expr));

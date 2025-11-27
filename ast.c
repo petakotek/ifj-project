@@ -1,8 +1,7 @@
 /*
- *
- * Autoři: xpasekj00
- * Soubor: ast.c
- * Popis: zajistuje ulozeni vysledku z parseru do stromu
+ * Autor: Jakub Jambrozi(xjambrj00) 
+ * Súbor: ast.c
+ * Popis: zaisťuje uloženie výsledku zo syntaktickej analýzy do stromu
  */
 #include "ast.h"
 
@@ -13,11 +12,6 @@
 #include <string.h>
 
 #include "support_functions.h"
-
-// Plochý builder pre if-chain (rovnaký pattern ako buildStmtListFlat):
-// Očakávaný tvar z parsera: IF_CHAIN(2) = [head, tail], kde
-//   head je buď AST_BRANCH(cond, block) alebo AST_ELSE(block)
-//   tail je IF_CHAIN (pravorekurzívny zvyšok) alebo EMPTY
 AstNode *buildIfChainFlat(size_t n, AstNode **kids) {
     // ε
     if (n == 0) {
@@ -34,13 +28,10 @@ AstNode *buildIfChainFlat(size_t n, AstNode **kids) {
     if (n == 2 && kids[1] && kids[1]->kind == AST_EMPTY) {
         AstNode *flat1[1] = {kids[0]};
 
-        // EMPTY uzol už nebudeme nikde používať -> uvoľniť
-        astFreeWhole(kids[1]);  // alebo free(kids[1]), ak máš istotu, že nemá deti
-
+        astFreeWhole(kids[1]);
         return astNew(AST_IF_CHAIN, 1, flat1);
     }
 
-    // (head, tail IF_CHAIN) -> head + tail.children...
     if (n == 2 && kids[1] && kids[1]->kind == AST_IF_CHAIN) {
         size_t    tail = kids[1]->arity;
         AstNode **flat = malloc(sizeof(AstNode *) * (tail + 1));
@@ -56,11 +47,9 @@ AstNode *buildIfChainFlat(size_t n, AstNode **kids) {
         AstNode *node = astNew(AST_IF_CHAIN, tail + 1, flat);
         free(flat);
 
-        // uvoľni len obal tail-u
         free(kids[1]->child);
         free(kids[1]);
 
-        // Validácia: najviac jedno ELSE a musí byť posledné
         bool seen_else = false;
         for (size_t i = 0; i < node->arity; ++i) {
             AstNode *ch = node->child[i];
@@ -78,7 +67,7 @@ AstNode *buildIfChainFlat(size_t n, AstNode **kids) {
         return node;
     }
 
-    // fallback – ak parser niekde pošle len head bez tailu
+
     return astNew(AST_IF_CHAIN, n, kids);
 }
 
@@ -94,7 +83,6 @@ AstNode *buildClassBlockFlat(size_t n, AstNode **kids) {
         return node;
     }
 
-    // (FUNC_DEC, tail MAIN_CLASS_BLOCK)
     if (n == 2 && kids[1] && kids[1]->kind == AST_MAIN_CLASS_BLOCK) {
         size_t    tail = kids[1]->arity;
         AstNode **flat = (AstNode **)malloc(sizeof(AstNode *) * (tail + 1));
@@ -147,9 +135,9 @@ AstNode *buildStmtListFlat(size_t n, AstNode **kids) {
     return astNew(AST_STATEMENT_LIST, n, kids);
 }
 
-// Sploští pravorekurzívny PARAM zoznam na ploché deti: IDENT, IDENT, ...
+
 AstNode *buildParamFlat(size_t n, AstNode **kids) {
-    // ε-vetva: prázdny zoznam
+
     if (n == 0) {
         AstNode *node = (AstNode *)calloc(1, sizeof(AstNode));
         if (!node) {
@@ -161,7 +149,7 @@ AstNode *buildParamFlat(size_t n, AstNode **kids) {
         return node;
     }
 
-    // 2-prvková vetva: (IDENT, tail PARAM)
+
     if (n == 2 && kids[0] && kids[1] && kids[1]->kind == AST_PARAM) {
         size_t tail = kids[1]->arity;
 
@@ -171,24 +159,24 @@ AstNode *buildParamFlat(size_t n, AstNode **kids) {
             memorySafeExit(INTERNAL_ERROR);
         }
 
-        flat[0] = kids[0];  // head IDENT
+        flat[0] = kids[0]; 
         if (tail > 0) {
-            // prenesieme deti z tail PARAM, nie samotný obal
+
             memcpy(&flat[1], kids[1]->child, sizeof(AstNode *) * tail);
         }
 
-        // vytvor nový plochý PARAM
+
         AstNode *node = astNew(AST_PARAM, tail + 1, flat);
         free(flat);
 
-        // zrušíme len obal tail PARAM (nie jeho deti – tie sme prebrali)
+
         free(kids[1]->child);
         free(kids[1]);
 
         return node;
     }
 
-    // fallback (napr. jediný IDENT bez tailu – ak by si niekde chcel)
+
     return astNew(AST_PARAM, n, kids);
 }
 
@@ -204,22 +192,15 @@ AstNode *astNew(AstNodeType kind, size_t arity, AstNode **kids) {
     new_node->arity = arity;
 
     if (arity > 0) {
-        // fprintf(stderr, "  -> Alokujem pole detí pre %zu uzlov\n", arity);
-
         new_node->child = (AstNode **)malloc(sizeof(AstNode *) * arity);
         if (!new_node->child) {
             printError(INTERNAL_ERROR, "Chyba alokácie detí AST uzla\n");
             memorySafeExit(INTERNAL_ERROR);
         }
         for (size_t i = 0; i < arity; ++i) {
-            // fprintf(stderr, "    -> Priraďujem dieťa[%zu] = %d\n", i, kids[i]->value);
-
             new_node->child[i] = kids[i];
         }
     }
-    // fprintf(stderr, "[AST-NEW] Uzol %s (%p) úspešne vytvorený\n", astNodeTypeToString(new_node->kind),
-    // (void*)new_node);
-
     return new_node;
 }
 
@@ -239,16 +220,7 @@ AstNode *newLeaf(AstNodeType kind, Token token) {
         newLeaf->kind = kind;
     }
     newLeaf->isLeaf = true;
-
     astValueFromToken(&newLeaf->value, kind, &token);
-
-    // if (newLeaf->value.hasStr)
-    //     fprintf(stderr, "  -> String hodnota: '%s'\n", newLeaf->value.str);
-    // else if (newLeaf->value.isInt)
-    //     fprintf(stderr, "  -> Int hodnota: %d\n", newLeaf->value.intVal);
-    // else if (newLeaf->value.isFloat)
-    //    fprintf(stderr, "  -> Float hodnota: %f\n", newLeaf->value.floatVal);
-
     if (newLeaf->value.floatVal && newLeaf->kind == AST_INT_LIT) {
         newLeaf->kind = AST_FLOAT_LIT;
     }
@@ -309,13 +281,11 @@ void astValueFromToken(AstValue *out, AstNodeType kind, Token *token) {
             double    val  = floatExp(token->value.identifier);
             long long ival = (long long)val;
             if (val == (double)ival) {
-                // Je to presne celé číslo → ulož ako int
                 out->isInt  = true;
                 out->intVal = ival;
             }
 
             else {
-                // Nie je to celé → ulož ako float
                 out->isFloat  = true;
                 out->floatVal = val;
             }
@@ -350,8 +320,6 @@ double floatExp(const char *s) {
     if (!pos) {
         return strtod(s, NULL);
     }
-
-    // rozdelenie na základ a exponent
     char base_str[32];
     strncpy(base_str, s, pos - s);
     base_str[pos - s] = '\0';
@@ -484,8 +452,6 @@ static void ast_dump_rec(const AstNode *n, int depth, const AstNode *parent) {
         fprintf(stderr, "%*s(null)\n", depth * 2, "");
         return;
     }
-
-    // Ochrana proti samoodkazovaniu
     if (n == parent) {
         fprintf(stderr, "%*s[CYCLE DETECTED: node %p refers to itself]\n", depth * 2, "", (void *)n);
         return;
@@ -525,16 +491,13 @@ char *stringChanging(char *tmp) {
         return NULL;
     }
     size_t len = strlen(tmp);
-
-    // uplne najhorsi pripad napr ak "\n\n\n\n\n\n\n\n\n\n\n\n"
-    // vsetky znaky bude treba previes na "\xyz"
     char *out = malloc(len * 4 + 1);
     if (!out) {
         printError(INTERNAL_ERROR, "chyba v alokacii");
         memorySafeExit(INTERNAL_ERROR);
     }
 
-    size_t j = 0;  // index do out
+    size_t j = 0;
     for (size_t i = 0; i < len; i++) {
         if (tmp[i] <= 32 || tmp[i] == 35 || tmp[i] == 92) {
             j += sprintf(out + j, "\\%03u", tmp[i]);
@@ -554,11 +517,7 @@ char *stringChangingLit(char *tmp) {
     if (!tmp) {
         return NULL;
     }
-
-    // prevedenie escape sekvencie do podoby z "\n" do '\n'
     char *unesc = escapeString(tmp);
-
-    // prevedenie do \xyz
     char *out = stringChanging(unesc);
 
     free(unesc);
@@ -594,7 +553,6 @@ char *escapeString(char *tmp) {
                 out[j++] = '\r';
                 i += 2;
             } else {
-                // nechaj ako je (ak nie je escape)
                 out[j++] = tmp[i++];
             }
         } else {
