@@ -38,6 +38,8 @@ int main(){
     }
 	// inicializovani struktury staraji se o cteni ze souboru
 	lexerInit(source_file);
+	//print_and_free_tokens(source_file);
+	//exit (0);
 	// tvorba stromu pres parser
 	AstNode *ast = parser();
 	//astDump(AST);
