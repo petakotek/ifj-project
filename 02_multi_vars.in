@@ -1,8 +1,7 @@
 import "ifj25" for Ifj
 class Program {
-    static main() {
-        var a  = 0e0
-        var b = 1e+0
-        var c = a / b
-    }
+  static main() {
+    var s
+    s = "hello	world"
+  }
 }
