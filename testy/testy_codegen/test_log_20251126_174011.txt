@@ -1,0 +1,129 @@
+
+[0;34m[TEST][0m test_01_return_value
+========================================
+ERROR (2) : (PSA) Zadany vyraz neni syntakticky spravny (neocekavany znak nebo samostatne stojici operator)
+FAIL: Compilation failed (Exit Code: 2)
+
+[0;34m[TEST][0m test_02_function_param
+========================================
+ERROR (2) : (PSA) Zadany vyraz neni syntakticky spravny (neocekavany znak nebo samostatne stojici operator)
+FAIL: Compilation failed (Exit Code: 2)
+
+[0;34m[TEST][0m test_03_type_checking
+========================================
+FAIL: Output mismatch
+Expected (Normalized): number
+100
+Actual (Normalized):   number100
+
+[0;34m[TEST][0m test_04_arithmetic
+========================================
+PASS
+
+[0;34m[TEST][0m test_05_assignment
+========================================
+PASS
+
+[0;34m[TEST][0m test_06_str_builtin
+========================================
+PASS
+
+[0;34m[TEST][0m test_07_string_concat
+========================================
+PASS
+
+[0;34m[TEST][0m test_08_getter
+========================================
+PASS
+
+[0;34m[TEST][0m test_09_setter
+========================================
+PASS
+
+[0;34m[TEST][0m test_10_if_else
+========================================
+PASS
+
+[0;34m[TEST][0m test_11_while
+========================================
+FAIL: Output mismatch
+Expected (Normalized): 3
+2
+1
+done
+Actual (Normalized):   321done
+
+[0;34m[TEST][0m test_12_global_var
+========================================
+PASS
+
+[0;34m[TEST][0m test_13_null_check
+========================================
+Error at line: 53
+Symbol has not been initilized!
+FAIL: Interpreter error (Exit Code: 56)
+
+[0;34m[TEST][0m test_14_null_type_check
+========================================
+Error at line: 59
+Symbol has not been initilized!
+FAIL: Interpreter error (Exit Code: 56)
+
+[0;34m[TEST][0m test_15_block_scope
+========================================
+FAIL: Output mismatch
+Expected (Normalized): 2
+1
+Actual (Normalized):   21
+
+[0;34m[TEST][0m test_16_nested_if
+========================================
+PASS
+
+[0;34m[TEST][0m test_17_string_repeat
+========================================
+PASS
+
+[0;34m[TEST][0m test_18_division
+========================================
+FAIL: Output mismatch
+Expected (Normalized): 10
+Actual (Normalized):   HEX_FLOAT[1.5p+3]
+
+[0;34m[TEST][0m test_19_logical_and
+========================================
+FAIL: Output mismatch
+Expected (Normalized): true_and
+false_and
+Actual (Normalized):   true_andfalse_and
+
+[0;34m[TEST][0m test_20_logical_or
+========================================
+FAIL: Output mismatch
+Expected (Normalized): true_or
+false_or
+Actual (Normalized):   true_orfalse_or
+
+[0;34m[TEST][0m test_21_logical_not
+========================================
+FAIL: Output mismatch
+Expected (Normalized): not_false
+not_true
+Actual (Normalized):   not_falsenot_true
+
+[0;34m[TEST][0m test_22_less_than
+========================================
+PASS
+
+[0;34m[TEST][0m test_23_greater_than
+========================================
+PASS
+
+[0;34m[TEST][0m test_24_overload_no_params
+========================================
+PASS
+
+[0;34m[TEST][0m test_25_overload_with_param
+========================================
+ERROR (2) : (PSA) Zadany vyraz neni syntakticky spravny (neocekavany znak nebo samostatne stojici operator)
+FAIL: Compilation failed (Exit Code: 2)

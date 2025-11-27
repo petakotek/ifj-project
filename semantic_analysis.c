@@ -211,10 +211,10 @@ SemValidationStates convSemSymbDTypeToSemValStates(SemSymbDataType dataType);
  */
 SemValidationStates recursiveNodeWalker(AstNode* currentNode, AstNodeType parentNodeType, size_t childNum);
 
-bool startSematicValidation(AstNode* root) {
+void startSematicValidation(AstNode* root) {
     if (root == NULL) {
         EXEC_END(INTERNAL_ERROR, "Nebyl predan AST!\n");
-        return false;
+        return;
     }
 
     createScopeStack();
@@ -223,7 +223,7 @@ bool startSematicValidation(AstNode* root) {
     for (size_t i = 0; i < root->arity; i++) {
         if (recursiveNodeWalker(root->child[i], AST_PROGRAM, i) != OK) {
             EXEC_END(INTERNAL_ERROR, "Spatna struktura stromu!\n");
-            return false;
+            return;
         }
     }
 
@@ -239,20 +239,20 @@ bool startSematicValidation(AstNode* root) {
                 }
             }
             EXEC_END(SEMANTICS_ERROR_UNDEF, "Reference na nedeklarovany getter, setter nebo funkci!\n");
-            return false;
+            return;
         }
     }
 
     if (scopesStack != NULL) {
         if (stackHashTablePtrIsEmpty(scopesStack) == false) {
             EXEC_END(SEMANTICS_ERROR_OTHERS, "Nebyly uzavreny vsechny bloky!\n");
-            return false;
+            return;
         }
     }
 
     freeSemanticsMemory();
 
-    return true;
+    return;
 }
 
 void freeSemanticsMemory() {

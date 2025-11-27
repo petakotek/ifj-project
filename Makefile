@@ -3,7 +3,7 @@ CC = gcc
 CFLAGS = -std=c11 -Wall -Wextra -O2 -pedantic -Werror=implicit-function-declaration -g -lm -D_POSIX_C_SOURCE=200809L
 DEV_CFLAGS = -DENABLE_DEVELOPMENT_LOGGING
 
-SRC = main.c lexer.c  parser.c support_functions.c symtable.c dynamic_stack.c ast_strom.c expr.c semantic_analysis.c codegen.c builtin_functions.c
+SRC = main.c lexer.c  parser.c support_functions.c symtable.c dynamic_stack.c ast.c expressions.c semantic_analysis.c code_generation.c builtin_functions.c
 OBJ = $(SRC:.c=.o)
 EXEC = ifj25
 

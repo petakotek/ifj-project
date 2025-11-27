@@ -3,6 +3,38 @@ JUMP main$0
 LABEL main$0
 CREATEFRAME
 PUSHFRAME
+DEFVAR LF@temp$var$readStr
+DEFVAR LF@temp$var$readNum
+DEFVAR LF@temp$var$readBool
+DEFVAR LF@temp$var$write
+DEFVAR LF@temp$var$writeType
+DEFVAR LF@temp$var$floorVal
+DEFVAR LF@temp$var$floorType
+DEFVAR LF@temp$var$strVal
+DEFVAR LF@temp$var$strType
+DEFVAR LF@temp$var$lengthVal
+DEFVAR LF@temp$var$lengthType
+DEFVAR LF@temp$var$lengthRet
+DEFVAR LF@temp$var$substringSin
+DEFVAR LF@temp$var$substringStart
+DEFVAR LF@temp$var$substringEnd
+DEFVAR LF@temp$var$substringSLen
+DEFVAR LF@temp$var$substringSout
+DEFVAR LF@temp$var$substringType
+DEFVAR LF@temp$var$substringCmpResult
+DEFVAR LF@temp$var$substringStemp
+DEFVAR LF@temp$var$strcmpS1
+DEFVAR LF@temp$var$strcmpS2
+DEFVAR LF@temp$var$strcmpType
+DEFVAR LF@temp$var$strcmpCmpResult
+DEFVAR LF@temp$var$ordStr
+DEFVAR LF@temp$var$ordNum
+DEFVAR LF@temp$var$ordType
+DEFVAR LF@temp$var$ordIsInt
+DEFVAR LF@temp$var$ordOut
+DEFVAR LF@temp$var$chrVal
+DEFVAR LF@temp$var$chrType
+DEFVAR LF@temp$var$chrIsInt
 DEFVAR LF@retval
 DEFVAR LF@main$0_ty_bool_0
 DEFVAR LF@main$0_val_bool_0
@@ -11,47 +43,55 @@ DEFVAR LF@main$0_ty_bool_1
 DEFVAR LF@main$0_val_bool_1
 DEFVAR LF@main$0_ty_bool_2
 DEFVAR LF@main$0_val_bool_2
-DEFVAR LF@main$0_ty_bool_3
-DEFVAR LF@main$0_val_bool_3
-DEFVAR LF@result$$1
+DEFVAR LF@main$0_ln_3
+DEFVAR LF@main$0_rn_3
+DEFVAR LF@main$0_ty_3
 DEFVAR LF@main$0_ty_bool_4
 DEFVAR LF@main$0_val_bool_4
+DEFVAR LF@result$$1
 DEFVAR LF@main$0_ty_bool_5
 DEFVAR LF@main$0_val_bool_5
-DEFVAR LF@main$0_ln_6
-DEFVAR LF@main$0_rn_6
-DEFVAR LF@main$0_ty_6
-DEFVAR LF@main$0_rs_6
-DEFVAR LF@main$0_ty_bool_7
-DEFVAR LF@main$0_val_bool_7
+DEFVAR LF@main$0_ty_bool_6
+DEFVAR LF@main$0_val_bool_6
+DEFVAR LF@main$0_ln_7
+DEFVAR LF@main$0_rn_7
+DEFVAR LF@main$0_ty_7
+DEFVAR LF@main$0_rs_7
 DEFVAR LF@main$0_ty_bool_8
 DEFVAR LF@main$0_val_bool_8
+DEFVAR LF@main$0_ty_bool_9
+DEFVAR LF@main$0_val_bool_9
+DEFVAR LF@main$0_ln_10
+DEFVAR LF@main$0_rn_10
+DEFVAR LF@main$0_ty_10
 MOVE LF@retval nil@nil
 PUSHS int@99
 INT2FLOATS
-DEFVAR LF@temp$var$strVal$0
-DEFVAR LF@temp$var$strType$0
-POPS LF@temp$var$strVal$0
-TYPE LF@temp$var$strType$0 LF@temp$var$strVal$0
-JUMPIFEQ temp$label$str$float$0 LF@temp$var$strType$0 string@float
-JUMPIFEQ temp$label$str$int$0 LF@temp$var$strType$0 string@int
-JUMPIFEQ temp$label$str$string$0 LF@temp$var$strType$0 string@string
-JUMPIFEQ temp$label$str$bool$0 LF@temp$var$strType$0 string@bool
-JUMPIFEQ temp$label$str$null$0 LF@temp$var$strType$0 string@nil
+POPS LF@temp$var$strVal
+TYPE LF@temp$var$strType LF@temp$var$strVal
+JUMPIFEQ temp$label$str$float$0 LF@temp$var$strType string@float
+JUMPIFEQ temp$label$str$int$0 LF@temp$var$strType string@int
+JUMPIFEQ temp$label$str$string$0 LF@temp$var$strType string@string
+JUMPIFEQ temp$label$str$bool$0 LF@temp$var$strType string@bool
+JUMPIFEQ temp$label$str$null$0 LF@temp$var$strType string@nil
 EXIT int@25
 LABEL temp$label$str$float$0
-PUSHS LF@temp$var$strVal$0
+ISINT LF@temp$var$strType LF@temp$var$strVal
+JUMPIFEQ temp$label$str$floatInt$0 LF@temp$var$strType bool@true
+PUSHS LF@temp$var$strVal
 FLOAT2STRS
 JUMP temp$label$str$end$0
+LABEL temp$label$str$floatInt$0
+FLOAT2INT LF@temp$var$strVal LF@temp$var$strVal
 LABEL temp$label$str$int$0
-PUSHS LF@temp$var$strVal$0
+PUSHS LF@temp$var$strVal
 INT2STRS
 JUMP temp$label$str$end$0
 LABEL temp$label$str$string$0
-PUSHS LF@temp$var$strVal$0
+PUSHS LF@temp$var$strVal
 JUMP temp$label$str$end$0
 LABEL temp$label$str$bool$0
-JUMPIFEQ  temp$label$str$bool$true$0 LF@temp$var$strType$0 string@bool
+JUMPIFEQ temp$label$str$bool$true$0 LF@temp$var$strType string@bool
 PUSHS string@false
 JUMP temp$label$str$end$0
 LABEL temp$label$str$bool$true$0
@@ -64,53 +104,51 @@ LABEL temp$label$str$end$0
 POPS LF@ansStr$$1
 PUSHS string@Odpoved\032je\032
 PUSHS LF@ansStr$$1
-POPS LF@main$0_rn_6
-POPS LF@main$0_ln_6
-PUSHS LF@main$0_ln_6
-PUSHS LF@main$0_rn_6
+POPS LF@main$0_rn_7
+POPS LF@main$0_ln_7
+PUSHS LF@main$0_ln_7
+PUSHS LF@main$0_rn_7
 TYPES
-POPS LF@main$0_ty_6
+POPS LF@main$0_ty_7
 TYPES
-PUSHS LF@main$0_ty_6
-JUMPIFEQS main$0$ok_add$6
-JUMP main$0$err$6
-LABEL main$0$ok_add$6
-PUSHS LF@main$0_ty_6
+PUSHS LF@main$0_ty_7
+JUMPIFEQS main$0$ok_add$7
+JUMP main$0$err$7
+LABEL main$0$ok_add$7
+PUSHS LF@main$0_ty_7
 PUSHS string@string
-JUMPIFEQS main$0$concat$6
-PUSHS LF@main$0_ty_6
+JUMPIFEQS main$0$concat$7
+PUSHS LF@main$0_ty_7
 PUSHS string@int
-JUMPIFEQS main$0$add$6
-PUSHS LF@main$0_ty_6
+JUMPIFEQS main$0$add$7
+PUSHS LF@main$0_ty_7
 PUSHS string@float
-JUMPIFEQS main$0$add$6
-JUMP main$0$err$6
-LABEL main$0$add$6
-PUSHS LF@main$0_ln_6
-PUSHS LF@main$0_rn_6
+JUMPIFEQS main$0$add$7
+JUMP main$0$err$7
+LABEL main$0$add$7
+PUSHS LF@main$0_ln_7
+PUSHS LF@main$0_rn_7
 ADDS
-JUMP main$0$end_add$6
-LABEL main$0$concat$6
-MOVE LF@main$0_rs_6 string@""
-CONCAT LF@main$0_rs_6 LF@main$0_ln_6 LF@main$0_rn_6
-PUSHS LF@main$0_rs_6
-JUMP main$0$end_add$6
-LABEL main$0$err$6
+JUMP main$0$end_add$7
+LABEL main$0$concat$7
+MOVE LF@main$0_rs_7 string@""
+CONCAT LF@main$0_rs_7 LF@main$0_ln_7 LF@main$0_rn_7
+PUSHS LF@main$0_rs_7
+JUMP main$0$end_add$7
+LABEL main$0$err$7
 EXIT int@25
-LABEL main$0$end_add$6
+LABEL main$0$end_add$7
 
 POPS LF@result$$1
 PUSHS LF@result$$1
-DEFVAR LF@temp$var$write$0
-DEFVAR LF@temp$var$writeType$0
-POPS LF@temp$var$write$0
-TYPE LF@temp$var$writeType$0 LF@temp$var$write$0
-JUMPIFNEQ temp$label$write$write$0 LF@temp$var$writeType$0 string@float
-ISINT LF@temp$var$writeType$0  LF@temp$var$write$0
-JUMPIFNEQ temp$label$write$write$0 LF@temp$var$writeType$0  bool@true
-FLOAT2INT LF@temp$var$write$0 LF@temp$var$write$0
+POPS LF@temp$var$write
+TYPE LF@temp$var$writeType LF@temp$var$write
+JUMPIFNEQ temp$label$write$write$0 LF@temp$var$writeType string@float
+ISINT LF@temp$var$writeType LF@temp$var$write
+JUMPIFNEQ temp$label$write$write$0 LF@temp$var$writeType bool@true
+FLOAT2INT LF@temp$var$write LF@temp$var$write
 LABEL temp$label$write$write$0
-WRITE LF@temp$var$write$0
+WRITE LF@temp$var$write
 PUSHS nil@nil
 LABEL main$0$end$0
 EXIT int@0

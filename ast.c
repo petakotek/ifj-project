@@ -1,18 +1,18 @@
 /*
  *
  * Autoři: xpasekj00
- * Soubor: ast_strom.c
+ * Soubor: ast.c
  * Popis: zajistuje ulozeni vysledku z parseru do stromu
  */
-#include "ast_strom.h"
+#include "ast.h"
+
+#include <math.h>
+#include <stdbool.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
 
 #include "support_functions.h"
-
-#include <string.h>
-#include <stdbool.h>
-#include <stdlib.h>
-#include <stdio.h>
-#include <math.h>
 
 // Plochý builder pre if-chain (rovnaký pattern ako buildStmtListFlat):
 // Očakávaný tvar z parsera: IF_CHAIN(2) = [head, tail], kde
@@ -22,29 +22,36 @@ AstNode *buildIfChainFlat(size_t n, AstNode **kids) {
     // ε
     if (n == 0) {
         AstNode *node = calloc(1, sizeof *node);
-        if (!node) { printError(INTERNAL_ERROR, "alloc IF_CHAIN(0)"); memorySafeExit(INTERNAL_ERROR); }
-        node->kind = AST_IF_CHAIN;
+        if (!node) {
+            printError(INTERNAL_ERROR, "alloc IF_CHAIN(0)");
+            memorySafeExit(INTERNAL_ERROR);
+        }
+        node->kind  = AST_IF_CHAIN;
         node->arity = 0;
         return node;
     }
 
     if (n == 2 && kids[1] && kids[1]->kind == AST_EMPTY) {
-        AstNode *flat1[1] = { kids[0] };
+        AstNode *flat1[1] = {kids[0]};
 
         // EMPTY uzol už nebudeme nikde používať -> uvoľniť
-        astFreeWhole(kids[1]);   // alebo free(kids[1]), ak máš istotu, že nemá deti
+        astFreeWhole(kids[1]);  // alebo free(kids[1]), ak máš istotu, že nemá deti
 
         return astNew(AST_IF_CHAIN, 1, flat1);
     }
 
     // (head, tail IF_CHAIN) -> head + tail.children...
     if (n == 2 && kids[1] && kids[1]->kind == AST_IF_CHAIN) {
-        size_t tail = kids[1]->arity;
-        AstNode **flat = malloc(sizeof(AstNode*) * (tail + 1));
-        if (!flat) { printError(INTERNAL_ERROR, "alloc ifchain flat"); memorySafeExit(INTERNAL_ERROR); }
+        size_t    tail = kids[1]->arity;
+        AstNode **flat = malloc(sizeof(AstNode *) * (tail + 1));
+        if (!flat) {
+            printError(INTERNAL_ERROR, "alloc ifchain flat");
+            memorySafeExit(INTERNAL_ERROR);
+        }
 
         flat[0] = kids[0];
-        if (tail) memcpy(&flat[1], kids[1]->child, sizeof(AstNode*) * tail);
+        if (tail)
+            memcpy(&flat[1], kids[1]->child, sizeof(AstNode *) * tail);
 
         AstNode *node = astNew(AST_IF_CHAIN, tail + 1, flat);
         free(flat);
@@ -77,20 +84,27 @@ AstNode *buildIfChainFlat(size_t n, AstNode **kids) {
 
 AstNode *buildClassBlockFlat(size_t n, AstNode **kids) {
     if (n == 0) {
-        AstNode *node = (AstNode*)calloc(1, sizeof(AstNode));
-        if (!node) { printError(INTERNAL_ERROR, "alloc MAIN_CLASS_BLOCK(0)"); memorySafeExit(INTERNAL_ERROR); }
-        node->kind = AST_MAIN_CLASS_BLOCK;
+        AstNode *node = (AstNode *)calloc(1, sizeof(AstNode));
+        if (!node) {
+            printError(INTERNAL_ERROR, "alloc MAIN_CLASS_BLOCK(0)");
+            memorySafeExit(INTERNAL_ERROR);
+        }
+        node->kind  = AST_MAIN_CLASS_BLOCK;
         node->arity = 0;
         return node;
     }
 
     // (FUNC_DEC, tail MAIN_CLASS_BLOCK)
     if (n == 2 && kids[1] && kids[1]->kind == AST_MAIN_CLASS_BLOCK) {
-        size_t tail = kids[1]->arity;
-        AstNode **flat = (AstNode**)malloc(sizeof(AstNode*) * (tail + 1));
-        if (!flat) { printError(INTERNAL_ERROR, "alloc classblock flat"); memorySafeExit(INTERNAL_ERROR); }
+        size_t    tail = kids[1]->arity;
+        AstNode **flat = (AstNode **)malloc(sizeof(AstNode *) * (tail + 1));
+        if (!flat) {
+            printError(INTERNAL_ERROR, "alloc classblock flat");
+            memorySafeExit(INTERNAL_ERROR);
+        }
         flat[0] = kids[0];
-        if (tail) memcpy(&flat[1], kids[1]->child, sizeof(AstNode*) * tail);
+        if (tail)
+            memcpy(&flat[1], kids[1]->child, sizeof(AstNode *) * tail);
 
         AstNode *node = astNew(AST_MAIN_CLASS_BLOCK, tail + 1, flat);
         free(flat);
@@ -104,19 +118,26 @@ AstNode *buildClassBlockFlat(size_t n, AstNode **kids) {
 }
 
 AstNode *buildStmtListFlat(size_t n, AstNode **kids) {
-    if (n == 0) {                       // ε
+    if (n == 0) {  // ε
         AstNode *node = calloc(1, sizeof *node);
-        if (!node) { printError(INTERNAL_ERROR,"alloc STMT_LIST(0)"); memorySafeExit(INTERNAL_ERROR); }
-        node->kind = AST_STATEMENT_LIST;
+        if (!node) {
+            printError(INTERNAL_ERROR, "alloc STMT_LIST(0)");
+            memorySafeExit(INTERNAL_ERROR);
+        }
+        node->kind  = AST_STATEMENT_LIST;
         node->arity = 0;
         return node;
     }
     if (n == 2 && kids[1] && kids[1]->kind == AST_STATEMENT_LIST) {
-        size_t tail = kids[1]->arity;
-        AstNode **flat = malloc(sizeof(AstNode*) * (tail + 1));
-        if (!flat) { printError(INTERNAL_ERROR,"alloc stmtlist flat"); memorySafeExit(INTERNAL_ERROR); }
+        size_t    tail = kids[1]->arity;
+        AstNode **flat = malloc(sizeof(AstNode *) * (tail + 1));
+        if (!flat) {
+            printError(INTERNAL_ERROR, "alloc stmtlist flat");
+            memorySafeExit(INTERNAL_ERROR);
+        }
         flat[0] = kids[0];
-        if (tail) memcpy(&flat[1], kids[1]->child, sizeof(AstNode*) * tail);
+        if (tail)
+            memcpy(&flat[1], kids[1]->child, sizeof(AstNode *) * tail);
         AstNode *node = astNew(AST_STATEMENT_LIST, tail + 1, flat);
         free(flat);
         free(kids[1]->child);
@@ -126,14 +147,16 @@ AstNode *buildStmtListFlat(size_t n, AstNode **kids) {
     return astNew(AST_STATEMENT_LIST, n, kids);
 }
 
-
 // Sploští pravorekurzívny PARAM zoznam na ploché deti: IDENT, IDENT, ...
 AstNode *buildParamFlat(size_t n, AstNode **kids) {
     // ε-vetva: prázdny zoznam
     if (n == 0) {
-        AstNode *node = (AstNode*)calloc(1, sizeof(AstNode));
-        if (!node) { printError(INTERNAL_ERROR, "alloc PARAM(0)"); memorySafeExit(INTERNAL_ERROR); }
-        node->kind = AST_PARAM;
+        AstNode *node = (AstNode *)calloc(1, sizeof(AstNode));
+        if (!node) {
+            printError(INTERNAL_ERROR, "alloc PARAM(0)");
+            memorySafeExit(INTERNAL_ERROR);
+        }
+        node->kind  = AST_PARAM;
         node->arity = 0;
         return node;
     }
@@ -142,13 +165,16 @@ AstNode *buildParamFlat(size_t n, AstNode **kids) {
     if (n == 2 && kids[0] && kids[1] && kids[1]->kind == AST_PARAM) {
         size_t tail = kids[1]->arity;
 
-        AstNode **flat = (AstNode**)malloc(sizeof(AstNode*) * (tail + 1));
-        if (!flat) { printError(INTERNAL_ERROR, "alloc param flat"); memorySafeExit(INTERNAL_ERROR); }
+        AstNode **flat = (AstNode **)malloc(sizeof(AstNode *) * (tail + 1));
+        if (!flat) {
+            printError(INTERNAL_ERROR, "alloc param flat");
+            memorySafeExit(INTERNAL_ERROR);
+        }
 
-        flat[0] = kids[0]; // head IDENT
+        flat[0] = kids[0];  // head IDENT
         if (tail > 0) {
             // prenesieme deti z tail PARAM, nie samotný obal
-            memcpy(&flat[1], kids[1]->child, sizeof(AstNode*) * tail);
+            memcpy(&flat[1], kids[1]->child, sizeof(AstNode *) * tail);
         }
 
         // vytvor nový plochý PARAM
@@ -167,160 +193,138 @@ AstNode *buildParamFlat(size_t n, AstNode **kids) {
 }
 
 AstNode *astNew(AstNodeType kind, size_t arity, AstNode **kids) {
-
-    AstNode *new_node = (AstNode*)calloc(1, sizeof(AstNode));
+    AstNode *new_node = (AstNode *)calloc(1, sizeof(AstNode));
     if (!new_node) {
         printError(INTERNAL_ERROR, "Chyba alokace: new_node");
         memorySafeExit(INTERNAL_ERROR);
     }
     new_node->tmpId = 0;
 
-    new_node->kind = kind;
+    new_node->kind  = kind;
     new_node->arity = arity;
 
-    if (arity > 0)
-    {
+    if (arity > 0) {
+        // fprintf(stderr, "  -> Alokujem pole detí pre %zu uzlov\n", arity);
 
-        //fprintf(stderr, "  -> Alokujem pole detí pre %zu uzlov\n", arity);
-
-        new_node->child = (AstNode**)malloc(sizeof(AstNode*) * arity);
+        new_node->child = (AstNode **)malloc(sizeof(AstNode *) * arity);
         if (!new_node->child) {
             printError(INTERNAL_ERROR, "Chyba alokácie detí AST uzla\n");
             memorySafeExit(INTERNAL_ERROR);
         }
-        for (size_t i = 0; i < arity; ++i)
-        {
-
-            //fprintf(stderr, "    -> Priraďujem dieťa[%zu] = %d\n", i, kids[i]->value);
+        for (size_t i = 0; i < arity; ++i) {
+            // fprintf(stderr, "    -> Priraďujem dieťa[%zu] = %d\n", i, kids[i]->value);
 
             new_node->child[i] = kids[i];
         }
-
     }
-    //fprintf(stderr, "[AST-NEW] Uzol %s (%p) úspešne vytvorený\n", astNodeTypeToString(new_node->kind),  (void*)new_node);
-
+    // fprintf(stderr, "[AST-NEW] Uzol %s (%p) úspešne vytvorený\n", astNodeTypeToString(new_node->kind),
+    // (void*)new_node);
 
     return new_node;
 }
 
-
 AstNode *newLeaf(AstNodeType kind, Token token) {
-    AstNode *newLeaf = (AstNode*)calloc(1, sizeof(AstNode));
+    AstNode *newLeaf = (AstNode *)calloc(1, sizeof(AstNode));
     if (!newLeaf) {
         printError(INTERNAL_ERROR, "Chyba alokácie AST listu\n");
         memorySafeExit(INTERNAL_ERROR);
     }
-    if (kind == AST_INT_LIT_EXP)
-    {
+    if (kind == AST_INT_LIT_EXP) {
         newLeaf->kind = AST_INT_LIT;
-    }
-    else if (kind == AST_FLOAT_LIT_EXP)
-    {
+    } else if (kind == AST_FLOAT_LIT_EXP) {
         newLeaf->kind = AST_FLOAT_LIT;
-    }
-    else if (kind == AST_STRING_BLOCK)
+    } else if (kind == AST_STRING_BLOCK)
         newLeaf->kind = AST_STRING_LIT;
-    else 
-    {
+    else {
         newLeaf->kind = kind;
     }
     newLeaf->isLeaf = true;
 
     astValueFromToken(&newLeaf->value, kind, &token);
 
-    //if (newLeaf->value.hasStr)
-    //    fprintf(stderr, "  -> String hodnota: '%s'\n", newLeaf->value.str);
-    //else if (newLeaf->value.isInt)
-    //    fprintf(stderr, "  -> Int hodnota: %d\n", newLeaf->value.intVal);
-    //else if (newLeaf->value.isFloat)
-    //   fprintf(stderr, "  -> Float hodnota: %f\n", newLeaf->value.floatVal);
+    // if (newLeaf->value.hasStr)
+    //     fprintf(stderr, "  -> String hodnota: '%s'\n", newLeaf->value.str);
+    // else if (newLeaf->value.isInt)
+    //     fprintf(stderr, "  -> Int hodnota: %d\n", newLeaf->value.intVal);
+    // else if (newLeaf->value.isFloat)
+    //    fprintf(stderr, "  -> Float hodnota: %f\n", newLeaf->value.floatVal);
 
-    if (newLeaf->value.floatVal && newLeaf->kind == AST_INT_LIT)
-    {
+    if (newLeaf->value.floatVal && newLeaf->kind == AST_INT_LIT) {
         newLeaf->kind = AST_FLOAT_LIT;
     }
     return newLeaf;
 }
 
-
 void astFreeWhole(AstNode *node) {
-    if (!node)
-    {
+    if (!node) {
         return;
     }
-    if (node->isLeaf)
-    {
-        if (node->value.hasStr || node->value.isBool)
-        {
+    if (node->isLeaf) {
+        if (node->value.hasStr || node->value.isBool) {
             free(node->value.str);
             node->value.str = NULL;
         }
         free(node);
         return;
     }
-    for (size_t i = 0; i < node->arity; ++i)
-    {
+    for (size_t i = 0; i < node->arity; ++i) {
         astFreeWhole(node->child[i]);
     }
     free(node->child);
     free(node);
 }
 
-
-
 void astValueFromToken(AstValue *out, AstNodeType kind, Token *token) {
     memset(out, 0, sizeof(*out));
-    switch (kind)
-    {
+    switch (kind) {
         case AST_INT_LIT:
-            out->isInt = true;
-            out->intVal = strtoll(token->value.identifier,NULL,0);
+            out->isInt  = true;
+            out->intVal = strtoll(token->value.identifier, NULL, 0);
             break;
         case AST_FLOAT_LIT:
-            out->isFloat = true;
-            out->floatVal = strtod(token->value.identifier,NULL);
+            out->isFloat  = true;
+            out->floatVal = strtod(token->value.identifier, NULL);
             break;
         case AST_STRING_LIT:
             out->hasStr = true;
-            char *tmp = stringChangingLit(token->value.identifier);
-            out->str = tmp;
+            char *tmp   = stringChangingLit(token->value.identifier);
+            out->str    = tmp;
             break;
         case AST_STRING_BLOCK:
             out->hasStr = true;
-            char *temp = stringChanging(token->value.identifier);
-            out->str = temp;
+            char *temp  = stringChanging(token->value.identifier);
+            out->str    = temp;
             break;
         case AST_IDENTIFIER:
         case AST_GLOBAL_ID:
             out->hasStr = true;
-            out->str = dupCstr(token->value.identifier);
+            out->str    = dupCstr(token->value.identifier);
             break;
         case AST_BOOL_LIT:
             out->isBool = true;
-            out->str = dupCstr(token->value.identifier);
+            out->str    = dupCstr(token->value.identifier);
             break;
 
-        case AST_INT_LIT_EXP:
-            {
-            double val = floatExp(token->value.identifier);
+        case AST_INT_LIT_EXP: {
+            double    val  = floatExp(token->value.identifier);
             long long ival = (long long)val;
             if (val == (double)ival) {
                 // Je to presne celé číslo → ulož ako int
-                out->isInt = true;
+                out->isInt  = true;
                 out->intVal = ival;
             }
 
             else {
                 // Nie je to celé → ulož ako float
-                out->isFloat = true;
+                out->isFloat  = true;
                 out->floatVal = val;
             }
             break;
-            }
+        }
 
         case AST_FLOAT_LIT_EXP:
-            out-> isFloat = true;
-            out-> floatVal = floatExp(token->value.identifier);
+            out->isFloat  = true;
+            out->floatVal = floatExp(token->value.identifier);
             break;
         default:
             break;
@@ -328,12 +332,11 @@ void astValueFromToken(AstValue *out, AstNodeType kind, Token *token) {
 }
 
 char *dupCstr(const char *string) {
-    if (!string)
-    {
+    if (!string) {
         return NULL;
     }
-    size_t len = strlen(string) + 1;
-    char *newString = (char*)malloc(len);
+    size_t len       = strlen(string) + 1;
+    char  *newString = (char *)malloc(len);
     if (!newString) {
         printError(INTERNAL_ERROR, "Chyba alokácie (dupCstr)\n");
         memorySafeExit(INTERNAL_ERROR);
@@ -344,8 +347,7 @@ char *dupCstr(const char *string) {
 
 double floatExp(const char *s) {
     char *pos = strpbrk(s, "eE");
-    if (!pos) 
-    {
+    if (!pos) {
         return strtod(s, NULL);
     }
 
@@ -355,11 +357,9 @@ double floatExp(const char *s) {
     base_str[pos - s] = '\0';
 
     double base = strtod(base_str, NULL);
-    double exp = strtod(pos + 1,NULL);
+    double exp  = strtod(pos + 1, NULL);
     return pow(base, exp);
 }
-
-
 
 const char *astNodeTypeToString(AstNodeType kind) {
     switch (kind) {
@@ -375,59 +375,108 @@ const char *astNodeTypeToString(AstNodeType kind) {
             return "BLOCK";
         case AST_STATEMENT_LIST:
             return "STATEMENT_LIST";
-        case AST_FUNC_DEC:         return "FUNC_DEC";
-        case AST_PARAM:            return "PARAM";
-        case AST_FUNC_CALL:        return "FUNC_CALL";
-        case AST_VAR:              return "VAR";
-        case AST_ASSIGN:           return "ASSIGN";
-        case AST_IF:               return "IF";
-        case AST_WHILE:            return "WHILE";
-        case AST_FOR:              return "FOR";
-        case AST_BREAK:            return "BREAK";
-        case AST_CONTINUE:         return "CONTINUE";
-        case AST_RETURN:           return "RETURN";
-        case AST_IDENTIFIER:       return "IDENTIFIER";
-        case AST_GLOBAL_ID:        return "GLOBAL_ID";
-        case AST_INT_LIT:          return "INT_LIT";
-        case AST_FLOAT_LIT:        return "FLOAT_LIT";
-        case AST_STRING_LIT:       return "STRING_LIT";
-        case AST_PLUS:             return "STRING_PLUS";
-        case AST_MINUS:                  return "STRING_MINUS";
-        case AST_MUL:                  return "STRING_MUL";
-        case AST_DIV:                  return "STRING_DIV";
-        case AST_GT:                  return "STRING_GT";
-        case AST_LT:                  return "STRING_LT";
-        case AST_GTE:                  return "STRING_GTE";
-        case AST_LTE:                  return "STRING_LTE";
-        case AST_EQ:                  return "STRING_EQ";
-        case AST_NEQ:               return "STRING_NEQ"; // !=
-        case AST_LPAREN:                  return "STRING_LPAREN";
-        case AST_RPAREN:                  return "STRING_RPAREN";
-        case AST_NOT:                  return "STRING_NEGACE";
-        case AST_OR:                  return "STRING_OR";
-        case AST_EMPTY: return "EMPTY";
-        case AST_NULL: return "NULL";
-        case AST_IFJ_CALL: return "IFJ_CALL";
-        case AST_ELSE: return "ELSE";
-        case AST_IF_CHAIN: return "IF CHAIN";
-        case AST_DOUBLE_DOT:            return "DOUBLE_DOT";
-        case AST_TRIPLE_DOT:            return "TRIPLE_DOT";
-        case AST_BOOL_LIT:          return "BOOL_LIT";
-        case AST_KEYWORD_NUM:       return "KEYWORD_NUM";
-        case AST_KEYWORD_STRING:       return "KEYWORD_STRING";
-        case AST_IS:                return "STRING_IS";
-        case AST_GETTER: return "GETTER";
-        case AST_SETTER: return "SETTER";
-        case AST_CONDITION: return"CONDITION";
-        case AST_TERNARY:   return "TERNARY_OPERATOR";
-        case AST_AND: return "STRING_AND";
-        case AST_SMALL_NULL: return "SMALL_NULL";
-        case AST_GETTER_CALL: return "GETTER_CALL";
-        case AST_SETTER_CALL: return "SETTER_CALL";
-        default:                   return "UNKNOWN_AST_NODE";
+        case AST_FUNC_DEC:
+            return "FUNC_DEC";
+        case AST_PARAM:
+            return "PARAM";
+        case AST_FUNC_CALL:
+            return "FUNC_CALL";
+        case AST_VAR:
+            return "VAR";
+        case AST_ASSIGN:
+            return "ASSIGN";
+        case AST_IF:
+            return "IF";
+        case AST_WHILE:
+            return "WHILE";
+        case AST_FOR:
+            return "FOR";
+        case AST_BREAK:
+            return "BREAK";
+        case AST_CONTINUE:
+            return "CONTINUE";
+        case AST_RETURN:
+            return "RETURN";
+        case AST_IDENTIFIER:
+            return "IDENTIFIER";
+        case AST_GLOBAL_ID:
+            return "GLOBAL_ID";
+        case AST_INT_LIT:
+            return "INT_LIT";
+        case AST_FLOAT_LIT:
+            return "FLOAT_LIT";
+        case AST_STRING_LIT:
+            return "STRING_LIT";
+        case AST_PLUS:
+            return "STRING_PLUS";
+        case AST_MINUS:
+            return "STRING_MINUS";
+        case AST_MUL:
+            return "STRING_MUL";
+        case AST_DIV:
+            return "STRING_DIV";
+        case AST_GT:
+            return "STRING_GT";
+        case AST_LT:
+            return "STRING_LT";
+        case AST_GTE:
+            return "STRING_GTE";
+        case AST_LTE:
+            return "STRING_LTE";
+        case AST_EQ:
+            return "STRING_EQ";
+        case AST_NEQ:
+            return "STRING_NEQ";  // !=
+        case AST_LPAREN:
+            return "STRING_LPAREN";
+        case AST_RPAREN:
+            return "STRING_RPAREN";
+        case AST_NOT:
+            return "STRING_NEGACE";
+        case AST_OR:
+            return "STRING_OR";
+        case AST_EMPTY:
+            return "EMPTY";
+        case AST_NULL:
+            return "NULL";
+        case AST_IFJ_CALL:
+            return "IFJ_CALL";
+        case AST_ELSE:
+            return "ELSE";
+        case AST_IF_CHAIN:
+            return "IF CHAIN";
+        case AST_DOUBLE_DOT:
+            return "DOUBLE_DOT";
+        case AST_TRIPLE_DOT:
+            return "TRIPLE_DOT";
+        case AST_BOOL_LIT:
+            return "BOOL_LIT";
+        case AST_KEYWORD_NUM:
+            return "KEYWORD_NUM";
+        case AST_KEYWORD_STRING:
+            return "KEYWORD_STRING";
+        case AST_IS:
+            return "STRING_IS";
+        case AST_GETTER:
+            return "GETTER";
+        case AST_SETTER:
+            return "SETTER";
+        case AST_CONDITION:
+            return "CONDITION";
+        case AST_TERNARY:
+            return "TERNARY_OPERATOR";
+        case AST_AND:
+            return "STRING_AND";
+        case AST_SMALL_NULL:
+            return "SMALL_NULL";
+        case AST_GETTER_CALL:
+            return "GETTER_CALL";
+        case AST_SETTER_CALL:
+            return "SETTER_CALL";
+        default:
+            return "UNKNOWN_AST_NODE";
     }
 }
-
 
 #ifdef ENABLE_DEVELOPMENT_LOGGING
 static void ast_dump_rec(const AstNode *n, int depth, const AstNode *parent) {
@@ -438,7 +487,7 @@ static void ast_dump_rec(const AstNode *n, int depth, const AstNode *parent) {
 
     // Ochrana proti samoodkazovaniu
     if (n == parent) {
-        fprintf(stderr, "%*s[CYCLE DETECTED: node %p refers to itself]\n", depth * 2, "", (void*)n);
+        fprintf(stderr, "%*s[CYCLE DETECTED: node %p refers to itself]\n", depth * 2, "", (void *)n);
         return;
     }
 
@@ -471,35 +520,26 @@ void astDump(const AstNode *root) {
 }
 #endif
 
-char *stringChanging(char * tmp)
-{
-    if (!tmp)
-    {
+char *stringChanging(char *tmp) {
+    if (!tmp) {
         return NULL;
     }
     size_t len = strlen(tmp);
 
-    //uplne najhorsi pripad napr ak "\n\n\n\n\n\n\n\n\n\n\n\n" 
-    //vsetky znaky bude treba previes na "\xyz"
+    // uplne najhorsi pripad napr ak "\n\n\n\n\n\n\n\n\n\n\n\n"
+    // vsetky znaky bude treba previes na "\xyz"
     char *out = malloc(len * 4 + 1);
-    if (!out) 
-    {   
+    if (!out) {
         printError(INTERNAL_ERROR, "chyba v alokacii");
         memorySafeExit(INTERNAL_ERROR);
     }
-    
 
     size_t j = 0;  // index do out
-    for(size_t i = 0; i < len; i++)
-    {
-        
-        if (tmp[i] <= 32 || tmp[i] == 35 || tmp[i] == 92)
-        {
-            j +=  sprintf(out + j, "\\%03u", tmp[i]);
-            
-        }
-        else
-        {
+    for (size_t i = 0; i < len; i++) {
+        if (tmp[i] <= 32 || tmp[i] == 35 || tmp[i] == 92) {
+            j += sprintf(out + j, "\\%03u", tmp[i]);
+
+        } else {
             out[j] = tmp[i];
             j++;
         }
@@ -507,72 +547,57 @@ char *stringChanging(char * tmp)
 
     out[j] = '\0';
 
-    return out; 
+    return out;
 }
 
-char *stringChangingLit(char *tmp)
-{
-    if (!tmp) 
-    {
+char *stringChangingLit(char *tmp) {
+    if (!tmp) {
         return NULL;
     }
 
-    //prevedenie escape sekvencie do podoby z "\n" do '\n'
+    // prevedenie escape sekvencie do podoby z "\n" do '\n'
     char *unesc = escapeString(tmp);
 
-    //prevedenie do \xyz
+    // prevedenie do \xyz
     char *out = stringChanging(unesc);
 
     free(unesc);
     return out;
 }
 
-char *escapeString(char *tmp)
-{
+char *escapeString(char *tmp) {
     size_t len = strlen(tmp);
-    char *out = malloc(len + 1); 
+    char  *out = malloc(len + 1);
     if (!out) {
         printError(INTERNAL_ERROR, "chyba v alokacii");
         memorySafeExit(INTERNAL_ERROR);
     }
 
     size_t i = 0, j = 0;
-     while (i < len) {
+    while (i < len) {
         if (tmp[i] == '\\' && i + 1 < len) {
-            char c = tmp[i+2];
+            char c = tmp[i + 2];
 
-            if (c == 'n')      
-            { 
-                out[j++] = '\n';  
-                i += 2; 
-            }
-            else if (c == 't') 
-            { 
-                out[j++] = '\t';  
-                i += 2; 
-            }
-            else if (c == '\\')
-            { 
-                out[j++] = '\\';  
-                i += 2; 
-            }
-            else if (c == '"') 
-            { 
-                out[j++] = '\"';  
-                i += 2; 
-            }
-            else if (c == 'r')
-            {
-                out[j++] = '\r';  
-                i += 2; 
-            }
-            else 
-            { 
+            if (c == 'n') {
+                out[j++] = '\n';
+                i += 2;
+            } else if (c == 't') {
+                out[j++] = '\t';
+                i += 2;
+            } else if (c == '\\') {
+                out[j++] = '\\';
+                i += 2;
+            } else if (c == '"') {
+                out[j++] = '\"';
+                i += 2;
+            } else if (c == 'r') {
+                out[j++] = '\r';
+                i += 2;
+            } else {
                 // nechaj ako je (ak nie je escape)
                 out[j++] = tmp[i++];
             }
-        }
-        else {
+        } else {
             out[j++] = tmp[i++];
         }
     }

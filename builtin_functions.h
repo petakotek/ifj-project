@@ -9,16 +9,16 @@
 #ifndef BUILTIN
 #define BUILTIN
 
-#include "ast_strom.h"
-#include "codegen.h"
+#include "ast.h"
+#include "code_generation.h"
 
 /**
  * @brief Funkce zajišťuje zpracování volání vestavěných funkcí
- * 
- * @param ifjFunctionCall Uzel s voláním libovolné vestavěné funkce 
+ *
+ * @param ifjFunctionCall Uzel s voláním libovolné vestavěné funkce
  * @param context Kontext
  */
-void handleBuiltin(AstNode * ifjFunctionCall, FuncContext* context);
+void handleBuiltin(AstNode* ifjFunctionCall, FuncContext* context);
 
 #endif
 
