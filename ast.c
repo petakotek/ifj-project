@@ -1,10 +1,10 @@
 /*
  *
  * Autoři: xpasekj00
- * Soubor: ast_strom.c
+ * Soubor: ast.c
  * Popis: zajistuje ulozeni vysledku z parseru do stromu
  */
-#include "ast_strom.h"
+#include "ast.h"
 
 #include <math.h>
 #include <stdbool.h>

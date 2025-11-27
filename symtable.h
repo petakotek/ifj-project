@@ -61,7 +61,6 @@ void hashTableRealloc(HashTable *);  // Funkce provede reallokaci tabulky symbol
  * @return false Ne není prázdná
  */
 bool hashTableIsEmpty(HashTable *hashT);
-// TODO obecně uklidit symtable.* a podepsat se
 
 #endif  // SYMTABLE_H
 

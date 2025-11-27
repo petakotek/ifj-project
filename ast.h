@@ -1,7 +1,7 @@
 /*
  *
  * Autoři: xpasekj00, xjambrj00
- * Soubor: ast_strom.h
+ * Soubor: ast.h
  * Popis: hlavickovy soubor pro ast strom, obsahuje strukturu node pro strom
  */
 

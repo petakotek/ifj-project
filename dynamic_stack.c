@@ -12,7 +12,7 @@
 #include <stdbool.h>
 #include <stdlib.h>
 
-#include "ast_strom.h"
+#include "ast.h"
 #include "support_functions.h"
 
 /**

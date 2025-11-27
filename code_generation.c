@@ -1,4 +1,4 @@
-#include "codegen.h"
+#include "code_generation.h"
 
 #include <stdarg.h>
 #include <stdbool.h>
@@ -7,12 +7,9 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "ast_strom.h"
+#include "ast.h"
 #include "builtin_functions.h"
 #include "dynamic_stack.h"
-#include "lexer.h"
-#include "parser.h"
-#include "semantic_analysis.h"
 #include "support_functions.h"
 static size_t loop_counter = 0;
 static size_t if_counter   = 0;
