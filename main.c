@@ -36,6 +36,8 @@ int main() {
     // inicializovani struktury staraji se o cteni ze souboru
     lexerInit(source_file);
     // tvorba stromu pres parser
+     print_and_free_tokens();
+    exit(1);
     AstNode *ast = parser();
     // astDump(AST);
     // funkcia astDump -> funkcia na kontrolny vypis ast stromu
