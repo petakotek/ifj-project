@@ -13,12 +13,7 @@
 #include "support_functions.h"
 static size_t loop_counter = 0;
 static size_t if_counter   = 0;
-/**
- * @brief Tiskne formátovaný text se znakem nového řádku na konci.
- *
- * @param fmt Formátovací řetězec.
- * @param ... Argumenty pro formátování.
- */
+
 void printN(const char *fmt, ...) {
     va_list args;
     va_start(args, fmt);
@@ -360,6 +355,13 @@ FuncContext *constuctorFuncContext() {
 }
 
 void destructorFuncContext(FuncContext *funcStruct) { free(funcStruct); }
+/**
+ * @brief Rekurzivně sbírá lokální proměnné a alokuje dočasné proměnné pro operace v AST.
+ *
+ * @param node Aktuální uzel AST.
+ * @param vars Seznam lokálních proměnných k naplnění.
+ * @param funcStruct Kontext funkce.
+ */
 void collectLocalVars(AstNode *node, VarList *vars, FuncContext *funcStruct) {
     if (node == NULL)
         return;
@@ -401,6 +403,16 @@ void collectLocalVars(AstNode *node, VarList *vars, FuncContext *funcStruct) {
             break;
     }
 }
+/**
+ * @brief Rekurzivně sbírá jména globálních proměnných z AST.
+ *
+ * Prochází Abstract Syntax Tree (AST) a přidává jména uzlů typu `AST_GLOBAL_ID`
+ * do seznamu `global`. Jména globálních proměnných jsou potřebná pro jejich
+ * následnou inicializaci.
+ *
+ * @param root Ukazatel na aktuální uzel AST pro rekurzivní průchod.
+ * @param global Ukazatel na seznam proměnných (VarList), kam se mají globální proměnné přidat.
+ */
 void emitLookGlobal(AstNode *root, VarList *global) {
     if (!root)
         return;
@@ -413,6 +425,16 @@ void emitLookGlobal(AstNode *root, VarList *global) {
     for (size_t i = 0; i < root->arity; i++)
         emitLookGlobal(root->child[i], global);
 }
+/**
+ * @brief Generuje kód pro definici a inicializaci globálních proměnných.
+ *
+ * Funkce nejprve rekurzivně posbírá všechna jména globálních proměnných z celého AST
+ * pomocí `emitLookGlobal`. Poté pro každou proměnnou vygeneruje IFJcode23
+ * instrukce pro její definici (`DEFVAR GF@...`) a inicializaci na `nil@nil`
+ * (`MOVE GF@... nil@nil`).
+ *
+ * @param root Kořenový uzel AST celého programu.
+ */
 void emitGlobal(AstNode *root) {
     VarList *globals = varListCreate();
     emitLookGlobal(root, globals);
@@ -422,7 +444,17 @@ void emitGlobal(AstNode *root) {
     }
     varListDescrution(globals);
 }
-
+/**
+ * @brief Generuje kód pro návrat z funkce (return statement).
+ *
+ * Funkce nejprve zpracuje výraz, který má být vrácen (`emitChildren`).
+ * Návratová hodnota je uložena na zásobník a následně přemístěna do
+ * lokální proměnné `LF@retval`. Na závěr generuje skok (`JUMP`) na koncový
+ * label funkce (`label_end`).
+ *
+ * @param root Ukazatel na uzel AST reprezentující příkaz return.
+ * @param funcStrukt Kontext funkce (FuncContext) obsahující koncový label.
+ */
 void emitReturn(AstNode *root, FuncContext *funcStrukt) {
     emitChildren(root, funcStrukt);
     if (root->child[0]->kind == AST_EMPTY) {
@@ -431,6 +463,21 @@ void emitReturn(AstNode *root, FuncContext *funcStrukt) {
     printN("POPS LF@retval");
     printN("JUMP %s", funcStrukt->label_end);
 }
+/**
+ * @brief Generuje IFJcode23 kód pro celou deklaraci funkce (funkční tělo).
+ *
+ * Funkce je zodpovědná za kompletní emitování funkčního těla, včetně:
+ * 1. **Inicializace kontextu** (stacky labelů, čítače dočasných proměnných).
+ * 2. **Definování počátečního a koncového labelu** funkce (LABEL).
+ * 3. **Správy rámců** (`CREATEFRAME`, `PUSHFRAME`).
+ * 4. **Sbírání lokálních proměnných** (včetně `retval`) a jejich definice (`DEFVAR`).
+ * 5. **Zpracování parametrů** voláním `POPS` pro jejich přesun z datového zásobníku do lokálních proměnných.
+ * 6. **Emitování těla funkce** (`emitChildren`).
+ * 7. **Správného ukončení** – buď `RETURN` (s návratovou hodnotou na zásobníku) pro běžné funkce, nebo `EXIT` pro hlavní funkci (`main$0`).
+ * 8. **Uvolnění veškeré alokované paměti** pro kontext, zásobníky a labely.
+ *
+ * @param root Ukazatel na uzel AST (`AST_FUNC_DEC`), který reprezentuje celou deklaraci funkce.
+ */
 void emitFuncDec(AstNode *root) {
     DynamiclabelStackStackPtr label_stack = stacklabelStackConstruct(DEFAULT_INIT_ELEMENT_COUNT);
     bool                      main        = false;
@@ -490,6 +537,15 @@ void emitFuncDec(AstNode *root) {
     destructorFuncContext(context);
     free(label_end);
 }
+/**
+ * @brief Generuje IFJcode23 instrukce pro volání funkce.
+ *
+ * Funkce vytvoří nový dočasný rámec (`CREATEFRAME`), zpracuje argumenty
+ * volání (parametry) a poté provede volání pomocí instrukce `CALL`.
+ *
+ * @param node Uzel AST reprezentující volání funkce.
+ * @param funcStruct Kontex funkce (FuncContext) pro zpracování argumentů.
+ */
 void emit_call_func(AstNode *node, FuncContext *funcStruct) {
     printN("CREATEFRAME");
     for (size_t i = 0; i < node->child[1]->arity; i++) {
@@ -497,10 +553,14 @@ void emit_call_func(AstNode *node, FuncContext *funcStruct) {
     }
     printN("CALL $%s$0", node->child[0]->value.str);
 }
-/*
+/**
+ * @brief Generuje IFJcode23 kód pro operaci sčítání/konkatenace (+).
  *
+ * Zajišťuje typovou kontrolu a provádí sčítání pro čísla nebo konkatenaci pro řetězce.
+ *
+ * @param node Uzel AST pro operaci AST_PLUS.
+ * @param funcStruct Kontext funkce pro dočasné proměnné a labely.
  */
-
 void emitPlus(AstNode *node, FuncContext *funcStruct) {
     for (size_t i = 0; i < 2; i++) {
         emitCommand(node->child[i], funcStruct);
@@ -583,6 +643,15 @@ void emitPlus(AstNode *node, FuncContext *funcStruct) {
     printN("LABEL %s", label_end);
     printN("");
 }
+/**
+ * @brief Generuje IFJcode23 kód pro binární operaci odčítání (-).
+ *
+ * Kontroluje, zda jsou operandy stejného numerického typu, a provádí `SUBS`.
+ * Na unární minus je zavolan `emitUnaryMinus`.
+ *
+ * @param node Uzel AST pro operaci AST_MINUS.
+ * @param funcStrukt Kontext funkce.
+ */
 void emitMinus(AstNode *node, FuncContext *funcStrukt) {
     if (node->arity == 1) {
         emitUnaryMinus(node, funcStrukt);
@@ -1843,8 +1912,6 @@ void emitTernarni(AstNode *node, FuncContext *funcStruct) {
  * @params ukazatel na hash_table
  */
 /*
- * TODO udelat if condition aby poznal co tam ma udelat
- * TODO false nebo null je false ostatni pushu true
  */
 void emitCommand(AstNode *node, FuncContext *funcStruct) {
     switch (node->kind) {

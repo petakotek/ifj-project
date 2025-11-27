@@ -383,7 +383,7 @@ Token lexerTokenNext() {
                     free(buf);
                     buf = NULL;
                     printError(LEX_ERROR,
-                               "Nedokonceny string"
+                               "Nedokonceny Komentar"
                                "%c on line : %lu",
                                c, lexer->pos);
                     memorySafeExit(LEX_ERROR);
@@ -769,7 +769,7 @@ Token lexerTokenNext() {
              */
             case ZERO: {
                 if (c == 'x') {
-                    char current_char = lexer->input[lexer->pos + 2];
+                    char current_char = lexer->input[lexer->pos + 1];
                     if (!isxdigit(current_char)) {
                         free(buf);
                         buf = NULL;
@@ -792,7 +792,10 @@ Token lexerTokenNext() {
                                "%c on line : %lu",
                                c, lexer->pos);
                     memorySafeExit(LEX_ERROR);
-                } else {
+                }else if(c == 'e' || c == 'E'){
+            	   	stav = DIGIT_EXP;
+                    lexer->pos++;
+                }else {
                     token.type             = TOKEN_INTEGER;
                     token.value.identifier = substring(zacatek, lexer->pos);
                     token.line             = radek;
@@ -827,6 +830,7 @@ Token lexerTokenNext() {
                         lexer->pos++;
                     } else {
                         free(buf);
+                        buf=NULL;
                         printError(LEX_ERROR, "Neznamy charakter v lexerTokenNext: %c on line : %lu", next_char,
                                    lexer->pos);
                         memorySafeExit(LEX_ERROR);
@@ -835,8 +839,8 @@ Token lexerTokenNext() {
                     char prev_char = lexer->input[lexer->pos - 1];
                     if (!isdigit(prev_char)) {
                         free(buf);
-                        printError(LEX_ERROR, "Neplatny format cisla (chybi exponent): %s",
-                                   substring(zacatek, lexer->pos), lexer->pos);
+                        buf=NULL;
+                        printError(LEX_ERROR, "Neplatny format cisla");
                         memorySafeExit(LEX_ERROR);
                     }
                     token.type             = TOKEN_INTEGER_EXP;
@@ -889,9 +893,8 @@ Token lexerTokenNext() {
                     CountComents = 1;
                     lexer->pos++;
                 } else {
-                    token.type = TOKEN_SLASH;
-                    token.line = radek;
-                    goto token_found;
+                	token.type = TOKEN_SLASH;
+                 	goto token_found;
                 }
                 break;
             }

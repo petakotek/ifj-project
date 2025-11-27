@@ -31,7 +31,9 @@ int main() {
     }
     // Inicializace struktury pro čtení ze souboru
     lexerInit(source_file);
-
+    // tvorba stromu pres parser
+    // print_and_free_tokens();
+    //exit(1);
     // Syntaktická kontrola a sestavení AST stromu
     AstNode *ast = parser();
 

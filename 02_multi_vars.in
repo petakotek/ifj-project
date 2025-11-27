@@ -1,8 +1,7 @@
 import "ifj25" for Ifj
 class Program {
-    static main() {
-        var d = """ hello """
-        var a = "a"
-        var c = d - a
-    }
+  static main() {
+    var s
+    s = "hello	world"
+  }
 }
