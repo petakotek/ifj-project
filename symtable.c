@@ -35,7 +35,7 @@ HashTable *hashTableInit() {
     hashT->tableCapacity = TABLE_CAPACITY;
     hashT->tableSize     = 0;
 
-    // inicializace prvků tabulky na defaultní hodnoty
+    // inicializace prvků tabulky na základní hodnoty
     hashTableInitItems(hashT);
     return hashT;
 }
@@ -95,6 +95,7 @@ int hashTableInsertItem(HashTable *hashT, char *key, SemSymbol token) {
                 printError(INTERNAL_ERROR, "Chyba alokace klice");
                 return -1;
             }
+            // uložení klíče do parametru položky tabulky
             strcpy(item->key, key);
 
             item->symbol    = token;
@@ -128,8 +129,8 @@ void hashTableDeleteItem(HashTable *hashT, char *key) {
 }
 
 /**
- * @brief Funkce pro vyhledani polozky v tabulce symbolu
- * @return Funkce vraci index v poli hashovaci tabulky, pokud nenajde vraci -1
+ * @brief Funkce pro vyhledání polozky v tabulce symbolů
+ * @return Funkce vrací index v poli tabulky symbolů, pokud nenajde, vraci -1
  */
 int hashTableSearchItem(HashTable *hashT, char *key) {
     int indexToSearch = hashItem(key, hashT);
@@ -153,7 +154,7 @@ int hashTableSearchItem(HashTable *hashT, char *key) {
             return currentIndex;
         }
 
-        // prosli jsme celou tabulku
+        // prošli jsme celou tabulku
         if (currentIndex == originalIndex && shift >= hashT->tableCapacity) {
             // printError(INTERNAL_ERROR, "Prvek \"%s\" v tabulce nebyl nalezen\n", key);
             return -1;
@@ -183,8 +184,9 @@ void hashTableDealloc(HashTable *hashT) {
 
     free(hashT);  // uvolneni alokace tabulky
 }
+
 /**
- * @brief Hashovací funkce
+ * @brief Implementace hashovací funkce polocí metody Daniela J. Bernsteina
  * @param key ukazatel na řetězec, který bude vkládán
  * @return Vrací index v poli struktur, který je využit při hledání, mazání, vkládání
  */
@@ -201,15 +203,16 @@ int hashItem(char *key, HashTable *hashT) {
         hash = ((hash << 5) + hash) + c;
     }
 
-    return hash % hashT->tableCapacity;
+    // modulo k zajištění kruhovosti vraceného indexu
+    return hash % hashT->tableCapacity; 
 }
 
 /**
  * @brief Funkce pro realokaci pole položek tabulky symbolů, je volána z funkce hashTableInsertItem
  * @param hashT je ukazatel na tabulku, která bude alokována
- * @return nemá návratovou hodnotu
  */
 void hashTableRealloc(HashTable *hashT) {
+
     if (hashT == NULL) {
         printError(INTERNAL_ERROR, "Tabulka je prazdna");
         return;
@@ -220,7 +223,8 @@ void hashTableRealloc(HashTable *hashT) {
 
     TableItem *oldArray = hashT->items;
 
-    TableItem *newArray = malloc(sizeof(TableItem) * newCapacity);
+    // Alokace nové velikosti tabulky
+    TableItem *newArray = malloc(sizeof(TableItem) * newCapacity);  
 
     if (newArray == NULL) {
         printError(INTERNAL_ERROR, "Chyba realokace pameti pole symbolu");
@@ -240,15 +244,20 @@ void hashTableRealloc(HashTable *hashT) {
         if (empty == false) {
             if (oldArray[i].key != NULL) {
                 hashTableInsertItem(hashT, key, symbol);
-                free(key);
+                free(key); // uvolnění klíče položky staré tabulky
             }
         }
     }
 
-    free(oldArray);
+    free(oldArray); // uvolnění staré tabulky
     oldArray = NULL;
 }
 
+/**
+ * @brief Funkce pro ověřující prázdnost tabulky
+ * @param hashT Ukazatel na tabulku symbolů
+ * @return Funkce navrací hodnotu true v případě, že je tabulka prádná, jinak false
+ */
 bool hashTableIsEmpty(HashTable *hashT) { return hashT->tableSize == 0; }
 
 /* Konec symtable.c */
