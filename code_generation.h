@@ -1,3 +1,12 @@
+/**
+ * Fakulta informačních technologií VUT Brno
+ *
+ * @brief Hlavičkový soubor implementace generátoru kódu
+ * @file code_generation.c
+ * @author Josef Pasek (xpasekj00), Petr Kotek (xkotekp00), Jakub Jambrozi(xjambrj00) 
+ */
+
+
 #ifndef CODEGEN_H
 #define CODEGEN_H
 #include <stddef.h>
@@ -74,3 +83,5 @@ typedef struct {
     char *func_name;
 } tmpValue;
 #endif
+
+/* Konec code_generation.h */

@@ -3,9 +3,8 @@
  *
  * @brief Hlavičkový soubor pro implementaci hashovací tabulky s implicitním zřetězením
  * pro projekt do předmětu IFJ
- * @file hashtable.c
+ * @file symtable.c
  * @author Petr Kotek (xkotekp00)
- * Upraveno: 13.10.2025
  */
 
 #include "symtable.h"

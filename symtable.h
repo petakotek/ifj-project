@@ -3,9 +3,8 @@
  *
  * Hlavičkový soubor pro implementaci hashovací tabulky s implicitním zřetězením
  * pro projekt do předmětu IFJ
- * @file hashtable.h
+ * @file symtable.h
  * @author Petr Kotek (xkotekp00)
- * Upraveno: 19.10.2025
  */
 
 #ifndef SYMTABLE_H
