@@ -1,34 +1,78 @@
 /**
  * Fakulta informačných technológií VUT Brno
  *
- * Súbor pre implementáciu lexikálnej analýzy
+ * @brief Súbor pre implementáciu lexikálnej analýzy
  * pre projekt do predmetu IFJ
  * @file  parser.c
  * @author Jakub Jambrozi (xjambrj00)
- * upravované: 22.10.2025
  */
-
-#include "parser.h"
 
 #include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 
+#include "parser.h"
 #include "ast.h"
 #include "expressions.h"
 #include "lexer.h"
 #include "support_functions.h"
 #include "symbol.h"
 
-Token                 *gLookHead = NULL;
-DynamicAstNodeStackPtr astStack  = NULL;
-Token                  token;
-AstNode               *astRoot  = NULL;
-DynamicSymbolStackPtr  stack    = NULL;
-bool                   function = false;
-bool                   block    = false;
+/*Globálne premenné pre účely implementácie funkcie parserFree*/
 
+/** 
+ * @var glookHead
+ * @brief ukazovateľ na token určený pre predanie precedenčnej analýze
+ * a následne aj na vrátenie aktuálneho tokena syntaktickej analýze
+ */
+Token *gLookHead = NULL;
+
+/** 
+ * @var astStack
+ * @brief stack uzlov abstraktného syntaktického stromu
+ */
+DynamicAstNodeStackPtr astStack  = NULL;
+
+/** 
+ * @var token
+ * @brief štruktúra Token, aktuálne použivaného tokenu získaného z lexikálneho analyzátora
+ */
+Token token;
+
+/** 
+ * @var astRoot
+ * @brief ukazovateľ na počiatočný uzol abstraktného syntaktického stromu
+ */
+AstNode *astRoot  = NULL;
+
+/** 
+ * @var stack
+ * @brief stack štruktúr Symbol
+ */
+DynamicSymbolStackPtr  stack    = NULL;
+
+/** 
+ * Pomocná globálna premenná na kozmetickú úpravu abstraktného syntaktického stromu
+ * pre účely jednoduchšej implementácie generátora.
+ * @var function
+ * @brief nadobúda true ak z oneline bloku potrebujeme vrátiť hodnotu,
+ * false ak ju nepotrebujeme.
+ */
+bool function = false;
+
+/**
+ * Pomocná globálna premenná na určenie, či sa nachádzame vo for/while bloku.
+ *
+ * @var block
+ * @brief true => sme vo for/while bloku; false => mimo neho.
+ */
+bool block = false;
+
+
+/**
+ * @brief Základna funkcia na spustenie syntaktickej analýzy  
+ */
 AstNode *parser() {
     astStack = stackAstNodeConstruct(DEFAULT_INIT_ELEMENT_COUNT);
     stack    = stackSymbolConstruct(DEFAULT_INIT_ELEMENT_COUNT);
@@ -1075,3 +1119,5 @@ void parserFree(void) {
         stack = NULL;
     }
 }
+
+/*** konec parser.c ***/

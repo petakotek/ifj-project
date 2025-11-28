@@ -1,11 +1,10 @@
 /**
  * Fakulta informačných technológií VUT Brno
  *
- * Hlavičkový súbor pre implementáciu lexikálnej analýzy
+ * @brief Hlavičkový súbor pre implementáciu lexikálnej analýzy
  * pre projekt do predmetu IFJ
  * @file  parser.h
  * @author Jakub Jambrozi (xjambrj00)
- * upravované: 22.10.2025
  */
 
 #ifndef PARSER_H
@@ -91,6 +90,13 @@ Symbol makeReduce(AstNodeType kind, size_t arity);
  * @param token token z ktorého potrebujeme prečítať konkrétnu hodnotu
  */
 Symbol makeTermValue(Token token);
+
+/**
+ * @brief pomocná funkcia vytvorenie štruktúry Symbol, ktorá bude obsahovať
+ * konkrétnu hodnotu z token.value a konkrétne značky pre zachytenie tejto hodnoty
+ * @param token token z ktorého potrebujeme prečítať konkrétnu hodnotu
+ */
+Symbol makeTermValueAndCaptureIdentifier(const char *exact);
 
 /**
  * @brief kontrolná funkcia zda prebehol vklad na zásobník správne
@@ -258,7 +264,6 @@ void continueFunc(DynamicSymbolStackPtr stack);
 /**
  * @brief Funkcia na zaobchádzanie s neterminálom Return
  * @param stack Inicializovaný stack na ktorom sú štruktúry Symbol neterminálov a terminálov
- * @param token Aktuálne používaný token z lexer.c
  */
 void returnFunc(DynamicSymbolStackPtr stack);
 
@@ -288,15 +293,83 @@ void exprFunc(DynamicSymbolStackPtr stack, Token *gLookahead, DynamicAstNodeStac
  */
 void newLineFunc(DynamicSymbolStackPtr stack, Token token);
 
+
+/**
+ * @brief Funkcia na zaobchádzanie s neterminálom OPT_NEW_LINES
+ * kontroluje výskyt a zabezpečuje načítanie za sebou idúcich nových riadkov
+ * @param stack Inicializovaný stack na ktorom sú štruktúry Symbol neterminálov a terminálov
+ * @param token Aktuálne používaný token z lexer.c
+ */
 void optNewlinesFunc(DynamicSymbolStackPtr stack, Token token);
 
-Symbol makeTermValueAndCaptureIdentifier(const char *exact);
+
+/**
+ * @brief Funkcia na zaobchádzanie s neterminálom  BLOCK_CONTENT_FUNC
+ * zabezpečuje medziskok v blocku
+ * obstaráva token nového riadku a token koncového bloku inak volá funkciu zaobchádzania
+ * s príkazmi v bloku
+ * @param stack Inicializovaný stack na ktorom sú štruktúry Symbol neterminálov a terminálov
+ * @param token Aktuálne používaný token z lexer.c
+ */
 void   blockContentFuncCheck(DynamicSymbolStackPtr stack, Token token);
-void   tokenFree(Token *token);
+
+/**
+ * @brief Funkcia na zaobchádzanie s neterminálom  CALL_IFJ
+ * kontrolu, či volanie vstavanej funkcie je správne syntakticky zapísané následne
+ * volá funkciu pre kontrolu existencie vstavanej funkcie
+ * @param stack Inicializovaný stack na ktorom sú štruktúry Symbol neterminálov a terminálov
+ * @param token Aktuálne používaný token z lexer.c
+ */
 void   callIfjfunc(DynamicSymbolStackPtr stack, Token token);
-void   elseItemFunc(DynamicSymbolStackPtr stack, Token token);
-void   elseChainFunc(DynamicSymbolStackPtr stack, Token token);
+
+/**
+ * @brief Funkcia na zaobchádzanie s neterminálom  CALL_IFJ_CHECK
+ * Prebieha kontrola existencie danej vstavanej funkcie
+ * @param stack Inicializovaný stack na ktorom sú štruktúry Symbol neterminálov a terminálov
+ * @param token Aktuálne používaný token z lexer.c
+ */
 void   callIfjCheckfunc(DynamicSymbolStackPtr stack, Token token);
+
+/**
+ * @brief Funkcia na zaobchádzanie s neterminálom  ELSE_ITEM
+ * funkcia obstaráva token if a token začiatku nového bloku, podľa toho, aký
+ * aktuálny token sa načíta z lexikálneho analyzátora, vyhodnotí či ide o else if vetvu 
+ * alebo o else vetu
+ * @param stack Inicializovaný stack na ktorom sú štruktúry Symbol neterminálov a terminálov
+ * @param token Aktuálne používaný token z lexer.c
+ */
+void   elseItemFunc(DynamicSymbolStackPtr stack, Token token);
+
+/**
+ * @brief Funkcia na zaobchádzanie s neterminálom  ELSE_CHAIN
+ * kontroluje, či po if vetve nasleduje aj else vetva, ak áno, tak volá 
+ * funkciu neterminál ELSE_ITEM a následne aj samú seba
+ * @param stack Inicializovaný stack na ktorom sú štruktúry Symbol neterminálov a terminálov
+ * @param token Aktuálne používaný token z lexer.c
+ */
+void   elseChainFunc(DynamicSymbolStackPtr stack, Token token);
+
+/**
+ * @brief Funkcia na zaobchádzanie s neterminálom  ASSIGN_IDJ_ID_CHECK
+ * funkcia rozhodujúca,či sa jedná o priradenie volaním vstavanej funkcie alebo sa jedná 
+ * o priradenie výrazom následne, tak volá precedenčnú analýzu
+ * @param stack Inicializovaný stack na ktorom sú štruktúry Symbol neterminálov a terminálov
+ * @param token Aktuálne používaný token z lexer.c
+ */
 void   AssignIfjIdCheckFunc(DynamicSymbolStackPtr stack, Token token);
+
+/**
+ * @brief funkcia používaná na uvoľnenie jedného tokenu
+ * jedná sa hlavne o uvoľňovanie tokenov s potrebou zachovania nejakých hodnôt
+ * @param token Aktuálne používaný token z lexer.c, ktorý chceme uvoľniť 
+ */
+void   tokenFree(Token *token);
+
+/**
+ * @brief funkcia zaobstarajúca uvoľnenie pamäte, ktorá je využívaná
+ * alebo alokovaná v syntaktickej analýze a pri tvorbe abstraktného syntaktického stromu
+ */
 void   parserFree(void);
-#endif  // PARSER_H
+#endif
+
+/*** konec parser.h ***/

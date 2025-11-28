@@ -1,8 +1,9 @@
-/*
- *
- * Autoři: xpasekj00, xjambrj00
- * Soubor: ast.h
- * Popis: hlavickovy soubor pro ast strom, obsahuje strukturu node pro strom
+/** 
+ * Fakulta informačných technologií VUT Brno
+ * 
+ * @brief hlavičkový súbor pre abstraktný syntaktický strom, 
+ * @file ast.h
+ * @author: Jakub Jambrozi (xjambrj00)
  */
 
 #ifndef AST_STROM_H
@@ -194,4 +195,6 @@ char    *stringChanging(char *tmp);
 char    *stringChangingLit(char *tmp);
 char    *escapeString(char *tmp);
 
-#endif  // AST_STROM_H
+#endif
+
+/*** konec ast.h ***/
