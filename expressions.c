@@ -797,7 +797,7 @@ AstNode *parseExpression(Token *token, int flag) {
             expectingRPAREN = true;
         }
 
-        // ošetření, že za klíčovým slovem is není blbost
+        // ošetření, že za klíčovým slovem is není nevalidní token
         if (checkIs) {
             if (DEBUG)
                 printLog("actualToken %s\n", tokenTypeToString(actualToken.type));
