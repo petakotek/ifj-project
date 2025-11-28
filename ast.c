@@ -1,7 +1,10 @@
-/*
- * Autor: Jakub Jambrozi(xjambrj00) 
- * Súbor: ast.c
- * Popis: zaisťuje uloženie výsledku zo syntaktickej analýzy do stromu
+/** 
+ * Fakulta informačných technologií VUT Brno
+ * 
+ * @brief súbor pre implementáciu abstraktného syntaktického strom, 
+ * pre účely implementácie syntaktickej analýzy, pre projekt do predmetu IFJ
+ * @file ast.c
+ * @author: Jakub Jambrozi (xjambrj00)
  */
 #include "ast.h"
 
@@ -10,8 +13,9 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-
 #include "support_functions.h"
+
+
 AstNode *buildIfChainFlat(size_t n, AstNode **kids) {
     // ε
     if (n == 0) {
@@ -563,3 +567,4 @@ char *escapeString(char *tmp) {
     out[j] = '\0';
     return out;
 }
+/*** konec ast.c ***/
