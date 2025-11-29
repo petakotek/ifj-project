@@ -687,7 +687,7 @@ SemValidationStates recursiveNodeWalker(AstNode* currentNode, AstNodeType parent
 
                 if (foundSymbol == NULL) {
                     EXEC_END(SEMANTICS_ERROR_UNDEF,
-                             "Promena v danem ramci neexistuje a nemuze byt parametr promenne!\n");
+                             "Promena v danem ramci neexistuje a nemuze byt parametr!\n");
                 }
 
                 identifierDataType = foundSymbol->dataType;
