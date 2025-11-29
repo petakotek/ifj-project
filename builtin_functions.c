@@ -299,21 +299,28 @@ void emitSubstring(AstNode* functionCallNode, FuncContext* context) {
     printN("JUMPIFNEQ temp$label$substring$error$%u LF@temp$var$substringType string@string", substringCounter);
     printN("STRLEN LF@temp$var$substringSLen LF@temp$var$substringSin");
     printN("ADD LF@temp$var$substringSLen LF@temp$var$substringSLen int@1");
+
     // Podmínka pro počátek podřetězce
     printN("TYPE LF@temp$var$substringType LF@temp$var$substringStart");
     printN("JUMPIFEQ temp$label$substring$startInt$%u LF@temp$var$substringType string@int", substringCounter);
+    // Desetinné číslo
+    printN("TYPE LF@temp$var$substringType LF@temp$var$substringStart");
+    printN("JUMPIFNEQ temp$label$substring$error$%u LF@temp$var$substringType string@float", substringCounter);
     // Začátek je desetinné číslo, ale možná celočíselné
     printN("ISINT LF@temp$var$substringType LF@temp$var$substringStart");
-    printN("JUMPIFNEQ temp$label$substring$error$%u LF@temp$var$substringType bool@true", substringCounter);
+    printN("JUMPIFNEQ temp$label$substring$errorNotInt$%u LF@temp$var$substringType bool@true", substringCounter);
     printN("FLOAT2INT LF@temp$var$substringStart LF@temp$var$substringStart");
 
     // Podmínka pro konec podřetězce
     printN("LABEL temp$label$substring$startInt$%u", substringCounter);
     printN("TYPE LF@temp$var$substringType LF@temp$var$substringEnd");
     printN("JUMPIFEQ temp$label$substring$endInt$%u LF@temp$var$substringType string@int", substringCounter);
+    // Desetinné číslo
+    printN("TYPE LF@temp$var$substringType LF@temp$var$substringEnd");
+    printN("JUMPIFNEQ temp$label$substring$error$%u LF@temp$var$substringType string@float", substringCounter);
     // Konec je desetinné číslo, ale možná celočíselné
     printN("ISINT LF@temp$var$substringType LF@temp$var$substringEnd");
-    printN("JUMPIFNEQ temp$label$substring$error$%u LF@temp$var$substringType bool@true", substringCounter);
+    printN("JUMPIFNEQ temp$label$substring$errorNotInt$%u LF@temp$var$substringType bool@true", substringCounter);
     printN("FLOAT2INT LF@temp$var$substringEnd LF@temp$var$substringEnd");
 
     // začátek < 0 ?
@@ -337,6 +344,9 @@ void emitSubstring(AstNode* functionCallNode, FuncContext* context) {
     // Chyba
     printN("LABEL temp$label$substring$error$%u", substringCounter);
     printN("EXIT int@%i", RUNTIME_SEMANTICS_ERROR_BAD_TYPE);
+    // Chyba -- vstup je desetinné číslo
+    printN("LABEL temp$label$substring$errorNotInt$%u", substringCounter);
+    printN("EXIT int@%i", RUNTIME_SEMANTICS_ERROR_UNCOMPATIBLE);
 
     // Operace
     printN("LABEL temp$label$substring$operation$%u", substringCounter);
@@ -432,9 +442,17 @@ void emitOrd(AstNode* functionCallNode, FuncContext* context) {
     // Podmínka pro číslo
     printN("TYPE LF@temp$var$ordType LF@temp$var$ordNum");
     printN("JUMPIFEQ temp$label$ord$operation$%u LF@temp$var$ordType string@int", ordCounter);
+
+    // Možná desetinné číslo
+    printN("TYPE LF@temp$var$ordType LF@temp$var$ordNum");
+    printN("JUMPIFNEQ temp$label$ord$error$%u LF@temp$var$ordType string@float", ordCounter);
+
     // Desetinné číslo, ale možná celočíselné
     printN("ISINT LF@temp$var$ordIsInt LF@temp$var$ordNum");
     printN("JUMPIFEQ temp$label$ord$float$%u LF@temp$var$ordIsInt bool@true", ordCounter);
+
+    // Chyba -- vstup je desetinné číslo
+    printN("EXIT int@%i", RUNTIME_SEMANTICS_ERROR_UNCOMPATIBLE);
     // Chyba
     printN("LABEL temp$label$ord$error$%u", ordCounter);
     printN("EXIT int@%i", RUNTIME_SEMANTICS_ERROR_BAD_TYPE);
@@ -463,10 +481,20 @@ void emitChr(AstNode* functionCallNode, FuncContext* context) {
     // Podmínka
     printN("TYPE LF@temp$var$chrType LF@temp$var$chrVal");
     printN("JUMPIFEQ temp$label$chr$operation$%u LF@temp$var$chrType string@int", chrCounter);
+
+    // Možná desetinné číslo
+    printN("TYPE LF@temp$var$chrType LF@temp$var$chrVal");
+    printN("JUMPIFNEQ temp$label$chr$error$%u LF@temp$var$chrType string@float", chrCounter);
+
     // Desetinné číslo, ale možná celočíselný
     printN("ISINT LF@temp$var$chrIsInt LF@temp$var$chrVal");
     printN("JUMPIFEQ temp$label$chr$float$%u LF@temp$var$chrIsInt bool@true", chrCounter);
+
+    // Chyba -- vstup je desetinné číslo
+    printN("EXIT int@%i", RUNTIME_SEMANTICS_ERROR_UNCOMPATIBLE);
+
     // Chyba
+    printN("LABEL temp$label$chr$error$%u", chrCounter);
     printN("EXIT int@%i", RUNTIME_SEMANTICS_ERROR_BAD_TYPE);
 
     // Celé desetinné číslo
