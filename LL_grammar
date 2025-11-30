@@ -1,59 +1,56 @@
 @file: LL_grammar.txt
 @author Jakub Jambrozi (xjambrj00)
 LL(1) gramatika pre jazyk IFJ25
-Štartovací symbol: Program
+Štartovací symbol: <program>
 
-=== Povinný Prolog a kostra programu ===
-Program -> Prolog TOKEN_NEW_LINE Main_class TOKEN_EOF
-Prolog -> TOKEN_KEYWORD_IMPORT TOKEN_STRING("ifj25") TOKEN_KEYWORD_FOR TOKEN_KEYWORD_IFJ
-Main_class -> TOKEN_KEYWORD_CLASS TOKEN_IDENTIFIER(Program) TOKEN_BLOCK_START TOKEN_NEW_LINE Main_class_block TOKEN_BLOCK_END TOKEN_NEW_LINE
-Main_class_block -> Func_dec Main_class_block | eps
+<program> -> <optNewlines> <prolog> TOKEN_NEW_LINE <optNewlines> <mainClass>
+<prolog> -> TOKEN_KEYWORD_IMPORT <optNewlines> TOKEN_STRING("ifj25") TOKEN_KEYWORD_FOR <optNewlines> TOKEN_KEYWORD_IFJ
 
-=== Všeobecný block a jeho obsah ===
-Block -> TOKEN_BLOCK_START Block_content TOKEN_BLOCK_END TOKEN_NEW_LINE
-Block_content -> TOKEN_NEW_LINE smth | Oneline_expr_opt 
+<mainClass> -> TOKEN_KEYWORD_CLASS TOKEN_IDENTIFIER(Program) TOKEN_BLOCK_START TOKEN_NEW_LINE <mainClassBlock> TOKEN_BLOCK_END <newLineCheck>
+<mainClassBlock> -> <funcDec> <mainClassBlock> | TOKEN_NEW_LINE <mainClassBlock> | eps
+<newLineCheck> -> TOKEN_NEW_LINE <newLineCheck> | TOKEN_EOF
+<optNewlines> -> TOKEN_NEW_LINE <optNewlines> | eps
 
-smth -> smth_list smth_tail
-smth_tail -> TOKEN_NEW_LINE smth | eps 
-smth_list ->  Return | Var | If | While | For | Break | Continue | Call_assign | Global_assign | eps 
-Oneline_expr_opt -> Expr | eps
+<block> -> TOKEN_BLOCK_START <blockContentCheck> TOKEN_BLOCK_END
+<blockContentCheck> -> <expr> | TOKEN_NEW_LINE <blockContent> | eps
+<blockContent> -> TOKEN_NEW_LINE <blockContent> | <stmt> | eps
 
-=== Funkcie, Getter a Setter === 
-Func_dec -> TOKEN_KEYWORD_STATIC TOKEN_IDENTIFIER Func_dec_tail
-Func_dec_tail -> TOKEN_LPAREN Param TOKEN_RPAREN Block | TOKEN_ASSIGN TOKEN_LPAREN TOKEN_IDENTIFIER TOKEN_RPAREN Block | Block
-Param -> TOKEN_IDENTIFIER Param_list | eps
-Param_list -> TOKEN_COMMA TOKEN_IDENTIFIER Param_list | eps 
-Func_call -> TOKEN_IDENTIFIER TOKEN_LPAREN Var_arg TOKEN_RPAREN | TOKEN_KEYWORD_IFJ TOKEN_DOT TOKEN_IDENTIFIER TOKEN_LPAREN Var_arg TOKEN_RPAREN
+<stmt> -> <stmtList> <stmtTail>
+<stmtTail> -> TOKEN_NEW_LINE <blockContent> | eps 
+<stmtList> -> <return> | <var> | <if> | <while> | <for> | <break> | <continue> | <callAssign> | <globalAssign> 
+            | TOKEN_IDENTIFIER <expr> | <expr>  | <block>
 
-=== Deklarovanie výrazu ===
-Var -> TOKEN_KEYWORD_VAR TOKEN_IDENTIFIER Var_EXT
-Var_EXT -> TOKEN_ASSIGN Expr | eps 
-Var_arg -> Expr var_arg_list | eps
-var_arg_list -> TOKEN_COMMA Expr var_arg_list | eps 
+<funcDec> -> TOKEN_KEYWORD_STATIC TOKEN_IDENTIFIER <funcDecTail>
+<funcDecTail> -> TOKEN_LPAREN <optNewlines> <param> TOKEN_RPAREN <block> TOKEN_NEW_LINE
+               | TOKEN_ASSIGN TOKEN_LPAREN TOKEN_IDENTIFIER TOKEN_RPAREN <block> TOKEN_NEW_LINE
+               | <block> TOKEN_NEW_LINE
+<param> -> TOKEN_IDENTIFIER <paramList> | eps
+<paramList> -> TOKEN_COMMA <optNewlines> TOKEN_IDENTIFIER <paramList> | eps 
 
-=== Všeobecné priradnie ====
-Call_assign -> TOKEN_IDENTIFIER Call_assign_list
-Call_assign_list -> TOKEN_ASSIGN Expr | TOKEN_LPAREN Var_arg TOKEN_RPAREN   
-Global_assign -> TOKEN_GLOBAL_ID TOKEN_ASSIGN Expr 
- 
-=== if else podmienky ===
-If -> TOKEN_KEYWORD_IF TOKEN_LPAREN Expr TOKEN_RPAREN Block Else 
-Else ->  TOKEN_KEYWORD_ELSE Block | TOKEN_KEYWORD_ELSE If | eps
+<var> -> TOKEN_KEYWORD_VAR TOKEN_IDENTIFIER <varExt>
+<varExt> -> TOKEN_ASSIGN <assignIfjIdCheck> | TOKEN_NEW_LINE | TOKEN_BLOCK_END
+<varArg> -> <expr> <varArgList> | eps
+<varArgList> -> TOKEN_COMMA <optNewlines> <expr> <varArgList> | eps 
 
-=== Cykly For a While === 
-While -> TOKEN_KEYWORD_WHILE TOKEN_LPAREN Expr TOKEN_RPAREN Block
-For -> TOKEN_KEYWORD_FOR TOKEN_LPAREN TOKEN_IDENTIFIER TOKEN_KEYWORD_IN Expr TOKEN_RPAREN Block
-Break -> TOKEN_KEYWORD_BREAK
-Continue -> TOKEN_KEYWORD_CONTINUE
+<callAssign> -> TOKEN_IDENTIFIER <callAssignList>
+<callAssignList> -> TOKEN_ASSIGN <assignIfjIdCheck> | TOKEN_LPAREN <varArg> TOKEN_RPAREN
+<globalAssign> -> TOKEN_GLOBAL_ID TOKEN_ASSIGN <assignIfjIdCheck>
 
-=== Return pre EXTSTAT === 
-Return -> TOKEN_KEYWORD_RETURN Return_expr
-Return_expr -> Expr | eps
+<if> -> TOKEN_KEYWORD_IF TOKEN_LPAREN <expr> TOKEN_RPAREN <block> <elseChain>
+<elseChain> -> TOKEN_KEYWORD_ELSE <elseItem> <elseChain> | eps
+<elseItem> -> TOKEN_KEYWORD_IF TOKEN_LPAREN <expr> TOKEN_RPAREN <block> | <block>
 
+<while> -> TOKEN_KEYWORD_WHILE TOKEN_LPAREN <expr> TOKEN_RPAREN <block>
+<for> -> TOKEN_KEYWORD_FOR TOKEN_LPAREN TOKEN_IDENTIFIER TOKEN_KEYWORD_IN <expr> TOKEN_RPAREN <block>
+<break> -> TOKEN_KEYWORD_BREAK
+<continue> -> TOKEN_KEYWORD_CONTINUE
 
-=== Výrazy ===
-Expr -> /* precedenčná analýza */
+<assignIfjIdCheck> -> <expr> | TOKEN_KEYWORD_IFJ <callIfJ>
+<callIfJ> -> TOKEN_DOT <optNewlines> <callIfjCheck> TOKEN_LPAREN <varArg> TOKEN_RPAREN
+<callIfjCheck> -> TOKEN_IDENTIFIER("read_str",  "read_num", "write", "floor", "str", "length",
+                      "substring", "strcmp",   "ord",   "chr",   "read_bool")
 
+<return> -> TOKEN_KEYWORD_RETURN <returnExpr>
+<returnExpr> -> <expr> | eps
 
-
- 
+<expr> -> PSA
