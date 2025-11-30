@@ -330,7 +330,7 @@ double floatExp(const char *s) {
 
     double base = strtod(base_str, NULL);
     double exp  = strtod(pos + 1, NULL);
-    return pow(base, exp);
+    return base * pow(10, exp);
 }
 
 const char *astNodeTypeToString(AstNodeType kind) {
