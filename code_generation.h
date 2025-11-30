@@ -18,12 +18,11 @@
 #include "support_functions.h"
 #include "symtable.h"
 typedef struct {
-    char                     *func_name;
-    DynamiclabelStackStackPtr label_stack;
-    char                     *label_end;
-    int                       value_counter;
+    char                     *funcName;
+    DynamiclabelStackStackPtr labelStack;
+    char                     *labelEnd;
+    int                       valueCounter;
     bool                      main;
-    size_t                    loop_counter;
 } FuncContext;
 void  emitProlog();
 void  emitCommand(AstNode *node, FuncContext *funcContext);
@@ -74,14 +73,11 @@ void emitElse(AstNode *node, FuncContext *funcContext);
 // Pomocná struktura pro ukládání proměnných behem projizdeni uzlem funkce
 // abych si na zacatku funkce nadefinovali vsechny promenen ktere budou pouzity
 typedef struct {
-    char **var_names;  // pole jmen var proměnných
+    char **varNames;  // pole jmen var proměnných
     int    count;      // počet proměnných pro resize
     int    capacity;   // kapacita pole pro resize
 } VarList;
 // Pomocna struktura pro ukladani si scopu a counter pro delani docasnych promenych abychom se vyhli konfiktum
-typedef struct {
-    char *func_name;
-} tmpValue;
 #endif
 
 /* Konec code_generation.h */

@@ -1,0 +1,169 @@
+
+digraph LexerStateMachine {
+    // ===================== GLOBÁLNÍ NASTAVENÍ =====================
+    // Směr grafu (Top-Bottom), fonty a základní vzhled
+        // Nastavení pro A4 na výšku (nebo na šířku v dokumentu)
+    // rankdir=LR je pro lexery obvykle lepší (tok zleva doprava)
+    rankdir=TB; 
+    
+    // Velikost A4 v palcích (cca 21x29 cm)
+    // 'size' omezí vykreslování, aby se to vešlo
+    size="11,8"; // A4 na šířku (Landscape) - v dokumentaci otočíte obrázek o 90 stupňů
+    ratio="fill";
+    splines=true;  // Křivky místo lomených čar
+    nodesep=0.2;   // Horizontální mezera
+    ranksep=0.4;   // Vertikální mezera
+    
+    // Výchozí styl pro všechny uzly (stavy)
+    node [
+        fontname="Consolas", 
+        fontsize=11, 
+        style="filled,rounded", 
+        shape=rect,       // V Graphviz je 'rounded rect' podobný vašemu 'state'
+        penwidth=1.2,     // Tloušťka čáry
+        color="#807272"
+    ];
+ // Výchozí styl pro hrany (šipky)
+    edge [fontname="Consolas", fontsize=10, color="#333333", arrowsize=0.8];
+
+
+    // ===================== DEFINICE STAVŮ A STYLŮ =====================
+    
+    // 1. Startovní stav (žlutý)
+    node [fillcolor="#FFF59D",peripheries=2];
+    SLX [label="START_LEX"];
+
+    // 2. Terminální stavy - DVOJITÁ ČÁRA (peripheries=2) + Červená
+    // Tady je ten trik, který PlantUML neumí
+    node [fillcolor="#ca8d8d",peripheries=1];
+    END_Q1;HEXA_Z;DOUBLE_Q;
+    
+    node [fillcolor="#FFF4CC"];
+   BLOCK_C;
+    // 3. Čísla (Modré) - Obyčejný rámeček
+    node [fillcolor="#E5F0FF", peripheries=2, penwidth=1.2];
+    ZERO; NUMBER; HEXA_N; FLOAT_N; DECIMAL_E; FLOAT_E;
+
+    // 4. Řetězce (Zelené)
+    node [fillcolor="#D8FFD8"];
+    STRING;  STRING_B;END_Q2
+
+    // 5. Operátory (Fialové)
+    node [fillcolor="#EEDBFF"];
+    P; M; MU; C; D; DD; TD; CO; QM;
+    ASS; EQO; LT; LTE; GT; GTE;
+    AH; A; OH; O; NG; NT;
+    BS; BE; PL; PR;
+    UNDERSCORE; // Underscore jste měl jako operátor
+    SLASH;
+
+    // 6. Identifikátory (Oranžové)
+    node [fillcolor="#f7a996"];
+    ID; GID;
+
+    // 7. Komentáře (Žluté světlé)
+    node [fillcolor="#FFF4CC"];
+    LINE_C; BLOCK_C;
+
+
+    // ===================== PŘECHODY =====================
+
+    // Vstupní bod (neviditelný uzel -> start)
+    start_point [shape=point, width=0, style=invis];
+    start_point -> SLX;
+
+    // Smyčka WHITESPACE nahoře
+    // Používáme porty :n (north) aby šipka šla horem
+    SLX:nw -> SLX:ne [label=" whitespace "];
+
+
+    // ----- IDENTIFIKÁTORY -----
+    SLX -> ID [label=" isalpha() "];
+    SLX -> UNDERSCORE [label=" _ "];
+    
+    ID -> ID [label=" alnum | _ "];
+    UNDERSCORE -> GID [label=" _ "];
+    UNDERSCORE -> ID [label=" alnum "];
+
+
+    // ----- ČÍSLA -----
+    SLX -> ZERO [label=" 0 "];
+    SLX -> NUMBER [label=" digit "];
+
+    ZERO -> HEXA_N [label=" x "];
+    ZERO -> FLOAT_N [label=" . "];
+    ZERO -> DECIMAL_E [label=" e/E "];
+
+    NUMBER -> NUMBER [label=" digit "];
+    NUMBER -> FLOAT_N [label=" . "];
+    NUMBER -> DECIMAL_E [label=" e/E "];
+
+    HEXA_N -> HEXA_N [label=" hex "];
+    FLOAT_N -> FLOAT_N [label=" digit "];
+    FLOAT_N -> FLOAT_E [label=" e/E "];
+    DECIMAL_E -> DECIMAL_E [label=" digit "];
+    FLOAT_E -> FLOAT_E [label=" digit "];
+
+
+    // ----- ŘETĚZCE -----
+    SLX -> STRING [label=" ' \" ' "]; // Uvozovky je třeba escapovat
+    
+    STRING -> STRING [label=" C > 31 "];
+    STRING -> DOUBLE_Q [label=" \" "];
+    STRING -> HEXA_Z [label=" \\x "];
+    HEXA_Z -> STRING [label=" hex esc "];
+
+    DOUBLE_Q -> STRING_B [label=" ' \" ' "];
+    STRING_B -> END_Q1 [label=" ' \" ' "];
+    END_Q1 -> END_Q2 [label=" ' \" ' "];
+    END_Q1 -> STRING_B [label = "c != ' \" ' "];
+    END_Q2 -> STRING_B [label = "c != ' \" ' "];
+
+
+    // ----- KOMENTÁŘE -----
+    SLX -> SLASH [label=" / "];
+    SLASH -> LINE_C [label=" / "];
+    SLASH -> BLOCK_C [label=" * "];
+    
+    LINE_C -> LINE_C;
+    BLOCK_C -> BLOCK_C [label=" uvnitř "];
+    BLOCK_C:n -> SLX:n [label=" */ "];
+
+    // ----- OPERÁTORY -----
+    // Aby byl graf přehledný, sdružíme hrany
+    SLX -> P [label=" + "];
+    SLX -> M [label=" - "];
+    SLX -> MU [label=" * "];
+    SLX -> C [label=" , "];
+    SLX -> CO [label=" : "];
+    SLX -> QM [label=" ? "];
+    SLX -> BS [label=" { "];
+    SLX -> BE [label=" } "];
+    SLX -> PL [label=" ( "];
+    SLX -> PR [label=" ) "];
+
+    SLX -> D [label=" . "];
+    D -> DD [label=" . "];
+    DD -> TD [label=" . "];
+
+    SLX -> ASS [label=" = "];
+    ASS -> EQO [label=" = "];
+    
+    SLX -> LT [label=" < "];
+    LT -> LTE [label=" = "];
+    
+    SLX -> GT [label=" > "];
+    GT -> GTE [label=" = "];
+    
+    SLX -> NG [label=" ! "];
+    NG -> NT [label=" = "];
+
+    SLX -> AH [label=" & "];
+    AH -> A [label=" & "];
+    
+    SLX -> OH [label=" | "];
+    OH -> O [label=" | "];
+
+    // ----- KONCE -----
+    SLX -> EOF [label=" \\0 "];
+}

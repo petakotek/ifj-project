@@ -20,8 +20,8 @@
 #include "builtin_functions.h"
 #include "dynamic_stack.h"
 #include "support_functions.h"
-static size_t loop_counter = 0;
-static size_t if_counter   = 0;
+static size_t loopCounter = 0;
+static size_t ifCounter   = 0;
 
 void printN(const char *fmt, ...) {
     va_list args;
@@ -56,46 +56,46 @@ char *resizeLabelName(char *prefix, size_t *size) {
  * Label je tvořen z řetězce existujících labelů ve větvi s připojením nového bloku.
  * Příklad: `fun$1$while$2` je label pro druhý `while` cyklus uvnitř funkce `fun`.
  *
- * @param func_name Jméno bloku (např. "fun", "if", "while").
- * @param funcStruckt Kontext funkce obsahující zásobník labelů (`label_stack`).
+ * @param funcName Jméno bloku (např. "fun", "if", "while").
+ * @param funcStruckt Kontext funkce obsahující zásobník labelů (`labelStack`).
  * @param pridaniDoStacku Logická hodnota určující, zda se má vygenerovaný label uložit na zásobník.
- * @param global_counter Globální čítač pro unikátní číslování aktuálního bloku.
+ * @param globalCounter Globální čítač pro unikátní číslování aktuálního bloku.
  * @return Ukazatel na nově alokovaný řetězec obsahující výsledný label.
  */
-char *generatorLable(char *func_name, FuncContext *funcStruckt, bool pridaniDoStacku, size_t global_counter) {
-    size_t size_of_buffer = 128;
-    char  *result_label   = (char *)malloc(size_of_buffer);
-    if (result_label == NULL) {
+char *generatorLable(char *funcName, FuncContext *funcStruckt, bool pridaniDoStacku, size_t globalCounter) {
+    size_t sizeOfBuffer = 128;
+    char  *resultLabel   = (char *)malloc(sizeOfBuffer);
+    if (resultLabel == NULL) {
         printError(INTERNAL_ERROR, "Error allocating memory for label");
         memorySafeExit(INTERNAL_ERROR);
     }
 
-    int current_len = 0;
+    int currentLen = 0;
 
     // Získání existujícího prefixu ze zásobníku (pokud existuje)
-    if (!stacklabelStackIsEmpty(funcStruckt->label_stack)) {
-        char *prefix = stacklabelStackRead(funcStruckt->label_stack);
+    if (!stacklabelStackIsEmpty(funcStruckt->labelStack)) {
+        char *prefix = stacklabelStackRead(funcStruckt->labelStack);
         if (prefix != NULL) {
-            size_t prefix_len = strlen(prefix);
+            size_t prefixLen = strlen(prefix);
 
-            if (prefix_len + 1 + 10 >= size_of_buffer) {
-                result_label = resizeLabelName(result_label, &size_of_buffer);
-                if (result_label == NULL) {
+            if (prefixLen + 1 + 10 >= sizeOfBuffer) {
+                resultLabel = resizeLabelName(resultLabel, &sizeOfBuffer);
+                if (resultLabel == NULL) {
                     printError(INTERNAL_ERROR, "Error resizing label buffer");
                     memorySafeExit(INTERNAL_ERROR);
                 }
             }
-            if (prefix_len + 1 + 10 >= size_of_buffer) {
-                result_label = resizeLabelName(result_label, &size_of_buffer);
-                if (result_label == NULL) {
+            if (prefixLen + 1 + 10 >= sizeOfBuffer) {
+                resultLabel = resizeLabelName(resultLabel, &sizeOfBuffer);
+                if (resultLabel == NULL) {
                     printError(INTERNAL_ERROR, "Error resizing label buffer");
                     memorySafeExit(INTERNAL_ERROR);
                 }
             }
 
-            current_len = snprintf(result_label, size_of_buffer, "%s", prefix);
-            if (current_len < 0 || (size_t)current_len >= size_of_buffer) {
-                free(result_label);
+            currentLen = snprintf(resultLabel, sizeOfBuffer, "%s", prefix);
+            if (currentLen < 0 || (size_t)currentLen >= sizeOfBuffer) {
+                free(resultLabel);
                 printError(INTERNAL_ERROR, "Error during initial label copy");
                 memorySafeExit(INTERNAL_ERROR);
                 return NULL;
@@ -105,44 +105,44 @@ char *generatorLable(char *func_name, FuncContext *funcStruckt, bool pridaniDoSt
 
     // 2. Přidání nového bloku jako suffix: "$if$3"
     // Formát: $TypBloku$CisloBloku
-    size_t remaining_space = size_of_buffer - current_len;
+    size_t remainingSpace = sizeOfBuffer - currentLen;
     int    written         = 0;
     if (funcStruckt->main == false) {
-        written = snprintf(result_label + current_len, remaining_space, "$%s$%zu", func_name, global_counter);
+        written = snprintf(resultLabel + currentLen, remainingSpace, "$%s$%zu", funcName, globalCounter);
     } else if (!pridaniDoStacku) {
-        written = snprintf(result_label + current_len, remaining_space, "$%s", func_name);
+        written = snprintf(resultLabel + currentLen, remainingSpace, "$%s", funcName);
     } else {
-        written = snprintf(result_label + current_len, remaining_space, "%s", func_name);
+        written = snprintf(resultLabel + currentLen, remainingSpace, "%s", funcName);
     }
-    if (written <= 0 || (size_t)written >= remaining_space) {
+    if (written <= 0 || (size_t)written >= remainingSpace) {
         // potřebna resize
-        if ((size_t)written >= remaining_space) {
-            result_label = resizeLabelName(result_label, &size_of_buffer);
-            if (result_label == NULL) {
+        if ((size_t)written >= remainingSpace) {
+            resultLabel = resizeLabelName(resultLabel, &sizeOfBuffer);
+            if (resultLabel == NULL) {
                 printError(INTERNAL_ERROR, "Error resizing label buffer (suffix)");
                 memorySafeExit(INTERNAL_ERROR);
             }
-            remaining_space = size_of_buffer - current_len;
+            remainingSpace = sizeOfBuffer - currentLen;
             // znovu zapsani
-            written = snprintf(result_label + current_len, remaining_space, "$%s$%zu", funcStruckt->func_name,
-                               global_counter);
+            written = snprintf(resultLabel + currentLen, remainingSpace, "$%s$%zu", funcStruckt->funcName,
+                               globalCounter);
         }
 
         if (written <= 0) {
-            free(result_label);
+            free(resultLabel);
             printError(INTERNAL_ERROR, "Error during suffix creation");
             memorySafeExit(INTERNAL_ERROR);
         }
     }
-    current_len += written;
+    currentLen += written;
 
     if (pridaniDoStacku) {
         // Uložení plného label na zásobník
         // pro funkce a if-else while-for pro dalsi zanoreni
-        stacklabelStackPush(funcStruckt->label_stack, result_label);
+        stacklabelStackPush(funcStruckt->labelStack, resultLabel);
     }
     // a jeho vraceni
-    return result_label;
+    return resultLabel;
 }
 /**
  * @brief Generuje kód voláním emitCommand pro všechny potomky uzlu.
@@ -162,54 +162,43 @@ VarList *varListCreate() {
     VarList *list   = malloc(sizeof(VarList));
     list->capacity  = 16;
     list->count     = 0;
-    list->var_names = calloc(1, sizeof(char *) * list->capacity);
+    list->varNames = calloc(1, sizeof(char *) * list->capacity);
     return list;
 }
 /**
  * @brief Přidá jméno proměnné do seznamu (listu) s automatickou změnou velikosti.
- *
- * Pokud je seznam plný, kapacita se zdvojnásobí pomocí `realloc()`.
- * Funkce kontroluje duplicitu: pokud proměnná s daným jménem již existuje,
- * operace je ignorována. Jméno proměnné je zkopírováno (duplikováno) a uloženo.
  *
  * @param list Ukazatel na strukturu VarList, do které se má proměnná přidat.
  * @param name Ukazatel na řetězec obsahující jméno proměnné, které se má přidat.
  */
 void varListAdd(VarList *list, char *name) {
     for (int i = 0; i < list->count; i++) {
-        if (strcmp(list->var_names[i], name) == 0) {
+        if (strcmp(list->varNames[i], name) == 0) {
             return;
         }
     }
     // az moc promenych resize
     if (list->count >= list->capacity) {
         list->capacity *= 2;
-        list->var_names = realloc(list->var_names, sizeof(char *) * list->capacity);
+        list->varNames = realloc(list->varNames, sizeof(char *) * list->capacity);
     }
-    list->var_names[list->count] = strdup(name);
+    list->varNames[list->count] = strdup(name);
     list->count++;
 }
 /**
  * @brief Uvolní (zničí) seznam proměnných a veškerou alokovanou paměť.
  *
- * Funkce uvolní paměť alokovanou pro jednotlivá jména proměnných i pro samotné pole
- * ukazatelů.
- *
  * @param list Ukazatel na strukturu VarList, která má být zničena.
  */
 void varListDescrution(VarList *list) {
     for (int i = 0; i < list->count; i++) {
-        free(list->var_names[i]);
+        free(list->varNames[i]);
     }
-    free(list->var_names);
+    free(list->varNames);
     free(list);
 }
 /**
  * @brief Generuje kód pro všechny deklarované funkce.
- *
- * Zajišťuje, že hlavní funkce (`main$0`) je emitována jako poslední,
- * aby byla umístěna na konec programu a ostatní funkce
- * jsou emitovány v pořadí, v jakém se nacházejí v AST.
  *
  * @param root Kořenový uzel AST obsahující deklarace funkcí.
  * @param funcContext Kontext funkce (proměnné, zásobníky atd.) pro generování kódu.
@@ -227,10 +216,6 @@ void emitFunctions(AstNode *root, FuncContext *funcContext) {
 }
 /**
  * @brief Přidá do seznamu dočasných proměnných (tmps) potřebné pro binární operace.
- *
- * Tato funkce generuje unikátní jména dočasných proměnných na základě typu binární
- * operace (uzlu AST) a aktuálního kontextu (jména funkce a ID). Jména jsou
- * uložena do seznamu `vars`.
  *
  * @param vars Ukazatel na seznam proměnných (VarList), kam se mají dočasné proměnné přidat.
  * @param func Jméno aktuální funkce pro prefix jména dočasné proměnné.
@@ -354,12 +339,11 @@ FuncContext *constuctorFuncContext() {
         printError(INTERNAL_ERROR, "chyba v alokaci");
         memorySafeExit(INTERNAL_ERROR);
     }
-    funcStruct->func_name     = NULL;
-    funcStruct->label_stack   = NULL;
-    funcStruct->label_end     = NULL;
+    funcStruct->funcName     = NULL;
+    funcStruct->labelStack   = NULL;
+    funcStruct->labelEnd     = NULL;
     funcStruct->main          = false;
-    funcStruct->value_counter = 0;
-    funcStruct->loop_counter  = 0;
+    funcStruct->valueCounter = 0;
     return funcStruct;
 }
 
@@ -404,8 +388,8 @@ void collectLocalVars(AstNode *node, VarList *vars, FuncContext *funcStruct) {
         case AST_GLOBAL_ID:
         case AST_IDENTIFIER:
         case AST_OR: {
-            node->tmpId = funcStruct->value_counter++;
-            addBinopTmps(vars, funcStruct->func_name, node->tmpId, node);
+            node->tmpId = funcStruct->valueCounter++;
+            addBinopTmps(vars, funcStruct->funcName, node->tmpId, node);
             break;
         }
         default:
@@ -415,9 +399,6 @@ void collectLocalVars(AstNode *node, VarList *vars, FuncContext *funcStruct) {
 /**
  * @brief Rekurzivně sbírá jména globálních proměnných z AST.
  *
- * Prochází Abstract Syntax Tree (AST) a přidává jména uzlů typu `AST_GLOBAL_ID`
- * do seznamu `global`. Jména globálních proměnných jsou potřebná pro jejich
- * následnou inicializaci.
  *
  * @param root Ukazatel na aktuální uzel AST pro rekurzivní průchod.
  * @param global Ukazatel na seznam proměnných (VarList), kam se mají globální proměnné přidat.
@@ -437,86 +418,68 @@ void emitLookGlobal(AstNode *root, VarList *global) {
 /**
  * @brief Generuje kód pro definici a inicializaci globálních proměnných.
  *
- * Funkce nejprve rekurzivně posbírá všechna jména globálních proměnných z celého AST
- * pomocí `emitLookGlobal`. Poté pro každou proměnnou vygeneruje IFJcode23
- * instrukce pro její definici (`DEFVAR GF@...`) a inicializaci na `nil@nil`
- * (`MOVE GF@... nil@nil`).
- *
  * @param root Kořenový uzel AST celého programu.
  */
 void emitGlobal(AstNode *root) {
     VarList *globals = varListCreate();
     emitLookGlobal(root, globals);
     for (int i = 0; i < globals->count; i++) {
-        printN("DEFVAR GF@%s", globals->var_names[i]);
-        printN("MOVE GF@%s nil@nil", globals->var_names[i]);
+        printN("DEFVAR GF@%s", globals->varNames[i]);
+        printN("MOVE GF@%s nil@nil", globals->varNames[i]);
     }
     varListDescrution(globals);
 }
 /**
  * @brief Generuje kód pro návrat z funkce (return statement).
  *
- * Funkce nejprve zpracuje výraz, který má být vrácen (`emitChildren`).
- * Návratová hodnota je uložena na zásobník a následně přemístěna do
- * lokální proměnné `LF@retval`. Na závěr generuje skok (`JUMP`) na koncový
- * label funkce (`label_end`).
  *
  * @param root Ukazatel na uzel AST reprezentující příkaz return.
- * @param funcStrukt Kontext funkce (FuncContext) obsahující koncový label.
+ * @param funcStruct Kontext funkce (FuncContext) obsahující koncový label.
  */
-void emitReturn(AstNode *root, FuncContext *funcStrukt) {
-    emitChildren(root, funcStrukt);
+void emitReturn(AstNode *root, FuncContext *funcStruct) {
+    emitChildren(root, funcStruct);
     if (root->child[0]->kind == AST_EMPTY) {
         printN("PUSHS nil@nil");
     }
     printN("POPS LF@retval");
-    printN("JUMP %s", funcStrukt->label_end);
+    printN("JUMP %s", funcStruct->labelEnd);
 }
 /**
- * @brief Generuje IFJcode23 kód pro celou deklaraci funkce (funkční tělo).
+ * @brief Generuje IFJcode25 kód pro celou deklaraci funkce (funkční tělo).
  *
- * Funkce je zodpovědná za kompletní emitování funkčního těla, včetně:
- * 1. **Inicializace kontextu** (stacky labelů, čítače dočasných proměnných).
- * 2. **Definování počátečního a koncového labelu** funkce (LABEL).
- * 3. **Správy rámců** (`CREATEFRAME`, `PUSHFRAME`).
- * 4. **Sbírání lokálních proměnných** (včetně `retval`) a jejich definice (`DEFVAR`).
- * 5. **Zpracování parametrů** voláním `POPS` pro jejich přesun z datového zásobníku do lokálních proměnných.
- * 6. **Emitování těla funkce** (`emitChildren`).
- * 7. **Správného ukončení** – buď `RETURN` (s návratovou hodnotou na zásobníku) pro běžné funkce, nebo `EXIT` pro hlavní funkci (`main$0`).
- * 8. **Uvolnění veškeré alokované paměti** pro kontext, zásobníky a labely.
- *
+ * Funkce je zodpovědná za kompletní emitování funkčního těla
  * @param root Ukazatel na uzel AST (`AST_FUNC_DEC`), který reprezentuje celou deklaraci funkce.
  */
 void emitFuncDec(AstNode *root) {
-    DynamiclabelStackStackPtr label_stack = stacklabelStackConstruct(DEFAULT_INIT_ELEMENT_COUNT);
+    DynamiclabelStackStackPtr labelStack = stacklabelStackConstruct(DEFAULT_INIT_ELEMENT_COUNT);
     bool                      main        = false;
     char                     *label       = NULL;
-    size_t                    tmp_counter = 0;
+    size_t                    tmpCounter = 0;
     FuncContext              *context     = constuctorFuncContext();
-    context->func_name                    = root->child[0]->value.str;
-    context->label_end                    = NULL;
-    context->label_stack                  = label_stack;
+    context->funcName                    = root->child[0]->value.str;
+    context->labelEnd                    = NULL;
+    context->labelStack                  = labelStack;
     if (strcmp(root->child[0]->value.str, "main$0") == 0 && root->child[1]->child[0]->kind == AST_EMPTY) {
         main          = true;
         context->main = true;
-        label         = generatorLable(root->child[0]->value.str, context, true, tmp_counter);
+        label         = generatorLable(root->child[0]->value.str, context, true, tmpCounter);
         printN("LABEL %s", label);
     } else {
-        label = generatorLable(root->child[0]->value.str, context, true, tmp_counter);
+        label = generatorLable(root->child[0]->value.str, context, true, tmpCounter);
         printN("LABEL %s", label);
     }
     context->main      = false;
-    char *label_end    = generatorLable("end", context, false, tmp_counter);
-    context->label_end = label_end;
+    char *labelEnd    = generatorLable("end", context, false, tmpCounter);
+    context->labelEnd = labelEnd;
     printN("CREATEFRAME");
     printN("PUSHFRAME");
     printIfj();
     // sbirani lokalnich promenych na deklaraci
-    VarList *local_vars = varListCreate();
-    varListAdd(local_vars, "retval");
-    collectLocalVars(root->child[2], local_vars, context);  // funkce uvnitr
-    for (int i = 0; i < local_vars->count; i++) {
-        printN("DEFVAR LF@%s", local_vars->var_names[i]);
+    VarList *localVars = varListCreate();
+    varListAdd(localVars, "retval");
+    collectLocalVars(root->child[2], localVars, context);  // funkce uvnitr
+    for (int i = 0; i < localVars->count; i++) {
+        printN("DEFVAR LF@%s", localVars->varNames[i]);
     }
     AstNode *params = root->child[1];
     if (params->child[0]->kind != AST_EMPTY) {
@@ -528,7 +491,7 @@ void emitFuncDec(AstNode *root) {
     }
     printN("MOVE LF@retval nil@nil");
     emitChildren(root->child[2], context);
-    printN("LABEL %s", label_end);
+    printN("LABEL %s", labelEnd);
     if (!main) {
         printN("PUSHS LF@retval");
         printN("POPFRAME");
@@ -536,18 +499,18 @@ void emitFuncDec(AstNode *root) {
     } else {
         printN("EXIT int@0");
     }
-    varListDescrution(local_vars);
-    while (!stacklabelStackIsEmpty(label_stack)) {
-        char *item = stacklabelStackRead(label_stack);
-        stacklabelStackPop(label_stack);
+    varListDescrution(localVars);
+    while (!stacklabelStackIsEmpty(labelStack)) {
+        char *item = stacklabelStackRead(labelStack);
+        stacklabelStackPop(labelStack);
         free(item);
     }
-    stacklabelStackDestruct(label_stack);
+    stacklabelStackDestruct(labelStack);
     destructorFuncContext(context);
-    free(label_end);
+    free(labelEnd);
 }
 /**
- * @brief Generuje IFJcode23 instrukce pro volání funkce.
+ * @brief Generuje IFJcode25 instrukce pro volání funkce.
  *
  * Funkce vytvoří nový dočasný rámec (`CREATEFRAME`), zpracuje argumenty
  * volání (parametry) a poté provede volání pomocí instrukce `CALL`.
@@ -563,7 +526,7 @@ void emit_call_func(AstNode *node, FuncContext *funcStruct) {
     printN("CALL $%s$0", node->child[0]->value.str);
 }
 /**
- * @brief Generuje IFJcode23 kód pro operaci sčítání/konkatenace (+).
+ * @brief Generuje IFJcode25 kód pro operaci sčítání/konkatenace (+).
  *
  * Zajišťuje typovou kontrolu a provádí sčítání pro čísla nebo konkatenaci pro řetězce.
  *
@@ -576,19 +539,19 @@ void emitPlus(AstNode *node, FuncContext *funcStruct) {
     }
     int  id = node->tmpId;
     char ln[128], rn[128], ty[128], rs[128];
-    snprintf(ln, sizeof ln, "%s_ln_%d", funcStruct->func_name, id);
-    snprintf(rn, sizeof rn, "%s_rn_%d", funcStruct->func_name, id);
-    snprintf(ty, sizeof ty, "%s_ty_%d", funcStruct->func_name, id);
-    snprintf(rs, sizeof rs, "%s_rs_%d", funcStruct->func_name, id);
+    snprintf(ln, sizeof ln, "%s_ln_%d", funcStruct->funcName, id);
+    snprintf(rn, sizeof rn, "%s_rn_%d", funcStruct->funcName, id);
+    snprintf(ty, sizeof ty, "%s_ty_%d", funcStruct->funcName, id);
+    snprintf(rs, sizeof rs, "%s_rs_%d", funcStruct->funcName, id);
 
-    int  size_for_label = strlen(funcStruct->func_name) + 20;
-    char label_ok[size_for_label], label_add[size_for_label], label_concat[size_for_label], label_end[size_for_label],
-        label_err[size_for_label];
-    snprintf(label_ok, sizeof label_ok, "%s$ok_add$%d", funcStruct->func_name, id);
-    snprintf(label_add, sizeof label_add, "%s$add$%d", funcStruct->func_name, id);
-    snprintf(label_concat, sizeof label_concat, "%s$concat$%d", funcStruct->func_name, id);
-    snprintf(label_end, sizeof label_end, "%s$end_add$%d", funcStruct->func_name, id);
-    snprintf(label_err, sizeof label_err, "%s$err$%d", funcStruct->func_name, id);
+    int  size_for_label = strlen(funcStruct->funcName) + 20;
+    char labelOk[size_for_label], labelAdd[size_for_label], labelConcat[size_for_label], labelEnd[size_for_label],
+        labelErr[size_for_label];
+    snprintf(labelOk, sizeof labelOk, "%s$ok_add$%d", funcStruct->funcName, id);
+    snprintf(labelAdd, sizeof labelAdd, "%s$add$%d", funcStruct->funcName, id);
+    snprintf(labelConcat, sizeof labelConcat, "%s$concat$%d", funcStruct->funcName, id);
+    snprintf(labelEnd, sizeof labelEnd, "%s$end_add$%d", funcStruct->funcName, id);
+    snprintf(labelErr, sizeof labelErr, "%s$err$%d", funcStruct->funcName, id);
     //  Ulozeni do docasnych promenychg
     printN("POPS LF@%s", rn);  // Uložíme pravou hodnotu (right)
     printN("POPS LF@%s", ln);  // Uložíme levou hodnotu (left)
@@ -611,76 +574,74 @@ void emitPlus(AstNode *node, FuncContext *funcStruct) {
     // Vrátíme typ pravého operandu zpět
     printN("PUSHS LF@%s", ty);  // zásobník: [type_left, type_right]
                                 // Porovnání, že typy jsou stejné
-    printN("JUMPIFEQS %s", label_ok);
-    printN("JUMP %s", label_err);
+    printN("JUMPIFEQS %s", labelOk);
+    printN("JUMP %s", labelErr);
 
-    printN("LABEL %s", label_ok);
+    printN("LABEL %s", labelOk);
     // Je to string?
     printN("PUSHS LF@%s", ty);      // [right_type]
     printN("PUSHS string@string");  // [right_type, "string"]
-    printN("JUMPIFEQS %s", label_concat);
+    printN("JUMPIFEQS %s", labelConcat);
 
     // Je to int?
     printN("PUSHS LF@%s", ty);   // [right_type]
     printN("PUSHS string@int");  // [right_type, "int"]
-    printN("JUMPIFEQS %s", label_add);
+    printN("JUMPIFEQS %s", labelAdd);
 
     // Je to float?
     printN("PUSHS LF@%s", ty);     // [right_type]
     printN("PUSHS string@float");  // [right_type, "float"]
-    printN("JUMPIFEQS %s", label_add);
+    printN("JUMPIFEQS %s", labelAdd);
 
-    printN("JUMP %s", label_err);
+    printN("JUMP %s", labelErr);
     // --- ADD větev (pro int a float) ---
-    printN("LABEL %s", label_add);
+    printN("LABEL %s", labelAdd);
     // Musíme znovu načíst původní hodnoty
     printN("PUSHS LF@%s", ln);
     printN("PUSHS LF@%s", rn);
     printN("ADDS");
-    printN("JUMP %s", label_end);
+    printN("JUMP %s", labelEnd);
     // --- CONCAT větev (pro string) ---
-    printN("LABEL %s", label_concat);
+    printN("LABEL %s", labelConcat);
     printN("MOVE LF@%s string@\"\"", rs);
     printN("CONCAT LF@%s LF@%s LF@%s", rs, ln, rn);
     printN("PUSHS LF@%s", rs);
-    printN("JUMP %s", label_end);
+    printN("JUMP %s", labelEnd);
 
     // --- CHYBA ---
-    printN("LABEL %s", label_err);
+    printN("LABEL %s", labelErr);
     printN("EXIT int@%i", RUNTIME_SEMANTICS_ERROR_UNCOMPATIBLE);
     // --- KONEC ---
-    printN("LABEL %s", label_end);
+    printN("LABEL %s", labelEnd);
     printN("");
 }
 /**
- * @brief Generuje IFJcode23 kód pro binární operaci odčítání (-).
- *
- * Kontroluje, zda jsou operandy stejného numerického typu, a provádí `SUBS`.
+ * @brief Generuje IFJcode25 kód pro binární operaci odčítání (-).
  * Na unární minus je zavolan `emitUnaryMinus`.
  *
  * @param node Uzel AST pro operaci AST_MINUS.
- * @param funcStrukt Kontext funkce.
+ * @param funcStruct Kontext funkce.
  */
-void emitMinus(AstNode *node, FuncContext *funcStrukt) {
+void emitMinus(AstNode *node, FuncContext *funcStruct) {
     if (node->arity == 1) {
-        emitUnaryMinus(node, funcStrukt);
+        emitUnaryMinus(node, funcStruct);
         return;
     }
     for (int i = 0; i < 2; i++) {
-        emitCommand(node->child[i], funcStrukt);
+        emitCommand(node->child[i], funcStruct);
     }
     // Po emitBinaryOp máme na zásobníku: [hodnota_left, hodnota_right]
     int  id = node->tmpId;
     char ln[128], rn[128], ty[128];
-    snprintf(ln, sizeof ln, "%s_ln_%d", funcStrukt->func_name, id);
-    snprintf(rn, sizeof rn, "%s_rn_%d", funcStrukt->func_name, id);
-    snprintf(ty, sizeof ty, "%s_ty_%d", funcStrukt->func_name, id);
+    snprintf(ln, sizeof ln, "%s_ln_%d", funcStruct->funcName, id);
+    snprintf(rn, sizeof rn, "%s_rn_%d", funcStruct->funcName, id);
+    snprintf(ty, sizeof ty, "%s_ty_%d", funcStruct->funcName, id);
 
-    int  size_for_label = strlen(funcStrukt->func_name) + 20;
-    char label_ok[size_for_label], label_end[size_for_label], label_err[size_for_label];
-    snprintf(label_ok, sizeof label_ok, "%s$ok_minus$%d", funcStrukt->func_name, id);
-    snprintf(label_end, sizeof label_end, "%s$end_minus$%d", funcStrukt->func_name, id);
-    snprintf(label_err, sizeof label_err, "%s$err_minus$%d", funcStrukt->func_name, id);
+    int  size_for_label = strlen(funcStruct->funcName) + 20;
+    char labelOk[size_for_label], labelEnd[size_for_label], labelErr[size_for_label];
+    snprintf(labelOk, sizeof labelOk, "%s$ok_minus$%d", funcStruct->funcName, id);
+    snprintf(labelEnd, sizeof labelEnd, "%s$end_minus$%d", funcStruct->funcName, id);
+    snprintf(labelErr, sizeof labelErr, "%s$err_minus$%d", funcStruct->funcName, id);
     //  Ulozeni do docasnych promenychg
     printN("POPS LF@%s", rn);  // Uložíme pravou hodnotu (right)
     printN("POPS LF@%s", ln);  // Uložíme levou hodnotu (left)
@@ -703,52 +664,56 @@ void emitMinus(AstNode *node, FuncContext *funcStrukt) {
     // Vrátíme typ pravého operandu zpět
     printN("PUSHS LF@%s", ty);  // zásobník: [type_left, type_right]
                                 // Porovnání, že typy jsou stejné
-    printN("JUMPIFEQS %s", label_ok);
-    printN("JUMP %s", label_err);
+    printN("JUMPIFEQS %s", labelOk);
+    printN("JUMP %s", labelErr);
 
-    printN("LABEL %s", label_ok);
+    printN("LABEL %s", labelOk);
     printN("PUSHS LF@%s", ty);
     printN("PUSHS string@string");
-    printN("JUMPIFEQS %s", label_err);
+    printN("JUMPIFEQS %s", labelErr);
 
     printN("PUSHS LF@%s", ln);
     printN("PUSHS LF@%s", rn);
     printN("SUBS");
-    printN("JUMP %s", label_end);
+    printN("JUMP %s", labelEnd);
     // --- CHYBA ---
-    printN("LABEL %s", label_err);
+    printN("LABEL %s", labelErr);
     printN("EXIT int@%i", RUNTIME_SEMANTICS_ERROR_UNCOMPATIBLE);
     // --- KONEC ---
-    printN("LABEL %s", label_end);
+    printN("LABEL %s", labelEnd);
     printN("");
 }
-/*
-dodelat * operator na string a cislo
-*/
+/**
+ * @brief Generuje IFJcode25 kód pro operaci nasobení/konkatenac (*).
+ *
+ * Zajišťuje typovou kontrolu a provádí nasobeni pro čísla nebo konkatenaci pro řetězce a čislo.
+ *
+ * @param node Uzel AST pro operaci AST_PLUS.
+ * @param funcStruct Kontext funkce pro dočasné proměnné a labely.
+ */
 void emitMul(AstNode *node, FuncContext *funcStruct) {
-    // Vyhodnoť obě děti
     for (int i = 0; i < 2; i++) {
         emitCommand(node->child[i], funcStruct);
     }
 
     int  id = node->tmpId;
     char ln[128], rn[128], rty[128], lty[128], rs[128], counter[128];
-    snprintf(ln, sizeof ln, "%s_ln_%d", funcStruct->func_name, id);
-    snprintf(rn, sizeof rn, "%s_rn_%d", funcStruct->func_name, id);
-    snprintf(rty, sizeof rty, "%s_rty_%d", funcStruct->func_name, id);
-    snprintf(lty, sizeof lty, "%s_lty_%d", funcStruct->func_name, id);
-    snprintf(rs, sizeof rs, "%s_rs_%d", funcStruct->func_name, id);
-    snprintf(counter, sizeof counter, "%s_counter_%d", funcStruct->func_name, id);
+    snprintf(ln, sizeof ln, "%s_ln_%d", funcStruct->funcName, id);
+    snprintf(rn, sizeof rn, "%s_rn_%d", funcStruct->funcName, id);
+    snprintf(rty, sizeof rty, "%s_rty_%d", funcStruct->funcName, id);
+    snprintf(lty, sizeof lty, "%s_lty_%d", funcStruct->funcName, id);
+    snprintf(rs, sizeof rs, "%s_rs_%d", funcStruct->funcName, id);
+    snprintf(counter, sizeof counter, "%s_counter_%d", funcStruct->funcName, id);
 
-    char label_mul[128], label_concat[128], label_end[128], label_err[128], label_start[128], label_loop_end[128];
-    snprintf(label_mul, sizeof label_mul, "%s$mul$%d", funcStruct->func_name, id);
-    snprintf(label_concat, sizeof label_concat, "%s$concat$%d", funcStruct->func_name, id);
-    snprintf(label_end, sizeof label_end, "%s$end_mul$%d", funcStruct->func_name, id);
-    snprintf(label_err, sizeof label_err, "%s$err$%d", funcStruct->func_name, id);
-    snprintf(label_start, sizeof label_start, "%s$start$%d", funcStruct->func_name, id);
-    snprintf(label_loop_end, sizeof label_loop_end, "%s$loop_end$%d", funcStruct->func_name, id);
+    char label_mul[128], labelConcat[128], labelEnd[128], labelErr[128], label_start[128], label_loop_end[128],labelConcat_1[128];
+    snprintf(label_mul, sizeof label_mul, "%s$mul$%d", funcStruct->funcName, id);
+    snprintf(labelConcat, sizeof labelConcat, "%s$concat$%d", funcStruct->funcName, id);
+    snprintf(labelConcat_1, sizeof labelConcat_1, "%s$concat_1$%d", funcStruct->funcName, id);
+    snprintf(labelEnd, sizeof labelEnd, "%s$end_mul$%d", funcStruct->funcName, id);
+    snprintf(labelErr, sizeof labelErr, "%s$err$%d", funcStruct->funcName, id);
+    snprintf(label_start, sizeof label_start, "%s$start$%d", funcStruct->funcName, id);
+    snprintf(label_loop_end, sizeof label_loop_end, "%s$loop_end$%d", funcStruct->funcName, id);
 
-    // Ulož hodnoty
     printN("POPS LF@%s", rn);
     printN("POPS LF@%s", ln);
 
@@ -764,12 +729,12 @@ void emitMul(AstNode *node, FuncContext *funcStruct) {
     // Kontrola: levý je string?
     printN("PUSHS LF@%s", lty);
     printN("PUSHS string@string");
-    printN("JUMPIFEQS %s", label_concat);
+    printN("JUMPIFEQS %s", labelConcat_1);
 
-    // Kontrola: pravý je string?
+    // Kontrola: pravý je string = chyba
     printN("PUSHS LF@%s", rty);
     printN("PUSHS string@string");
-    printN("JUMPIFEQS %s", label_concat);
+    printN("JUMPIFEQS %s", labelErr);
 
     // Jinak násobení float * float
     printN("LABEL %s", label_mul);
@@ -777,10 +742,19 @@ void emitMul(AstNode *node, FuncContext *funcStruct) {
     printN("PUSHS LF@%s", ln);
     printN("PUSHS LF@%s", rn);
     printN("MULS");
-    printN("JUMP %s", label_end);
+    printN("JUMP %s", labelEnd);
 
+    printN("LABEL %s",labelConcat_1);
+    printN("PUSHS LF@%s", rty);
+    printN("PUSHS string@float");
+    printN("JUMPIFNEQS %s", labelErr);
+
+    printN("PUSHS LF@%s", rn);
+    printN("ISINTS");
+    printN("PUSHS bool@true");
+    printN("JUMPIFNEQS %s", labelErr);
     // CONCAT větev
-    printN("LABEL %s", label_concat);
+    printN("LABEL %s", labelConcat);
 
     printN("MOVE LF@%s int@0", counter);
     printN("PUSHS LF@%s", rn);
@@ -818,30 +792,35 @@ void emitMul(AstNode *node, FuncContext *funcStruct) {
     printN("LABEL %s", label_loop_end);
     printN("PUSHS LF@%s", rs);
 
-    printN("JUMP %s", label_end);
+    printN("JUMP %s", labelEnd);
 
-    printN("LABEL %s", label_err);
+    printN("LABEL %s", labelErr);
     printN("EXIT int@%d", RUNTIME_SEMANTICS_ERROR_UNCOMPATIBLE);
-    printN("LABEL %s", label_end);
+    printN("LABEL %s", labelEnd);
 }
-
-void emitDiv(AstNode *node, FuncContext *funcStrukt) {
+/**
+ * @brief Generuje IFJcode25 kód pro dělení (/), včetně konverze int na float a ošetření dělení nulou.
+ *
+ * @param node Uzel AST pro operaci dělení.
+ * @param funcStrukt Kontext funkce.
+ */
+void emitDiv(AstNode *node, FuncContext *funcStruct) {
     for (int i = 0; i < 2; i++) {
-        emitCommand(node->child[i], funcStrukt);
+        emitCommand(node->child[i], funcStruct);
     }
     // Příprava dočasných proměnných a labelů
     int  id = node->tmpId;
     char ln[128], rn[128], ty[128];
-    snprintf(ln, sizeof ln, "%s_ln_%d", funcStrukt->func_name, id);
-    snprintf(rn, sizeof rn, "%s_rn_%d", funcStrukt->func_name, id);
-    snprintf(ty, sizeof ty, "%s_ty_%d", funcStrukt->func_name, id);
+    snprintf(ln, sizeof ln, "%s_ln_%d", funcStruct->funcName, id);
+    snprintf(rn, sizeof rn, "%s_rn_%d", funcStruct->funcName, id);
+    snprintf(ty, sizeof ty, "%s_ty_%d", funcStruct->funcName, id);
 
-    char label_ok[128], label_int_div[128], label_div_zero[128], label_end[128], label_err[128];
-    snprintf(label_ok, sizeof label_ok, "%s$ok_div$%d", funcStrukt->func_name, id);
-    snprintf(label_int_div, sizeof label_int_div, "%s$intdiv_div$%d", funcStrukt->func_name, id);
-    snprintf(label_div_zero, sizeof label_div_zero, "%s$divzero_div$%d", funcStrukt->func_name, id);
-    snprintf(label_end, sizeof label_end, "%s$end_div$%d", funcStrukt->func_name, id);
-    snprintf(label_err, sizeof label_err, "%s$err_div$%d", funcStrukt->func_name, id);
+    char labelOk[128], labelIntDiv[128], labelDivZero[128], labelEnd[128], labelErr[128];
+    snprintf(labelOk, sizeof labelOk, "%s$ok_div$%d", funcStruct->funcName, id);
+    snprintf(labelIntDiv, sizeof labelIntDiv, "%s$intdiv_div$%d", funcStruct->funcName, id);
+    snprintf(labelDivZero, sizeof labelDivZero, "%s$divzero_div$%d", funcStruct->funcName, id);
+    snprintf(labelEnd, sizeof labelEnd, "%s$end_div$%d", funcStruct->funcName, id);
+    snprintf(labelErr, sizeof labelErr, "%s$err_div$%d", funcStruct->funcName, id);
 
     // Uložení operandů do dočasných proměnných
     printN("POPS LF@%s", rn);  // Uložíme pravou hodnotu (right)
@@ -865,40 +844,40 @@ void emitDiv(AstNode *node, FuncContext *funcStrukt) {
     printN("PUSHS LF@%s", ty);  // zásobník: [type_left, type_right]
 
     // Porovnání, že typy jsou stejné
-    printN("JUMPIFEQS %s", label_ok);
-    printN("JUMP %s", label_err);
+    printN("JUMPIFEQS %s", labelOk);
+    printN("JUMP %s", labelErr);
 
     // Typy jsou stejné - nyní zkontrolujeme konkrétní typ
-    printN("LABEL %s", label_ok);
+    printN("LABEL %s", labelOk);
 
     // Zakázat string (string nelze dělit)
     printN("PUSHS LF@%s", ty);
     printN("PUSHS string@string");
-    printN("JUMPIFEQS %s", label_err);
+    printN("JUMPIFEQS %s", labelErr);
 
     // Je to int? → potřeba konverze na float
     printN("PUSHS LF@%s", ty);
     printN("PUSHS string@int");
-    printN("JUMPIFEQS %s", label_int_div);
+    printN("JUMPIFEQS %s", labelIntDiv);
 
     // Je to float → kontrola dělení float nulou
     printN("PUSHS LF@%s", rn);
     printN("PUSHS float@0x0p+0");
-    printN("JUMPIFEQS %s", label_div_zero);
+    printN("JUMPIFEQS %s", labelDivZero);
 
     // Float dělení (ln / rn)
     printN("PUSHS LF@%s", ln);
     printN("PUSHS LF@%s", rn);
     printN("DIVS");
-    printN("JUMP %s", label_end);
+    printN("JUMP %s", labelEnd);
 
     // Int dělení - kontrola int/0, pak konverze na float
-    printN("LABEL %s", label_int_div);
+    printN("LABEL %s", labelIntDiv);
 
     // Kontrola dělení int nulou
     printN("PUSHS LF@%s", rn);
     printN("PUSHS int@0");
-    printN("JUMPIFEQS %s", label_div_zero);
+    printN("JUMPIFEQS %s", labelDivZero);
 
     // Konverze int → float pro oba operandy
     printN("INT2FLOAT LF@%s LF@%s", ln, ln);
@@ -908,34 +887,42 @@ void emitDiv(AstNode *node, FuncContext *funcStrukt) {
     printN("PUSHS LF@%s", ln);
     printN("PUSHS LF@%s", rn);
     printN("DIVS");
-    printN("JUMP %s", label_end);
+    printN("JUMP %s", labelEnd);
 
     // Chyba: dělení nulou
-    printN("LABEL %s", label_div_zero);
+    printN("LABEL %s", labelDivZero);
     printN("EXIT int@%i", RUNTIME_SEMANTICS_ERROR_UNCOMPATIBLE);
 
     // Chyba: nekompatibilní typy
-    printN("LABEL %s", label_err);
+    printN("LABEL %s", labelErr);
     printN("EXIT int@%i", RUNTIME_SEMANTICS_ERROR_UNCOMPATIBLE);
 
     // Konec dělení
-    printN("LABEL %s", label_end);
+    printN("LABEL %s", labelEnd);
 }
-void emitEqual(AstNode *node, FuncContext *funcStrukt) {
+/**
+ * @brief Generuje IFJcode25 kód pro operaci rovnosti (==) s kontrolou typové shody.
+ *
+ * Pokud se typy liší, vrací `bool@false`. Jinak používá instrukci `EQS`.
+ *
+ * @param node Uzel AST pro operaci AST_EQ.
+ * @param funcStrukt Kontext funkce.
+ */
+void emitEqual(AstNode *node, FuncContext *funcStruct) {
     for (int i = 0; i < 2; i++) {
-        emitCommand(node->child[i], funcStrukt);
+        emitCommand(node->child[i], funcStruct);
     }
     // Příprava dočasných proměnných a labelů
     int  id = node->tmpId;
     char ln[128], rn[128], ty[128];
-    snprintf(ln, sizeof ln, "%s_ln_%d", funcStrukt->func_name, id);
-    snprintf(rn, sizeof rn, "%s_rn_%d", funcStrukt->func_name, id);
-    snprintf(ty, sizeof ty, "%s_ty_%d", funcStrukt->func_name, id);
+    snprintf(ln, sizeof ln, "%s_ln_%d", funcStruct->funcName, id);
+    snprintf(rn, sizeof rn, "%s_rn_%d", funcStruct->funcName, id);
+    snprintf(ty, sizeof ty, "%s_ty_%d", funcStruct->funcName, id);
 
-    char label_ok[128], label_end[128], label_err[128];
-    snprintf(label_ok, sizeof label_ok, "%s$ok$%d", funcStrukt->func_name, id);
-    snprintf(label_end, sizeof label_end, "%s$end_equal$%d", funcStrukt->func_name, id);
-    snprintf(label_err, sizeof label_err, "%s$err$%d", funcStrukt->func_name, id);
+    char labelOk[128], labelEnd[128], labelErr[128];
+    snprintf(labelOk, sizeof labelOk, "%s$ok$%d", funcStruct->funcName, id);
+    snprintf(labelEnd, sizeof labelEnd, "%s$end_equal$%d", funcStruct->funcName, id);
+    snprintf(labelErr, sizeof labelErr, "%s$err$%d", funcStruct->funcName, id);
 
     // Uložení operandů do dočasných proměnných
     printN("POPS LF@%s", rn);  // Uložíme pravou hodnotu (right)
@@ -959,40 +946,47 @@ void emitEqual(AstNode *node, FuncContext *funcStrukt) {
     printN("PUSHS LF@%s", ty);  // zásobník: [type_left, type_right]
 
     // Porovnání, že typy jsou stejné
-    printN("JUMPIFEQS %s", label_ok);
-    printN("JUMP %s", label_err);
+    printN("JUMPIFEQS %s", labelOk);
+    printN("JUMP %s", labelErr);
 
     // Typy jsou stejné - nyní zkontrolujeme konkrétní typ
-    printN("LABEL %s", label_ok);
+    printN("LABEL %s", labelOk);
     printN("PUSHS LF@%s", ln);
     printN("PUSHS LF@%s", rn);
     printN("EQS");
-    printN("JUMP %s", label_end);
+    printN("JUMP %s", labelEnd);
 
-    printN("LABEL %s", label_err);
+    printN("LABEL %s", labelErr);
     printN("PUSHS bool@false");
-    printN("LABEL %s", label_end);
+    printN("LABEL %s", labelEnd);
 }
-
+/**
+ * @brief Generuje IFJcode25 kód pro porovnání menší než (<) s konverzí na float.
+ *
+ * Konvertuje oba numerické operandy na `float` a používá instrukci `LTS`.
+ *
+ * @param node Uzel AST pro operaci AST_LT.
+ * @param funcStruct Kontext funkce.
+ */
 void emitLess(AstNode *node, FuncContext *funcStruct) {
     for (int i = 0; i < 2; i++) {
         emitCommand(node->child[i], funcStruct);
     }
     int  id = node->tmpId;
     char ln[128], rn[128], rty[128], lty[128];
-    snprintf(ln, sizeof ln, "%s_ln_%d", funcStruct->func_name, id);
-    snprintf(rn, sizeof rn, "%s_rn_%d", funcStruct->func_name, id);
-    snprintf(lty, sizeof lty, "%s_lty_%d", funcStruct->func_name, id);
-    snprintf(rty, sizeof rty, "%s_rty_%d", funcStruct->func_name, id);
+    snprintf(ln, sizeof ln, "%s_ln_%d", funcStruct->funcName, id);
+    snprintf(rn, sizeof rn, "%s_rn_%d", funcStruct->funcName, id);
+    snprintf(lty, sizeof lty, "%s_lty_%d", funcStruct->funcName, id);
+    snprintf(rty, sizeof rty, "%s_rty_%d", funcStruct->funcName, id);
 
-    char label_ok[128], label_end[128], label_err[128], label_l_float[128], label_r_float[128], label_r_check[128];
+    char labelOk[128], labelEnd[128], labelErr[128], labellFloat[128], labelRFloat[128], labelRCheck[128];
 
-    snprintf(label_ok, sizeof label_ok, "%s$le_ok$%d", funcStruct->func_name, id);
-    snprintf(label_end, sizeof label_end, "%s$le_end$%d", funcStruct->func_name, id);
-    snprintf(label_err, sizeof label_err, "%s$le_err$%d", funcStruct->func_name, id);
-    snprintf(label_l_float, sizeof label_l_float, "%s$le_l_f$%d", funcStruct->func_name, id);
-    snprintf(label_r_float, sizeof label_r_float, "%s$le_r_f$%d", funcStruct->func_name, id);
-    snprintf(label_r_check, sizeof label_r_check, "%s$le_r_chk$%d", funcStruct->func_name, id);
+    snprintf(labelOk, sizeof labelOk, "%s$le_ok$%d", funcStruct->funcName, id);
+    snprintf(labelEnd, sizeof labelEnd, "%s$le_end$%d", funcStruct->funcName, id);
+    snprintf(labelErr, sizeof labelErr, "%s$le_err$%d", funcStruct->funcName, id);
+    snprintf(labellFloat, sizeof labellFloat, "%s$le_l_f$%d", funcStruct->funcName, id);
+    snprintf(labelRFloat, sizeof labelRFloat, "%s$le_r_f$%d", funcStruct->funcName, id);
+    snprintf(labelRCheck, sizeof labelRCheck, "%s$le_r_chk$%d", funcStruct->funcName, id);
 
     printN("POPS LF@%s", rn);
     printN("POPS LF@%s", ln);
@@ -1006,61 +1000,69 @@ void emitLess(AstNode *node, FuncContext *funcStruct) {
 
     printN("PUSHS LF@%s", lty);
     printN("PUSHS string@float");
-    printN("JUMPIFEQS %s", label_r_check);
+    printN("JUMPIFEQS %s", labelRCheck);
 
     printN("PUSHS LF@%s", lty);
     printN("PUSHS string@int");
-    printN("JUMPIFEQS %s", label_l_float);
+    printN("JUMPIFEQS %s", labellFloat);
 
-    printN("JUMP %s", label_err);
+    printN("JUMP %s", labelErr);
 
-    printN("LABEL %s", label_l_float);
+    printN("LABEL %s", labellFloat);
     printN("INT2FLOAT LF@%s LF@%s", ln, ln);
 
-    printN("LABEL %s", label_r_check);
+    printN("LABEL %s", labelRCheck);
     printN("PUSHS LF@%s", rty);
     printN("PUSHS string@float");
-    printN("JUMPIFEQS %s", label_ok);
+    printN("JUMPIFEQS %s", labelOk);
     printN("PUSHS LF@%s", rty);
     printN("PUSHS string@int");
-    printN("JUMPIFEQS %s", label_r_float);
-    printN("JUMP %s", label_err);
+    printN("JUMPIFEQS %s", labelRFloat);
+    printN("JUMP %s", labelErr);
 
-    printN("LABEL %s", label_r_float);
+    printN("LABEL %s", labelRFloat);
     printN("INT2FLOAT LF@%s LF@%s", rn, rn);
 
-    printN("LABEL %s", label_ok);
+    printN("LABEL %s", labelOk);
 
     printN("PUSHS LF@%s", ln);
     printN("PUSHS LF@%s", rn);
     printN("LTS");
-    printN("JUMP %s", label_end);
+    printN("JUMP %s", labelEnd);
 
     // Chyba: nil nebo různé typy
-    printN("LABEL %s", label_err);
+    printN("LABEL %s", labelErr);
     printN("EXIT int@%i", RUNTIME_SEMANTICS_ERROR_UNCOMPATIBLE);
 
-    printN("LABEL %s", label_end);
+    printN("LABEL %s", labelEnd);
 }
+/**
+ * @brief Generuje IFJcode25 kód pro porovnání větší nebo rovno (>=).
+ *
+ * Implementováno jako (A > B) OR (A == B) s automatickou konverzí int na float.
+ *
+ * @param node Uzel AST pro operaci AST_GTE.
+ * @param funcStruct Kontext funkce.
+ */
 void emitGreater(AstNode *node, FuncContext *funcStruct) {
     for (int i = 0; i < 2; i++) {
         emitCommand(node->child[i], funcStruct);
     }
     int  id = node->tmpId;
     char ln[128], rn[128], rty[128], lty[128];
-    snprintf(ln, sizeof ln, "%s_ln_%d", funcStruct->func_name, id);
-    snprintf(rn, sizeof rn, "%s_rn_%d", funcStruct->func_name, id);
-    snprintf(lty, sizeof lty, "%s_lty_%d", funcStruct->func_name, id);
-    snprintf(rty, sizeof rty, "%s_rty_%d", funcStruct->func_name, id);
+    snprintf(ln, sizeof ln, "%s_ln_%d", funcStruct->funcName, id);
+    snprintf(rn, sizeof rn, "%s_rn_%d", funcStruct->funcName, id);
+    snprintf(lty, sizeof lty, "%s_lty_%d", funcStruct->funcName, id);
+    snprintf(rty, sizeof rty, "%s_rty_%d", funcStruct->funcName, id);
 
-    char label_ok[128], label_end[128], label_err[128], label_l_float[128], label_r_float[128], label_r_check[128];
+    char labelOk[128], labelEnd[128], labelErr[128], labellFloat[128], labelRFloat[128], labelRCheck[128];
 
-    snprintf(label_ok, sizeof label_ok, "%s$le_ok$%d", funcStruct->func_name, id);
-    snprintf(label_end, sizeof label_end, "%s$le_end$%d", funcStruct->func_name, id);
-    snprintf(label_err, sizeof label_err, "%s$le_err$%d", funcStruct->func_name, id);
-    snprintf(label_l_float, sizeof label_l_float, "%s$le_l_f$%d", funcStruct->func_name, id);
-    snprintf(label_r_float, sizeof label_r_float, "%s$le_r_f$%d", funcStruct->func_name, id);
-    snprintf(label_r_check, sizeof label_r_check, "%s$le_r_chk$%d", funcStruct->func_name, id);
+    snprintf(labelOk, sizeof labelOk, "%s$le_ok$%d", funcStruct->funcName, id);
+    snprintf(labelEnd, sizeof labelEnd, "%s$le_end$%d", funcStruct->funcName, id);
+    snprintf(labelErr, sizeof labelErr, "%s$le_err$%d", funcStruct->funcName, id);
+    snprintf(labellFloat, sizeof labellFloat, "%s$le_l_f$%d", funcStruct->funcName, id);
+    snprintf(labelRFloat, sizeof labelRFloat, "%s$le_r_f$%d", funcStruct->funcName, id);
+    snprintf(labelRCheck, sizeof labelRCheck, "%s$le_r_chk$%d", funcStruct->funcName, id);
 
     printN("POPS LF@%s", rn);
     printN("POPS LF@%s", ln);
@@ -1074,62 +1076,69 @@ void emitGreater(AstNode *node, FuncContext *funcStruct) {
 
     printN("PUSHS LF@%s", lty);
     printN("PUSHS string@float");
-    printN("JUMPIFEQS %s", label_r_check);
+    printN("JUMPIFEQS %s", labelRCheck);
 
     printN("PUSHS LF@%s", lty);
     printN("PUSHS string@int");
-    printN("JUMPIFEQS %s", label_l_float);
+    printN("JUMPIFEQS %s", labellFloat);
 
-    printN("JUMP %s", label_err);
+    printN("JUMP %s", labelErr);
 
-    printN("LABEL %s", label_l_float);
+    printN("LABEL %s", labellFloat);
     printN("INT2FLOAT LF@%s LF@%s", ln, ln);
 
-    printN("LABEL %s", label_r_check);
+    printN("LABEL %s", labelRCheck);
     printN("PUSHS LF@%s", rty);
     printN("PUSHS string@float");
-    printN("JUMPIFEQS %s", label_ok);
+    printN("JUMPIFEQS %s", labelOk);
     printN("PUSHS LF@%s", rty);
     printN("PUSHS string@int");
-    printN("JUMPIFEQS %s", label_r_float);
-    printN("JUMP %s", label_err);
+    printN("JUMPIFEQS %s", labelRFloat);
+    printN("JUMP %s", labelErr);
 
-    printN("LABEL %s", label_r_float);
+    printN("LABEL %s", labelRFloat);
     printN("INT2FLOAT LF@%s LF@%s", rn, rn);
 
-    printN("LABEL %s", label_ok);
+    printN("LABEL %s", labelOk);
 
     printN("PUSHS LF@%s", ln);
     printN("PUSHS LF@%s", rn);
     printN("GTS");
-    printN("JUMP %s", label_end);
+    printN("JUMP %s", labelEnd);
 
     // Chyba: nil nebo různé typy
-    printN("LABEL %s", label_err);
+    printN("LABEL %s", labelErr);
     printN("EXIT int@%i", RUNTIME_SEMANTICS_ERROR_UNCOMPATIBLE);
 
-    printN("LABEL %s", label_end);
+    printN("LABEL %s", labelEnd);
 }
-
+/**
+ * @brief Generuje IFJcode25 kód pro porovnání menší nebo rovno (<=).
+ *
+ * Implementováno jako (A < B) OR (A == B) s automatickou konverzí int na float.
+ *
+ * @param node Uzel AST pro operaci AST_LTE.
+ * @param funcStruct Kontext funkce.
+ */
 void emit_less_equal(AstNode *node, FuncContext *funcStruct) {
     for (int i = 0; i < 2; i++) {
         emitCommand(node->child[i], funcStruct);
     }
     int  id = node->tmpId;
     char ln[128], rn[128], rty[128], lty[128];
-    snprintf(ln, sizeof ln, "%s_ln_%d", funcStruct->func_name, id);
-    snprintf(rn, sizeof rn, "%s_rn_%d", funcStruct->func_name, id);
-    snprintf(lty, sizeof lty, "%s_lty_%d", funcStruct->func_name, id);
-    snprintf(rty, sizeof rty, "%s_rty_%d", funcStruct->func_name, id);
+    snprintf(ln, sizeof ln, "%s_ln_%d", funcStruct->funcName, id);
+    snprintf(rn, sizeof rn, "%s_rn_%d", funcStruct->funcName, id);
+    snprintf(lty, sizeof lty, "%s_lty_%d", funcStruct->funcName, id);
+    snprintf(rty, sizeof rty, "%s_rty_%d", funcStruct->funcName, id);
 
-    char label_ok[128], label_end[128], label_err[128], label_l_float[128], label_r_float[128], label_r_check[128];
+    char labelOk[128], labelEnd[128], labelErr[128], labellFloat[128], labelRFloat[128], labelRCheck[128];
 
-    snprintf(label_ok, sizeof label_ok, "%s$le_ok$%d", funcStruct->func_name, id);
-    snprintf(label_end, sizeof label_end, "%s$le_end$%d", funcStruct->func_name, id);
-    snprintf(label_err, sizeof label_err, "%s$le_err$%d", funcStruct->func_name, id);
-    snprintf(label_l_float, sizeof label_l_float, "%s$le_l_f$%d", funcStruct->func_name, id);
-    snprintf(label_r_float, sizeof label_r_float, "%s$le_r_f$%d", funcStruct->func_name, id);
-    snprintf(label_r_check, sizeof label_r_check, "%s$le_r_chk$%d", funcStruct->func_name, id);
+    snprintf(labelOk, sizeof labelOk, "%s$le_ok$%d", funcStruct->funcName, id);
+    snprintf(labelEnd, sizeof labelEnd, "%s$le_end$%d", funcStruct->funcName, id);
+    snprintf(labelErr, sizeof labelErr, "%s$le_err$%d", funcStruct->funcName, id);
+    snprintf(labellFloat, sizeof labellFloat, "%s$le_l_f$%d", funcStruct->funcName, id);
+    snprintf(labelRFloat, sizeof labelRFloat, "%s$le_r_f$%d", funcStruct->funcName, id);
+    snprintf(labelRCheck, sizeof labelRCheck, "%s$le_r_chk$%d", funcStruct->funcName, id);
 
     printN("POPS LF@%s", rn);
     printN("POPS LF@%s", ln);
@@ -1143,30 +1152,30 @@ void emit_less_equal(AstNode *node, FuncContext *funcStruct) {
 
     printN("PUSHS LF@%s", lty);
     printN("PUSHS string@float");
-    printN("JUMPIFEQS %s", label_r_check);
+    printN("JUMPIFEQS %s", labelRCheck);
 
     printN("PUSHS LF@%s", lty);
     printN("PUSHS string@int");
-    printN("JUMPIFEQS %s", label_l_float);
+    printN("JUMPIFEQS %s", labellFloat);
 
-    printN("JUMP %s", label_err);
+    printN("JUMP %s", labelErr);
 
-    printN("LABEL %s", label_l_float);
+    printN("LABEL %s", labellFloat);
     printN("INT2FLOAT LF@%s LF@%s", ln, ln);
 
-    printN("LABEL %s", label_r_check);
+    printN("LABEL %s", labelRCheck);
     printN("PUSHS LF@%s", rty);
     printN("PUSHS string@float");
-    printN("JUMPIFEQS %s", label_ok);
+    printN("JUMPIFEQS %s", labelOk);
     printN("PUSHS LF@%s", rty);
     printN("PUSHS string@int");
-    printN("JUMPIFEQS %s", label_r_float);
-    printN("JUMP %s", label_err);
+    printN("JUMPIFEQS %s", labelRFloat);
+    printN("JUMP %s", labelErr);
 
-    printN("LABEL %s", label_r_float);
+    printN("LABEL %s", labelRFloat);
     printN("INT2FLOAT LF@%s LF@%s", rn, rn);
 
-    printN("LABEL %s", label_ok);
+    printN("LABEL %s", labelOk);
 
     // LTS
     printN("PUSHS LF@%s", ln);
@@ -1180,32 +1189,40 @@ void emit_less_equal(AstNode *node, FuncContext *funcStruct) {
 
     // ORS
     printN("ORS");
-    printN("JUMP %s", label_end);
+    printN("JUMP %s", labelEnd);
 
-    printN("LABEL %s", label_err);
+    printN("LABEL %s", labelErr);
     printN("EXIT int@%i", RUNTIME_SEMANTICS_ERROR_UNCOMPATIBLE);
 
-    printN("LABEL %s", label_end);
+    printN("LABEL %s", labelEnd);
 }
+/**
+ * @brief Generuje IFJcode25 kód pro porovnání větší nebo rovno (>=).
+ *
+ * Implementováno jako (A > B) OR (A == B) s automatickou konverzí int na float.
+ *
+ * @param node Uzel AST pro operaci AST_GTE.
+ * @param funcStruct Kontext funkce.
+ */
 void emit_greater_equal(AstNode *node, FuncContext *funcStruct) {
     for (int i = 0; i < 2; i++) {
         emitCommand(node->child[i], funcStruct);
     }
     int  id = node->tmpId;
     char ln[128], rn[128], rty[128], lty[128];
-    snprintf(ln, sizeof ln, "%s_ln_%d", funcStruct->func_name, id);
-    snprintf(rn, sizeof rn, "%s_rn_%d", funcStruct->func_name, id);
-    snprintf(lty, sizeof lty, "%s_lty_%d", funcStruct->func_name, id);
-    snprintf(rty, sizeof rty, "%s_rty_%d", funcStruct->func_name, id);
+    snprintf(ln, sizeof ln, "%s_ln_%d", funcStruct->funcName, id);
+    snprintf(rn, sizeof rn, "%s_rn_%d", funcStruct->funcName, id);
+    snprintf(lty, sizeof lty, "%s_lty_%d", funcStruct->funcName, id);
+    snprintf(rty, sizeof rty, "%s_rty_%d", funcStruct->funcName, id);
 
-    char label_ok[128], label_end[128], label_err[128], label_l_float[128], label_r_float[128], label_r_check[128];
+    char labelOk[128], labelEnd[128], labelErr[128], labellFloat[128], labelRFloat[128], labelRCheck[128];
 
-    snprintf(label_ok, sizeof label_ok, "%s$le_ok$%d", funcStruct->func_name, id);
-    snprintf(label_end, sizeof label_end, "%s$le_end$%d", funcStruct->func_name, id);
-    snprintf(label_err, sizeof label_err, "%s$le_err$%d", funcStruct->func_name, id);
-    snprintf(label_l_float, sizeof label_l_float, "%s$le_l_f$%d", funcStruct->func_name, id);
-    snprintf(label_r_float, sizeof label_r_float, "%s$le_r_f$%d", funcStruct->func_name, id);
-    snprintf(label_r_check, sizeof label_r_check, "%s$le_r_chk$%d", funcStruct->func_name, id);
+    snprintf(labelOk, sizeof labelOk, "%s$le_ok$%d", funcStruct->funcName, id);
+    snprintf(labelEnd, sizeof labelEnd, "%s$le_end$%d", funcStruct->funcName, id);
+    snprintf(labelErr, sizeof labelErr, "%s$le_err$%d", funcStruct->funcName, id);
+    snprintf(labellFloat, sizeof labellFloat, "%s$le_l_f$%d", funcStruct->funcName, id);
+    snprintf(labelRFloat, sizeof labelRFloat, "%s$le_r_f$%d", funcStruct->funcName, id);
+    snprintf(labelRCheck, sizeof labelRCheck, "%s$le_r_chk$%d", funcStruct->funcName, id);
 
     printN("POPS LF@%s", rn);
     printN("POPS LF@%s", ln);
@@ -1219,30 +1236,30 @@ void emit_greater_equal(AstNode *node, FuncContext *funcStruct) {
 
     printN("PUSHS LF@%s", lty);
     printN("PUSHS string@float");
-    printN("JUMPIFEQS %s", label_r_check);
+    printN("JUMPIFEQS %s", labelRCheck);
 
     printN("PUSHS LF@%s", lty);
     printN("PUSHS string@int");
-    printN("JUMPIFEQS %s", label_l_float);
+    printN("JUMPIFEQS %s", labellFloat);
 
-    printN("JUMP %s", label_err);
+    printN("JUMP %s", labelErr);
 
-    printN("LABEL %s", label_l_float);
+    printN("LABEL %s", labellFloat);
     printN("INT2FLOAT LF@%s LF@%s", ln, ln);
 
-    printN("LABEL %s", label_r_check);
+    printN("LABEL %s", labelRCheck);
     printN("PUSHS LF@%s", rty);
     printN("PUSHS string@float");
-    printN("JUMPIFEQS %s", label_ok);
+    printN("JUMPIFEQS %s", labelOk);
     printN("PUSHS LF@%s", rty);
     printN("PUSHS string@int");
-    printN("JUMPIFEQS %s", label_r_float);
-    printN("JUMP %s", label_err);
+    printN("JUMPIFEQS %s", labelRFloat);
+    printN("JUMP %s", labelErr);
 
-    printN("LABEL %s", label_r_float);
+    printN("LABEL %s", labelRFloat);
     printN("INT2FLOAT LF@%s LF@%s", rn, rn);
 
-    printN("LABEL %s", label_ok);
+    printN("LABEL %s", labelOk);
     printN("PUSHS LF@%s", ln);
     printN("PUSHS LF@%s", rn);
     printN("GTS");
@@ -1251,105 +1268,132 @@ void emit_greater_equal(AstNode *node, FuncContext *funcStruct) {
     printN("PUSHS LF@%s", rn);
     printN("EQS");
     printN("ORS");
-    printN("JUMP %s", label_end);
-    printN("JUMP %s", label_end);
+    printN("JUMP %s", labelEnd);
+    printN("JUMP %s", labelEnd);
 
-    printN("LABEL %s", label_err);
+    printN("LABEL %s", labelErr);
     printN("EXIT int@%i", RUNTIME_SEMANTICS_ERROR_UNCOMPATIBLE);
 
-    printN("LABEL %s", label_end);
+    printN("LABEL %s", labelEnd);
 }
 
 void emitEqualNot(AstNode *node, FuncContext *funcStruct) {
     emitEqual(node, funcStruct);
     printN("NOTS");
 }
-
-//&& neni to obycejny operator
+/**
+ * @brief Generuje IFJcode25 kód pro logické AND (`&&`) s implementací short circuit.
+ *
+ * Pokud je levý operand `false` nebo `nil`, operace se okamžitě ukončí a vrátí `false`.
+ *
+ * @param node Uzel AST pro operaci AST_AND.
+ * @param funcContext Kontext funkce.
+ */
 void emitAnd(AstNode *node, FuncContext *funcContext) {
     int  id = node->tmpId;
-    char label_false[128], label_end[128];
-    snprintf(label_false, sizeof label_false, "%s$and_false$%d", funcContext->func_name, id);
-    snprintf(label_end, sizeof label_end, "%s$and_end$%d", funcContext->func_name, id);
+    char labelFalse[128], labelEnd[128];
+    snprintf(labelFalse, sizeof labelFalse, "%s$and_false$%d", funcContext->funcName, id);
+    snprintf(labelEnd, sizeof labelEnd, "%s$and_end$%d", funcContext->funcName, id);
 
-    char left_tmp[128];
-    snprintf(left_tmp, sizeof left_tmp, "%s_and_left_%d", funcContext->func_name, id);
+    char leftTmp[128];
+    snprintf(leftTmp, sizeof leftTmp, "%s_and_left_%d", funcContext->funcName, id);
 
     emitCondition(node->child[0], funcContext);
-    printN("POPS LF@%s", left_tmp);
+    printN("POPS LF@%s", leftTmp);
 
     // short circuit: if LHS == false → false
-    printN("PUSHS LF@%s", left_tmp);
+    printN("PUSHS LF@%s", leftTmp);
     printN("PUSHS bool@false");
-    printN("JUMPIFEQS %s", label_false);
+    printN("JUMPIFEQS %s", labelFalse);
 
     // short circuit: if LHS == nil → false
-    printN("PUSHS LF@%s", left_tmp);
+    printN("PUSHS LF@%s", leftTmp);
     printN("PUSHS nil@nil");
-    printN("JUMPIFEQS %s", label_false);
+    printN("JUMPIFEQS %s", labelFalse);
 
     // LHS == true → evaluate RHS
     emitCondition(node->child[1], funcContext);
-    printN("JUMP %s", label_end);
+    printN("JUMP %s", labelEnd);
 
-    printN("LABEL %s", label_false);
+    printN("LABEL %s", labelFalse);
     printN("PUSHS bool@false");
 
-    printN("LABEL %s", label_end);
+    printN("LABEL %s", labelEnd);
 }
+/**
+ * @brief Generuje IFJcode25 kód pro logické OR (||) s implementací short circuit.
+ *
+ * Pokud je levý operand `true`, operace se okamžitě ukončí a vrátí `true`.
+ *
+ * @param node Uzel AST pro operaci AST_OR.
+ * @param funcContext Kontext funkce.
+ */
 void emitOr(AstNode *node, FuncContext *funcContext) {
     int  id = node->tmpId;
-    char label_true[128], label_end[128];
-    snprintf(label_true, sizeof label_true, "%s$or_success$%d", funcContext->func_name, id);
-    snprintf(label_end, sizeof label_end, "%s$or_end$%d", funcContext->func_name, id);
+    char labelTrue[128], labelEnd[128];
+    snprintf(labelTrue, sizeof labelTrue, "%s$or_success$%d", funcContext->funcName, id);
+    snprintf(labelEnd, sizeof labelEnd, "%s$or_end$%d", funcContext->funcName, id);
 
-    char left_tmp[128];
-    snprintf(left_tmp, sizeof left_tmp, "%s_or_left_%d", funcContext->func_name, id);
+    char leftTmp[128];
+    snprintf(leftTmp, sizeof leftTmp, "%s_or_left_%d", funcContext->funcName, id);
 
     emitCondition(node->child[0], funcContext);
-    printN("POPS LF@%s", left_tmp);
+    printN("POPS LF@%s", leftTmp);
 
-    printN("PUSHS LF@%s", left_tmp);
+    printN("PUSHS LF@%s", leftTmp);
     printN("PUSHS bool@true");
-    printN("JUMPIFEQS %s", label_true);
+    printN("JUMPIFEQS %s", labelTrue);
 
     emitCondition(node->child[1], funcContext);
-    printN("JUMP %s", label_end);
+    printN("JUMP %s", labelEnd);
 
-    printN("LABEL %s", label_true);
+    printN("LABEL %s", labelTrue);
     printN("PUSHS bool@true");
 
-    printN("LABEL %s", label_end);
+    printN("LABEL %s", labelEnd);
 }
+/**
+ * @brief Generuje IFJcode25 kód pro logickou negaci (NOT) pomocí instrukce NOTS.
+ *
+ * @param node Uzel AST pro operaci AST_NOT.
+ * @param funcStruct Kontext funkce.
+ */
 void emitNegace(AstNode *node, FuncContext *funcStruct) {
     int  id = node->tmpId;
-    char value[128], value_type[128];
-    snprintf(value, sizeof value, "%s_ln_%d", funcStruct->func_name, id);
-    snprintf(value_type, sizeof value, "%s_ty_%d", funcStruct->func_name, id);
+    char value[128], valueType[128];
+    snprintf(value, sizeof value, "%s_ln_%d", funcStruct->funcName, id);
+    snprintf(valueType, sizeof value, "%s_ty_%d", funcStruct->funcName, id);
 
-    char label_false[128], label_end[128];
-    snprintf(label_false, sizeof label_false, "%s$and_not_false$%d", funcStruct->func_name, id);
-    snprintf(label_end, sizeof label_end, "%s$and_end$%d", funcStruct->func_name, id);
+    char labelFalse[128], labelEnd[128];
+    snprintf(labelFalse, sizeof labelFalse, "%s$and_not_false$%d", funcStruct->funcName, id);
+    snprintf(labelEnd, sizeof labelEnd, "%s$and_end$%d", funcStruct->funcName, id);
     emitCondition(node->child[0], funcStruct);
     // Stack: [left_value]
     printN("NOTS");
     // Stack: [result] (buď left pokud false/nil, nebo right)
 }
-
-void emitUnaryMinus(AstNode *node, FuncContext *funcStrukt) {
-    emitCommand(node->child[0], funcStrukt);
+/**
+ * @brief Generuje IFJcode25 kód pro unární negaci (-) pro int a float.
+ *
+ * Negace je implementována jako odečtení hodnoty od nuly (`0 - hodnota`).
+ *
+ * @param node Uzel AST pro unární minus.
+ * @param funcStrukt Kontext funkce.
+ */
+void emitUnaryMinus(AstNode *node, FuncContext *funcStruct) {
+    emitCommand(node->child[0], funcStruct);
     int id = node->tmpId;
 
     char ln[128], ty[128];
-    snprintf(ln, sizeof ln, "%s_ln_%d", funcStrukt->func_name, id);
-    snprintf(ty, sizeof ty, "%s_ty_%d", funcStrukt->func_name, id);
+    snprintf(ln, sizeof ln, "%s_ln_%d", funcStruct->funcName, id);
+    snprintf(ty, sizeof ty, "%s_ty_%d", funcStruct->funcName, id);
 
-    char label_ok[128];
-    char label_ok_float[128];
-    char label_end[128];
-    snprintf(label_ok, sizeof label_ok, "%s$ok$%d", funcStrukt->func_name, id);
-    snprintf(label_ok_float, sizeof label_ok_float, "%s$ok_float$%d", funcStrukt->func_name, id);
-    snprintf(label_end, sizeof label_end, "%s$end_Minus$%d", funcStrukt->func_name, id);
+    char labelOk[128];
+    char labelOkFloat[128];
+    char labelEnd[128];
+    snprintf(labelOk, sizeof labelOk, "%s$ok$%d", funcStruct->funcName, id);
+    snprintf(labelOkFloat, sizeof labelOkFloat, "%s$ok_float$%d", funcStruct->funcName, id);
+    snprintf(labelEnd, sizeof labelEnd, "%s$end_Minus$%d", funcStruct->funcName, id);
 
     // Vyndej hodnotu a ulož ji
     printN("POPS LF@%s", ln);
@@ -1362,44 +1406,50 @@ void emitUnaryMinus(AstNode *node, FuncContext *funcStrukt) {
     // Kontrola na int
     printN("PUSHS LF@%s", ty);
     printN("PUSHS string@int");
-    printN("JUMPIFEQS %s", label_ok);
+    printN("JUMPIFEQS %s", labelOk);
 
     // Kontrola na float
     printN("PUSHS LF@%s", ty);
     printN("PUSHS string@float");
-    printN("JUMPIFEQS %s", label_ok_float);
+    printN("JUMPIFEQS %s", labelOkFloat);
 
     // Error - nejde o int ani float
     printN("EXIT int@%i", RUNTIME_SEMANTICS_ERROR_UNCOMPATIBLE);
 
     // OK label - proveď operaci
-    printN("LABEL %s", label_ok);
+    printN("LABEL %s", labelOk);
     printN("PUSHS int@0");
     printN("PUSHS LF@%s", ln);
     printN("SUBS");
-    printN("JUMP %s", label_end);
+    printN("JUMP %s", labelEnd);
 
-    printN("LABEL %s", label_ok_float);
+    printN("LABEL %s", labelOkFloat);
     double nula = 0.0;
     printN("PUSHS float@%a", nula);
     printN("PUSHS LF@%s", ln);
     printN("SUBS");
-    printN("LABEL %s", label_end);
+    printN("LABEL %s", labelEnd);
 }
+/**
+ * @brief Generuje IFJcode25 kód pro operátor kontroly typu (`is`).
+ *
+ * @param node Uzel AST pro operaci kontroly typu.
+ * @param funcStruct Kontext funkce.
+ */
 void emitIs(AstNode *node, FuncContext *funcStruct) {
     emitCommand(node->child[0], funcStruct);
     int  id = node->tmpId;
     char ln[128], lty[128];
-    snprintf(ln, sizeof ln, "%s_ln_%d", funcStruct->func_name, id);
-    snprintf(lty, sizeof lty, "%s_lty_%d", funcStruct->func_name, id);
-    char label_num[128], label_string[128], label_null[128];
-    char label_ok[128], label_err[128], label_end[128];
-    snprintf(label_num, sizeof label_num, "%s$Num$%d", funcStruct->func_name, id);
-    snprintf(label_string, sizeof label_string, "%s$String$%d", funcStruct->func_name, id);
-    snprintf(label_null, sizeof label_null, "%s$Null$%d", funcStruct->func_name, id);
-    snprintf(label_ok, sizeof label_ok, "%s$ok$%d", funcStruct->func_name, id);
-    snprintf(label_err, sizeof label_err, "%s$err$%d", funcStruct->func_name, id);
-    snprintf(label_end, sizeof label_end, "%s$end_is$%d", funcStruct->func_name, id);
+    snprintf(ln, sizeof ln, "%s_ln_%d", funcStruct->funcName, id);
+    snprintf(lty, sizeof lty, "%s_lty_%d", funcStruct->funcName, id);
+    char labelNum[128], labelString[128], labelNull[128];
+    char labelOk[128], labelErr[128], labelEnd[128];
+    snprintf(labelNum, sizeof labelNum, "%s$Num$%d", funcStruct->funcName, id);
+    snprintf(labelString, sizeof labelString, "%s$String$%d", funcStruct->funcName, id);
+    snprintf(labelNull, sizeof labelNull, "%s$Null$%d", funcStruct->funcName, id);
+    snprintf(labelOk, sizeof labelOk, "%s$ok$%d", funcStruct->funcName, id);
+    snprintf(labelErr, sizeof labelErr, "%s$err$%d", funcStruct->funcName, id);
+    snprintf(labelEnd, sizeof labelEnd, "%s$end_is$%d", funcStruct->funcName, id);
 
     // Pop levého operandu do LF@ln
     printN("POPS LF@%s", ln);
@@ -1411,13 +1461,13 @@ void emitIs(AstNode *node, FuncContext *funcStruct) {
 
     switch (node->child[1]->kind) {
         case AST_KEYWORD_NUM:  // "Num"
-            printN("JUMP %s", label_num);
+            printN("JUMP %s", labelNum);
             break;
         case AST_KEYWORD_STRING:  // "String"
-            printN("JUMP %s", label_string);
+            printN("JUMP %s", labelString);
             break;
         case AST_NULL:  // "Null"
-            printN("JUMP %s", label_null);
+            printN("JUMP %s", labelNull);
             break;
         default:
             printN("PUSHS bool@false");
@@ -1425,39 +1475,45 @@ void emitIs(AstNode *node, FuncContext *funcStruct) {
     }
 
     // ---- Num ----
-    printN("LABEL %s", label_num);
+    printN("LABEL %s", labelNum);
     printN("PUSHS LF@%s", lty);
     printN("PUSHS string@int");
-    printN("JUMPIFEQS %s", label_ok);
+    printN("JUMPIFEQS %s", labelOk);
     printN("PUSHS LF@%s", lty);
     printN("PUSHS string@float");
-    printN("JUMPIFEQS %s", label_ok);
-    printN("JUMP %s", label_err);
+    printN("JUMPIFEQS %s", labelOk);
+    printN("JUMP %s", labelErr);
 
     // ---- String ----
-    printN("LABEL %s", label_string);
+    printN("LABEL %s", labelString);
     printN("PUSHS LF@%s", lty);
     printN("PUSHS string@string");
-    printN("JUMPIFEQS %s", label_ok);
-    printN("JUMP %s", label_err);
+    printN("JUMPIFEQS %s", labelOk);
+    printN("JUMP %s", labelErr);
 
     // ---- Null ----
-    printN("LABEL %s", label_null);
+    printN("LABEL %s", labelNull);
     printN("PUSHS LF@%s", lty);
     printN("PUSHS string@nil");
-    printN("JUMPIFEQS %s", label_ok);
-    printN("JUMP %s", label_err);
+    printN("JUMPIFEQS %s", labelOk);
+    printN("JUMP %s", labelErr);
 
     // ---- výsledek ----
-    printN("LABEL %s", label_ok);
+    printN("LABEL %s", labelOk);
     printN("PUSHS bool@true");
-    printN("JUMP %s", label_end);
+    printN("JUMP %s", labelEnd);
 
-    printN("LABEL %s", label_err);
+    printN("LABEL %s", labelErr);
     printN("PUSHS bool@false");
 
-    printN("LABEL %s", label_end);
+    printN("LABEL %s", labelEnd);
 }
+/**
+ * @brief Generuje IFJcode25 kód pro přiřazení hodnoty lokální proměnné (=).
+ *
+ * @param node Uzel AST pro přiřazení.
+ * @param funcStruct Kontext funkce.
+ */
 void emitAssigned(AstNode *node, FuncContext *funcStruct) {
     if (node->child[0]->kind == AST_SETTER_CALL) {
         emitCommand(node->child[1], funcStruct);
@@ -1468,8 +1524,11 @@ void emitAssigned(AstNode *node, FuncContext *funcStruct) {
     emitCommand(node->child[1], funcStruct);
     printN("POPS LF@%s", node->child[0]->value.str);
 }
-/*
- *opravi
+/**
+ * @brief Generuje IFJcode25 kód pro inicializaci lokální proměnné.
+ *
+ * @param node Uzel AST pro deklaraci/inicializaci proměnné.
+ * @param funcStruct Kontext funkce.
  */
 void emitVar(AstNode *node, FuncContext *funcStruct) {
     if (node->child[1]->kind != AST_EMPTY) {
@@ -1477,18 +1536,30 @@ void emitVar(AstNode *node, FuncContext *funcStruct) {
         printN("POPS LF@%s", node->child[0]->value.str);
     }
 }
+/**
+ * @brief Generuje IFJcode25 kód pro inicializaci globální proměnné v těle funkce.
+ *
+ * @param node Uzel AST pro inicializaci globální proměnné.
+ * @param funcStruct Kontext funkce.
+ */
 void emitGLobal(AstNode *node, FuncContext *funcStruct) {
     if (node->child[1]->kind != AST_EMPTY) {
         emitCommand(node->child[1]->child[0], funcStruct);
         printN("POPS GF@%s", node->child[0]->value.str);
     }
 }
+/**
+ * @brief Generuje IFJcode25 kód pro celou sekvenci `if-else if-else` (if chain).
+ *
+ * @param node Kořenový uzel AST pro celý `if-else if-else` řetězec.
+ * @param funcContext Kontext funkce pro generování labelů.
+ */
 void emitIfChain(AstNode *node, FuncContext *funcContext) {
     /**
      * vytvorenie lablu na spode if chainu na ktory v pripade splnenia podmienky
      * budeme z jednotlivych podmienok skakat
      */
-    char *endLabel = generatorLable("ifchainend", funcContext, false, if_counter);
+    char *endLabel = generatorLable("ifchainend", funcContext, false, ifCounter);
 
     for (size_t i = 0; i < node->arity; i++) {
         if (node->child[i]->kind == AST_IF) {
@@ -1505,10 +1576,17 @@ void emitIfChain(AstNode *node, FuncContext *funcContext) {
     printN("LABEL %s", endLabel);
     free(endLabel);
 }
+/**
+ * @brief Generuje IFJcode25 kód pro blok `if` nebo `else if`.
+ *
+ * @param node Uzel AST pro příkaz `if`.
+ * @param funcContext Kontext funkce.
+ * @param endLabel Koncový label celého `if-else if-else` řetězce.
+ */
 void emitIf(AstNode *node, FuncContext *funcContext, char *endLabel) {
-    if_counter++;
+    ifCounter++;
     char *label = NULL;
-    label       = generatorLable("ifEnd", funcContext, false, if_counter);
+    label       = generatorLable("ifEnd", funcContext, false, ifCounter);
     // dame skontrolovat podmienku
     emitCondition(node->child[0], funcContext);
     // mame vysledok podmienky true/false na zasobniku
@@ -1527,7 +1605,12 @@ void emitIf(AstNode *node, FuncContext *funcContext, char *endLabel) {
     printN("LABEL %s", label);
     free(label);
 }
-
+/**
+ * @brief Generuje IFJcode25 kód pro tělo bloku `else`.
+ *
+ * @param node Uzel AST pro příkaz `else`.
+ * @param funcContext Kontext funkce.
+ */
 void emitElse(AstNode *node, FuncContext *funcContext) { emitChildren(node->child[0], funcContext); }
 
 /**
@@ -1535,12 +1618,12 @@ void emitElse(AstNode *node, FuncContext *funcContext) { emitChildren(node->chil
  * @param node Ukazatel na aktualne
  */
 void emitWhile(AstNode *node, FuncContext *funcContext) {
-    loop_counter++;
-    char *block_prefix = generatorLable("while", funcContext, true, loop_counter);
-    char *labelStart   = generatorLable("start", funcContext, false, loop_counter);
+    loopCounter++;
+    char *blockPrefix = generatorLable("while", funcContext, true, loopCounter);
+    char *labelStart   = generatorLable("start", funcContext, false, loopCounter);
     printN("LABEL %s", labelStart);
     char *endLabel = NULL;
-    endLabel       = generatorLable("end", funcContext, false, loop_counter);
+    endLabel       = generatorLable("end", funcContext, false, loopCounter);
     if (node->child[0]->kind == AST_CONDITION) {
         // while -> condition -> AST samotneho operatoru
         emitCommand(node->child[0], funcContext);
@@ -1557,86 +1640,114 @@ void emitWhile(AstNode *node, FuncContext *funcContext) {
     printN("LABEL %s", endLabel);  // ! LABEL KONEC
     free(endLabel);
     free(labelStart);
-    char *popped_prefix = stacklabelStackRead(funcContext->label_stack);
-    if (popped_prefix == block_prefix) {
-        stacklabelStackPop(funcContext->label_stack);
-        free(block_prefix);
+    char *poppedPrefix = stacklabelStackRead(funcContext->labelStack);
+    if (poppedPrefix == blockPrefix) {
+        stacklabelStackPop(funcContext->labelStack);
+        free(blockPrefix);
     } else {
         printError(INTERNAL_ERROR, "nepovedene uvolneni lablu na konci while loopu");
         memorySafeExit(INTERNAL_ERROR);
     }
-    loop_counter--;
+    loopCounter--;
 }
-
+/**
+ * @brief Generuje IFJcode25 kód pro příkaz `break`.
+ *
+ * Implementuje skok (`JUMP`) na koncový label aktuální smyčky.
+ *
+ * @param funcContext Kontext funkce.
+ */
 void emitBreak(FuncContext *funcContext) {
-    char *label = generatorLable("end", funcContext, false, loop_counter);
+    char *label = generatorLable("end", funcContext, false, loopCounter);
     printN("JUMP %s", label);
     free(label);
 }
-
+/**
+ * @brief Generuje IFJcode25 kód pro příkaz `continue`.
+ *
+ * Implementuje skok (`JUMP`) na počáteční label aktuální smyčky.
+ *
+ * @param funcContext Kontext funkce.
+ */
 void emitContinue(FuncContext *funcContext) {
-    char *label = generatorLable("start", funcContext, false, loop_counter);
+    char *label = generatorLable("start", funcContext, false, loopCounter);
     printN("JUMP %s", label);
     free(label);
 }
+/**
+ * @brief Generuje IFJcode25 kód pro konverzi proměnné na logickou hodnotu (boolean).
+ *
+ * Implementuje pravidla konverze: `nil` a `bool@false` jsou **false**;
+ * jakákoliv jiná hodnota nebo typ je **true**.
+ *
+ * @param node Uzel AST pro proměnnou.
+ * @param funcContext Kontext funkce.
+ */
 void emitBool(AstNode *node, FuncContext *funcContext) {
     if (node->kind == AST_IDENTIFIER || node->kind == AST_GLOBAL_ID) {
-        char ty_var[128], val_var[128];
-        char is_false_label[128], end_label[128];
-        char is_type_bool_label[128];
+        char tyVar[128], valVar[128];
+        char isFalseLabel[128], endLabel[128];
+        char isTypeBoolLabel[128];
         int  id = node->tmpId;
 
-        snprintf(ty_var, sizeof ty_var, "%s_ty_bool_%d", funcContext->func_name, id);
-        snprintf(val_var, sizeof val_var, "%s_val_bool_%d", funcContext->func_name, id);
-        snprintf(is_false_label, sizeof is_false_label, "%s$bool_is_false$%d", funcContext->func_name, id);
-        snprintf(end_label, sizeof end_label, "%s$bool_end$%d", funcContext->func_name, id);
-        snprintf(is_type_bool_label, sizeof is_type_bool_label, "%s$bool_type_ok$%d", funcContext->func_name, id);
+        snprintf(tyVar, sizeof tyVar, "%s_ty_bool_%d", funcContext->funcName, id);
+        snprintf(valVar, sizeof valVar, "%s_val_bool_%d", funcContext->funcName, id);
+        snprintf(isFalseLabel, sizeof isFalseLabel, "%s$bool_is_false$%d", funcContext->funcName, id);
+        snprintf(endLabel, sizeof endLabel, "%s$bool_end$%d", funcContext->funcName, id);
+        snprintf(isTypeBoolLabel, sizeof isTypeBoolLabel, "%s$bool_type_ok$%d", funcContext->funcName, id);
 
-        const char *var_name = node->value.str;
+        const char *varName = node->value.str;
 
         // Získání hodnoty a typu
         if (node->kind == AST_IDENTIFIER) {
-            printN("PUSHS LF@%s", var_name);
+            printN("PUSHS LF@%s", varName);
         } else {
-            printN("PUSHS GF@%s", var_name);
+            printN("PUSHS GF@%s", varName);
         }
-        printN("POPS LF@%s", val_var);
-        printN("PUSHS LF@%s", val_var);
+        printN("POPS LF@%s", valVar);
+        printN("PUSHS LF@%s", valVar);
         printN("TYPES");
-        printN("POPS LF@%s", ty_var);
+        printN("POPS LF@%s", tyVar);
 
         // --- KONTROLA 1: NIL ---
-        printN("PUSHS LF@%s", ty_var);
+        printN("PUSHS LF@%s", tyVar);
         printN("PUSHS string@nil");
-        printN("JUMPIFEQS %s", is_false_label);
+        printN("JUMPIFEQS %s", isFalseLabel);
 
         // --- KONTROLA 2: TYP NENÍ BOOL ---
-        printN("PUSHS LF@%s", ty_var);
+        printN("PUSHS LF@%s", tyVar);
         printN("PUSHS string@bool");
-        printN("JUMPIFEQS %s", is_type_bool_label);
+        printN("JUMPIFEQS %s", isTypeBoolLabel);
 
         // --- TRUE případ (jiný typ než nil a bool) ---
         printN("PUSHS bool@true");
-        printN("JUMP %s", end_label);
+        printN("JUMP %s", endLabel);
 
         // --- KONTROLA 3: HODNOTA BOOL@FALSE
-        printN("LABEL %s", is_type_bool_label);
-        printN("PUSHS LF@%s", val_var);
+        printN("LABEL %s", isTypeBoolLabel);
+        printN("PUSHS LF@%s", valVar);
         printN("PUSHS bool@false");
-        printN("JUMPIFEQS %s", is_false_label);
+        printN("JUMPIFEQS %s", isFalseLabel);
 
         // --- TRUE případ (bool@true) ---
         printN("PUSHS bool@true");
-        printN("JUMP %s", end_label);
+        printN("JUMP %s", endLabel);
 
         // --- FALSE případy (nil nebo bool@false) ---
-        printN("LABEL %s", is_false_label);
+        printN("LABEL %s", isFalseLabel);
         printN("PUSHS bool@false");
 
         // --- Konec ---
-        printN("LABEL %s", end_label);
+        printN("LABEL %s", endLabel);
     }
 }
+/**
+ * @brief Generuje IFJcode25 kód pro vyhodnocení libovolného výrazu v kontextu podmínky (`if`, `while`).
+ *
+ * Tato funkce zajišťuje, že výsledek výrazu na datovém zásobníku je vždy logická hodnota (`bool@true` nebo `bool@false`).
+ * @param node Uzel AST reprezentující podmínku nebo výraz.
+ * @param funcContext Kontext funkce.
+ */
 void emitCondition(AstNode *node, FuncContext *funcContext) {
     if (node->arity == 0) {
         printLog(astNodeTypeToString(node->kind));
@@ -1672,19 +1783,26 @@ void emitCondition(AstNode *node, FuncContext *funcContext) {
     }
 }
 /**
+ * @brief Generuje IFJcode25 kód pro cyklus `for-in-range`.
  *
+ * Implementuje iteraci v číselném rozsahu (`[start, end]` nebo `[start, end)`) s čítačem.
+ * Zajišťuje **typovou kontrolu** hranic rozsahu, konverzi na int a ošetření chyb.
+ * Vytváří návěští pro skoky (`break`, `continue`).
+ *
+ * @param node Uzel AST pro cyklus `for`.
+ * @param funcContext Kontext funkce.
  */
 void emitFor(AstNode *node, FuncContext *funcContext) {
-    loop_counter++;
+    loopCounter++;
 
-    char *block_prefix = generatorLable("for", funcContext, true, loop_counter);
+    char *blockPrefix = generatorLable("for", funcContext, true, loopCounter);
 
-    char *errorLabel         = generatorLable("TypesError", funcContext, false, loop_counter);
+    char *errorLabel         = generatorLable("TypesError", funcContext, false, loopCounter);
     bool  generateErrorLabel = false;
 
-    char *labelStart = generatorLable("start", funcContext, false, loop_counter);
+    char *labelStart = generatorLable("start", funcContext, false, loopCounter);
 
-    char *endLabel = generatorLable("end", funcContext, false, loop_counter);
+    char *endLabel = generatorLable("end", funcContext, false, loopCounter);
 
     char *variable = node->child[0]->child[0]->value.str;  // ? hodnota proměnné sektoru podmínky for cyklu
 
@@ -1808,27 +1926,37 @@ void emitFor(AstNode *node, FuncContext *funcContext) {
     free(errorLabel);
     free(endLabel);
     free(labelStart);
-    char *popped_prefix = stacklabelStackRead(funcContext->label_stack);
-    if (popped_prefix == block_prefix) {
-        stacklabelStackPop(funcContext->label_stack);
-        free(block_prefix);  // Tímto uvolňujeme alokovanou paměť
+    char *poppedPrefix = stacklabelStackRead(funcContext->labelStack);
+    if (poppedPrefix == blockPrefix) {
+        stacklabelStackPop(funcContext->labelStack);
+        free(blockPrefix);  // Tímto uvolňujeme alokovanou paměť
     } else {
         printError(INTERNAL_ERROR, "nepovedene uvolneni lablu na konci while loopu");
         memorySafeExit(INTERNAL_ERROR);
     }
-    loop_counter--;
+    loopCounter--;
 }
-
+/**
+ * @brief Generuje IFJcode25 kód pro volání setter funkce.
+ *
+ * @param node Uzel AST s názvem setteru (AST_SETTER_CALL).
+ */
 void emitSetterCall(AstNode *node) { printN("CALL %s", node->value.str); }
-
+/**
+ * @brief Generuje IFJcode25 kód pro definici a tělo setter funkce.
+ *
+ * Setter je generován jako standardní funkce, která přijímá jeden parametr.
+ *
+ * @param node Uzel AST pro definici setteru (AST_SETTER).
+ */
 void emitSetter(AstNode *node) {
     DynamiclabelStackStackPtr labelStack = stacklabelStackConstruct(DEFAULT_INIT_ELEMENT_COUNT);
     FuncContext              *context    = constuctorFuncContext();
-    context->func_name                   = node->child[0]->value.str;
+    context->funcName                   = node->child[0]->value.str;
 
-    context->label_stack = labelStack;
+    context->labelStack = labelStack;
     char *labelEnd       = generatorLable("setterEnd", context, true, 0);
-    context->label_end   = labelEnd;
+    context->labelEnd   = labelEnd;
     printN("LABEL %s", node->child[0]->value.str);
     printN("CREATEFRAME");
     printN("PUSHFRAME");
@@ -1841,13 +1969,13 @@ void emitSetter(AstNode *node) {
     VarList *localVariables = varListCreate();
     collectLocalVars(node->child[2], localVariables, context);  // funkce uvnitr
     for (int i = 0; i < localVariables->count; i++) {
-        printN("DEFVAR LF@%s", localVariables->var_names[i]);
+        printN("DEFVAR LF@%s", localVariables->varNames[i]);
     }
 
     for (size_t i = 0; i < node->child[2]->child[0]->arity; i++) {
         emitCommand(node->child[2]->child[0]->child[i], context);
     }
-    printN("LABEL %s", context->label_end);
+    printN("LABEL %s", context->labelEnd);
     printN("POPFRAME");
     printN("RETURN");
 
@@ -1860,18 +1988,27 @@ void emitSetter(AstNode *node) {
     stacklabelStackDestruct(labelStack);
     destructorFuncContext(context);
 }
-
+/**
+ * @brief Generuje IFJcode25 kód pro volání getter funkce.
+ *
+ * @param node Uzel AST s názvem getteru (AST_GETTER_CALL).
+ */
 void emitGetterCall(AstNode *node) { printN("CALL %s", node->value.str); }
-
+/**
+ * @brief Generuje IFJcode25 kód pro definici a tělo getter funkce.
+ *
+ * Getter je generován jako standardní funkce, která vrací hodnotu:
+ * @param node Uzel AST pro definici getteru (AST_GETTER).
+ */
 void emitGetter(AstNode *node) {
     DynamiclabelStackStackPtr labelStack = stacklabelStackConstruct(DEFAULT_INIT_ELEMENT_COUNT);
 
     FuncContext *context = constuctorFuncContext();
-    context->func_name   = node->child[0]->value.str;
+    context->funcName   = node->child[0]->value.str;
 
-    context->label_stack = labelStack;
+    context->labelStack = labelStack;
     char *labelEnd       = generatorLable("getterEnd", context, true, 0);
-    context->label_end   = labelEnd;
+    context->labelEnd   = labelEnd;
     printN("LABEL %s", node->child[0]->value.str);
     printN("CREATEFRAME");
     printN("PUSHFRAME");
@@ -1881,13 +2018,13 @@ void emitGetter(AstNode *node) {
     varListAdd(localVariables, "retval");
     collectLocalVars(node->child[2], localVariables, context);  // funkce uvnitr
     for (int i = 0; i < localVariables->count; i++) {
-        printN("DEFVAR LF@%s", localVariables->var_names[i]);
+        printN("DEFVAR LF@%s", localVariables->varNames[i]);
     }
     printN("MOVE LF@retval nil@nil");
     for (size_t i = 0; i < node->child[2]->child[0]->arity; i++) {
         emitCommand(node->child[2]->child[0]->child[i], context);
     }
-    printN("LABEL %s", context->label_end);
+    printN("LABEL %s", context->labelEnd);
     printN("PUSHS LF@retval");
     printN("POPFRAME");
     printN("RETURN");
@@ -1901,26 +2038,35 @@ void emitGetter(AstNode *node) {
     stacklabelStackDestruct(labelStack);
     destructorFuncContext(context);
 }
+/**
+ * @brief Generuje IFJcode25 kód pro ternární operátor (podmíněný výraz: `podmínka ? hodnota_true : hodnota_false`).
+ *
+ * @param node Uzel AST reprezentující ternární operátor.
+ * @param funcStruct Kontext funkce.
+ */
 void emitTernarni(AstNode *node, FuncContext *funcStruct) {
-    char label_true[128], label_end[128];
+    char labelTrue[128], labelEnd[128];
     int  id = node->tmpId;
-    snprintf(label_true, sizeof label_true, "%s$true$%d", funcStruct->func_name, id);
-    snprintf(label_end, sizeof label_end, "%s$end$%d", funcStruct->func_name, id);
+    snprintf(labelTrue, sizeof labelTrue, "%s$true$%d", funcStruct->funcName, id);
+    snprintf(labelEnd, sizeof labelEnd, "%s$end$%d", funcStruct->funcName, id);
     emitCondition(node->child[0], funcStruct);
     printN("PUSHS bool@true");
-    printN("JUMPIFEQS %s", label_true);
+    printN("JUMPIFEQS %s", labelTrue);
     emitCommand(node->child[2], funcStruct);
-    printN("JUMP %s", label_end);
-    printN("LABEL %s", label_true);
+    printN("JUMP %s", labelEnd);
+    printN("LABEL %s", labelTrue);
     emitCommand(node->child[1], funcStruct);
-    printN("LABEL %s", label_end);
+    printN("LABEL %s", labelEnd);
 }
-/*
- * @brief switch zajisti zavolani sablon
- * @params ukazatel na uzel
- * @params ukazatel na hash_table
- */
-/*
+/**
+ * @brief Hlavní switch pro generování IFJcode25 kódu z uzlů AST.
+ *
+ * Tato funkce prochází typ uzlu AST (`node->kind`) a volá odpovídající
+ * emitovací funkci (např. `emitPlus`, `emitWhile`, `emitVar`) nebo generuje přímo
+ * IFJcode25 instrukce pro jednoduché případy.
+ *
+ * @param node Uzel AST k emitování.
+ * @param funcStruct Kontext funkce (pouze pro složité operace a uvnitř funkcí).
  */
 void emitCommand(AstNode *node, FuncContext *funcStruct) {
     switch (node->kind) {
@@ -2113,17 +2259,15 @@ void emitCommand(AstNode *node, FuncContext *funcStruct) {
             memorySafeExit(INTERNAL_ERROR);
     }
 }
+/**
+ * @brief Hlavní funkce pro generování IFJcode23 kódu.
+ *
+ * @param root Kořenový uzel abstraktního syntaktického stromu.
+ */
 void codegenGenerate(AstNode *root) {
     FuncContext *funcStruct = constuctorFuncContext();
     emitChildren(root, funcStruct);
     destructorFuncContext(funcStruct);
-    /*
-    printN("EXIT %s", NO_ERROR);
-    printN("LABEL error %s", RUNTIME_SEMANTICS_ERROR_UNCOMPATIBLE);
-    printN("EXIT %s", RUNTIME_SEMANTICS_ERROR_UNCOMPATIBLE);
-    printN("LABEL error%s", RUNTIME_SEMANTICS_ERROR_UNCOMPATIBLE);
-    printN("EXIT %s", RUNTIME_SEMANTICS_ERROR_UNCOMPATIBLE);
-    */
 }
 
 /* Konec code_generation.c */

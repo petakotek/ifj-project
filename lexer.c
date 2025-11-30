@@ -977,9 +977,13 @@ Token lexerTokenNext() {
                                c, lexer->pos);
                     memorySafeExit(LEX_ERROR);
                 } else {
+                	if(c > 31){
                     // tady je nacitani znaku do docaneho bufferu
                     appendChar(&buf, &delak, &kapacity, c);
                     lexer->pos++;
+                 }else {
+                 lexer->pos++;
+                 }
                 }
                 break;
             }
