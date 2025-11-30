@@ -155,7 +155,7 @@ typedef struct {
     size_t      length;
 } LexerState;
 /*
- * Funkce inicializuje lexer a alokuje paměť pro stav lexikálního analyzátoru.
+ * @brief Funkce inicializuje lexer a alokuje paměť pro stav lexikálního analyzátoru.
  *
  * @param source  vstupní řetězec zpracovávaný lexerem (z main.c)
  * @return        0 při úspěchu, -1 při chybě alokace
@@ -166,7 +166,7 @@ int lexerInit(const char *source);
  */
 void lexerFree(void);
 /*
- * Hlavní funkce konečného automatu pro získání dalšího tokenu.
+ * @brif Hlavní funkce konečného automatu pro získání dalšího tokenu.
  *
  * @return  další token ze vstupu; pokud není více tokenů,
  *          vrací TOKEN_EOF; při chybě může vrátit ERROR_TOKEN
