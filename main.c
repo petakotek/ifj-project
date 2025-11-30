@@ -36,7 +36,6 @@ int main() {
     //exit(1);
     // Syntaktická kontrola a sestavení AST stromu
     AstNode *ast = parser();
-
     // Sémantická kontrolo a úprava AST stromu
     startSematicValidation(ast);
 

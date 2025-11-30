@@ -1,0 +1,34 @@
+import "ifj25" for Ifj
+class Program {
+// Vestavěné funkce
+    static main() {
+        Ifj.write("A: ")
+        Ifj.write(4e-1)
+        Ifj.write("\n")
+        var start
+        var end
+        var sIn
+        var sOut
+        var asd
+
+
+        start = 0
+        end = 4
+        sIn = "ahoj"
+        sOut = Ifj.substring(sIn, start, end)
+        asd = 1
+        var a = Ifj.ord(sOut, asd)
+        
+        asd = 78
+        var b = Ifj.chr(asd)
+        
+        Ifj.write(sOut)
+        Ifj.write("\n")
+        
+        Ifj.write(a)
+        Ifj.write("\n")
+
+        Ifj.write(b)
+        Ifj.write("\n")
+    }
+}

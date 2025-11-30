@@ -1,3 +1,12 @@
+/**
+ * Fakulta informačních technologií VUT Brno
+ *
+ * @brief Implementace generátoru kódu pro projekt do předmětu IFJ 2025
+ * @file code_generation.c
+ * @author Josef Pasek (xpasekj00), Petr Kotek (xkotekp00), Jakub Jambrozi(xjambrj00) 
+ */
+
+
 #include "code_generation.h"
 
 #include <stdarg.h>
@@ -2260,3 +2269,5 @@ void codegenGenerate(AstNode *root) {
     emitChildren(root, funcStruct);
     destructorFuncContext(funcStruct);
 }
+
+/* Konec code_generation.c */

@@ -1,8 +1,9 @@
-/*
- *
- * Autoři: xpasekj00, xjambrj00
- * Soubor: ast.h
- * Popis: hlavickovy soubor pro ast strom, obsahuje strukturu node pro strom
+/** 
+ * Fakulta informačných technologií VUT Brno
+ * 
+ * @brief hlavičkový súbor pre abstraktný syntaktický strom, 
+ * @file ast.h
+ * @author: Jakub Jambrozi (xjambrj00)
  */
 
 #ifndef AST_STROM_H
@@ -117,10 +118,10 @@ typedef struct AstValue {
  * @brief struktura uzla
  * @param kind typu AstNodeType -> typ uzla(názov)
  * @param arity typu size_t -> pocet deti uzla
- * @param child typu Astnode **child -> ukazel na list deti uzla
+ * @param child typu Astnode **child -> ukazovateľ na list deti uzla
  * @param isLeaf typu bool podla ktoreho vieme urcit ci sa jedna o list alebo o uzol
  * false -> uzol, true -> list
- * @param value typu Astvalue -> struktura ktora obsahuje konkretne hodnoty pre listy
+ * @param value typu Astvalue -> štruktúra ktora obsahuje konkretne hodnoty pre listy
  * (teda pouziva sa ak isLeaf = true)
  */
 typedef struct AstNode {
@@ -129,13 +130,13 @@ typedef struct AstNode {
     struct AstNode **child;
     bool             isLeaf;
     AstValue         value;  // platný len ak isLeaf == true
-    // pro generovani docasnych promenych pouziva pouze codegen
+    // pre generovanie dočasných premenných používa iba codegen
     int tmpId;
 } AstNode;
 
 /**
  * @brief funkcia na vytvorenie listu aj s konkretnou hodnotou
- * očakáva sa že tento list nemože byť uzlom s dalšími listami
+ * očakáva sa že tento list nemôže byť uzlom s dalšími listami
  * @param kind predstavuje typ listu ktorý sa ma vytvoriť (názov)
  * @param token token ktoreho hodnotu chceme dat do listu
  * @return Astnode*
@@ -146,7 +147,7 @@ AstNode *newLeaf(AstNodeType kind, Token token);
  * @brief funkcia ktora vytvori novy uzol z vlastnosti parametrov
  * @param kind predstavuje typ listu ktorý sa ma vytvoriť (názov)
  * @param arity pocet deti noveho uzla
- * @param kids ukazel na deti noveho uzla ktora sa mu maju pridelit
+ * @param kids ukazovateľ na deti noveho uzla ktora sa mu maju pridelit
  * ich pocet sa rovna arity
  * @return Astnode* ktory uz obsahuje vsetky svoje deti
  */
@@ -159,7 +160,7 @@ AstNode *astNew(AstNodeType kind, size_t arity, AstNode **kids);
 void astFreeWhole(AstNode *node);
 
 /**
- * @brief pomocna funkcia na vkladanie hodnoty do abstraktneho syntaktickeho stromu.
+ * @brief pomocna funkcia na vkladanie hodnoty do abstraktneho syntaktického stromu.
  * vyplna strukturu Astvalue podla toho aky typ hodnoty chceme vkladat
  * @param out vysledna struktura AstValue ktoru potom pridame do abstraktneho syntaktickeho stromu.
  * @param kind predstavuje typ uzla ktorý sa ma vytvoriť (názov)
@@ -194,4 +195,6 @@ char    *stringChanging(char *tmp);
 char    *stringChangingLit(char *tmp);
 char    *escapeString(char *tmp);
 
-#endif  // AST_STROM_H
+#endif
+
+/*** konec ast.h ***/

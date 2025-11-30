@@ -1,11 +1,10 @@
 /**
  * Fakulta informačních technologií VUT Brno
  *
- * Hlavičkový soubor pro implementaci hashovací tabulky s implicitním zřetězením
+ * @brief Hlavičkový soubor pro implementaci hashovací tabulky s implicitním zřetězením
  * pro projekt do předmětu IFJ
- * @file hashtable.h
+ * @file symtable.h
  * @author Petr Kotek (xkotekp00)
- * Upraveno: 19.10.2025
  */
 
 #ifndef SYMTABLE_H
@@ -24,7 +23,6 @@ typedef struct {
     bool      isEmpty;  // Proměnná sloužící pro ověření, zda je položka již obsazena nějakým prvkem nebo
                         // ne
     bool isDeleted;     //
-    // implementovat pole jako kruhove, operace %
 
 } TableItem;
 
