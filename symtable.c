@@ -82,8 +82,8 @@ int hashTableInsertItem(HashTable *hashT, char *key, SemSymbol token) {
     int steps = 0;
 
     while (steps < hashT->tableCapacity) {
-        int        curr = (index + steps) % hashT->tableCapacity;
-        TableItem *item = &hashT->items[curr];
+        int currentIndex = (index + steps) % hashT->tableCapacity;
+        TableItem *item = &hashT->items[currentIndex];
 
         if (item->isEmpty || item->isDeleted) {
             if (item->key != NULL) {
@@ -92,7 +92,7 @@ int hashTableInsertItem(HashTable *hashT, char *key, SemSymbol token) {
 
             item->key = malloc(strlen(key) + 1);
             if (item->key == NULL) {
-                printError(INTERNAL_ERROR, "Chyba alokace klice");
+                printError(INTERNAL_ERROR, "Chyba alokace klice pri vkladani\n");
                 return -1;
             }
             // uložení klíče do parametru položky tabulky
@@ -103,7 +103,7 @@ int hashTableInsertItem(HashTable *hashT, char *key, SemSymbol token) {
             item->isDeleted = false;
 
             hashT->tableSize++;
-            return curr;
+            return currentIndex; // navracím index, kde byla vložena položka
         }
         steps++;
     }

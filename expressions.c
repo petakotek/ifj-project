@@ -1029,6 +1029,17 @@ AstNode *parseExpression(Token *token, int flag) {
             printStack(stackP);
         }
 
+        // ošetření toho, že výraz rozsahu nemůže samostatně stát někde v programu kromě for cyklu
+        if (flag != -1 && (actualToken.type == TOKEN_TRIPLE_DOT || actualToken.type == TOKEN_DOUBLE_DOT))
+        {
+            printError(SYNTAX_ERROR,
+                        "(PSA) Vyraz rozsahu je na neplatnem miste (mimo for cyklus)\n");
+            freeAstStack(stackA);
+            freePrecedenceStack(stackP);
+            memorySafeExit(SYNTAX_ERROR);
+        }
+        
+
         if (endFlag == TOKEN_PSA_END) {
             // cyklus probíhá dokud není na zásobníku pouze dolar a výraz
             while (!checkDollarExpression(stackP)) {
