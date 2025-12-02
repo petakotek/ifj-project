@@ -1,0 +1,8 @@
+import "ifj25" for Ifj
+class Program {
+
+static main() {
+    __d = Ifj.write("line1\n")
+    __d = Ifj.write("line2\n")
+}
+}

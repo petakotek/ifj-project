@@ -1,0 +1,20 @@
+import "ifj25" for Ifj
+class Program {
+
+static main() {
+    var c
+    var code
+    var again
+
+    c = Ifj.chr(66)
+    code = Ifj.ord(c, 0)
+    again = Ifj.chr(code)
+
+    __d = Ifj.write(c)
+    __d = Ifj.write(" ")
+    __d = Ifj.write(code)
+    __d = Ifj.write(" ")
+    __d = Ifj.write(again)
+    __d = Ifj.write("\n")
+}
+}

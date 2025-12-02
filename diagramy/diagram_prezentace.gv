@@ -1,0 +1,16 @@
+digraph LexerStateMachine {
+    rankdir=LR; 
+    size="11,8"; 
+    splines=true; 
+    nodesep=0.2;   
+    ranksep=0.4;   
+    
+    node [
+        fontname="Consolas", 
+        fontsize=11, 
+        style="filled,rounded", 
+        shape=rect,       
+        penwidth=1.2,     
+        color="#807272"
+    ];
+}

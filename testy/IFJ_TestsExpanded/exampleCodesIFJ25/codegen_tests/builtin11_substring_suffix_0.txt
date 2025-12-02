@@ -1,0 +1,16 @@
+import "ifj25" for Ifj
+class Program {
+
+static main() {
+    var s
+    var t
+    var len
+
+    s = "abcdef"
+    len = Ifj.length(s)
+    t = Ifj.substring(s, 3, len)
+
+    __d = Ifj.write(t)
+    __d = Ifj.write("\n")
+}
+}
