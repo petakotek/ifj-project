@@ -457,6 +457,7 @@ void blockContentFuncCheck(DynamicSymbolStackPtr stack, Token token) {
         case TOKEN_FLOAT_EXP:
         case TOKEN_INTEGER_EXP:
         case TOKEN_STRING_BLOCK:
+
             pushCheck(stackSymbolPush(stack, makeReduce(AST_STATEMENT_LIST, 1)));
 
             if (function) {
@@ -667,6 +668,10 @@ void varArgFunc(DynamicSymbolStackPtr stack, Token token) {
     stackSymbolPop(stack);
     switch (token.type) 
     {
+        case TOKEN_KEYWORD_IFJ:
+            pushCheck(stackSymbolPush(stack, makeNonterm(N_CALL_IFJ)));
+            pushCheck(stackSymbolPush(stack, makeTerm(TOKEN_KEYWORD_IFJ)));
+            break;
         case TOKEN_IDENTIFIER:
         case TOKEN_GLOBAL_ID:
         case TOKEN_INTEGER:
@@ -855,6 +860,10 @@ void returnFunc(DynamicSymbolStackPtr stack) {
 void returnExprFunc(DynamicSymbolStackPtr stack, Token token) {
     stackSymbolPop(stack);
     switch (token.type) {
+        case TOKEN_KEYWORD_IFJ:
+            pushCheck(stackSymbolPush(stack, makeNonterm(N_CALL_IFJ)));
+            pushCheck(stackSymbolPush(stack, makeTerm(TOKEN_KEYWORD_IFJ)));
+            break;
         case TOKEN_IDENTIFIER:
         case TOKEN_GLOBAL_ID:
         case TOKEN_INTEGER:
