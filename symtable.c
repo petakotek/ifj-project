@@ -64,7 +64,7 @@ void hashTableInitItems(HashTable *hashT) {
 int hashTableInsertItem(HashTable *hashT, char *key, SemSymbol token) {
     if (hashT == NULL || key == NULL)  // tabulka je prazdna nebo zadany klic je NULL
     {
-        return -1;
+        return INSERT_ERROR;
     }
 
     int nasobek = hashT->tableSize * 1.2;
