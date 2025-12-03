@@ -126,5 +126,5 @@ LABEL temp$label$write$write$0
 WRITE LF@temp$var$write
 PUSHS nil@nil
 POPS GF@__d
-LABEL main$0$end$0
+LABEL main$0end
 EXIT int@0
