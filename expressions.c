@@ -23,6 +23,13 @@
 #endif
 
 typedef enum {
+    EXPECTING_RPAREN = -1, // očekávání pravé závorky
+    EXPECTING_ANYTHING = 0, // očekávám jako konec výrazu nový řádek
+    EXPECTING_BLOCK_END = -2, // očekávám konec výrazu jako }
+    EXPECTING_FUNC_END = 1 // očekávám pravou závorku jako ukočení výrazu funkce
+} precedentEndFlags;
+
+typedef enum {
     R,  // >
     L,  // <
     E,  // =
@@ -941,7 +948,7 @@ AstNode *parseExpression(Token *token, int flag) {
         {
             checkEmptyIf = true;
             // prevence prazdneho if statementu
-            if (flag == -1 && actualToken.type == TOKEN_RPAREN) {
+            if (flag == EXPECTING_RPAREN && actualToken.type == TOKEN_RPAREN) {
                 printError(SYNTAX_ERROR, "(PSA) Volano nad prazdnym cyklem, podminkou...\n");
                 freeAstStack(stackA);
                 freePrecedenceStack(stackP);
@@ -1000,18 +1007,18 @@ AstNode *parseExpression(Token *token, int flag) {
         }
 
         // Podmínky, které mohou nastat při ukočování výrazu
-        if ((flag == -1 && actualToken.type == TOKEN_RPAREN && StackTop.type == TOKEN_DOLLAR)
+        if ((flag == EXPECTING_RPAREN && actualToken.type == TOKEN_RPAREN && StackTop.type == TOKEN_DOLLAR)
             // ukonceni pouze na novy radek
             || (actualToken.type == TOKEN_NEW_LINE && StackTop.type == TOKEN_DOLLAR)
             // оddělení výrazů ve funkce čárkou
             || (actualToken.type == TOKEN_COMMA && StackTop.type == TOKEN_DOLLAR)
             // ukončení funkce pravou závorkou
-            || (actualToken.type == TOKEN_RPAREN && StackTop.type == TOKEN_DOLLAR && flag == 1)
+            || (actualToken.type == TOKEN_RPAREN && StackTop.type == TOKEN_DOLLAR && flag == EXPECTING_FUNC_END)
             // ukonceni volani vyrazu v jednoradkove funkci
-            || (actualToken.type == TOKEN_BLOCK_END && flag == -2 && StackTop.type == TOKEN_DOLLAR)
+            || (actualToken.type == TOKEN_BLOCK_END && flag == EXPECTING_BLOCK_END && StackTop.type == TOKEN_DOLLAR)
             // volani funkce pouze s jednim parametrem
             ||
-            (actualToken.type == TOKEN_RPAREN && flag == 0 && StackTop.type == TOKEN_DOLLAR &&
+            (actualToken.type == TOKEN_RPAREN && flag == EXPECTING_ANYTHING && StackTop.type == TOKEN_DOLLAR &&
              expectingRPAREN ==
                  false)) {  // abych mohl koncit potrebuji mit na vstupu token new line a u zasobniku ukazovat jen na $
             if (DEBUG) {
@@ -1030,7 +1037,7 @@ AstNode *parseExpression(Token *token, int flag) {
         }
 
         // ošetření toho, že výraz rozsahu nemůže samostatně stát někde v programu kromě for cyklu
-        if (flag != -1 && (actualToken.type == TOKEN_TRIPLE_DOT || actualToken.type == TOKEN_DOUBLE_DOT))
+        if (flag != EXPECTING_RPAREN && (actualToken.type == TOKEN_TRIPLE_DOT || actualToken.type == TOKEN_DOUBLE_DOT))
         {
             printError(SYNTAX_ERROR,
                         "(PSA) Vyraz rozsahu je na neplatnem miste (mimo for cyklus)\n");
