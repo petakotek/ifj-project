@@ -14,6 +14,10 @@
 
 #include "semantic_analysis.h"
 
+typedef enum{
+    ITEM_NOT_FOUND = -1,
+    INSERT_ERROR = -2
+} SymTableErrors;
 /**
  * @brief Struktura položky v hashovací tabulce
  */

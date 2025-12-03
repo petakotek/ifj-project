@@ -781,8 +781,7 @@ Token lexerTokenNext() {
 
             /*
              * Stav pro nulo ve kterem se bud dostaneme do float_number pokud je nasledovana tecko
-             * nebo do hexa pokud nasleduje x pokud je dalsi cislo integer tak vyhodime error
-             * jelikoz vstup 0123 je neplatny
+             * nebo do hexa pokud nasleduje x
              */
             case ZERO: {
                 if (c == 'x') {
@@ -994,7 +993,13 @@ Token lexerTokenNext() {
                     appendChar(&buf, &delak, &kapacity, c);
                     lexer->pos++;
                  }else {
-                 lexer->pos++;
+                 	free(buf);
+                    buf = NULL;
+                    printError(LEX_ERROR,
+                                "Neznamy jsem tu v else v string charakter v lexerTokenNext"
+                                "%c on line : %lu",
+                                c, lexer->pos);
+                    memorySafeExit(LEX_ERROR);
                  }
                 }
                 break;
@@ -1116,7 +1121,6 @@ Token lexerTokenNext() {
                 token.line = radek;
                 goto token_found;
             }
-            // mezi krok pro mozne -- ale pokud je druhe neco jineho nez - tak vraci token
             case MINUS: {
                 token.type = TOKEN_MINUS;
                 token.line = radek;
@@ -1304,6 +1308,7 @@ token_found:;
 token_found_string:;
     return token;
 }
+
 Token isEffectivelyInteger(char *input, Token token) {
     bool dot = false;
     int  pos_dot;
