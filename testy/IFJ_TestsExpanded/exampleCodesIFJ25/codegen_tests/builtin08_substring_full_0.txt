@@ -1,0 +1,14 @@
+import "ifj25" for Ifj
+class Program {
+
+static main() {
+    var s
+    var t
+
+    s = "hello"
+    t = Ifj.substring(s, 0, Ifj.length(s))
+
+    __d = Ifj.write(t)
+    __d = Ifj.write("\n")
+}
+}

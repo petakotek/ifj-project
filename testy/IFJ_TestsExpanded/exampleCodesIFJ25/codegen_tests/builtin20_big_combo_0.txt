@@ -1,0 +1,25 @@
+import "ifj25" for Ifj
+class Program {
+
+static main() {
+    var s
+    var len
+    var mid
+    var code
+    var ch
+
+    s = "Hello"
+    len = Ifj.length(s)          // 5
+    mid = Ifj.substring(s, 1, 4) // "ell"
+    code = Ifj.ord(s, 0)         // 'H' = 72
+    ch = Ifj.chr(code + 1)       // 'I'
+
+    __d = Ifj.write("len=")
+    __d = Ifj.write(len)
+    __d = Ifj.write(",mid=")
+    __d = Ifj.write(mid)
+    __d = Ifj.write(",next=")
+    __d = Ifj.write(ch)
+    __d = Ifj.write("\n")
+}
+}

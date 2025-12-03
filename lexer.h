@@ -17,23 +17,20 @@
 typedef enum {
     START_LEX,  /// start
     ID,         /// Promena
-    UNDERSCORE,
-    GLOBAL_ID,
-    NUMBER,
-    FLOAT_NUMBER,
-    ZERO,
-    HEXA_NUM,
-    FLOAT_EXP,
-    DIGIT_EXP,
-    NEG_DIGIT_EXP,
-    STRING,
-    STRING_BLOCK,
-    STRING_HEX_N,
-    BACKSLASH,
-    LINE_COMMENT,
-    BLOCK_COMMENT,
-    STAR_COMMENT,
-    SYMBOL,
+    UNDERSCORE, //_
+    GLOBAL_ID, //Globalni identifikator
+    NUMBER, //cisla
+    FLOAT_NUMBER, //float cislo
+    ZERO, // stav 0
+    HEXA_NUM, // hexadecimalni cisla
+    FLOAT_EXP, // float s e
+    DIGIT_EXP, // decimalni s e
+    STRING, // String
+    STRING_BLOCK, // Block string
+    STRING_HEX_N, // znaky zapsane jako hexa cisla
+    BACKSLASH, // /
+    LINE_COMMENT, // // :)
+    BLOCK_COMMENT, // /*
     BLOCK_START,
     BLOCK_END,
     PAR_LEFT,
@@ -176,6 +173,9 @@ TokenType matchIdentifikator(const char *identifikator);
 char     *tokenTypeToString(TokenType type);
 
 Token        isEffectivelyInteger(char *input, Token token);
+/*
+* Globalni proměné abychom byli schopni uvolnit pamět či soubor v error stavu
+*/
 extern char *source_file;
 extern char *buf;
 #endif

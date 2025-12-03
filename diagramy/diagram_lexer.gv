@@ -1,80 +1,64 @@
-
 digraph LexerStateMachine {
     // ===================== GLOBÁLNÍ NASTAVENÍ =====================
-    // Směr grafu (Top-Bottom), fonty a základní vzhled
-        // Nastavení pro A4 na výšku (nebo na šířku v dokumentu)
-    // rankdir=LR je pro lexery obvykle lepší (tok zleva doprava)
-    rankdir=TB; 
+    rankdir=LR; 
+    size="11,8"; 
+    splines=true; 
+    nodesep=0.2;   
+    ranksep=0.4;   
     
-    // Velikost A4 v palcích (cca 21x29 cm)
-    // 'size' omezí vykreslování, aby se to vešlo
-    size="11,8"; // A4 na šířku (Landscape) - v dokumentaci otočíte obrázek o 90 stupňů
-    ratio="fill";
-    splines=true;  // Křivky místo lomených čar
-    nodesep=0.2;   // Horizontální mezera
-    ranksep=0.4;   // Vertikální mezera
-    
-    // Výchozí styl pro všechny uzly (stavy)
     node [
         fontname="Consolas", 
         fontsize=11, 
         style="filled,rounded", 
-        shape=rect,       // V Graphviz je 'rounded rect' podobný vašemu 'state'
-        penwidth=1.2,     // Tloušťka čáry
+        shape=rect,       
+        penwidth=1.2,     
         color="#807272"
     ];
- // Výchozí styl pro hrany (šipky)
     edge [fontname="Consolas", fontsize=10, color="#333333", arrowsize=0.8];
 
-
-    // ===================== DEFINICE STAVŮ A STYLŮ =====================
+    // ===================== DEFINICE STAVŮ =====================
     
-    // 1. Startovní stav (žlutý)
-    node [fillcolor="#FFF59D",peripheries=2];
+    // 1. Startovní stav
+    node [fillcolor="#FFF59D", peripheries=2];
     SLX [label="START_LEX"];
 
-    // 2. Terminální stavy - DVOJITÁ ČÁRA (peripheries=2) + Červená
-    // Tady je ten trik, který PlantUML neumí
-    node [fillcolor="#ca8d8d",peripheries=1];
-    END_Q1;HEXA_Z;DOUBLE_Q;
+    // 2. Terminální stavy (červené)
+    node [fillcolor="#ca8d8d", peripheries=1];
+    END_Q1; HEXA_ZNAK; DOUBLE_Q; END_Q2;
     
-    node [fillcolor="#FFF4CC"];
-   BLOCK_C;
-    // 3. Čísla (Modré) - Obyčejný rámeček
+    // 3. Čísla (Modré)
     node [fillcolor="#E5F0FF", peripheries=2, penwidth=1.2];
-    ZERO; NUMBER; HEXA_N; FLOAT_N; DECIMAL_E; FLOAT_E;
+    ZERO; NUMBER; HEXA_NUM; FLOAT_N; DIGIT_EXP; FLOAT_EXP;
 
     // 4. Řetězce (Zelené)
     node [fillcolor="#D8FFD8"];
-    STRING;  STRING_B;END_Q2
+    STRING; STRING_BLOCK;
 
     // 5. Operátory (Fialové)
     node [fillcolor="#EEDBFF"];
-    P; M; MU; C; D; DD; TD; CO; QM;
-    ASS; EQO; LT; LTE; GT; GTE;
-    AH; A; OH; O; NG; NT;
-    BS; BE; PL; PR;
-    UNDERSCORE; // Underscore jste měl jako operátor
+    PLUS; MINUS; STAR; COMMA; DOT; DOUBLE_DOT; TRIPLE_DOT; COLON; QUESTION_MARK;
+    ASSIGN; EQ; LT; LTE; GT; GTE;
+    AND_HALF; AND; OR_HALF; OR; NEGACE; NOT;
+    BLOCK_START; BLOCK_END; PAR_LEFT; PAR_RIGHT;
+    UNDERSCORE; 
     SLASH;
 
     // 6. Identifikátory (Oranžové)
     node [fillcolor="#f7a996"];
-    ID; GID;
+    ID; GLOBAL_ID;
 
     // 7. Komentáře (Žluté světlé)
     node [fillcolor="#FFF4CC"];
-    LINE_C; BLOCK_C;
+    LINE_COMMENT; BLOCK_COMMENT;
 
 
     // ===================== PŘECHODY =====================
 
-    // Vstupní bod (neviditelný uzel -> start)
     start_point [shape=point, width=0, style=invis];
     start_point -> SLX;
 
-    // Smyčka WHITESPACE nahoře
-    // Používáme porty :n (north) aby šipka šla horem
-    SLX:nw -> SLX:ne [label=" whitespace "];
+    // OPRAVA: Použití platných portů nw -> ne (horní smyčka)
+    SLX:jw -> SLX:je [label=" whitespace                   "];
 
 
     // ----- IDENTIFIKÁTORY -----
@@ -82,7 +66,7 @@ digraph LexerStateMachine {
     SLX -> UNDERSCORE [label=" _ "];
     
     ID -> ID [label=" alnum | _ "];
-    UNDERSCORE -> GID [label=" _ "];
+    UNDERSCORE -> GLOBAL_ID [label=" _ "];
     UNDERSCORE -> ID [label=" alnum "];
 
 
@@ -90,64 +74,66 @@ digraph LexerStateMachine {
     SLX -> ZERO [label=" 0 "];
     SLX -> NUMBER [label=" digit "];
 
-    ZERO -> HEXA_N [label=" x "];
+    ZERO -> HEXA_NUM [label=" x "];
     ZERO -> FLOAT_N [label=" . "];
-    ZERO -> DECIMAL_E [label=" e/E "];
+    ZERO -> DIGIT_EXP [label=" e/E "];
 
     NUMBER -> NUMBER [label=" digit "];
     NUMBER -> FLOAT_N [label=" . "];
-    NUMBER -> DECIMAL_E [label=" e/E "];
+    NUMBER -> DIGIT_EXP [label=" e/E "];
 
-    HEXA_N -> HEXA_N [label=" hex "];
+    HEXA_NUM -> HEXA_NUM [label=" hex "];
     FLOAT_N -> FLOAT_N [label=" digit "];
-    FLOAT_N -> FLOAT_E [label=" e/E "];
-    DECIMAL_E -> DECIMAL_E [label=" digit "];
-    FLOAT_E -> FLOAT_E [label=" digit "];
+    FLOAT_N -> FLOAT_EXP [label=" e/E "];
+    DIGIT_EXP -> DIGIT_EXP [label=" digit "];
+    FLOAT_EXP -> FLOAT_EXP [label=" digit "];
 
 
     // ----- ŘETĚZCE -----
-    SLX -> STRING [label=" ' \" ' "]; // Uvozovky je třeba escapovat
+    SLX -> STRING [label=" ' \" ' "]; 
     
-    STRING -> STRING [label=" C > 31 "];
+    STRING -> STRING [label=" c > 31 "];
     STRING -> DOUBLE_Q [label=" \" "];
-    STRING -> HEXA_Z [label=" \\x "];
-    HEXA_Z -> STRING [label=" hex esc "];
+    STRING -> HEXA_ZNAK [label=" \\x "];
+    HEXA_ZNAK -> STRING [label=" hexa_count == 2"];
 
-    DOUBLE_Q -> STRING_B [label=" ' \" ' "];
-    STRING_B -> END_Q1 [label=" ' \" ' "];
+    DOUBLE_Q -> STRING_BLOCK [label=" ' \" ' "];
+    STRING_BLOCK -> END_Q1 [label=" ' \" ' "];
     END_Q1 -> END_Q2 [label=" ' \" ' "];
-    END_Q1 -> STRING_B [label = "c != ' \" ' "];
-    END_Q2 -> STRING_B [label = "c != ' \" ' "];
+    END_Q1 -> STRING_BLOCK [label = "c != ' \" ' "];
+    END_Q2 -> STRING_BLOCK [label = "c != ' \" ' "];
 
 
     // ----- KOMENTÁŘE -----
     SLX -> SLASH [label=" / "];
-    SLASH -> LINE_C [label=" / "];
-    SLASH -> BLOCK_C [label=" * "];
+    SLASH -> LINE_COMMENT [label=" / "];
+    SLASH -> BLOCK_COMMENT [label=" * "];
     
-    LINE_C -> LINE_C;
-    BLOCK_C -> BLOCK_C [label=" uvnitř "];
-    BLOCK_C:n -> SLX:n [label=" */ "];
+    LINE_COMMENT -> LINE_COMMENT [label = "c != \\n "];
+    BLOCK_COMMENT -> BLOCK_COMMENT [label=" c != ' */'  "];
+    // OPRAVA: Doplněn port 'n' před dvojtečku
+    BLOCK_COMMENT:n -> SLX:n [label=" */ "];
+
 
     // ----- OPERÁTORY -----
-    // Aby byl graf přehledný, sdružíme hrany
-    SLX -> P [label=" + "];
-    SLX -> M [label=" - "];
-    SLX -> MU [label=" * "];
-    SLX -> C [label=" , "];
-    SLX -> CO [label=" : "];
-    SLX -> QM [label=" ? "];
-    SLX -> BS [label=" { "];
-    SLX -> BE [label=" } "];
-    SLX -> PL [label=" ( "];
-    SLX -> PR [label=" ) "];
+    SLX -> PLUS [label=" + "];
+    SLX -> MINUS [label=" - "];
+    SLX -> STAR [label=" * "];
+    SLX -> COMMA [label=" , "];
+    SLX -> COLON [label=" : "];
+    SLX -> QUESTION_MARK [label=" ? "];
+    // OPRAVA: Odstraněno nadbytečné lomítko /
+    SLX -> BLOCK_START [label=" { "];
+    SLX -> BLOCK_END [label=" } "];
+    SLX -> PAR_LEFT [label=" ( "];
+    SLX -> PAR_RIGHT [label=" ) "];
 
-    SLX -> D [label=" . "];
-    D -> DD [label=" . "];
-    DD -> TD [label=" . "];
+    SLX -> DOT [ label=" . "];
+    DOT -> DOUBLE_DOT [label=" . "];
+    DOUBLE_DOT -> TRIPLE_DOT [label=" . "];
 
-    SLX -> ASS [label=" = "];
-    ASS -> EQO [label=" = "];
+    SLX -> ASSIGN [label=" = "];
+    ASSIGN -> EQ [label=" = "];
     
     SLX -> LT [label=" < "];
     LT -> LTE [label=" = "];
@@ -155,14 +141,14 @@ digraph LexerStateMachine {
     SLX -> GT [label=" > "];
     GT -> GTE [label=" = "];
     
-    SLX -> NG [label=" ! "];
-    NG -> NT [label=" = "];
+    SLX -> NEGACE [label=" ! "];
+    NEGACE -> NOT [label=" = "];
 
-    SLX -> AH [label=" & "];
-    AH -> A [label=" & "];
+    SLX -> AND_HALF [label=" & "];
+    AND_HALF -> AND [label=" & "];
     
-    SLX -> OH [label=" | "];
-    OH -> O [label=" | "];
+    SLX -> OR_HALF [label=" | "];
+    OR_HALF -> OR [label=" | "];
 
     // ----- KONCE -----
     SLX -> EOF [label=" \\0 "];

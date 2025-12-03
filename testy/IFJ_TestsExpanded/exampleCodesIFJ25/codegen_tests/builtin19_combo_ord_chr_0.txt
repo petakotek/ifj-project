@@ -1,0 +1,16 @@
+import "ifj25" for Ifj
+class Program {
+
+static main() {
+    var s
+    var code
+    var next
+
+    s = "A"
+    code = Ifj.ord(s, 0)
+    next = Ifj.chr(code + 1)
+
+    __d = Ifj.write(next)
+    __d = Ifj.write("\n")
+}
+}

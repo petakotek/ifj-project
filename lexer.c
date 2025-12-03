@@ -16,7 +16,7 @@
 #include "support_functions.h"
 
 /*
- * Proměne  která je potřebna byti viditelnou v celem souboru
+ * Proměne  která jsou potřebna byti viditelnou v celem souboru
  */
 static LexerState *lexer        = NULL;
 static int         CountComents = 0;
@@ -25,7 +25,7 @@ char              *source_file  = NULL;
 // pocatecni kapacita buffer ktere je pouzivat pro pridavani znaku do stringu
 #define INIT_CAPACITY 32
 /*
- * Funkce inicializuje lexer a alokuje paměť pro stav lexikálního analyzátoru.
+ * @brief Funkce inicializuje lexer a alokuje paměť pro stav lexikálního analyzátoru.
  *
  * @param source  vstupní řetězec zpracovávaný lexerem (z main.c)
  * @return        0 při úspěchu, -1 při chybě alokace
@@ -43,7 +43,8 @@ int lexerInit(const char *source) {
 }
 
 /*
- * Uvolní paměť spojenou s lexerem a nastaví ukazatel na NULL.
+ * @brief Uvolní paměť spojenou s lexerem a nastaví ukazatel na NULL.
+ * @param void
  */
 void lexerFree(void) {
     if (lexer != NULL) {
@@ -56,9 +57,9 @@ void lexerFree(void) {
     }
 }
 /*
- *	Funkce na identifikaci identifikator
+ * @briefFunkce na identifikaci identifikator
  * @param char *string
- * @return TokenType
+ * @return TokenTyped
  */
 TokenType matchIdentifikator(const char *identifikator) {
     if (strcmp(identifikator, "if") == 0) {
@@ -305,7 +306,7 @@ Token lexerTokenNext() {
     // aktualni znak ktery cteme v automatu
     char c;
     /*
-     * Promena zacatek slozi k urceni zacatku :) tokenu
+     * Promena zacatek slozi k urceni zacatku
      */
     int zacatek = lexer->pos;
     /*
@@ -319,13 +320,29 @@ Token lexerTokenNext() {
     // buffer pro hexa cisla v stringu
     char hexa_buffer[3];
     /*
-     * Konecny automat funguje tak ze se posovame lexer->pos po vstupu ve chvili kdy v pocatecnim
-     * stavu START_LEX dedekujeme cislo nebo identifikator tak ulozime hodnotu hodnotu lexer->pos do
-     * promene zacatek ve chvili kdy v techto stavech zjistime ze dalsi charakter je jiny nez
-     * aktualni pozadovanym stavem tak udelame substring od zacatek po lexer->pos a mame token
-     * identifikatoru nebo cisla stejne tak u nekterych symbolu a u blokoveho stringu ale u normalni
-     * stringu to musime zduvodu moznosti hexa cisel ukladat do prubezneho bufferu jednoduche
-     * symboly vracime okamzite
+     * Popis fungování konečného automatu (FSA) lexikální analýzy.
+     *
+     * 1. Postup lexerem:
+     * - Posouváme ukazatel pozice vstupu (lexer->pos) po znacích.
+     *
+     * 2. Detekce a zpracování tokenů s proměnnou délkou (ID, čísla):
+     * - Když ve výchozím stavu START_LEX detekujeme **číslo** nebo **identifikátor**,
+     * uložíme aktuální pozici (lexer->pos) do proměnné **počátek**.
+     * - Jakmile v těchto stavech narazíme na znak, který neodpovídá pravidlům
+     * aktuálního stavu, provedeme **substring** od **počátku** do aktuální
+     * pozice (lexer->pos), čímž získáme hotový token (identifikátor, číslo).
+     *
+     * 3. Zpracování speciálních typů tokenů:
+     * - **Blokový řetězec (block string)**: Podobný princip jako ID/čísla (substring).
+     * - **Normální řetězec (string)**: Musí se ukládat do **průběžného bufferu (buf)**
+     * kvůli možnosti zpracování **hexadecimálních kódů znaků** uvnitř řetězce.
+     * - **Jednoduché symboly/operátory**: Vracíme je **okamžitě** (bez nutnosti substringu
+     * nebo mezibufferu).
+     *
+     * 4. Zpracování konce souboru (EOF):
+     * - Speciální switch blok na začátku cyklu zajišťuje, že při dosažení EOF
+     * (lexer->pos >= lexer->length) je korektně vyhodnocen a vrácen i poslední
+     * rozpracovaný token.
      */
     while (1) {
         if (lexer->pos >= lexer->length) {  // kontrola aby nas counter nepreskocil velikost
@@ -785,13 +802,8 @@ Token lexerTokenNext() {
                     stav = FLOAT_NUMBER;
                     lexer->pos++;
                 } else if (isdigit(c)) {
-                    free(buf);
-                    buf = NULL;
-                    printError(LEX_ERROR,
-                               "Neznamy charakter v lexerTokenNext"
-                               "%c on line : %lu",
-                               c, lexer->pos);
-                    memorySafeExit(LEX_ERROR);
+                   stav = NUMBER;
+                   lexer->pos++;
                 }else if(c == 'e' || c == 'E'){
             	   	stav = DIGIT_EXP;
                     lexer->pos++;
