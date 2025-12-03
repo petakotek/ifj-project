@@ -2,7 +2,7 @@
  * Fakulta informačných technologií VUT Brno
  *
  * Hlavičkový súbor pre implementáciu lexikálnej analýzy
- * konkrétne pre struktúru symbolov pre terminalý a neterminály
+ * konkrétne pre strukturu symbolov pre terminaly a neterminály
  * pre projekt do predmetu IFJ
  * @file  parser.h
  * @author Jakub Jambrozi (xjambrj00)

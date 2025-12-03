@@ -11,7 +11,7 @@
 
 #include <stdio.h>
 /*
- *Definice typu tokenu v lexeru
+ *Definice typu tokenu v lex
  */
 // Stav do kterych se muze dostat
 typedef enum {
@@ -61,10 +61,10 @@ typedef enum {
     COLON,          // :
     QUESTION_MARK,  // ?
     DOUBLE_MINUS,   // --
-    ZNAK_HEXA       // stav kdy ve stringu dostaneme hexa cislo a tim doplnime znak
+    ZNAK_HEXA       // stav kdy ve řetězců dostaneme hexa cislo a tim doplnime znak
     // dopsat vsechny operatory jako stav a jako token
 } StateType;
-// nějaky natrel co by tam mohlo byt
+// nějaký natrel co by tam mohlo byt
 typedef enum {
     TOKEN_EOF,
     TOKEN_IDENTIFIER,
@@ -135,7 +135,7 @@ typedef union {
 
 /*
  *Definuje samotny jeden token
- *obecne prametry tokenu: Line(pro error zpravy) .. vice mene nenapadlo
+ *obecne parametry tokenu: Line(pro error zpravy) .. vice mene nenapadlo
  * Union pro specificke parametry daneho tokenu ty nejdulezitejsi hodnoty()
  */
 typedef struct {
@@ -154,16 +154,16 @@ typedef struct {
 /*
  * @brief Funkce inicializuje lexer a alokuje paměť pro stav lexikálního analyzátoru.
  *
- * @param source  vstupní řetězec zpracovávaný lexerem (z main.c)
+ * @param source  vstupní řetězec zpracovávaný lex (z main.c)
  * @return        0 při úspěchu, -1 při chybě alokace
  */
 int lexerInit(const char *source);
 /*
- * Uvolní paměť spojenou s lexerem a nastaví ukazatel na NULL.
+ * Uvolní paměť spojenou s lex a nastaví ukazatel na NULL.
  */
 void lexerFree(void);
 /*
- * @brif Hlavní funkce konečného automatu pro získání dalšího tokenu.
+ * @brief Hlavní funkce konečného automatu pro získání dalšího tokenu.
  *
  * @return  další token ze vstupu; pokud není více tokenů,
  *          vrací TOKEN_EOF; při chybě může vrátit ERROR_TOKEN
@@ -174,7 +174,7 @@ char     *tokenTypeToString(TokenType type);
 
 Token        isEffectivelyInteger(char *input, Token token);
 /*
-* Globalni proměné abychom byli schopni uvolnit pamět či soubor v error stavu
+* Globalni proměnné abychom byli schopni uvolnit paměť či soubor v error stavu
 */
 extern char *source_file;
 extern char *buf;

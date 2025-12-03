@@ -1,7 +1,7 @@
 /**
  * Fakulta informačních technologií VUT Brno
  *
- * @brief Hlavičkový soubor pro implementaci hashovací tabulky s implicitním zřetězením
+ * @brief Hlavičkový soubor pro implementaci hash tabulky s implicitním zřetězením
  * pro projekt do předmětu IFJ
  * @file symtable.c
  * @author Petr Kotek (xkotekp00)
@@ -42,8 +42,8 @@ HashTable *hashTableInit() {
     return hashT;
 }
 /**
- * @brief Funkce inicializuje všechny prvky v tabulce na defaultní hodnoty s vyjímkou pole key
- * @param hashT Ukazatel na hashovací tabulku
+ * @brief Funkce inicializuje všechny prvky v tabulce na počáteční hodnoty s výjimkou pole key
+ * @param hashT Ukazatel na hash tabulku
  */
 void hashTableInitItems(HashTable *hashT) {
     for (int indexOfItem = 0; indexOfItem < hashT->tableCapacity; indexOfItem++) {
@@ -56,8 +56,8 @@ void hashTableInitItems(HashTable *hashT) {
 }
 
 /**
- * @brief Funkce vloží prvek do pole položek hashovací tabulky a vrátí index, na kterém byla položka
- * uložena. V případě, že index, který vypočítala hashovací funkce je již obsazený postupuje dál
+ * @brief Funkce vloží prvek do pole položek hash tabulky a vrátí index, na kterém byla položka
+ * uložena. V případě, že index, který vypočítala hash funkce je již obsazený postupuje dál
  * polem a hledá první volný index
  * @return Funkce vraci index v poli polozek
  */
@@ -189,13 +189,13 @@ void hashTableDealloc(HashTable *hashT) {
 }
 
 /**
- * @brief Implementace hashovací funkce polocí metody Daniela J. Bernsteina
+ * @brief Implementace hash funkce pomocí metody Daniela J. Bernsteina
  * @param key ukazatel na řetězec, který bude vkládán
  * @return Vrací index v poli struktur, který je využit při hledání, mazání, vkládání
  */
 int hashItem(char *key, HashTable *hashT) {
     if (key == NULL) {
-        printError(INTERNAL_ERROR, "Nelze hashovat NULL prvek");
+        printError(INTERNAL_ERROR, "Nelze hash NULL prvek");
         return INTERNAL_ERROR;
     }
 
@@ -259,7 +259,7 @@ void hashTableRealloc(HashTable *hashT) {
 /**
  * @brief Funkce pro ověřující prázdnost tabulky
  * @param hashT Ukazatel na tabulku symbolů
- * @return Funkce navrací hodnotu true v případě, že je tabulka prádná, jinak false
+ * @return Funkce navrací hodnotu true v případě, že je tabulka prázdná, jinak false
  */
 bool hashTableIsEmpty(HashTable *hashT) { return hashT->tableSize == 0; }
 

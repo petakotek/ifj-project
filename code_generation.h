@@ -18,7 +18,7 @@
 #include "support_functions.h"
 #include "symtable.h"
 /*
-* Struktura na uložení informaci o funkci ve ktere se generator kodu nachazí.
+* Struktura na uložení informaci o funkci ve ktere se generator kodu nachází.
 */
 typedef struct {
     char                     *funcName;
@@ -29,7 +29,7 @@ typedef struct {
 } FuncContext;
 void  emitProlog();
 void  emitCommand(AstNode *node, FuncContext *funcContext);
-char *generatorLable(char *func_name, FuncContext *funcContext, bool pridaniDoStacku, size_t counter);
+char *generatorLabel(char *func_name, FuncContext *funcContext, bool addToStack, size_t counter);
 void  codegenGenerate(AstNode *root);
 char *resizeLabelName(char *prefix, size_t *size);
 void  emitPlus(AstNode *node, FuncContext *funcContext);
@@ -38,7 +38,7 @@ void  emitMul(AstNode *node, FuncContext *funcContext);
 void  emitDiv(AstNode *node, FuncContext *funcContext);
 void  emitAssigned(AstNode *node, FuncContext *funcContext);
 void  emitVar(AstNode *node, FuncContext *funcContext);
-void  emitNegace(AstNode *node, FuncContext *funcContex);
+void  emitNegace(AstNode *node, FuncContext *funcContext);
 void  emitOr(AstNode *node, FuncContext *funcContext);
 void  emitAnd(AstNode *node, FuncContext *funcContext);
 void  emitEqualNot(AstNode *node, FuncContext *funcContext);
@@ -50,26 +50,26 @@ void  emitGetter(AstNode *node);
 void  emitCondition(AstNode *node, FuncContext *funcContext);
 void  printN(const char *fmt, ...);
 
-void         emitUnaryMinus(AstNode *node, FuncContext *funcStrukt);
-FuncContext *ConstuctorFuncContext();
+void         emitUnaryMinus(AstNode *node, FuncContext *funcStruct);
+FuncContext *ConstructorFuncContext();
 
 /**
- * @brief Funkcia pre generovanie kodu pustupnosti if a else funkcii
+ * @brief Funkcia pre generovanie kodu retezu if a else funkcii
  * @param node aktualny uzol s ktorym pracujeme
- * @param funcContext struktura pre vytvorenie labla obsahujuca counter,...
+ * @param funcContext struktura pre vytvorenie navesti obsahujuca counter,...
  */
 void emitIfChain(AstNode *node, FuncContext *funcContext);
 /**
  * @brief Funkcia pre generovanie kodu if funkcii
  * @param node aktualny uzol s ktorym pracujeme
  * @param endlabel label konca if retazca
- * @param funcContext struktura pre vytvorenie labla obsahujuca counter,...
+ * @param funcContext struktura pre vytvorenie navesti obsahujuca counter,...
  */
 void emitIf(AstNode *node, FuncContext *funcContext, char *endLabel);
 /**
  * @brief Funkcia pre generovanie kodu else funkcii
  * @param node aktualny uzol s ktorym pracujeme
- * @param funcContext struktura pre vytvorenie labla obsahujuca counter,...
+ * @param funcContext struktura pre vytvorenie navesti obsahujuca counter,...
  */
 void emitElse(AstNode *node, FuncContext *funcContext);
 
@@ -80,7 +80,7 @@ typedef struct {
     int    count;      // počet proměnných pro resize
     int    capacity;   // kapacita pole pro resize
 } VarList;
-// Pomocna struktura pro ukladani si scopu a counter pro delani docasnych promenych abychom se vyhli konfiktum
+// Pomocna struktura pro ukladani si ramce a counter pro delani docasnych proměnných abychom se vyhli konfliktům
 #endif
 
 /* Konec code_generation.h */

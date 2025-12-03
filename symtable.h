@@ -1,7 +1,7 @@
 /**
  * Fakulta informačních technologií VUT Brno
  *
- * @brief Hlavičkový soubor pro implementaci hashovací tabulky s implicitním zřetězením
+ * @brief Hlavičkový soubor pro implementaci hash tabulky s implicitním zřetězením
  * pro projekt do předmětu IFJ
  * @file symtable.h
  * @author Petr Kotek (xkotekp00)
@@ -19,7 +19,7 @@ typedef enum{
     INSERT_ERROR = -2
 } SymTableErrors;
 /**
- * @brief Struktura položky v hashovací tabulce
+ * @brief Struktura položky v hash tabulce
  */
 typedef struct {
     char     *key;      // identifikator
@@ -31,8 +31,8 @@ typedef struct {
 } TableItem;
 
 /**
- * @brief Struktura hashovaci tabulky
- * @param items Pole položek v hashovací tabulce
+ * @brief Struktura hash tabulky
+ * @param items Pole položek v hash tabulce
  * @param tableSize Aktuální velikost tabulky
  * @param tableCapacity kapacita tabulky, která může být použita
  */
@@ -40,19 +40,19 @@ typedef struct {
     int tableSize;             /** Aktuální velikost tabulky @param tableCapacity Kapacita tabulky nemůže být
                                   větší jak její velikost */
     int        tableCapacity;  // Kapacita tabulky, která může být využita
-    TableItem *items;          // Pole položek v Hashovací tabulce
+    TableItem *items;          // Pole položek v Hash tabulce
 } HashTable;
 
 HashTable *hashTableInit();
 void       hashTableInitItems(HashTable *);  // Funkce pro základní inicializaci
 int        hashTableInsertItem(HashTable *, char *key,
-                               SemSymbol token);   // Funkce pro vložení položky do hashovací tabulky s
+                               SemSymbol token);   // Funkce pro vložení položky do hash tabulky s
                                                    // alokací řetězce, který bude vkládán
-void hashTableDeleteItem(HashTable *, char *key);  // Funkce pro smazání položky v hashovací tabulce
-int  hashTableSearchItem(HashTable *, char *key);  // Funkce pro nalezení položky v hashovací tabulce
-void hashTableDealloc(HashTable *);                // funkce pro dealokaci hashovací tabulky
+void hashTableDeleteItem(HashTable *, char *key);  // Funkce pro smazání položky v hash tabulce
+int  hashTableSearchItem(HashTable *, char *key);  // Funkce pro nalezení položky v hash tabulce
+void hashTableDealloc(HashTable *);                // funkce pro dealokaci hash tabulky
 int  hashItem(char *key, HashTable *);
-void hashTableRealloc(HashTable *);  // Funkce provede reallokaci tabulky symbolu v pripade,
+void hashTableRealloc(HashTable *);  // Funkce provede realokaci tabulky symbolu v pripade,
                                      // ze doslo k naplneni kapacity
 
 /**

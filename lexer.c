@@ -16,24 +16,24 @@
 #include "support_functions.h"
 
 /*
- * Proměne  která jsou potřebna byti viditelnou v celem souboru
+ * Proměnné  která jsou potřeba byti viditelnou v celem souboru
  */
 static LexerState *lexer        = NULL;
 static int         CountComents = 0;
 char              *buf          = NULL;
 char              *source_file  = NULL;
-// pocatecni kapacita buffer ktere je pouzivat pro pridavani znaku do stringu
+// pocatecni capacity buffer ktere je pouzivat pro pridavani znaku do řetězců
 #define INIT_CAPACITY 32
 /*
  * @brief Funkce inicializuje lexer a alokuje paměť pro stav lexikálního analyzátoru.
  *
- * @param source  vstupní řetězec zpracovávaný lexerem (z main.c)
+ * @param source  vstupní řetězec (z main.c)
  * @return        0 při úspěchu, -1 při chybě alokace
  */
 int lexerInit(const char *source) {
     lexer = malloc(sizeof(LexerState));
     if (lexer == NULL) {
-        printError(INTERNAL_ERROR, "nepovedeny malloc v lexeru\n");
+        printError(INTERNAL_ERROR, "nepovedeny malloc v lex\n");
         memorySafeExit(INTERNAL_ERROR);
     }
     lexer->length = strlen(source);
@@ -43,7 +43,7 @@ int lexerInit(const char *source) {
 }
 
 /*
- * @brief Uvolní paměť spojenou s lexerem a nastaví ukazatel na NULL.
+ * @brief Uvolní paměť spojenou s lex a nastaví ukazatel na NULL.
  * @param void
  */
 void lexerFree(void) {
@@ -125,7 +125,7 @@ TokenType matchIdentifikator(const char *identifikator) {
     return TOKEN_IDENTIFIER;
 }
 /*
- * Funkce nakrajéní stringu na token
+ * Funkce nakrájení řetězců na token
  *@param int start startovaci pozice
  *@param int end koncici pozice
  * @return vraci char *vysledek
@@ -137,7 +137,7 @@ char *substring(size_t start, size_t end) {
     int   length   = end - start;
     char *vysledek = malloc((length + 1) * sizeof(char));
     if (vysledek == NULL) {
-        printError(INTERNAL_ERROR, "nepovedeny malloc v substringu v lexeru\n");
+        printError(INTERNAL_ERROR, "nepovedeny malloc v podřetězců v lex\n");
         memorySafeExit(INTERNAL_ERROR);
     }
     int pos = 0;
@@ -273,32 +273,33 @@ char *tokenTypeToString(TokenType type) {
             return "UNKNOWN_TOKEN";
     }
 }
-/*
- *Dopomocna funkce na dodavani znaku do buffru ktery se vrati zpatky v podobe
- *stringu s tokenem
- *@params char ** buf je samotny docastny buffer
- *@params int *delka aktualni delka buffru
- *@params c znak dodavany
+/**
+ * Pomocna funkce na dodavani znaku do bufferu ktery se vrati zpatky v podobe
+ * řetězců s token
+ *
+ * @params char ** buf je samotny dočasný buffer
+ * @params int *length aktualni length buffer
+ * @params c znak dodavany
  */
-void appendChar(char **buf, int *delka, int *kapacita, char c) {
-    if (*delka + 1 >= *kapacita) {  // ve chvili kdy hrozi preteceni realloc
-        *kapacita *= 2;
-        *buf = realloc(*buf, *kapacita);
+void appendChar(char **buf, int *length, int *capacity, char c) {
+    if (*length + 1 >= *capacity) {  // ve chvili kdy hrozi preteceni realloc
+        *capacity *= 2;
+        *buf = realloc(*buf, *capacity);
         if (buf == NULL) {
-            printError(INTERNAL_ERROR, "Chyba v reallocku reallock \n");
+            printError(INTERNAL_ERROR, "Chyba v realokace\n");
             memorySafeExit(INTERNAL_ERROR);
         }
     }
-    (*buf)[(*delka)++] = c;  // zapisovani znaku do bufferu
-    (*buf)[*delka]     = '\0';
+    (*buf)[(*length)++] = c;  // zapisovani znaku do bufferu
+    (*buf)[*length]     = '\0';
 }
 Token lexerTokenNext() {
     // inicializace bufferu na string
 
     buf = calloc(INIT_CAPACITY, sizeof(char)); /* Musi se dojit na konec pomoci goto jinak MUSI BYT FREE!!! jinak memory
                                                   leak typicky nasobky 32byt */
-    int   kapacity = INIT_CAPACITY;
-    int   delak    = 0;
+    int   capacity = INIT_CAPACITY;
+    int   length    = 0;
     Token token    = {0};
     if (lexer == NULL || lexer->pos >= lexer->length) {
         token.type = TOKEN_EOF;
@@ -315,14 +316,14 @@ Token lexerTokenNext() {
     StateType stav = START_LEX;
     // promena na pocitani radku
     int radek = 1;
-    // kontrola poctu v hexa cisle v stringu
+    // kontrola poctu v hexa cisle v řetězců
     int hexa_count = 0;
-    // buffer pro hexa cisla v stringu
+    // buffer pro hexa cisla v řetězců
     char hexa_buffer[3];
     /*
      * Popis fungování konečného automatu (FSA) lexikální analýzy.
      *
-     * 1. Postup lexerem:
+     * 1. Postup lex:
      * - Posouváme ukazatel pozice vstupu (lexer->pos) po znacích.
      *
      * 2. Detekce a zpracování tokenů s proměnnou délkou (ID, čísla):
@@ -336,8 +337,8 @@ Token lexerTokenNext() {
      * - **Blokový řetězec (block string)**: Podobný princip jako ID/čísla (substring).
      * - **Normální řetězec (string)**: Musí se ukládat do **průběžného bufferu (buf)**
      * kvůli možnosti zpracování **hexadecimálních kódů znaků** uvnitř řetězce.
-     * - **Jednoduché symboly/operátory**: Vracíme je **okamžitě** (bez nutnosti substringu
-     * nebo mezibufferu).
+     * - **Jednoduché symboly/operátory**: Vracíme je **okamžitě** (bez nutnosti podřetězců
+     * nebo mezi bufferu).
      *
      * 4. Zpracování konce souboru (EOF):
      * - Speciální switch blok na začátku cyklu zajišťuje, že při dosažení EOF
@@ -347,7 +348,7 @@ Token lexerTokenNext() {
     while (1) {
         if (lexer->pos >= lexer->length) {  // kontrola aby nas counter nepreskocil velikost
             /*
-             * Switch pro situace ze jsme v urcitem stavu a hitnem EOF bez toho aby tam byl \n tak abychom
+             * Switch pro situace ze jsme v urcitem stavu a najdeme EOF bez toho aby tam byl \n tak abychom
              * i ten posledni token vyhodnotili spravnym vystupem
              */
             switch (stav) {
@@ -954,19 +955,19 @@ Token lexerTokenNext() {
                         hexa_count = 0;
                         lexer->pos++;
                     } else if (next == 'n') {
-                        appendChar(&buf, &delak, &kapacity, '\n');
+                        appendChar(&buf, &length, &capacity, '\n');
                         lexer->pos++;
                     } else if (next == 'r') {
-                        appendChar(&buf, &delak, &kapacity, '\r');
+                        appendChar(&buf, &length, &capacity, '\r');
                         lexer->pos++;
                     } else if (next == 't') {
-                        appendChar(&buf, &delak, &kapacity, '\t');
+                        appendChar(&buf, &length, &capacity, '\t');
                         lexer->pos++;
                     } else if (next == '"') {
-                        appendChar(&buf, &delak, &kapacity, '\"');
+                        appendChar(&buf, &length, &capacity, '\"');
                         lexer->pos++;
                     } else if (next == '\\') {
-                        appendChar(&buf, &delak, &kapacity, '\\');
+                        appendChar(&buf, &length, &capacity, '\\');
                         lexer->pos++;
                     }
 
@@ -989,8 +990,8 @@ Token lexerTokenNext() {
                     memorySafeExit(LEX_ERROR);
                 } else {
                 	if(c > 31){
-                    // tady je nacitani znaku do docaneho bufferu
-                    appendChar(&buf, &delak, &kapacity, c);
+                    // tady je nacitani znaku do dočasného bufferu
+                    appendChar(&buf, &length, &capacity, c);
                     lexer->pos++;
                  }else {
                  	free(buf);
@@ -1015,7 +1016,7 @@ Token lexerTokenNext() {
                         // prevedeni na cislo
                         int vysledek_int = (int)strtol(hexa_buffer, NULL, 16);
                         // prevedeni na znak
-                        appendChar(&buf, &delak, &kapacity, (char)vysledek_int);
+                        appendChar(&buf, &length, &capacity, (char)vysledek_int);
                         stav       = STRING;
                         hexa_count = 0;
                     } else {
@@ -1077,7 +1078,7 @@ Token lexerTokenNext() {
 
             case END_DOUBLE_QUO: {
                 if (c == '"') {
-                    // třetí uvozovka → konec block stringu
+                    // třetí uvozovka → konec block řetězců
                     lexer->pos++;
                     token.type             = TOKEN_STRING_BLOCK;
                     token.line             = radek;
@@ -1214,7 +1215,7 @@ Token lexerTokenNext() {
                 token.line = radek;
                 goto token_found;
             }
-            // tercelarni operatory
+            // terciární operatory
             case COLON: {
                 token.type = TOKEN_COLON;
                 token.line = radek;

@@ -26,7 +26,7 @@ typedef enum {
     EXPECTING_RPAREN = -1, // očekávání pravé závorky
     EXPECTING_ANYTHING = 0, // očekávám jako konec výrazu nový řádek
     EXPECTING_BLOCK_END = -2, // očekávám konec výrazu jako }
-    EXPECTING_FUNC_END = 1 // očekávám pravou závorku jako ukočení výrazu funkce
+    EXPECTING_FUNC_END = 1 // očekávám pravou závorku jako ukončení výrazu funkce
 } precedentEndFlags;
 
 typedef enum {
@@ -274,7 +274,7 @@ AstNodeType getAstNodeTypeFromTokenType(TokenType type) {
             return AST_FLOAT_LIT_EXP;
 
         default:
-            printError(SYNTAX_ERROR, "(PSA) Nelze prevést TokenType na AstNodeType, neznámý token\n");
+            printError(SYNTAX_ERROR, "(PSA) Nelze prevest TokenType na AstNodeType, neznámý token\n");
             memorySafeExit(SYNTAX_ERROR);
             return AST_RETURN;
             break;
@@ -347,7 +347,7 @@ void freePrecedenceStack(DynamicPrecedenceStackPtr stack) {
 /**
  * @brief Funkce spočítá počet položek v zásobníku tokenů
  * @param stack Zásobník tokenů
- * @return Fuknce navrací počet položek
+ * @return Funkce navrací počet položek
  */
 int countParameters(DynamicPrecedenceStackPtr stack){
     int count = 0;
@@ -378,7 +378,7 @@ int countParameters(DynamicPrecedenceStackPtr stack){
 
 /**
  * @brief Funkce nalezne pravidlo z gramatiky precedenční analýzy a sestaví mini podstrom,
- * ke kterému ukazatel na minikořen hodí na stack
+ * ke kterému ukazatel na mini kořen hodí na stack
  * @param stack Zásobník, který se bude vyprazdňovat po symbol <
  */
 void findPrecedenceRule(DynamicPrecedenceStackPtr stack, DynamicAstNodeStackPtr stackA) {
@@ -560,11 +560,11 @@ void findPrecedenceRule(DynamicPrecedenceStackPtr stack, DynamicAstNodeStackPtr 
                 stackAstNodePop(stackA);
                 AstNode *ifNode = stackAstNodeRead(stackA);
                 stackAstNodePop(stackA);
-                AstNode *contidionNode = stackAstNodeRead(stackA);
+                AstNode *conditionNode = stackAstNodeRead(stackA);
                 stackAstNodePop(stackA);
                 kids[2] = elseNode;       // else
                 kids[1] = ifNode;         // true
-                kids[0] = contidionNode;  // podmínka
+                kids[0] = conditionNode;  // podmínka
 
                 AstNode *newRoot = astNew(AST_TERNARY, 3, kids);
                 free(kids);  // uvolnění dětí, ukazatelé na ně jsou již zajištěny
@@ -586,10 +586,10 @@ void findPrecedenceRule(DynamicPrecedenceStackPtr stack, DynamicAstNodeStackPtr 
 }
 
 /**
- * @brief Funkce zkotroluje první přijatý token,
+ * @brief Funkce zkontroluje první přijatý token,
  *        pokud aktuální token nesmí být prvním, funkce ukončí program
  *
- * @param actualToken Token, který se zkotroluje
+ * @param actualToken Token, který se zkontroluje
  * @return Funkce vrací hodnotu true v případě povoleného token na vstupu, jinak ukončuje program
  */
 bool checkFirstTokenType(Token actualToken) {
@@ -621,9 +621,9 @@ bool checkFirstTokenType(Token actualToken) {
 }
 
 /**
- * @brief Funkce zkotroluje, že na zásobníku je jenom výraz a dolar
+ * @brief Funkce zkontroluje, že na zásobníku je jenom výraz a dolar
  * @param stack zásobník precedenční analýzy
- * @return Návratovou hodnotou je true v přípradě,
+ * @return Návratovou hodnotou je true v případě,
  *         že na zásobníku je pouze výraz a dolar, jinak false
  */
 bool checkDollarExpression(DynamicPrecedenceStackPtr stack) {
@@ -648,7 +648,7 @@ bool checkDollarExpression(DynamicPrecedenceStackPtr stack) {
 }
 
 /**
- * @brief Pomocná funkce pro vypsání aktuální zásobíku, slouží pro ladící účely
+ * @brief Pomocná funkce pro vypsání aktuální zásobníku, slouží pro ladící účely
  * @param stack Zásobník tokenů
  */
 void printStack(DynamicPrecedenceStackPtr stack) {
@@ -678,7 +678,7 @@ void printStack(DynamicPrecedenceStackPtr stack) {
  * @param stackP Zásobník tokenů
  * @param stackA Zásobník AST uzlů
  * @param actualToken Ukazatel na aktuální načtený token
- * @param endFlag Ukazatel na pomocnou proměnnou ukočující PSA
+ * @param endFlag Ukazatel na pomocnou proměnnou ukončující PSA
  */
 void functionCalled(DynamicPrecedenceStackPtr stackP, DynamicAstNodeStackPtr stackA, Token *actualToken, int *endFlag) {
     findPrecedenceRule(stackP, stackA);  // zpracuji identifikator, co je na vrcholu zasobniku
@@ -740,7 +740,7 @@ void functionCalled(DynamicPrecedenceStackPtr stackP, DynamicAstNodeStackPtr sta
                 printLog("\t\t\t\tParam executed\n");
 
             paramCount++;
-            // vložení pamametru na zásobník uzlů AST stromu
+            // vložení parametru na zásobník uzlů AST stromu
             stackAstNodePush(stackA, param);
             // Pokud je načtena čárka, je načten další parametr
             if (actualToken->type == TOKEN_COMMA) {
@@ -773,7 +773,7 @@ void functionCalled(DynamicPrecedenceStackPtr stackP, DynamicAstNodeStackPtr sta
 
         // Cyklem ze zásobníku seberu napočítaný počet parametrů
         for (int i = 0; i < paramCount; ++i) {
-            // kontrola, zda zásobník, ze kterého beru parametry funce není prázdný
+            // kontrola, zda zásobník, ze kterého beru parametry funkce není prázdný
             if (stackAstNodeIsEmpty(stackA)) {
                 printError(SYNTAX_ERROR, "(PSA): málo detí na AST zásobníku pri redukcii\n");
                 memorySafeExit(SYNTAX_ERROR);
@@ -799,7 +799,7 @@ void functionCalled(DynamicPrecedenceStackPtr stackP, DynamicAstNodeStackPtr sta
         // načtení parametrů
         AstNode *params        = stackAstNodeRead(stackA);
         stackAstNodePop(stackA);
-        // načtení idetifikátoru funkce (jejího názvu)
+        // načtení identifikátoru funkce (jejího názvu)
         AstNode *identif = stackAstNodeRead(stackA);
         stackAstNodePop(stackA);
 
@@ -833,13 +833,13 @@ void functionCalled(DynamicPrecedenceStackPtr stackP, DynamicAstNodeStackPtr sta
  *         že je výraz správný, vrací ukazatel na kořen stromu, který vytvoří
  * @param token aktuální token, který přišel od překladače
  * @param flag Celočíselná hodnota udávající, kde byla funkce volána (výraz ve v podmínce, ...)
- * @return Funkce navrací ukazatel na uzel stromu vytvoření precedeční analýzou
+ * @return Funkce navrací ukazatel na uzel stromu vytvoření precedenční analýzou
  */
 AstNode *parseExpression(Token *token, int flag) {
     if (DEBUG)
         printLog("%d FLAG\n", flag);
 
-    // zásobník pro precedeční analýzu
+    // zásobník pro precedenční analýzu
     DynamicPrecedenceStackPtr stackP = stackPrecedenceConstruct(DEFAULT_INIT_ELEMENT_COUNT);
     // Zásobník uzlů, na které budou odkládány zpracované výrazy
     DynamicAstNodeStackPtr stackA = stackAstNodeConstruct(DEFAULT_INIT_ELEMENT_COUNT);
@@ -862,7 +862,7 @@ AstNode *parseExpression(Token *token, int flag) {
         case TOKEN_KEYWORD_NULL_SMALL:
         case TOKEN_FLOAT_EXP:
         case TOKEN_INTEGER_EXP:
-            token->value.identifier = NULL;  // Překladač oevzdá vlastnictví PSA
+            token->value.identifier = NULL;  // Překladač odevzdá vlastnictví PSA
             break;
 
         default:
@@ -886,7 +886,7 @@ AstNode *parseExpression(Token *token, int flag) {
     bool checkEmptyIf = false;
     // Kontrolní proměnná pro implementaci možnosti nového řádku za operátorem
     bool expectingNewLineAfterOperator = true;
-    // Pomocná proměnná pro implementaci zajištění kontroly ukočení výrazu pravou závorkou
+    // Pomocná proměnná pro implementaci zajištění kontroly ukončení výrazu pravou závorkou
     bool expectingRPAREN = false;
     // Pomocná proměnná pro zpracování funkce ve výrazu
     bool functionCall = false;
@@ -947,7 +947,7 @@ AstNode *parseExpression(Token *token, int flag) {
         if (!checkEmptyIf)  // voláno pouze jednou při prvním volání sestavení výrazu v if bloku
         {
             checkEmptyIf = true;
-            // prevence prazdneho if statementu
+            // prevence prázdné if podmínky
             if (flag == EXPECTING_RPAREN && actualToken.type == TOKEN_RPAREN) {
                 printError(SYNTAX_ERROR, "(PSA) Volano nad prazdnym cyklem, podminkou...\n");
                 freeAstStack(stackA);
@@ -1006,11 +1006,11 @@ AstNode *parseExpression(Token *token, int flag) {
             }
         }
 
-        // Podmínky, které mohou nastat při ukočování výrazu
+        // Podmínky, které mohou nastat při ukončování výrazu
         if ((flag == EXPECTING_RPAREN && actualToken.type == TOKEN_RPAREN && StackTop.type == TOKEN_DOLLAR)
             // ukonceni pouze na novy radek
             || (actualToken.type == TOKEN_NEW_LINE && StackTop.type == TOKEN_DOLLAR)
-            // оddělení výrazů ve funkce čárkou
+            // oddělení výrazů ve funkce čárkou
             || (actualToken.type == TOKEN_COMMA && StackTop.type == TOKEN_DOLLAR)
             // ukončení funkce pravou závorkou
             || (actualToken.type == TOKEN_RPAREN && StackTop.type == TOKEN_DOLLAR && flag == EXPECTING_FUNC_END)
@@ -1102,7 +1102,7 @@ AstNode *parseExpression(Token *token, int flag) {
                     stackPrecedencePush(stackP, stop);  // <
                     stackPrecedencePush(stackP, actualToken);
 
-                } else {  // vložení ukočovací zarážky ještě před aktuální ID, které je na zásobníku
+                } else {  // vložení ukončovací zarážky ještě před aktuální ID, které je na zásobníku
                     if (DEBUG)
                         printLog("\t\t%d budu hazet na stack slozite\n", poradiCount++);
 
