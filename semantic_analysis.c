@@ -1101,7 +1101,7 @@ void deleteScope() {
 
 SemSymbol* findSymbolAndModifyAST(AstNode* sourceNode, SemSymbol* destSymbol, AstNodeType parent, size_t childNum) {
     unsigned toSearchScopeIndex = scopesStack->nextTopElement;
-    int      index              = -1;
+    int      index              = ITEM_NOT_FOUND;
     char*    key                = sourceNode->value.str;
 
     unsigned symbolNameLength =
@@ -1116,12 +1116,12 @@ SemSymbol* findSymbolAndModifyAST(AstNode* sourceNode, SemSymbol* destSymbol, As
         snprintf(symbolName, symbolNameLength, "%s$$%u", key, toSearchScopeIndex);
 
         index = hashTableSearchItem(scopesStack->array[toSearchScopeIndex], symbolName);
-        if (index != -1) {
+        if (index != ITEM_NOT_FOUND) {
             break;
         }
     }
 
-    if (index == -1) {
+    if (index == ITEM_NOT_FOUND) {
         // Může to být i získávač nebo nastavovač
         unsigned symbolNameLength = strlen(key) + 3;  // prostor pro '$_'
 
@@ -1177,13 +1177,13 @@ SemSymbol* findSymbolAndModifyAST(AstNode* sourceNode, SemSymbol* destSymbol, As
 
 SemSymbol* findSymbol(char* key) {
     unsigned toSearchScopeIndex = scopesStack->nextTopElement;
-    int      index              = -1;
+    int      index              = ITEM_NOT_FOUND;
 
     while (toSearchScopeIndex != 0) {
         toSearchScopeIndex--;
 
         index = hashTableSearchItem(scopesStack->array[toSearchScopeIndex], key);
-        if (index != -1) {
+        if (index != ITEM_NOT_FOUND) {
             break;
         }
     }
@@ -1194,7 +1194,7 @@ SemSymbol* findSymbol(char* key) {
 SemSymbol* findGlobalSymbol(char* key) {
     int index = hashTableSearchItem(scopesStack->array[0], key);
 
-    if (index == -1) {
+    if (index == ITEM_NOT_FOUND) {
         return NULL;
     }
 
@@ -1213,7 +1213,7 @@ SemSymbol* findSymbolCurrentScope(char* key) {
     }
 
     int index = hashTableSearchItem(stackHashTablePtrRead(scopesStack), key);
-    if (index == -1) {
+    if (index == ITEM_NOT_FOUND) {
         return NULL;
     }
 
@@ -1233,7 +1233,7 @@ void insertSymbolGlobalScope(SemSymbol symbol) {
 
     int index = hashTableInsertItem(scopesStack->array[0], symbol.name, symbol);
 
-    if (index == -1) {
+    if (index == INSERT_ERROR) {
         EXEC_END(INTERNAL_ERROR, "Selhalo vlozeni prvku do globalniho ramce!\n");
         return;
     }
@@ -1254,7 +1254,7 @@ void insertSymbolCurrentScope(SemSymbol symbol) {
 
     int index = hashTableInsertItem(currentScope, symbol.name, symbol);
 
-    if (index == -1) {
+    if (index == INSERT_ERROR) {
         EXEC_END(INTERNAL_ERROR, "Selhalo vlozeni prvku do ramce!\n");
     };
 }
@@ -1272,7 +1272,7 @@ void removeUndeclaredReference(char* referenceSymbolName) {
         return;
     }
 
-    if (hashTableSearchItem(undeclaredReferenceTable, referenceSymbolName) == -1) {
+    if (hashTableSearchItem(undeclaredReferenceTable, referenceSymbolName) == ITEM_NOT_FOUND) {
         return;
     }
 
@@ -1285,7 +1285,7 @@ void insertUndeclaredReference(char* referenceSymbolName, SemSymbol symbol) {
         return;
     }
 
-    if (hashTableInsertItem(undeclaredReferenceTable, referenceSymbolName, symbol) == -1) {
+    if (hashTableInsertItem(undeclaredReferenceTable, referenceSymbolName, symbol) == INSERT_ERROR) {
         EXEC_END(INTERNAL_ERROR, "Nepodarilo se vlozit prvek do tabulky!\n");
     }
 }

@@ -17,6 +17,8 @@
 
 #define TABLE_CAPACITY 20  // nastavení počtu položek tabulky
 
+
+
 /**
  * @brief Inicializace tabulky, alokace pole prvků
  * @param hashT ukazatel na strukturu tabulky
@@ -71,7 +73,7 @@ int hashTableInsertItem(HashTable *hashT, char *key, SemSymbol token) {
     }
 
     int existing = hashTableSearchItem(hashT, key);
-    if (existing != -1) {
+    if (existing != ITEM_NOT_FOUND) {
         hashT->items[existing].symbol = token;
         return existing;
     }
@@ -81,6 +83,7 @@ int hashTableInsertItem(HashTable *hashT, char *key, SemSymbol token) {
     int index = hashItem(key, hashT);
     int steps = 0;
 
+    // Prohledávání dokud počet kroků nepřeskočí kapacitu tabulky
     while (steps < hashT->tableCapacity) {
         int currentIndex = (index + steps) % hashT->tableCapacity;
         TableItem *item = &hashT->items[currentIndex];
@@ -93,7 +96,7 @@ int hashTableInsertItem(HashTable *hashT, char *key, SemSymbol token) {
             item->key = malloc(strlen(key) + 1);
             if (item->key == NULL) {
                 printError(INTERNAL_ERROR, "Chyba alokace klice pri vkladani\n");
-                return -1;
+                return INSERT_ERROR;
             }
             // uložení klíče do parametru položky tabulky
             strcpy(item->key, key);
@@ -108,7 +111,7 @@ int hashTableInsertItem(HashTable *hashT, char *key, SemSymbol token) {
         steps++;
     }
 
-    return -1;
+    return INSERT_ERROR;
 }
 /**
  * @brief Funkce smaže prvek v poli v tabulce, pokud je nalezen
@@ -116,7 +119,7 @@ int hashTableInsertItem(HashTable *hashT, char *key, SemSymbol token) {
  */
 void hashTableDeleteItem(HashTable *hashT, char *key) {
     int deleteIndex = hashTableSearchItem(hashT, key);
-    if (deleteIndex == -1) {
+    if (deleteIndex == ITEM_NOT_FOUND) {
         printError(INTERNAL_ERROR, "Polozka v tabulce neni\n");
     } else {
         free(hashT->items[deleteIndex].key);
@@ -147,7 +150,7 @@ int hashTableSearchItem(HashTable *hashT, char *key) {
         int currentIndex = (indexToSearch + shift) % hashT->tableCapacity;
         // Pokud narazíme na prázdnou pozici, klíč není v tabulce
         if (hashT->items[currentIndex].key == NULL && hashT->items[currentIndex].isDeleted == false) {
-            return -1;
+            return ITEM_NOT_FOUND;
         }
 
         if (!strcmp(key, hashT->items[currentIndex].key)) {
@@ -157,10 +160,10 @@ int hashTableSearchItem(HashTable *hashT, char *key) {
         // prošli jsme celou tabulku
         if (currentIndex == originalIndex && shift >= hashT->tableCapacity) {
             // printError(INTERNAL_ERROR, "Prvek \"%s\" v tabulce nebyl nalezen\n", key);
-            return -1;
+            return ITEM_NOT_FOUND;
         }
     }
-    return -1;
+    return ITEM_NOT_FOUND;
 }
 /**
  * @brief Funkce sloužící pro uvolnění paměti tabulky symbolů
