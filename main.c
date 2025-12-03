@@ -31,14 +31,23 @@ int main() {
     }
     // Inicializace struktury pro čtení ze souboru
     lexerInit(source_file);
-    // tvorba stromu pres parser
-   // print_and_free_tokens();
-   // exit(1);
+
     // Syntaktická kontrola a sestavení AST stromu
     AstNode *ast = parser();
+
+    #ifdef ENABLE_DEVELOPMENT_LOGGING
+    printLog("AST\n");
+    astDump(ast);
+    #endif
+
     // Sémantická kontrolo a úprava AST stromu
     startSematicValidation(ast);
+
+    #ifdef ENABLE_DEVELOPMENT_LOGGING
+    printLog("AST po semanticke analyze\n");
     astDump(ast);
+    #endif
+
     // Generování kódu
     codegenGenerate(ast);
 
