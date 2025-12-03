@@ -413,7 +413,7 @@ void prologFunc(DynamicSymbolStackPtr stack) {
     // na zásobník vložíme symbol s hodnotou "ifj25", ktorú musí token v prologu obsahovať
     pushCheck(stackSymbolPush(stack, makeTermValue(ifj25)));
     pushCheck(stackSymbolPush(stack, makeNonterm(N_OPT_NEWLINES)));
-    pushCheck(stackSymbolPush(stack, makeTerm(TOKEN_KEYWORD_IMPORT)));
+    pushCheck(stackSymbolPush(stack, makeTerm(TOKEN_KEYWORD_IMPORT))); 
 }
 
 // <mainClass> -> TOKEN_KEYWORD_CLASS TOKEN_IDENTIFIER(Program) TOKEN_BLOCK_START TOKEN_NEW_LINE <mainClassBlock> TOKEN_BLOCK_END <newLineCheck>
@@ -740,6 +740,7 @@ void varArgFunc(DynamicSymbolStackPtr stack, Token token) {
     switch (token.type) 
     {
         case TOKEN_KEYWORD_IFJ:
+            pushCheck(stackSymbolPush(stack, makeReduce(AST_IFJ_CALL, 2)));
             pushCheck(stackSymbolPush(stack, makeNonterm(N_CALL_IFJ)));
             pushCheck(stackSymbolPush(stack, makeTerm(TOKEN_KEYWORD_IFJ)));
             break;
@@ -961,6 +962,7 @@ void returnExprFunc(DynamicSymbolStackPtr stack, Token token) {
     stackSymbolPop(stack);
     switch (token.type) {
         case TOKEN_KEYWORD_IFJ:
+            pushCheck(stackSymbolPush(stack, makeReduce(AST_IFJ_CALL, 2)));
             pushCheck(stackSymbolPush(stack, makeNonterm(N_CALL_IFJ)));
             pushCheck(stackSymbolPush(stack, makeTerm(TOKEN_KEYWORD_IFJ)));
             break;
