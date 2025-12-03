@@ -38,7 +38,7 @@ int main() {
     AstNode *ast = parser();
     // Sémantická kontrolo a úprava AST stromu
     startSematicValidation(ast);
-
+    astDump(ast);
     // Generování kódu
     codegenGenerate(ast);
 

@@ -33,7 +33,7 @@ void printN(const char *fmt, ...) {
 /**
  * @brief print na . ktery je musi byt na zacatku
  */
-void emitProlog() { printN("."); }
+void emitProlog() { printN(".IFJcode25"); }
 /**
  * @brief Změní velikost bufferu pro jména labelů.
  *
@@ -483,11 +483,17 @@ void emitFuncDec(AstNode *root) {
         printN("DEFVAR LF@%s", localVars->varNames[i]);
     }
     AstNode *params = root->child[1];
+//kvuli unsigned size t se dela ten to for loop takhle
     if (params->child[0]->kind != AST_EMPTY) {
-        for (size_t i = 0; i < params->arity - 1; i++) {
+    	size_t i = params->arity-1;
+    	while(true){
+     		i--;
             const char *pname = params->child[i]->value.str;
             printN("DEFVAR LF@%s", pname);
             printN("POPS LF@%s", pname);
+            if(i == 0){
+            break;
+            }
         }
     }
     printN("MOVE LF@retval nil@nil");
