@@ -3,7 +3,7 @@
  *
  * @brief Implementace generátoru kódu pro projekt do předmětu IFJ 2025
  * @file code_generation.c
- * @author Josef Pasek (xpasekj00), Petr Kotek (xkotekp00), Jakub Jambrozi(xjambrj00) 
+ * @author Josef Pasek (xpasekj00), Petr Kotek (xkotekp00), Jakub Jambrozi(xjambrj00)
  */
 
 
@@ -31,9 +31,9 @@ void printN(const char *fmt, ...) {
     va_end(args);
 }
 /**
- * @brief print na .IFJcode25 ktery je musi byt na zacatku
+ * @brief print na . ktery je musi byt na zacatku
  */
-void emitProlog() { printN(".IFJcode25"); }
+void emitProlog() { printN("."); }
 /**
  * @brief Změní velikost bufferu pro jména labelů.
  *
@@ -51,9 +51,9 @@ char *resizeLabelName(char *prefix, size_t *size) {
     return prefix;
 }
 /**
- * @brief Generuje unikátní label na základě existujícího prefixu větve a nového bloku.
+ * @brief Generuje unikátní navěští na základě existujícího prefixu větve a nového bloku.
  *
- * Label je tvořen z řetězce existujících labelů ve větvi s připojením nového bloku.
+ * Navěští je tvořen z řetězce existujících navěští.
  * Příklad: `fun$1$while$2` je label pro druhý `while` cyklus uvnitř funkce `fun`.
  *
  * @param funcName Jméno bloku (např. "fun", "if", "while").
@@ -137,7 +137,7 @@ char *generatorLable(char *funcName, FuncContext *funcStruckt, bool pridaniDoSta
     currentLen += written;
 
     if (pridaniDoStacku) {
-        // Uložení plného label na zásobník
+        // Uložení plného navěští na zásobník
         // pro funkce a if-else while-for pro dalsi zanoreni
         stacklabelStackPush(funcStruckt->labelStack, resultLabel);
     }
@@ -290,6 +290,7 @@ void addBinopTmps(VarList *vars, const char *func, int id, AstNode *node) {
 }
 /*
  *tohle odmitam komentovat za to se stydim
+ *deklarce dočasných proměnych pro všechny vestavěné funkce
  */
 void printIfj() {
     printN("DEFVAR LF@temp$var$readStr");
@@ -434,7 +435,7 @@ void emitGlobal(AstNode *root) {
  *
  *
  * @param root Ukazatel na uzel AST reprezentující příkaz return.
- * @param funcStruct Kontext funkce (FuncContext) obsahující koncový label.
+ * @param funcStruct Kontext funkce (FuncContext) obsahující koncové navěští.
  */
 void emitReturn(AstNode *root, FuncContext *funcStruct) {
     emitChildren(root, funcStruct);
@@ -445,7 +446,7 @@ void emitReturn(AstNode *root, FuncContext *funcStruct) {
     printN("JUMP %s", funcStruct->labelEnd);
 }
 /**
- * @brief Generuje IFJcode25 kód pro celou deklaraci funkce (funkční tělo).
+	 * @brief Generuje  kód pro celou deklaraci funkce .
  *
  * Funkce je zodpovědná za kompletní emitování funkčního těla
  * @param root Ukazatel na uzel AST (`AST_FUNC_DEC`), který reprezentuje celou deklaraci funkce.
@@ -510,7 +511,7 @@ void emitFuncDec(AstNode *root) {
     free(labelEnd);
 }
 /**
- * @brief Generuje IFJcode25 instrukce pro volání funkce.
+ * @brief Generuje instrukce pro volání funkce.
  *
  * Funkce vytvoří nový dočasný rámec (`CREATEFRAME`), zpracuje argumenty
  * volání (parametry) a poté provede volání pomocí instrukce `CALL`.
@@ -526,7 +527,7 @@ void emit_call_func(AstNode *node, FuncContext *funcStruct) {
     printN("CALL $%s$0", node->child[0]->value.str);
 }
 /**
- * @brief Generuje IFJcode25 kód pro operaci sčítání/konkatenace (+).
+ * @brief Generuje  kód pro operaci sčítání/konkatenace (+).
  *
  * Zajišťuje typovou kontrolu a provádí sčítání pro čísla nebo konkatenaci pro řetězce.
  *
@@ -616,7 +617,7 @@ void emitPlus(AstNode *node, FuncContext *funcStruct) {
     printN("");
 }
 /**
- * @brief Generuje IFJcode25 kód pro binární operaci odčítání (-).
+ * @brief Generuje  kód pro binární operaci odčítání (-).
  * Na unární minus je zavolan `emitUnaryMinus`.
  *
  * @param node Uzel AST pro operaci AST_MINUS.
@@ -684,7 +685,7 @@ void emitMinus(AstNode *node, FuncContext *funcStruct) {
     printN("");
 }
 /**
- * @brief Generuje IFJcode25 kód pro operaci nasobení/konkatenac (*).
+ * @brief Generuje  kód pro operaci nasobení/konkatenac (*).
  *
  * Zajišťuje typovou kontrolu a provádí nasobeni pro čísla nebo konkatenaci pro řetězce a čislo.
  *
@@ -799,7 +800,7 @@ void emitMul(AstNode *node, FuncContext *funcStruct) {
     printN("LABEL %s", labelEnd);
 }
 /**
- * @brief Generuje IFJcode25 kód pro dělení (/), včetně konverze int na float a ošetření dělení nulou.
+ * @brief Generuje  kód pro dělení (/), včetně konverze int na float a ošetření dělení nulou.
  *
  * @param node Uzel AST pro operaci dělení.
  * @param funcStrukt Kontext funkce.
@@ -901,7 +902,7 @@ void emitDiv(AstNode *node, FuncContext *funcStruct) {
     printN("LABEL %s", labelEnd);
 }
 /**
- * @brief Generuje IFJcode25 kód pro operaci rovnosti (==) s kontrolou typové shody.
+ * @brief Generuje  kód pro operaci rovnosti (==) s kontrolou typové shody.
  *
  * Pokud se typy liší, vrací `bool@false`. Jinak používá instrukci `EQS`.
  *
@@ -961,7 +962,7 @@ void emitEqual(AstNode *node, FuncContext *funcStruct) {
     printN("LABEL %s", labelEnd);
 }
 /**
- * @brief Generuje IFJcode25 kód pro porovnání menší než (<) s konverzí na float.
+ * @brief Generuje  kód pro porovnání menší než (<) s konverzí na float.
  *
  * Konvertuje oba numerické operandy na `float` a používá instrukci `LTS`.
  *
@@ -1037,7 +1038,7 @@ void emitLess(AstNode *node, FuncContext *funcStruct) {
     printN("LABEL %s", labelEnd);
 }
 /**
- * @brief Generuje IFJcode25 kód pro porovnání větší nebo rovno (>=).
+ * @brief Generuje  kód pro porovnání větší nebo rovno (>=).
  *
  * Implementováno jako (A > B) OR (A == B) s automatickou konverzí int na float.
  *
@@ -1113,7 +1114,7 @@ void emitGreater(AstNode *node, FuncContext *funcStruct) {
     printN("LABEL %s", labelEnd);
 }
 /**
- * @brief Generuje IFJcode25 kód pro porovnání menší nebo rovno (<=).
+ * @brief Generuje  kód pro porovnání menší nebo rovno (<=).
  *
  * Implementováno jako (A < B) OR (A == B) s automatickou konverzí int na float.
  *
@@ -1197,7 +1198,7 @@ void emit_less_equal(AstNode *node, FuncContext *funcStruct) {
     printN("LABEL %s", labelEnd);
 }
 /**
- * @brief Generuje IFJcode25 kód pro porovnání větší nebo rovno (>=).
+ * @brief Generuje  kód pro porovnání větší nebo rovno (>=).
  *
  * Implementováno jako (A > B) OR (A == B) s automatickou konverzí int na float.
  *
@@ -1282,7 +1283,7 @@ void emitEqualNot(AstNode *node, FuncContext *funcStruct) {
     printN("NOTS");
 }
 /**
- * @brief Generuje IFJcode25 kód pro logické AND (`&&`) s implementací short circuit.
+ * @brief Generuje  kód pro logické AND (`&&`) s implementací short circuit.
  *
  * Pokud je levý operand `false` nebo `nil`, operace se okamžitě ukončí a vrátí `false`.
  *
@@ -1321,7 +1322,7 @@ void emitAnd(AstNode *node, FuncContext *funcContext) {
     printN("LABEL %s", labelEnd);
 }
 /**
- * @brief Generuje IFJcode25 kód pro logické OR (||) s implementací short circuit.
+ * @brief Generuje  kód pro logické OR (||) s implementací short circuit.
  *
  * Pokud je levý operand `true`, operace se okamžitě ukončí a vrátí `true`.
  *
@@ -1353,7 +1354,7 @@ void emitOr(AstNode *node, FuncContext *funcContext) {
     printN("LABEL %s", labelEnd);
 }
 /**
- * @brief Generuje IFJcode25 kód pro logickou negaci (NOT) pomocí instrukce NOTS.
+ * @brief Generuje  kód pro logickou negaci (NOT) pomocí instrukce NOTS.
  *
  * @param node Uzel AST pro operaci AST_NOT.
  * @param funcStruct Kontext funkce.
@@ -1373,7 +1374,7 @@ void emitNegace(AstNode *node, FuncContext *funcStruct) {
     // Stack: [result] (buď left pokud false/nil, nebo right)
 }
 /**
- * @brief Generuje IFJcode25 kód pro unární negaci (-) pro int a float.
+ * @brief Generuje  kód pro unární negaci (-) pro int a float.
  *
  * Negace je implementována jako odečtení hodnoty od nuly (`0 - hodnota`).
  *
@@ -1431,7 +1432,7 @@ void emitUnaryMinus(AstNode *node, FuncContext *funcStruct) {
     printN("LABEL %s", labelEnd);
 }
 /**
- * @brief Generuje IFJcode25 kód pro operátor kontroly typu (`is`).
+ * @brief Generuje  kód pro operátor kontroly typu (`is`).
  *
  * @param node Uzel AST pro operaci kontroly typu.
  * @param funcStruct Kontext funkce.
@@ -1509,7 +1510,7 @@ void emitIs(AstNode *node, FuncContext *funcStruct) {
     printN("LABEL %s", labelEnd);
 }
 /**
- * @brief Generuje IFJcode25 kód pro přiřazení hodnoty lokální proměnné (=).
+ * @brief Generuje  kód pro přiřazení hodnoty lokální proměnné (=).
  *
  * @param node Uzel AST pro přiřazení.
  * @param funcStruct Kontext funkce.
@@ -1525,7 +1526,7 @@ void emitAssigned(AstNode *node, FuncContext *funcStruct) {
     printN("POPS LF@%s", node->child[0]->value.str);
 }
 /**
- * @brief Generuje IFJcode25 kód pro inicializaci lokální proměnné.
+ * @brief Generuje  kód pro inicializaci lokální proměnné.
  *
  * @param node Uzel AST pro deklaraci/inicializaci proměnné.
  * @param funcStruct Kontext funkce.
@@ -1537,7 +1538,7 @@ void emitVar(AstNode *node, FuncContext *funcStruct) {
     }
 }
 /**
- * @brief Generuje IFJcode25 kód pro inicializaci globální proměnné v těle funkce.
+ * @brief Generuje  kód pro inicializaci globální proměnné v těle funkce.
  *
  * @param node Uzel AST pro inicializaci globální proměnné.
  * @param funcStruct Kontext funkce.
@@ -1548,12 +1549,7 @@ void emitGLobal(AstNode *node, FuncContext *funcStruct) {
         printN("POPS GF@%s", node->child[0]->value.str);
     }
 }
-/**
- * @brief Generuje IFJcode25 kód pro celou sekvenci `if-else if-else` (if chain).
- *
- * @param node Kořenový uzel AST pro celý `if-else if-else` řetězec.
- * @param funcContext Kontext funkce pro generování labelů.
- */
+
 void emitIfChain(AstNode *node, FuncContext *funcContext) {
     /**
      * vytvorenie lablu na spode if chainu na ktory v pripade splnenia podmienky
@@ -1576,13 +1572,7 @@ void emitIfChain(AstNode *node, FuncContext *funcContext) {
     printN("LABEL %s", endLabel);
     free(endLabel);
 }
-/**
- * @brief Generuje IFJcode25 kód pro blok `if` nebo `else if`.
- *
- * @param node Uzel AST pro příkaz `if`.
- * @param funcContext Kontext funkce.
- * @param endLabel Koncový label celého `if-else if-else` řetězce.
- */
+
 void emitIf(AstNode *node, FuncContext *funcContext, char *endLabel) {
     ifCounter++;
     char *label = NULL;
@@ -1605,12 +1595,7 @@ void emitIf(AstNode *node, FuncContext *funcContext, char *endLabel) {
     printN("LABEL %s", label);
     free(label);
 }
-/**
- * @brief Generuje IFJcode25 kód pro tělo bloku `else`.
- *
- * @param node Uzel AST pro příkaz `else`.
- * @param funcContext Kontext funkce.
- */
+
 void emitElse(AstNode *node, FuncContext *funcContext) { emitChildren(node->child[0], funcContext); }
 
 /**
@@ -1651,7 +1636,7 @@ void emitWhile(AstNode *node, FuncContext *funcContext) {
     loopCounter--;
 }
 /**
- * @brief Generuje IFJcode25 kód pro příkaz `break`.
+ * @brief Generuje  kód pro příkaz `break`.
  *
  * Implementuje skok (`JUMP`) na koncový label aktuální smyčky.
  *
@@ -1663,7 +1648,7 @@ void emitBreak(FuncContext *funcContext) {
     free(label);
 }
 /**
- * @brief Generuje IFJcode25 kód pro příkaz `continue`.
+ * @brief Generuje  kód pro příkaz `continue`.
  *
  * Implementuje skok (`JUMP`) na počáteční label aktuální smyčky.
  *
@@ -1675,7 +1660,7 @@ void emitContinue(FuncContext *funcContext) {
     free(label);
 }
 /**
- * @brief Generuje IFJcode25 kód pro konverzi proměnné na logickou hodnotu (boolean).
+ * @brief Generuje  kód pro konverzi proměnné na logickou hodnotu (boolean).
  *
  * Implementuje pravidla konverze: `nil` a `bool@false` jsou **false**;
  * jakákoliv jiná hodnota nebo typ je **true**.
@@ -1742,7 +1727,7 @@ void emitBool(AstNode *node, FuncContext *funcContext) {
     }
 }
 /**
- * @brief Generuje IFJcode25 kód pro vyhodnocení libovolného výrazu v kontextu podmínky (`if`, `while`).
+ * @brief Generuje  kód pro vyhodnocení libovolného výrazu v kontextu podmínky (`if`, `while`).
  *
  * Tato funkce zajišťuje, že výsledek výrazu na datovém zásobníku je vždy logická hodnota (`bool@true` nebo `bool@false`).
  * @param node Uzel AST reprezentující podmínku nebo výraz.
@@ -1783,7 +1768,7 @@ void emitCondition(AstNode *node, FuncContext *funcContext) {
     }
 }
 /**
- * @brief Generuje IFJcode25 kód pro cyklus `for-in-range`.
+ * @brief Generuje  kód pro cyklus `for-in-range`.
  *
  * Implementuje iteraci v číselném rozsahu (`[start, end]` nebo `[start, end)`) s čítačem.
  * Zajišťuje **typovou kontrolu** hranic rozsahu, konverzi na int a ošetření chyb.
@@ -1937,13 +1922,13 @@ void emitFor(AstNode *node, FuncContext *funcContext) {
     loopCounter--;
 }
 /**
- * @brief Generuje IFJcode25 kód pro volání setter funkce.
+ * @brief Generuje  kód pro volání setter funkce.
  *
  * @param node Uzel AST s názvem setteru (AST_SETTER_CALL).
  */
 void emitSetterCall(AstNode *node) { printN("CALL %s", node->value.str); }
 /**
- * @brief Generuje IFJcode25 kód pro definici a tělo setter funkce.
+ * @brief Generuje  kód pro definici a tělo setter funkce.
  *
  * Setter je generován jako standardní funkce, která přijímá jeden parametr.
  *
@@ -1989,13 +1974,13 @@ void emitSetter(AstNode *node) {
     destructorFuncContext(context);
 }
 /**
- * @brief Generuje IFJcode25 kód pro volání getter funkce.
+ * @brief Generuje  kód pro volání getter funkce.
  *
  * @param node Uzel AST s názvem getteru (AST_GETTER_CALL).
  */
 void emitGetterCall(AstNode *node) { printN("CALL %s", node->value.str); }
 /**
- * @brief Generuje IFJcode25 kód pro definici a tělo getter funkce.
+ * @brief Generuje  kód pro definici a tělo getter funkce.
  *
  * Getter je generován jako standardní funkce, která vrací hodnotu:
  * @param node Uzel AST pro definici getteru (AST_GETTER).
@@ -2039,7 +2024,7 @@ void emitGetter(AstNode *node) {
     destructorFuncContext(context);
 }
 /**
- * @brief Generuje IFJcode25 kód pro ternární operátor (podmíněný výraz: `podmínka ? hodnota_true : hodnota_false`).
+ * @brief Generuje  kód pro ternární operátor (podmíněný výraz: `podmínka ? hodnota_true : hodnota_false`).
  *
  * @param node Uzel AST reprezentující ternární operátor.
  * @param funcStruct Kontext funkce.
@@ -2059,11 +2044,11 @@ void emitTernarni(AstNode *node, FuncContext *funcStruct) {
     printN("LABEL %s", labelEnd);
 }
 /**
- * @brief Hlavní switch pro generování IFJcode25 kódu z uzlů AST.
+ * @brief Hlavní switch pro generování  kódu z uzlů AST.
  *
  * Tato funkce prochází typ uzlu AST (`node->kind`) a volá odpovídající
  * emitovací funkci (např. `emitPlus`, `emitWhile`, `emitVar`) nebo generuje přímo
- * IFJcode25 instrukce pro jednoduché případy.
+ *  instrukce pro jednoduché případy.
  *
  * @param node Uzel AST k emitování.
  * @param funcStruct Kontext funkce (pouze pro složité operace a uvnitř funkcí).
@@ -2129,19 +2114,15 @@ void emitCommand(AstNode *node, FuncContext *funcStruct) {
             break;
 
         case AST_SETTER_CALL:
-            // printN("AHOJ SETTER CALL");
             emitSetterCall(node);
             break;
         case AST_GETTER_CALL:
-            // printN("AHOJ GETTER CALL");
             emitGetterCall(node);
             break;
         case AST_SETTER:
-            // printN("AHOJ SETTER");
             emitSetter(node);
             break;
         case AST_GETTER:
-            // printN("AHOJ GETTER");
             emitGetter(node);
             break;
         case AST_NOT:
@@ -2157,22 +2138,17 @@ void emitCommand(AstNode *node, FuncContext *funcStruct) {
             emitContinue(funcStruct);
             break;
         case AST_RETURN:
-            // Nová implementace: navrat z funkce
             emitReturn(node, funcStruct);
             break;
 
-        // Deklarace a volání
         case AST_FUNC_DEC:
-            // definice funkce
             emitFuncDec(node);
             break;
         case AST_FUNC_CALL:
             emit_call_func(node, funcStruct);
             break;
 
-        // Proměnné / Přiřazení
         case AST_VAR:
-            // Nová implementace: deklarace/inicializace proměnné
             emitVar(node, funcStruct);
             break;
         case AST_ASSIGN:
@@ -2189,7 +2165,6 @@ void emitCommand(AstNode *node, FuncContext *funcStruct) {
             }
             break;
         case AST_GLOBAL_ID:
-            // Nová implementace: nacteni globalni promenne
             if (node->arity != 0) {
                 emitGLobal(node, funcStruct);
             } else {
@@ -2200,7 +2175,6 @@ void emitCommand(AstNode *node, FuncContext *funcStruct) {
         case AST_EMPTY:
             break;
 
-        // Operace (Expression)
         case AST_PLUS:
             emitPlus(node, funcStruct);
             break;
@@ -2260,7 +2234,7 @@ void emitCommand(AstNode *node, FuncContext *funcStruct) {
     }
 }
 /**
- * @brief Hlavní funkce pro generování IFJcode23 kódu.
+ * @brief Hlavní funkce pro generování kódu.
  *
  * @param root Kořenový uzel abstraktního syntaktického stromu.
  */

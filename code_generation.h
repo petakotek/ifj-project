@@ -3,7 +3,7 @@
  *
  * @brief Hlavičkový soubor implementace generátoru kódu
  * @file code_generation.c
- * @author Josef Pasek (xpasekj00), Petr Kotek (xkotekp00), Jakub Jambrozi(xjambrj00) 
+ * @author Josef Pasek (xpasekj00), Petr Kotek (xkotekp00), Jakub Jambrozi(xjambrj00)
  */
 
 
@@ -17,6 +17,9 @@
 #include "dynamic_stack.h"
 #include "support_functions.h"
 #include "symtable.h"
+/*
+* Struktura na uložení informaci o funkci ve ktere se generator kodu nachazí.
+*/
 typedef struct {
     char                     *funcName;
     DynamiclabelStackStackPtr labelStack;
