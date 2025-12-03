@@ -6,7 +6,8 @@ static main() {
     var t
 
     s = "hello"
-    t = Ifj.substring(s, 0, Ifj.length(s))
+    var x = Ifj.length(s)
+    t = Ifj.substring(s, 0, x)
 
     __d = Ifj.write(t)
     __d = Ifj.write("\n")
