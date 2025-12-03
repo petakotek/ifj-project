@@ -16,204 +16,51 @@
 #include "support_functions.h"
 
 
-AstNode *buildIfChainFlat(size_t n, AstNode **kids) {
-    // ε
-    if (n == 0) {
-        AstNode *node = calloc(1, sizeof *node);
-        if (!node) {
-            printError(INTERNAL_ERROR, "alloc IF_CHAIN(0)");
-            memorySafeExit(INTERNAL_ERROR);
-        }
-        node->kind  = AST_IF_CHAIN;
-        node->arity = 0;
-        return node;
-    }
-
-    if (n == 2 && kids[1] && kids[1]->kind == AST_EMPTY) {
-        AstNode *flat1[1] = {kids[0]};
-
-        astFreeWhole(kids[1]);
-        return astNew(AST_IF_CHAIN, 1, flat1);
-    }
-
-    if (n == 2 && kids[1] && kids[1]->kind == AST_IF_CHAIN) {
-        size_t    tail = kids[1]->arity;
-        AstNode **flat = malloc(sizeof(AstNode *) * (tail + 1));
-        if (!flat) {
-            printError(INTERNAL_ERROR, "alloc ifchain flat");
-            memorySafeExit(INTERNAL_ERROR);
-        }
-
-        flat[0] = kids[0];
-        if (tail)
-            memcpy(&flat[1], kids[1]->child, sizeof(AstNode *) * tail);
-
-        AstNode *node = astNew(AST_IF_CHAIN, tail + 1, flat);
-        free(flat);
-
-        free(kids[1]->child);
-        free(kids[1]);
-
-        bool seen_else = false;
-        for (size_t i = 0; i < node->arity; ++i) {
-            AstNode *ch = node->child[i];
-            if (ch && ch->kind == AST_ELSE) {
-                if (seen_else || i != node->arity - 1) {
-                    printError(SYNTAX_ERROR, "Else je duplicitné alebo nie je posledné");
-                    memorySafeExit(SYNTAX_ERROR);
-                }
-                seen_else = true;
-            } else if (seen_else) {
-                printError(SYNTAX_ERROR, "Po 'else' už nemôžu nasledovať ďalšie vetvy");
-                memorySafeExit(SYNTAX_ERROR);
-            }
-        }
-        return node;
-    }
-
-
-    return astNew(AST_IF_CHAIN, n, kids);
-}
-
-AstNode *buildClassBlockFlat(size_t n, AstNode **kids) {
-    if (n == 0) {
-        AstNode *node = (AstNode *)calloc(1, sizeof(AstNode));
-        if (!node) {
-            printError(INTERNAL_ERROR, "alloc MAIN_CLASS_BLOCK(0)");
-            memorySafeExit(INTERNAL_ERROR);
-        }
-        node->kind  = AST_MAIN_CLASS_BLOCK;
-        node->arity = 0;
-        return node;
-    }
-
-    if (n == 2 && kids[1] && kids[1]->kind == AST_MAIN_CLASS_BLOCK) {
-        size_t    tail = kids[1]->arity;
-        AstNode **flat = (AstNode **)malloc(sizeof(AstNode *) * (tail + 1));
-        if (!flat) {
-            printError(INTERNAL_ERROR, "alloc classblock flat");
-            memorySafeExit(INTERNAL_ERROR);
-        }
-        flat[0] = kids[0];
-        if (tail)
-            memcpy(&flat[1], kids[1]->child, sizeof(AstNode *) * tail);
-
-        AstNode *node = astNew(AST_MAIN_CLASS_BLOCK, tail + 1, flat);
-        free(flat);
-
-        free(kids[1]->child);
-        free(kids[1]);
-        return node;
-    }
-
-    return astNew(AST_MAIN_CLASS_BLOCK, n, kids);
-}
-
-AstNode *buildStmtListFlat(size_t n, AstNode **kids) {
-    if (n == 0) {  // ε
-        AstNode *node = calloc(1, sizeof *node);
-        if (!node) {
-            printError(INTERNAL_ERROR, "alloc STMT_LIST(0)");
-            memorySafeExit(INTERNAL_ERROR);
-        }
-        node->kind  = AST_STATEMENT_LIST;
-        node->arity = 0;
-        return node;
-    }
-    if (n == 2 && kids[1] && kids[1]->kind == AST_STATEMENT_LIST) {
-        size_t    tail = kids[1]->arity;
-        AstNode **flat = malloc(sizeof(AstNode *) * (tail + 1));
-        if (!flat) {
-            printError(INTERNAL_ERROR, "alloc stmtlist flat");
-            memorySafeExit(INTERNAL_ERROR);
-        }
-        flat[0] = kids[0];
-        if (tail)
-            memcpy(&flat[1], kids[1]->child, sizeof(AstNode *) * tail);
-        AstNode *node = astNew(AST_STATEMENT_LIST, tail + 1, flat);
-        free(flat);
-        free(kids[1]->child);
-        free(kids[1]);
-        return node;
-    }
-    return astNew(AST_STATEMENT_LIST, n, kids);
-}
-
-
-AstNode *buildParamFlat(size_t n, AstNode **kids) {
-
-    if (n == 0) {
-        AstNode *node = (AstNode *)calloc(1, sizeof(AstNode));
-        if (!node) {
-            printError(INTERNAL_ERROR, "alloc PARAM(0)");
-            memorySafeExit(INTERNAL_ERROR);
-        }
-        node->kind  = AST_PARAM;
-        node->arity = 0;
-        return node;
-    }
-
-
-    if (n == 2 && kids[0] && kids[1] && kids[1]->kind == AST_PARAM) {
-        size_t tail = kids[1]->arity;
-
-        AstNode **flat = (AstNode **)malloc(sizeof(AstNode *) * (tail + 1));
-        if (!flat) {
-            printError(INTERNAL_ERROR, "alloc param flat");
-            memorySafeExit(INTERNAL_ERROR);
-        }
-
-        flat[0] = kids[0]; 
-        if (tail > 0) {
-
-            memcpy(&flat[1], kids[1]->child, sizeof(AstNode *) * tail);
-        }
-
-
-        AstNode *node = astNew(AST_PARAM, tail + 1, flat);
-        free(flat);
-
-
-        free(kids[1]->child);
-        free(kids[1]);
-
-        return node;
-    }
-
-
-    return astNew(AST_PARAM, n, kids);
-}
 
 AstNode *astNew(AstNodeType kind, size_t arity, AstNode **kids) {
+    // alokácia nového uzla
     AstNode *new_node = (AstNode *)calloc(1, sizeof(AstNode));
     if (!new_node) {
         printError(INTERNAL_ERROR, "Chyba alokace: new_node");
         memorySafeExit(INTERNAL_ERROR);
     }
-    new_node->tmpId = 0;
 
+    // zápis predaných hodnôt do nového uzla
+    new_node->tmpId = 0;
+    // typ uzl
     new_node->kind  = kind;
+    // počet detí koľko 
     new_node->arity = arity;
 
+    // ak má mať uzol nejaké deti
     if (arity > 0) {
+        // alokujeme miesto pre deti
         new_node->child = (AstNode **)malloc(sizeof(AstNode *) * arity);
         if (!new_node->child) {
             printError(INTERNAL_ERROR, "Chyba alokácie detí AST uzla\n");
             memorySafeExit(INTERNAL_ERROR);
         }
-        for (size_t i = 0; i < arity; ++i) {
+        // poradie detí je už pri volaní funkcie zoradené čiže iba skopírujeme deti z parametru do nového uzla
+        for (size_t i = 0; i < arity; i++) {
             new_node->child[i] = kids[i];
         }
     }
+    // vrátime nový uzol syntaktickej analýze
     return new_node;
 }
 
 AstNode *newLeaf(AstNodeType kind, Token token) {
+    // alokácia nového listového uzla
     AstNode *newLeaf = (AstNode *)calloc(1, sizeof(AstNode));
     if (!newLeaf) {
         printError(INTERNAL_ERROR, "Chyba alokácie AST listu\n");
         memorySafeExit(INTERNAL_ERROR);
     }
+    
+    // priradenie typu listového uzla
+    // ak je to nejaký typ, ktorý budeme počas volania prerábať, tak novému listovému uzlu priradíme už
+    // typ uzlu po prerobení
+
     if (kind == AST_INT_LIT_EXP) {
         newLeaf->kind = AST_INT_LIT;
     } else if (kind == AST_FLOAT_LIT_EXP) {
@@ -223,11 +70,16 @@ AstNode *newLeaf(AstNodeType kind, Token token) {
     else {
         newLeaf->kind = kind;
     }
+    // nastavíme že sa jedná o listový uzol
     newLeaf->isLeaf = true;
+    // extrahuje konkrétnu hodnotu tokenu a zapíšeme ju do nového listového uzla
     astValueFromToken(&newLeaf->value, kind, &token);
+
+
     if (newLeaf->value.floatVal && newLeaf->kind == AST_INT_LIT) {
         newLeaf->kind = AST_FLOAT_LIT;
     }
+    // vrátime novo vytvorený listový uzol
     return newLeaf;
 }
 
@@ -255,40 +107,50 @@ void astValueFromToken(AstValue *out, AstNodeType kind, Token *token) {
     switch (kind) {
         case AST_INT_LIT:
             out->isInt  = true;
+            // prepis reťazca ná long long 
             out->intVal = strtoll(token->value.identifier, NULL, 0);
             break;
         case AST_FLOAT_LIT:
             out->isFloat  = true;
+            // prepis reťazca na double
             out->floatVal = strtod(token->value.identifier, NULL);
             break;
         case AST_STRING_LIT:
             out->hasStr = true;
+            // prepis reťazca aby bol kompatibilný s jazykom wren
             char *tmp   = stringChangingLit(token->value.identifier);
             out->str    = tmp;
             break;
         case AST_STRING_BLOCK:
             out->hasStr = true;
+            // prepis reťazca aby bol kompatibilný s jazykom wren
             char *temp  = stringChanging(token->value.identifier);
             out->str    = temp;
             break;
         case AST_IDENTIFIER:
         case AST_GLOBAL_ID:
             out->hasStr = true;
+            // vloženie reťazca do abstraktného syntaktického stromu cez pomocnú funkciu
+            // aby sa predišlo uvoľneniu hodnoty pri uvoľňovaní už nepotrebného tokenu
             out->str    = dupCstr(token->value.identifier);
             break;
         case AST_BOOL_LIT:
             out->isBool = true;
+            // vloženie reťazca do abstraktného syntaktického stromu cez pomocnú funkciu
+            // aby sa predišlo uvoľneniu hodnoty pri uvoľňovaní už nepotrebného tokenu
             out->str    = dupCstr(token->value.identifier);
             break;
 
         case AST_INT_LIT_EXP: {
+            // prevedenie reťazca obsahujúceho číslo s exponentom na konkrétnu hodnotu 
             double    val  = floatExp(token->value.identifier);
             long long ival = (long long)val;
+            //jedná sa o long long
             if (val == (double)ival) {
                 out->isInt  = true;
                 out->intVal = ival;
             }
-
+            // jedná sa skutočne o double
             else {
                 out->isFloat  = true;
                 out->floatVal = val;
@@ -298,6 +160,7 @@ void astValueFromToken(AstValue *out, AstNodeType kind, Token *token) {
 
         case AST_FLOAT_LIT_EXP:
             out->isFloat  = true;
+            // prevedenie reťazca obsahujúceho číslo s exponentom na konkrétnu hodnotu 
             out->floatVal = floatExp(token->value.identifier);
             break;
         default:
@@ -320,17 +183,300 @@ char *dupCstr(const char *string) {
 }
 
 double floatExp(const char *s) {
+    // overenie či sa v reťazci nachádza exponent
+    // zároveň zistíme na akej pozícii sa nachádza
     char *pos = strpbrk(s, "eE");
+    // ak sa nenachádza iba prevedieme reťazec do očakávanej návratovej hodnoty
     if (!pos) {
         return strtod(s, NULL);
     }
-    char base_str[32];
-    strncpy(base_str, s, pos - s);
-    base_str[pos - s] = '\0';
 
-    double base = strtod(base_str, NULL);
+    char baseStr[32];
+    //skopírujeme do baseStr iba časť po pozíciu danej v pos, na ktorej sa nachádza exponent
+    strncpy(baseStr, s, pos - s);
+    // pridáme umelý  ukončovací znak
+    baseStr[pos - s] = '\0';
+
+    // prevedieme reťazec v baseStr do double
+    double base = strtod(baseStr, NULL);
+    // prevedieme exponent do double
     double exp  = strtod(pos + 1, NULL);
+
+    // vrátime výsledne číslo
     return base * pow(10, exp);
+}
+
+
+char *stringChanging(char *tmp) {
+    if (!tmp) {
+        return NULL;
+    }
+    //získanie dĺžky reťazca
+    size_t len = strlen(tmp);
+    // alokujeme si miesto pre nový reťazec
+    // pôvodný počet * 4 (\xyz = 4 znaky) + 1 (\0)
+    char *out = malloc(len * 4 + 1);
+    if (!out) {
+        printError(INTERNAL_ERROR, "chyba v alokacii\n");
+        memorySafeExit(INTERNAL_ERROR);
+    }
+
+    size_t j = 0;
+    // prechádzanie každého znaku v pôvodnom reťazci
+    for (size_t i = 0; i < len; i++) {
+        // overenie o aký znak ide cez ascii kódy
+        if (tmp[i] <= 32 || tmp[i] == 35 || tmp[i] == 92) {
+            // zapíšeme do  nového reťazca znak vo formáte \xyz
+            j += sprintf(out + j, "\\%03u", tmp[i]);
+
+        } else {
+            //inak zapíšeme do nového reťazca pôvodný znak
+            out[j] = tmp[i];
+            j++;
+        }
+    }
+
+    out[j] = '\0';
+
+    return out;
+}
+
+
+char *stringChangingLit(char *tmp) {
+    if (!tmp) {
+        return NULL;
+    }
+    char *unesc = escapeString(tmp);
+    char *out = stringChanging(unesc);
+
+    free(unesc);
+    return out;
+}
+
+char *escapeString(char *tmp) {
+
+    size_t len = strlen(tmp);
+    char  *out = malloc(len + 1);
+    if (!out) {
+        printError(INTERNAL_ERROR, "chyba v alokacii\n");
+        memorySafeExit(INTERNAL_ERROR);
+    }
+
+    size_t i = 0, j = 0;
+    //prejdeme každý znak
+    while (i < len) {
+        // ak sa jedná o escape sekvenciu vložíme znak konkrétnej escape sekvencie
+        if (tmp[i] == '\\' && i + 1 < len) {
+            char c = tmp[i + 2];
+
+            if (c == 'n') {
+                out[j++] = '\n';
+                i += 2;
+            } else if (c == 't') {
+                out[j++] = '\t';
+                i += 2;
+            } else if (c == '\\') {
+                out[j++] = '\\';
+                i += 2;
+            } else if (c == '"') {
+                out[j++] = '\"';
+                i += 2;
+            } else if (c == 'r') {
+                out[j++] = '\r';
+                i += 2;
+            } else {
+                out[j++] = tmp[i++];
+            }
+        } else {
+            out[j++] = tmp[i++];
+        }
+    }
+
+    out[j] = '\0';
+    return out;
+}
+
+AstNode *buildIfChainFlat(size_t n, AstNode **kids) {
+    // ak je nastavená nulová arita
+    if (n == 0) {
+        // alokácia nového uzla
+        AstNode *node = calloc(1, sizeof *node);
+        if (!node) {
+            printError(INTERNAL_ERROR, "chyba alokácie\n");
+            memorySafeExit(INTERNAL_ERROR);
+        }
+        //zápis a vrátenie uzla s jeho typom a aritou 0
+        node->kind  = AST_IF_CHAIN;
+        node->arity = 0;
+        return node;
+    }
+
+    // ak sme na konci if reťazenia 
+    if (n == 2 && kids[1] && kids[1]->kind == AST_EMPTY) {
+        AstNode *flat1[1] = {kids[0]};
+
+        astFreeWhole(kids[1]);
+        return astNew(AST_IF_CHAIN, 1, flat1);
+    }
+
+    // nasleduje ďalšie if reťazenie, ktoré potrebujeme odstrániť a uložiť iba jeho deti
+    if (n == 2 && kids[1] && kids[1]->kind == AST_IF_CHAIN) {
+        size_t    tail = kids[1]->arity;
+        AstNode **flat = malloc(sizeof(AstNode *) * (tail + 1));
+        if (!flat) {
+            printError(INTERNAL_ERROR, "chyba alokácie\n");
+            memorySafeExit(INTERNAL_ERROR);
+        }
+
+        // ponecháme prvý IfChain uzol
+        flat[0] = kids[0];
+        // ak je arita druhého IFCHain > 0 => je potrebné ho uložiť
+        if (tail)
+            // skopírujeme do flat[1] iba deti druhého IF_CHAIN => samotný AST_IF_CHAIN vynecháme
+            memcpy(&flat[1], kids[1]->child, sizeof(AstNode *) * tail);
+        //vytvoríme nový uzol už bez AST_IF_CHAIN
+        AstNode *node = astNew(AST_IF_CHAIN, tail + 1, flat);
+        free(flat);
+
+        free(kids[1]->child);
+        free(kids[1]);
+
+        bool seen_else = false;
+        // syntaktická kontrola zaobchádzania s else vetvou
+        for (size_t i = 0; i < node->arity; ++i) {
+            AstNode *ch = node->child[i];
+            // zistíme či sa jedná o else
+            if (ch && ch->kind == AST_ELSE) {
+                // ak sa jedná o else zistíme či sa už niekde nevyskytlo alebo nie je ako posledné dieťa if reťazenia 
+                if (seen_else || i != node->arity - 1) {
+                    printError(SYNTAX_ERROR, "Else je duplicitné alebo nie je posledné\n");
+                    memorySafeExit(SYNTAX_ERROR);
+                }
+                seen_else = true;
+                // kontrola prítomnosti ďalšej vetvy za else vetvou
+            } else if (seen_else) {
+                printError(SYNTAX_ERROR, "Po 'else' už nemôžu nasledovať ďalšie vetvy\n");
+                memorySafeExit(SYNTAX_ERROR);
+            }
+        }
+        return node;
+    }
+
+
+    return astNew(AST_IF_CHAIN, n, kids);
+}
+
+AstNode *buildClassBlockFlat(size_t n, AstNode **kids) {
+    // ak je nastavená nulová arita
+    if (n == 0) {
+        AstNode *node = (AstNode *)calloc(1, sizeof(AstNode));
+        if (!node) {
+            printError(INTERNAL_ERROR, "chyba alokácie\n");
+            memorySafeExit(INTERNAL_ERROR);
+        }
+        node->kind  = AST_MAIN_CLASS_BLOCK;
+        node->arity = 0;
+        return node;
+    }
+
+    // nasleduje ďalší MAIN_CLASS_BLOCK, ktorý potrebujeme odstrániť a uložiť iba jeho deti    
+    if (n == 2 && kids[1] && kids[1]->kind == AST_MAIN_CLASS_BLOCK) {
+        size_t    tail = kids[1]->arity;
+        AstNode **flat = (AstNode **)malloc(sizeof(AstNode *) * (tail + 1));
+        if (!flat) {
+            printError(INTERNAL_ERROR, "chyba alokácie\n");
+            memorySafeExit(INTERNAL_ERROR);
+        }
+        // ponecháme prvý IfChain uzol
+        flat[0] = kids[0];
+        if (tail)
+            // skopírujeme do flat[1] iba deti druhého MAIN_CLASS_BLOKU => samotný AST_MAIN_CLASS_BLOCK vynecháme
+            memcpy(&flat[1], kids[1]->child, sizeof(AstNode *) * tail);
+        //vytvoríme nový uzol už bez AST_MAIN_CLASS_BLOCK
+        AstNode *node = astNew(AST_MAIN_CLASS_BLOCK, tail + 1, flat);
+        free(flat);
+
+        free(kids[1]->child);
+        free(kids[1]);
+        return node;
+    }
+
+    return astNew(AST_MAIN_CLASS_BLOCK, n, kids);
+}
+
+AstNode *buildStmtListFlat(size_t n, AstNode **kids) {
+    if (n == 0) { 
+        AstNode *node = calloc(1, sizeof *node);
+        if (!node) {
+            printError(INTERNAL_ERROR, "chyba alokácie\n");
+            memorySafeExit(INTERNAL_ERROR);
+        }
+        node->kind  = AST_STATEMENT_LIST;
+        node->arity = 0;
+        return node;
+    }
+    if (n == 2 && kids[1] && kids[1]->kind == AST_STATEMENT_LIST) {
+        size_t    tail = kids[1]->arity;
+        AstNode **flat = malloc(sizeof(AstNode *) * (tail + 1));
+        if (!flat) {
+            printError(INTERNAL_ERROR, "chyba alokácie\n");
+            memorySafeExit(INTERNAL_ERROR);
+        }
+        flat[0] = kids[0];
+        if (tail)
+            memcpy(&flat[1], kids[1]->child, sizeof(AstNode *) * tail);
+        AstNode *node = astNew(AST_STATEMENT_LIST, tail + 1, flat);
+        free(flat);
+        free(kids[1]->child);
+        free(kids[1]);
+        return node;
+    }
+    return astNew(AST_STATEMENT_LIST, n, kids);
+}
+
+
+AstNode *buildParamFlat(size_t n, AstNode **kids) {
+
+    if (n == 0) {
+        AstNode *node = (AstNode *)calloc(1, sizeof(AstNode));
+        if (!node) {
+            printError(INTERNAL_ERROR, "chyba alokácie\n");
+            memorySafeExit(INTERNAL_ERROR);
+        }
+        node->kind  = AST_PARAM;
+        node->arity = 0;
+        return node;
+    }
+
+
+    if (n == 2 && kids[0] && kids[1] && kids[1]->kind == AST_PARAM) {
+        size_t tail = kids[1]->arity;
+
+        AstNode **flat = (AstNode **)malloc(sizeof(AstNode *) * (tail + 1));
+        if (!flat) {
+            printError(INTERNAL_ERROR, "chyba alokácie\n");
+            memorySafeExit(INTERNAL_ERROR);
+        }
+
+        flat[0] = kids[0]; 
+        if (tail > 0) {
+
+            memcpy(&flat[1], kids[1]->child, sizeof(AstNode *) * tail);
+        }
+
+
+        AstNode *node = astNew(AST_PARAM, tail + 1, flat);
+        free(flat);
+
+
+        free(kids[1]->child);
+        free(kids[1]);
+
+        return node;
+    }
+
+
+    return astNew(AST_PARAM, n, kids);
 }
 
 const char *astNodeTypeToString(AstNodeType kind) {
@@ -490,81 +636,5 @@ void astDump(const AstNode *root) {
 }
 #endif
 
-char *stringChanging(char *tmp) {
-    if (!tmp) {
-        return NULL;
-    }
-    size_t len = strlen(tmp);
-    char *out = malloc(len * 4 + 1);
-    if (!out) {
-        printError(INTERNAL_ERROR, "chyba v alokacii");
-        memorySafeExit(INTERNAL_ERROR);
-    }
 
-    size_t j = 0;
-    for (size_t i = 0; i < len; i++) {
-        if (tmp[i] <= 32 || tmp[i] == 35 || tmp[i] == 92) {
-            j += sprintf(out + j, "\\%03u", tmp[i]);
-
-        } else {
-            out[j] = tmp[i];
-            j++;
-        }
-    }
-
-    out[j] = '\0';
-
-    return out;
-}
-
-char *stringChangingLit(char *tmp) {
-    if (!tmp) {
-        return NULL;
-    }
-    char *unesc = escapeString(tmp);
-    char *out = stringChanging(unesc);
-
-    free(unesc);
-    return out;
-}
-
-char *escapeString(char *tmp) {
-    size_t len = strlen(tmp);
-    char  *out = malloc(len + 1);
-    if (!out) {
-        printError(INTERNAL_ERROR, "chyba v alokacii");
-        memorySafeExit(INTERNAL_ERROR);
-    }
-
-    size_t i = 0, j = 0;
-    while (i < len) {
-        if (tmp[i] == '\\' && i + 1 < len) {
-            char c = tmp[i + 2];
-
-            if (c == 'n') {
-                out[j++] = '\n';
-                i += 2;
-            } else if (c == 't') {
-                out[j++] = '\t';
-                i += 2;
-            } else if (c == '\\') {
-                out[j++] = '\\';
-                i += 2;
-            } else if (c == '"') {
-                out[j++] = '\"';
-                i += 2;
-            } else if (c == 'r') {
-                out[j++] = '\r';
-                i += 2;
-            } else {
-                out[j++] = tmp[i++];
-            }
-        } else {
-            out[j++] = tmp[i++];
-        }
-    }
-
-    out[j] = '\0';
-    return out;
-}
 /*** konec ast.c ***/

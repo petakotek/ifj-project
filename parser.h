@@ -78,8 +78,8 @@ Symbol makeTermWithValue(TokenType type);
 Symbol makeNonterm(Nonterm nonTerm);
 
 /**
- * @brief pomocná funkcia na vytvorenie štruktúry Symbol ktorá
- * bude obsahovať počet detí a is_reduced = true
+ * @brief pomocná funkcia na vytvorenie štruktúry Symbol, ktorá reprezentovať uzol abstraktného syntaktického stromu
+ * ktorý sa ma vytvoriť a bude obsahovať počet detí, typ uzla, is_reduced = true
  * @param kind nazov neterminálu ktorý strom obsahovať
  * @param arity počet detí príslušný k danému uzlu
  */
