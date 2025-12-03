@@ -8,7 +8,8 @@ static main() {
     a = 4
     b = a == 4
 
-    __d = Ifj.write(show(b))
+    var x = show(b)
+    __d = Ifj.write(x)
 }
 
 static show(x) {

@@ -6,7 +6,9 @@ static main() {
     var r
 
     s = "hello"
-    r = (Ifj.substring(s, 0, 1)) == (Ifj.substring(s, 1, 2))
+    var x = Ifj.substring(s, 0, 1)
+    var y = Ifj.substring(s, 1, 2)
+    r = x == y 
 
     __d = Ifj.write(r)
 }
