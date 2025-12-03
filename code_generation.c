@@ -107,13 +107,14 @@ char *generatorLable(char *funcName, FuncContext *funcStruckt, bool pridaniDoSta
     // Formát: $TypBloku$CisloBloku
     size_t remainingSpace = sizeOfBuffer - currentLen;
     int    written         = 0;
-    if (funcStruckt->main == false) {
-        written = snprintf(resultLabel + currentLen, remainingSpace, "$%s$%zu", funcName, globalCounter);
-    } else if (!pridaniDoStacku) {
-        written = snprintf(resultLabel + currentLen, remainingSpace, "$%s", funcName);
-    } else {
+    if(funcStruckt->main == true){
         written = snprintf(resultLabel + currentLen, remainingSpace, "%s", funcName);
+    }else if(!pridaniDoStacku){
+    	written = snprintf(resultLabel + currentLen, remainingSpace, "%s", funcName);
+    }else {
+   		written = snprintf(resultLabel + currentLen, remainingSpace, "%s$%zu", funcName,globalCounter);
     }
+
     if (written <= 0 || (size_t)written >= remainingSpace) {
         // potřebna resize
         if ((size_t)written >= remainingSpace) {
@@ -530,7 +531,7 @@ void emit_call_func(AstNode *node, FuncContext *funcStruct) {
     for (size_t i = 0; i < node->child[1]->arity; i++) {
         emitCommand(node->child[1]->child[i], funcStruct);
     }
-    printN("CALL $%s$0", node->child[0]->value.str);
+    printN("CALL %s$0", node->child[0]->value.str);
 }
 /**
  * @brief Generuje  kód pro operaci sčítání/konkatenace (+).
@@ -1561,7 +1562,9 @@ void emitIfChain(AstNode *node, FuncContext *funcContext) {
      * vytvorenie lablu na spode if chainu na ktory v pripade splnenia podmienky
      * budeme z jednotlivych podmienok skakat
      */
-    char *endLabel = generatorLable("ifchainend", funcContext, false, ifCounter);
+    char label_end[128];
+    snprintf(label_end, sizeof label_end, "$ifchainend$%zu",ifCounter);
+    char *endLabel = generatorLable(label_end, funcContext, false, ifCounter);
 
     for (size_t i = 0; i < node->arity; i++) {
         if (node->child[i]->kind == AST_IF) {
@@ -1582,7 +1585,9 @@ void emitIfChain(AstNode *node, FuncContext *funcContext) {
 void emitIf(AstNode *node, FuncContext *funcContext, char *endLabel) {
     ifCounter++;
     char *label = NULL;
-    label       = generatorLable("ifEnd", funcContext, false, ifCounter);
+    char label_end[128];
+    snprintf(label_end, sizeof label_end, "$ifEnd$%zu",ifCounter);
+    label       = generatorLable(label_end, funcContext, false, ifCounter);
     // dame skontrolovat podmienku
     emitCondition(node->child[0], funcContext);
     // mame vysledok podmienky true/false na zasobniku
@@ -1639,7 +1644,6 @@ void emitWhile(AstNode *node, FuncContext *funcContext) {
         printError(INTERNAL_ERROR, "nepovedene uvolneni lablu na konci while loopu");
         memorySafeExit(INTERNAL_ERROR);
     }
-    loopCounter--;
 }
 /**
  * @brief Generuje  kód pro příkaz `break`.
@@ -1925,7 +1929,6 @@ void emitFor(AstNode *node, FuncContext *funcContext) {
         printError(INTERNAL_ERROR, "nepovedene uvolneni lablu na konci while loopu");
         memorySafeExit(INTERNAL_ERROR);
     }
-    loopCounter--;
 }
 /**
  * @brief Generuje  kód pro volání setter funkce.

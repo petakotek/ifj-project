@@ -1,0 +1,68 @@
+@startuml prezentace
+' Globální nastavení vzhledu
+skinparam ranksep 50
+skinparam nodesep 50
+
+' Styly uzlů
+skinparam state {
+    FontName Consolas
+    FontSize 15
+    BackgroundColor White
+    BorderColor #807272
+    BorderThickness 1.2
+}
+
+' Specifické styly pro kategorie
+skinparam state {
+    BackgroundColor<<LEXER>> #FFF59D
+    BackgroundColor<<TERMINAL>> #ca8d8d
+    BackgroundColor<<NUMBER>> #E5F0FF
+    BackgroundColor<<STRING>> #D8FFD8
+}
+skinparam state {
+    BackgroundColor<<FOCUS>> Gold
+    BorderColor<<FOCUS>> Red
+    BorderThickness<<FOCUS>> 2.5
+    Shadowing<<FOCUS>> true
+}
+hide empty description
+
+' ===================== DEFINICE STAVŮ =====================
+
+' 1. Startovní stav
+state "Lexikální analýza" as SLX <<FOCUS>>
+
+' 2. Terminální stavy (Generátor)
+state "Generátor kodu" as GK <<TERMINAL>>
+
+' 3. Parser a Precedenční analýza (Čísla/Modrá v původním)
+state "Parser" as Parser <<NUMBER>>
+state "Precedeční analýza" as PR <<NUMBER>>
+
+' 4. Sémantická analýza (Řetězce/Zelená v původním)
+state "Sematická analýza" as SM <<STRING>>
+
+state "Tabulka symbolů" as TS <<STRING>>
+' ===================== PŘECHODY (VAZBY) =====================
+
+' Hlavní tok zleva doprava
+SLX -right-> Parser : Token
+Parser -left-> SLX : Žádost o token
+
+' Vazba mezi Parserem a Precedenční analýzou (vedle sebe nebo pod sebou)
+Parser -up-> PR : Aktualní token a informační příznak
+PR -right-> Parser : Ukazatel 
+
+' Vazba dolů na Sémantickou analýzu (aby byla pod Parserem)
+Parser -down-> SM : AST strom
+
+' Vazba dolů na Generátor (aby byl pod Sémantickou)
+SM -down-> GK : Upravený AST strom
+SM --> TS : Kontrola rámcu
+TS-->SM
+SLX -right-> PR : Token
+PR -left-> SLX : Žádost o token
+
+
+    
+@enduml

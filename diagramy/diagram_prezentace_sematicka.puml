@@ -19,7 +19,12 @@ skinparam state {
     BackgroundColor<<NUMBER>> #E5F0FF
     BackgroundColor<<STRING>> #D8FFD8
 }
-
+skinparam state {
+    BackgroundColor<<FOCUS>> #D8FFD8
+    BorderColor<<FOCUS>> Red
+    BorderThickness<<FOCUS>> 2.5
+    Shadowing<<FOCUS>> true
+}
 hide empty description
 
 ' ===================== DEFINICE STAVŮ =====================
@@ -35,7 +40,7 @@ state "Parser" as Parser <<NUMBER>>
 state "Precedeční analýza" as PR <<NUMBER>>
 
 ' 4. Sémantická analýza (Řetězce/Zelená v původním)
-state "Sematická analýza" as SM <<STRING>>
+state "Sematická analýza" as SM <<FOCUS>>
 
 state "Tabulka symbolů" as TS <<STRING>>
 ' ===================== PŘECHODY (VAZBY) =====================
@@ -52,9 +57,12 @@ PR -right-> Parser : Ukazatel
 Parser -down-> SM : AST strom
 
 ' Vazba dolů na Generátor (aby byl pod Sémantickou)
-SM -down-> GK : Upravený AST strom
-SM --> TS : Kontrola rámcu
-TS-->SM
+SM -down[#red,bold]-> GK : Upravený AST strom
+SM -[#red,bold]-> TS : Kontrola rámcu
+TS-[#red,bold]->SM
+SLX -right-> PR : Token
+PR -left-> SLX : Žádost o token
+
 
     
 @enduml
