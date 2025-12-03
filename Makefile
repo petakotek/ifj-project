@@ -37,3 +37,13 @@ pack_merlin_test: pack
 	rm -rf testy.zip ready.zip
 	zip -r testy.zip ./testy *.sh ic25int-linux-x86_64 *.py
 	zip ready.zip *.zip
+
+test_all:
+	-./run_lex_tests.sh > out.log
+	-./run_syn_tests.sh >> out.log
+	-./run_sem_tests.sh >> out.log
+	-cd ./testy/IFJ_TestsExpanded && ./run_cc_tests.sh >> ../../out.log
+	-python3 ./test_lexer.py >> out.log
+	-python3 ./test_syntax.py >> out.log
+	-python3 ./test_semantic.py >> out.log
+	@echo Done
